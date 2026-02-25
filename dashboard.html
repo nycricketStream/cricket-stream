@@ -2,253 +2,104 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>NYC Eagles Tournament Broadcast</title>
+<title>Cricket Dashboard Admin</title>
 <style>
-body{
-    margin:0;
-    background:#0d0d0d;
-    font-family:Arial, Helvetica, sans-serif;
-    color:white;
-    overflow:hidden;
-}
-
-/* ===== CONTROL PANEL ===== */
-#controlPanel{
-    position:absolute;
-    top:10px;
-    left:10px;
-    width:450px;
-    max-height:95vh;
-    overflow:auto;
-    background:#1a1a1a;
-    padding:15px;
-    border-radius:8px;
-    z-index:1000;
-}
-
-input, textarea, select{
-    width:100%;
-    padding:6px;
-    margin-bottom:6px;
-    border:none;
-    border-radius:4px;
-}
-
-button{
-    width:100%;
-    padding:8px;
-    background:#0046BE;
-    color:white;
-    border:none;
-    font-weight:bold;
-    border-radius:4px;
-    margin-bottom:6px;
-    cursor:pointer;
-}
-
-/* ===== LOWER THIRD ===== */
-#lowerThird{
-    position:absolute;
-    bottom:120px;
-    left:-100%;
-    width:55%;
-    background:linear-gradient(90deg,#111,#1f1f1f);
-    border-left:8px solid #0046BE;
-    padding:18px;
-    border-radius:8px;
-    transition:.6s ease;
-}
-
-#playerRow{
-    display:flex;
-    align-items:center;
-}
-
-#playerImage{
-    width:80px;
-    height:80px;
-    border-radius:50%;
-    object-fit:cover;
-    margin-right:15px;
-}
-
-#playerName{
-    font-size:24px;
-    font-weight:bold;
-}
-
-#playerStats{
-    font-size:14px;
-    margin-top:6px;
-}
-
-/* ===== SCORE FRAME ===== */
-#scoreContainer{
-    position:absolute;
-    bottom:0;
-    width:100%;
-    height:100px;
-    background:linear-gradient(90deg,#000,#1a1a1a);
-    border-top:5px solid #0046BE;
-    overflow:hidden;
-}
-
-#accentGlow{
-    position:absolute;
-    left:0;
-    width:6px;
-    height:100%;
-    background:#0046BE;
-    box-shadow:0 0 20px #0046BE;
-}
-
-#scoreCrop{
-    position:absolute;
-    width:100%;
-    height:400px;
-}
-
-iframe{
-    width:100%;
-    height:400px;
-    border:none;
-    pointer-events:none;
-}
-
-#infoBar{
-    position:absolute;
-    right:20px;
-    top:10px;
-    font-size:14px;
-    text-align:right;
-}
-
-.badge{
-    display:inline-block;
-    padding:4px 8px;
-    margin-left:6px;
-    background:#333;
-    border-radius:4px;
-    font-size:12px;
-}
-
-/* ===== BIG MOMENTS ===== */
-#moment{
-    position:absolute;
-    top:40%;
-    left:50%;
-    transform:translate(-50%,-50%) scale(0);
-    font-size:120px;
-    font-weight:bold;
-    color:#FFD700;
-    text-shadow:0 0 40px rgba(255,215,0,.9);
-    transition:.4s ease;
-}
+body { font-family: Arial; margin:0; background:#1a1a1a; color:white; }
+input, textarea, select, button { width:100%; margin-bottom:6px; padding:6px; border-radius:4px; border:none; }
+button { background:#0046BE; color:white; font-weight:bold; cursor:pointer; }
+.container { padding:15px; max-width:400px; }
+hr { border:1px solid #333; }
 </style>
 </head>
-
 <body>
+<div class="container">
+<h2>Cricket Dashboard</h2>
 
-<div id="controlPanel">
-
-<h3>TEAMS</h3>
+<h3>Teams</h3>
 Team A <input id="teamA" value="Team A">
-Players Team A (11 names, one per line)
-<textarea id="playersA" rows="6"></textarea>
-
+Players Team A (11 names, one per line) <textarea id="playersA" rows="6"></textarea>
 Team B <input id="teamB" value="Florida XI">
-Players Team B (11 names, one per line)
-<textarea id="playersB" rows="6"></textarea>
-
+Players Team B (11 names, one per line) <textarea id="playersB" rows="6"></textarea>
 Team A Color <input type="color" id="colorA" value="#0046BE">
 Team B Color <input type="color" id="colorB" value="#C8102E">
 
-Batting Team
-<select id="battingTeam">
-<option value="A">Team A</option>
-<option value="B">Team B</option>
-</select>
-
-Innings
-<select id="innings">
-<option>1st Innings</option>
-<option>2nd Innings</option>
-</select>
+<h3>Batting & Innings</h3>
+Batting Team <select id="battingTeam"><option value="A">Team A</option><option value="B">Team B</option></select>
+Innings <select id="innings"><option>1st Innings</option><option>2nd Innings</option></select>
 
 <hr>
-
-<h3>PLAYER SELECT</h3>
-Select Team
-<select id="teamSelect"></select>
-Select Player
-<select id="playerSelect"></select>
-
+<h3>Player Info</h3>
+Team <select id="teamSelect"></select>
+Player <select id="playerSelect"></select>
 Matches <input type="number" id="matches">
 Runs <input type="number" id="runs">
 Balls <input type="number" id="balls">
 Wickets <input type="number" id="wickets">
 Player Image URL <input id="imageURL">
-
-<button onclick="showPlayer()">SHOW PLAYER</button>
+<button onclick="updatePlayer()">Update Player</button>
 
 <hr>
-
-<h3>SCORE FRAME / CRICCLUBS</h3>
+<h3>Score / CricClubs</h3>
 Embed URL <input id="embedURL">
 Crop Top (px) <input type="number" id="cropTop" value="-120">
 Frame Height <input type="number" id="frameHeight" value="100">
 Tournament Label <input id="tournamentText" value="NYNCL LIVE">
-
 <label><input type="checkbox" id="toggleScore" checked> Show CricClubs Score</label>
-
-<button onclick="applyEmbed()">APPLY SCORE EMBED</button>
+<button onclick="updateScore()">Update Score</button>
 
 <hr>
-
-<h3>SCORE INFO</h3>
+<h3>Score Info</h3>
 Overs <input type="number" id="overs" step="0.1">
 Current Runs <input type="number" id="totalRuns">
 Required Run Rate <input type="number" id="rrr" step="0.01">
 Powerplay <select id="powerplay"><option>OFF</option><option>ON</option></select>
-<button onclick="updateInfo()">UPDATE INFO</button>
+<button onclick="updateScoreInfo()">Update Score Info</button>
 
 <hr>
-
-<h3>MOMENTS</h3>
+<h3>Moments</h3>
 <button onclick="moment('FOUR!')">FOUR</button>
 <button onclick="moment('SIX!')">SIX</button>
 <button onclick="moment('WICKET!')">WICKET</button>
-
 </div>
-
-<!-- LOWER THIRD -->
-<div id="lowerThird">
-<div id="playerRow">
-<img id="playerImage">
-<div>
-<div id="playerName"></div>
-<div id="playerStats"></div>
-</div>
-</div>
-</div>
-
-<!-- SCORE FRAME -->
-<div id="scoreContainer">
-<div id="accentGlow"></div>
-<div id="scoreCrop"><iframe id="scoreFrame"></iframe></div>
-<div id="infoBar">
-<div id="inningsLabel"></div>
-<div class="badge" id="crrBox"></div>
-<div class="badge" id="rrrBox"></div>
-<div class="badge" id="ppBox"></div>
-</div>
-<div id="tournamentLabel" style="position:absolute;top:8px;right:20px;">NYNCL LIVE</div>
-</div>
-
-<div id="moment"></div>
 
 <script>
-// Populate team dropdown
+// -------------------
+// Functions to save state in localStorage
+// -------------------
+function saveState(){
+  const state = {
+    teamA: document.getElementById("teamA").value,
+    teamB: document.getElementById("teamB").value,
+    colorA: document.getElementById("colorA").value,
+    colorB: document.getElementById("colorB").value,
+    playersA: document.getElementById("playersA").value,
+    playersB: document.getElementById("playersB").value,
+    battingTeam: document.getElementById("battingTeam").value,
+    innings: document.getElementById("innings").value,
+    currentPlayer: {
+      team: document.getElementById("teamSelect").value,
+      name: document.getElementById("playerSelect").value,
+      matches: parseInt(document.getElementById("matches").value)||0,
+      runs: parseInt(document.getElementById("runs").value)||0,
+      balls: parseInt(document.getElementById("balls").value)||0,
+      wickets: parseInt(document.getElementById("wickets").value)||0,
+      imageURL: document.getElementById("imageURL").value
+    },
+    embedURL: document.getElementById("embedURL").value,
+    cropTop: parseInt(document.getElementById("cropTop").value),
+    frameHeight: parseInt(document.getElementById("frameHeight").value),
+    showCricClubs: document.getElementById("toggleScore").checked,
+    overs: parseFloat(document.getElementById("overs").value)||0,
+    totalRuns: parseFloat(document.getElementById("totalRuns").value)||0,
+    rrr: parseFloat(document.getElementById("rrr").value)||0,
+    powerplay: document.getElementById("powerplay").value
+  };
+  localStorage.setItem("broadcastState", JSON.stringify(state));
+}
+
+// -------------------
+// Player / Teams dropdown logic
+// -------------------
 function refreshTeams(){
   const t=document.getElementById("teamSelect");
   t.innerHTML="";
@@ -259,70 +110,24 @@ refreshTeams();
 document.getElementById("teamA").oninput=refreshTeams;
 document.getElementById("teamB").oninput=refreshTeams;
 
-// Load players
 document.getElementById("teamSelect").onchange=function(){
-  const list=this.value==="A"?document.getElementById("playersA").value:document.getElementById("playersB").value;
-  const names=list.split("\n");
-  const ps=document.getElementById("playerSelect");
+  const list = this.value==="A"?document.getElementById("playersA").value:document.getElementById("playersB").value;
+  const names = list.split("\n");
+  const ps = document.getElementById("playerSelect");
   ps.innerHTML="";
   names.forEach(n=>{if(n.trim()!="") ps.add(new Option(n,n));});
 };
 
-// Show player in lower third
-function showPlayer(){
-  const runs=parseFloat(document.getElementById("runs").value)||0;
-  const balls=parseFloat(document.getElementById("balls").value)||0;
-  const sr=balls>0?(runs/balls*100).toFixed(1):0;
-  document.getElementById("playerName").innerText=document.getElementById("playerSelect").value;
-  document.getElementById("playerStats").innerText="Matches: "+document.getElementById("matches").value+" | Runs: "+runs+" | Wickets: "+document.getElementById("wickets").value+" | SR: "+sr;
-  document.getElementById("playerImage").src=document.getElementById("imageURL").value;
-  const lower=document.getElementById("lowerThird");
-  lower.style.left="5%";
-  setTimeout(()=>{lower.style.left="-100%";},8000);
-}
+// Update functions
+function updatePlayer(){ saveState(); }
+function updateScore(){ saveState(); }
+function updateScoreInfo(){ saveState(); }
 
-// CricClubs embed with toggle
-function applyEmbed(){
-  const toggle=document.getElementById("toggleScore").checked;
-  const frame=document.getElementById("scoreContainer");
-  frame.style.display=toggle?"block":"none";
-  if(toggle){
-    document.getElementById("scoreFrame").src=document.getElementById("embedURL").value;
-    document.getElementById("scoreCrop").style.top=document.getElementById("cropTop").value+"px";
-    document.getElementById("scoreContainer").style.height=document.getElementById("frameHeight").value+"px";
-  }
-}
-
-// Auto-switch accent color based on batting team
-function autoAccentSwitch() {
-  const batting = document.getElementById("battingTeam").value;
-  const color = batting === "A" ? document.getElementById("colorA").value : document.getElementById("colorB").value;
-  document.getElementById("lowerThird").style.borderLeftColor = color;
-  document.getElementById("scoreContainer").style.borderTopColor = color;
-  document.getElementById("accentGlow").style.background = color;
-}
-document.getElementById("battingTeam").addEventListener("change", autoAccentSwitch);
-autoAccentSwitch();
-
-// Score info
-function updateInfo(){
-  const overs=parseFloat(document.getElementById("overs").value)||0;
-  const runs=parseFloat(document.getElementById("totalRuns").value)||0;
-  const crr=overs>0?(runs/overs).toFixed(2):0;
-  document.getElementById("crrBox").innerText="CRR: "+crr;
-  document.getElementById("rrrBox").innerText="RRR: "+document.getElementById("rrr").value;
-  document.getElementById("ppBox").innerText=document.getElementById("powerplay").value==="ON"?"POWERPLAY":"";
-  document.getElementById("inningsLabel").innerText=document.getElementById("innings").value;
-}
-
-// Big moments
+// Moment buttons
 function moment(type){
-  const el=document.getElementById("moment");
-  el.innerText=type;
-  el.style.transform="translate(-50%,-50%) scale(1)";
-  setTimeout(()=>{el.style.transform="translate(-50%,-50%) scale(0)";},1500);
+  localStorage.setItem("broadcastMoment", type);
+  setTimeout(()=>{ localStorage.removeItem("broadcastMoment"); },2000);
 }
 </script>
-
 </body>
 </html>
