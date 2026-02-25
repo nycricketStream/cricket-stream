@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,32 +7,62 @@
 <style>
 body{margin:0;background:transparent;font-family:Arial;color:white}
 
-#score{position:absolute;top:40px;left:50%;transform:translateX(-50%);background:#000a;padding:15px;border-radius:12px;display:none}
+/* Bottom CricClubs Bar */
+#bottomBar{
+position:absolute;bottom:20px;left:50%;
+transform:translateX(-50%);
+width:85%;height:110px;
+background:#1c1c1c;border-top:4px solid #e10600;
+border-radius:12px;overflow:hidden;display:none;
+}
+#bottomBar iframe{width:100%;height:100%;border:none}
 
-#lower{position:absolute;bottom:60px;left:60px;background:#000a;padding:15px;border-radius:12px;display:none}
+/* Scoreboard */
+#scoreWrap{
+position:absolute;top:30px;left:50%;
+transform:translateX(-50%);
+background:#111;padding:10px 30px;
+border:2px solid #e10600;border-radius:12px;
+display:none;
+}
 
-#lineups{position:absolute;top:150px;left:50%;transform:translateX(-50%);background:#000a;padding:20px;border-radius:14px;display:none}
+/* Player lower third */
+#player{
+position:absolute;bottom:150px;left:40px;
+background:#111;padding:14px;border-radius:10px;
+display:none;
+}
 
-#moment{position:absolute;top:40%;width:100%;text-align:center;font-size:140px;opacity:0;transition:.4s}
-#sponsor{position:absolute;bottom:0;width:100%;text-align:center;background:#000a;padding:8px}
-#bracket{position:absolute;right:0;top:0;height:100%;display:none}
-#embed{position:absolute;bottom:50px;left:50%;transform:translateX(-50%)}
-#adPlayer,#fullSponsor{position:absolute;top:0;left:0;width:100%;height:100%;background:black;display:none;justify-content:center;align-items:center;z-index:9999}
+/* Lineups */
+#lineups{
+position:absolute;top:120px;left:50%;
+transform:translateX(-50%);
+background:#111;padding:20px;border-radius:12px;
+display:none;
+}
 
+/* Sponsor */
+#sponsorBar{
+position:absolute;top:0;width:100%;
+background:#e10600;padding:6px;text-align:center;
+}
+
+#moment{
+position:absolute;top:40%;width:100%;
+text-align:center;font-size:120px;color:#e10600;
+opacity:0;transition:.4s;
+}
 .show{opacity:1}
 </style>
 </head>
 <body>
 
-<div id="score"></div>
-<div id="lower"><img id="pimg" height="80"><img id="plogo" height="60"><div id="pname"></div><div id="pstats"></div></div>
+<div id="scoreWrap"><div id="scoreText"></div></div>
+<div id="bottomBar"><iframe id="cricFrame"></iframe></div>
+<div id="player"><div id="playerText"></div></div>
 <div id="lineups"></div>
+<div id="sponsorBar"></div>
 <div id="moment"></div>
-<div id="sponsor"></div>
-<img id="bracket">
-<div id="embed"></div>
-<div id="fullSponsor"></div>
-<div id="adPlayer"></div>
 
 <script>
 const pusher=new Pusher("40ce89af9ae13d222f51",{cluster:"us2"});
@@ -39,68 +70,49 @@ const channel=pusher.subscribe("my-channel");
 
 channel.bind("broadcast-update",d=>{
 
-if(d.showScore!==undefined) score.style.display=d.showScore?"block":"none";
+if(d.showScore!==undefined)
+scoreWrap.style.display=d.showScore?"block":"none";
 
-if(d.teamA) score.innerHTML=`${d.tournament}<br>${d.teamA} ${d.score} ${d.teamB}<br>Ov ${d.overs} RRR ${d.rrr}`;
+if(d.teamA){
+scoreText.innerHTML=`${d.tournament}<br>
+${d.teamA} ${d.score} ${d.teamB}<br>
+Overs ${d.overs} | RRR ${d.rrr}`;
+}
+
+if(d.cricurl){
+bottomBar.style.display="block";
+cricFrame.src=d.cricurl;
+}
 
 if(d.player){
-lower.style.display="block";
-pname.innerText=d.player.name;
-pimg.src=d.player.img||"";
-plogo.src=d.player.logo||"";
-
-let s=[];
-if(d.player.showStats){
- if(d.player.showRuns) s.push("Runs "+d.player.runs);
- if(d.player.showWkts) s.push("Wkts "+d.player.wkts);
-}
-if(d.player.hand) s.push(d.player.hand);
-
-pstats.innerText=s.join(" | ");
-setTimeout(()=>lower.style.display="none",6000);
+player.style.display="block";
+playerText.innerText=`${d.player.name}
+${d.player.hand||''}
+Runs ${d.player.runs||''} Wkts ${d.player.wkts||''}`;
 }
 
-if(d.lineups){
+if(d.lineups?.show){
 lineups.style.display="block";
-lineups.innerHTML=`${d.lineups.A.join("<br>")}<hr>${d.lineups.B.join("<br>")}`;
+lineups.innerHTML=`
+<b>Team A</b><br>
+${d.lineups.A.map(p=>p.name).join("<br>")}
+<hr>
+<b>Team B</b><br>
+${d.lineups.B.map(p=>p.name).join("<br>")}
+`;
+}
+
+if(d.sponsors)
+sponsorBar.innerText=d.sponsors.join(" | ");
+
+if(d.fullSponsor){
+document.body.style.background=`url(${d.fullSponsor}) center/contain no-repeat black`;
 }
 
 if(d.moment){
 moment.innerText=d.moment;
 moment.classList.add("show");
 setTimeout(()=>moment.classList.remove("show"),3000);
-}
-
-if(d.sponsors) sponsor.innerText=d.sponsors.join(" | ");
-
-if(d.bracket){
-bracket.src=d.bracket.url;
-bracket.style.display=d.bracket.show?"block":"none";
-}
-
-if(d.embed){
-embed.innerHTML=d.embed.show?`<iframe src="${d.embed.url}" width="800" height="100"></iframe>`:"";
-}
-
-if(d.fullSponsor){
-fullSponsor.style.display="flex";
-fullSponsor.innerHTML=d.fullSponsor.type==="video"?
-`<video src="${d.fullSponsor.url}" autoplay muted style="max-width:100%;max-height:100%"></video>`:
-`<img src="${d.fullSponsor.url}" style="max-width:100%;max-height:100%">`;
-setTimeout(()=>fullSponsor.style.display="none",d.fullSponsor.duration*1000);
-}
-
-if(d.adPlaylist){
-let ads=d.adPlaylist.list;
-let i=0;
-adPlayer.style.display="flex";
-setInterval(()=>{
-let u=ads[i%ads.length];
-adPlayer.innerHTML=u.endsWith(".mp4")?
-`<video src="${u}" autoplay muted style="max-width:100%;max-height:100%"></video>`:
-`<img src="${u}" style="max-width:100%;max-height:100%">`;
-i++;
-},d.adPlaylist.duration*1000);
 }
 
 });
