@@ -126,7 +126,7 @@ let sponsorList = [];
 let sponsorIndex = 0;
 let rotateInterval;
 
-channel.bind("client-update-score", function(data){
+channel.bind("my-event", function(data){
   document.getElementById("tournament").innerText = data.tournament;
   document.getElementById("teams").innerText = data.teamA + " vs " + data.teamB;
   document.getElementById("score").innerText = data.score;
