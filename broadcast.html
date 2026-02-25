@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Broadcast Overlay</title>
+<style>
+body{ margin:0; background:transparent; font-family:Arial; color:white; overflow:hidden; }
+#lowerThird{ position:absolute; bottom:120px; left:-100%; width:55%; background:linear-gradient(90deg,#111,#1f1f1f); border-left:8px solid #0046BE; padding:18px; border-radius:8px; transition:.6s ease; display:flex; align-items:center;}
+#playerImage{ width:80px; height:80px; border-radius:50%; object-fit:cover; margin-right:15px;}
+#playerName{ font-size:24px; font-weight:bold;}
+#playerStats{ font-size:14px; margin-top:6px;}
+#scoreContainer{ position:absolute; bottom:0; width:100%; height:100px; background:linear-gradient(90deg,#000,#1a1a1a); border-top:5px solid #0046BE; overflow:hidden;}
+#accentGlow{position:absolute; left:0; width:6px; height:100%; background:#0046BE; box-shadow:0 0 20px #0046BE;}
+#scoreCrop{ position:absolute; width:100%; height:400px;}
+iframe{width:100%; height:400px; border:none; pointer-events:none;}
+#infoBar{ position:absolute; right:20px; top:10px; font-size:14px; text-align:right;}
+.badge{ display:inline-block; padding:4px 8px; margin-left:6px; background:#333; border-radius:4px; font-size:12px;}
+#tournamentLabel{position:absolute;top:8px;right:20px;}
+#moment{position:absolute; top:40%; left:50%; transform:translate(-50%,-50%) scale(0); font-size:120px; font-weight:bold; color:#FFD700; text-shadow:0 0 40px rgba(255,215,0,.9); transition:.4s ease;}
+</style>
+</head>
+<body>
+<div id="lowerThird">
+<img id="playerImage"><div><div id="playerName"></div><div id="playerStats"></div></div>
+</div>
+<div id="scoreContainer">
+<div id="accentGlow"></div>
+<div id="scoreCrop"><iframe id="scoreFrame"></iframe></div>
+<div id="infoBar">
+<div id="inningsLabel"></div>
+<div class="badge" id="crrBox"></div>
+<div class="badge" id="rrrBox"></div>
+<div class="badge" id="ppBox"></div>
+</div>
+<div id="tournamentLabel">NYNCL LIVE</div>
+</div>
+<div id="moment"></div>
+
+<script>
+// -------------------
+// Function to read dashboard state from localStorage
+// -------------------
+function updateOverlay(){
+  const state = JSON.parse(localStorage.getItem("broadcastState")||"{}");
+
+  if(state.currentPlayer){
+    const p = state.currentPlayer;
+    document.getElementById("playerImage").src=p.imageURL||"";
+    document.getElementById("playerName").innerText=p.name||"";
+    const sr = p.balls>0?(p.runs/p.balls*100).toFixed(1):0;
+    document.getElementById("playerStats").innerText=`Matches: ${p.matches||0} | Runs: ${p.runs||0} | Wickets: ${p.wickets||0} | SR: ${sr}`;
+    document.getElementById("lowerThird").style.left="5%";
+    setTimeout(()=>{document.getElementById("lowerThird").style.left="-100%";},8000);
+  }
+
+  // Accent color
+  const battingTeam = state.battingTeam==="A"?{color:state.colorA}:{color:state.colorB};
+  document.getElementById("lowerThird").style.borderLeftColor=battingTeam.color;
+  document.getElementById("scoreContainer").style.borderTopColor=battingTeam.color;
+  document.getElementById("accentGlow").style.background=battingTeam.color;
+
+  // CricClubs embed
+  const scoreFrame=document.getElementById("scoreFrame");
+  if(state.showCricClubs){
+    scoreFrame.src=state.embedURL||"";
+    document.getElementById("scoreCrop").style.top=(state.cropTop||0)+"px";
+    document.getElementById("scoreContainer").style.height=(state.frameHeight||100)+"px";
+    document.getElementById("scoreContainer").style.display="block";
+  } else document.getElementById("scoreContainer").style.display="none";
+
+  // Score info
+  const overs = state.overs||0;
+  const runs = state.totalRuns||0;
+  const rrr = state.rrr||0;
+  const pp = state.powerplay==="ON";
+  document.getElementById("crrBox").innerText="CRR: "+(overs>0?(runs/overs).toFixed(2):0);
+  document.getElementById("rrrBox").innerText="RRR: "+rrr;
+  document.getElementById("ppBox").innerText=pp?"POWERPLAY":"";
+  document.getElementById("inningsLabel").innerText=state.innings||"1st Innings";
+}
+
+// -------------------
+// Check for moment trigger
+// -------------------
+let lastMoment="";
+setInterval(()=>{
+  const momentVal = localStorage.getItem("broadcastMoment")||"";
+  if(momentVal && momentVal!==lastMoment){
+    lastMoment=momentVal;
+    const el=document.getElementById("moment");
+    el.innerText=momentVal;
+    el.style.transform="translate(-50%,-50%) scale(1)";
+    setTimeout(()=>{el.style.transform="translate(-50%,-50%) scale(0)";},1500);
+  }
+  updateOverlay();
+},200);
+</script>
+</body>
+</html>
