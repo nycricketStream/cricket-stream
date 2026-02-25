@@ -85,10 +85,10 @@ const pusher = new Pusher(PUSHER_KEY, {
   authEndpoint: "/pusher/auth",
 });
 
-const channel = pusher.subscribe("private-cricket-channel");
+const channel = pusher.subscribe("my-channel");
 
 function sendEvent(type){
-  channel.trigger("client-" + type, {
+  channel.trigger("my-event" + type, {
     tournament: document.getElementById("tournament").value,
     teamA: document.getElementById("teamA").value,
     teamB: document.getElementById("teamB").value,
