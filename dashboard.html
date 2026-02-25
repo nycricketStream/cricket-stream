@@ -4,33 +4,39 @@
 <meta charset="UTF-8">
 <title>Cricket Dashboard Admin</title>
 <style>
-body { font-family: Arial; margin:0; background:#1a1a1a; color:white; }
-input, textarea, select, button { width:100%; margin-bottom:6px; padding:6px; border-radius:4px; border:none; }
-button { background:#0046BE; color:white; font-weight:bold; cursor:pointer; }
-.container { padding:15px; max-width:400px; }
-hr { border:1px solid #333; }
+body{margin:0;font-family:Arial;background:#1a1a1a;color:white;overflow:auto;}
+.container{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:15px;}
+input, textarea, select, button{width:100%;margin-bottom:6px;padding:6px;border-radius:4px;border:none;}
+button{background:#0046BE;color:white;font-weight:bold;cursor:pointer;}
+textarea{resize:none;}
+.full-width{grid-column:1/-1;}
+hr{grid-column:1/-1;border:1px solid #333;}
 </style>
 </head>
 <body>
 <div class="container">
-<h2>Cricket Dashboard</h2>
 
-<h3>Teams</h3>
+<h2 class="full-width">Cricket Dashboard</h2>
+
+<!-- TEAMS -->
 Team A <input id="teamA" value="Team A">
-Players Team A (11 names, one per line) <textarea id="playersA" rows="6"></textarea>
 Team B <input id="teamB" value="Florida XI">
-Players Team B (11 names, one per line) <textarea id="playersB" rows="6"></textarea>
+
 Team A Color <input type="color" id="colorA" value="#0046BE">
 Team B Color <input type="color" id="colorB" value="#C8102E">
 
-<h3>Batting & Innings</h3>
+Players Team A <textarea id="playersA" rows="6"></textarea>
+Players Team B <textarea id="playersB" rows="6"></textarea>
+
 Batting Team <select id="battingTeam"><option value="A">Team A</option><option value="B">Team B</option></select>
 Innings <select id="innings"><option>1st Innings</option><option>2nd Innings</option></select>
 
-<hr>
-<h3>Player Info</h3>
+<hr class="full-width">
+
+<!-- PLAYER INFO -->
 Team <select id="teamSelect"></select>
 Player <select id="playerSelect"></select>
+
 Matches <input type="number" id="matches">
 Runs <input type="number" id="runs">
 Balls <input type="number" id="balls">
@@ -38,42 +44,52 @@ Wickets <input type="number" id="wickets">
 Player Image URL <input id="imageURL">
 <button onclick="updatePlayer()">Update Player</button>
 
-<hr>
-<h3>Score / CricClubs</h3>
-Embed URL <input id="embedURL">
+<hr class="full-width">
+
+<!-- SCORE / CRICCLUBS -->
+Embed URL <input id="embedURL" class="full-width">
 Crop Top (px) <input type="number" id="cropTop" value="-120">
 Frame Height <input type="number" id="frameHeight" value="100">
 Tournament Label <input id="tournamentText" value="NYNCL LIVE">
 <label><input type="checkbox" id="toggleScore" checked> Show CricClubs Score</label>
-<button onclick="updateScore()">Update Score</button>
+<button onclick="updateScore()">Update Score Embed</button>
 
-<hr>
-<h3>Score Info</h3>
+<hr class="full-width">
+
+<!-- SCORE INFO -->
 Overs <input type="number" id="overs" step="0.1">
 Current Runs <input type="number" id="totalRuns">
 Required Run Rate <input type="number" id="rrr" step="0.01">
 Powerplay <select id="powerplay"><option>OFF</option><option>ON</option></select>
 <button onclick="updateScoreInfo()">Update Score Info</button>
 
-<hr>
-<h3>Moments</h3>
+<hr class="full-width">
+
+<!-- MOMENTS -->
 <button onclick="moment('FOUR!')">FOUR</button>
 <button onclick="moment('SIX!')">SIX</button>
 <button onclick="moment('WICKET!')">WICKET</button>
+
+<hr class="full-width">
+
+<!-- SPONSORS -->
+Sponsor Names (one per line) <textarea id="sponsors" rows="3" class="full-width"></textarea>
+Rotation Interval (seconds) <input type="number" id="rotationInterval" value="5">
+<label><input type="checkbox" id="autoRotate"> Auto Rotate Sponsors</label>
+<button onclick="updateSponsors()">Update Sponsors</button>
+
 </div>
 
 <script>
-// -------------------
-// Functions to save state in localStorage
-// -------------------
-function saveState(){
-  const state = {
+// JSON state handling
+function buildState(){
+  return {
     teamA: document.getElementById("teamA").value,
     teamB: document.getElementById("teamB").value,
     colorA: document.getElementById("colorA").value,
     colorB: document.getElementById("colorB").value,
-    playersA: document.getElementById("playersA").value,
-    playersB: document.getElementById("playersB").value,
+    playersA: document.getElementById("playersA").value.split("\n"),
+    playersB: document.getElementById("playersB").value.split("\n"),
     battingTeam: document.getElementById("battingTeam").value,
     innings: document.getElementById("innings").value,
     currentPlayer: {
@@ -92,14 +108,26 @@ function saveState(){
     overs: parseFloat(document.getElementById("overs").value)||0,
     totalRuns: parseFloat(document.getElementById("totalRuns").value)||0,
     rrr: parseFloat(document.getElementById("rrr").value)||0,
-    powerplay: document.getElementById("powerplay").value
+    powerplay: document.getElementById("powerplay").value,
+    tournamentText: document.getElementById("tournamentText").value,
+    sponsors: document.getElementById("sponsors").value.split("\n").filter(s=>s.trim()!=""),
+    autoRotate: document.getElementById("autoRotate").checked,
+    rotationInterval: parseInt(document.getElementById("rotationInterval").value)||5
   };
-  localStorage.setItem("broadcastState", JSON.stringify(state));
 }
 
-// -------------------
-// Player / Teams dropdown logic
-// -------------------
+function saveState(){ localStorage.setItem("broadcastState", JSON.stringify(buildState())); }
+
+function updatePlayer(){ saveState(); }
+function updateScore(){ saveState(); }
+function updateScoreInfo(){ saveState(); }
+function updateSponsors(){ saveState(); }
+function moment(type){
+  const state=buildState(); state.moment=type; saveState();
+  setTimeout(()=>{ state.moment=""; saveState(); },2000);
+}
+
+// Teams dropdown
 function refreshTeams(){
   const t=document.getElementById("teamSelect");
   t.innerHTML="";
@@ -111,23 +139,12 @@ document.getElementById("teamA").oninput=refreshTeams;
 document.getElementById("teamB").oninput=refreshTeams;
 
 document.getElementById("teamSelect").onchange=function(){
-  const list = this.value==="A"?document.getElementById("playersA").value:document.getElementById("playersB").value;
-  const names = list.split("\n");
-  const ps = document.getElementById("playerSelect");
+  const list=this.value==="A"?document.getElementById("playersA").value:document.getElementById("playersB").value;
+  const names=list.split("\n");
+  const ps=document.getElementById("playerSelect");
   ps.innerHTML="";
   names.forEach(n=>{if(n.trim()!="") ps.add(new Option(n,n));});
 };
-
-// Update functions
-function updatePlayer(){ saveState(); }
-function updateScore(){ saveState(); }
-function updateScoreInfo(){ saveState(); }
-
-// Moment buttons
-function moment(type){
-  localStorage.setItem("broadcastMoment", type);
-  setTimeout(()=>{ localStorage.removeItem("broadcastMoment"); },2000);
-}
 </script>
 </body>
 </html>
