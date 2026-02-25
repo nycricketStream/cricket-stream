@@ -1,117 +1,140 @@
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <style>
-body{margin:0;background:transparent;font-family:Arial;color:white}
+body{margin:0;background:transparent;font-family:Arial}
 
-/* Bottom CricClubs Bar */
-#bottomBar{
-position:absolute;bottom:20px;left:50%;
+/* Manual Scoreboard */
+#scoreboard{
+position:absolute;
+bottom:20px;
+left:50%;
 transform:translateX(-50%);
-width:85%;height:110px;
-background:#1c1c1c;border-top:4px solid #e10600;
-border-radius:12px;overflow:hidden;display:none;
-}
-#bottomBar iframe{width:100%;height:100%;border:none}
-
-/* Scoreboard */
-#scoreWrap{
-position:absolute;top:30px;left:50%;
-transform:translateX(-50%);
-background:#111;padding:10px 30px;
-border:2px solid #e10600;border-radius:12px;
+width:85%;
+height:100px;
+background:linear-gradient(#222,#000);
+border-top:4px solid red;
+border-radius:12px;
+color:white;
 display:none;
+flex-direction:column;
+justify-content:center;
+align-items:center;
 }
 
-/* Player lower third */
+/* CricClubs */
+#cric{
+position:absolute;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+width:85%;
+height:100px;
+display:none;
+border-radius:12px;
+overflow:hidden;
+}
+
+/* Player */
 #player{
-position:absolute;bottom:150px;left:40px;
-background:#111;padding:14px;border-radius:10px;
+position:absolute;
+bottom:140px;
+left:40px;
+background:#111;
+padding:10px;
+border-left:6px solid red;
 display:none;
+align-items:center;
+border-radius:8px;
 }
-
-/* Lineups */
-#lineups{
-position:absolute;top:120px;left:50%;
-transform:translateX(-50%);
-background:#111;padding:20px;border-radius:12px;
-display:none;
+#player img{
+height:70px;
+margin-right:10px;
+border-radius:50%;
 }
 
 /* Sponsor */
-#sponsorBar{
-position:absolute;top:0;width:100%;
-background:#e10600;padding:6px;text-align:center;
+#sponsor{
+position:absolute;
+top:0;
+width:100%;
+background:#0046BE;
+color:white;
+padding:6px;
+text-align:center;
 }
-
-#moment{
-position:absolute;top:40%;width:100%;
-text-align:center;font-size:120px;color:#e10600;
-opacity:0;transition:.4s;
-}
-.show{opacity:1}
 </style>
 </head>
 <body>
 
-<div id="scoreWrap"><div id="scoreText"></div></div>
-<div id="bottomBar"><iframe id="cricFrame"></iframe></div>
-<div id="player"><div id="playerText"></div></div>
-<div id="lineups"></div>
-<div id="sponsorBar"></div>
-<div id="moment"></div>
+<div id="scoreboard"></div>
+
+<div id="cric">
+<iframe id="cricFrame" style="width:100%;height:100%;border:none"></iframe>
+</div>
+
+<div id="player">
+<img id="pimg">
+<div>
+<div id="pname"></div>
+<div id="phand"></div>
+</div>
+</div>
+
+<div id="sponsor"></div>
 
 <script>
 const pusher=new Pusher("40ce89af9ae13d222f51",{cluster:"us2"});
-const channel=pusher.subscribe("my-channel");
+const channel=pusher.subscribe("broadcast");
 
-channel.bind("broadcast-update",d=>{
+let sponsorTimer=null,index=0;
+let playerTimer=null;
 
-if(d.showScore!==undefined)
-scoreWrap.style.display=d.showScore?"block":"none";
+channel.bind("update",data=>{
 
-if(d.teamA){
-scoreText.innerHTML=`${d.tournament}<br>
-${d.teamA} ${d.score} ${d.teamB}<br>
-Overs ${d.overs} | RRR ${d.rrr}`;
+/* SCORE */
+if(data.showCric){
+cric.style.display="block";
+scoreboard.style.display="none";
+cricFrame.src=data.embedURL;
+}else{
+cric.style.display="none";
+scoreboard.style.display="flex";
+scoreboard.innerHTML=`
+<div>${data.tournament}</div>
+<div>${data.teamA} ${data.score} ${data.teamB}</div>
+<div>Overs ${data.overs} | RRR ${data.rrr}</div>`;
 }
 
-if(d.cricurl){
-bottomBar.style.display="block";
-cricFrame.src=d.cricurl;
+/* PLAYER */
+if(data.player?.name){
+player.style.display="flex";
+pname.innerText=data.player.name;
+phand.innerText=data.player.hand;
+pimg.src=data.player.img;
+
+player.style.borderLeftColor=
+data.player.team==="A"?data.colorA:data.colorB;
+
+clearTimeout(playerTimer);
+playerTimer=setTimeout(()=>player.style.display="none",6000);
 }
 
-if(d.player){
-player.style.display="block";
-playerText.innerText=`${d.player.name}
-${d.player.hand||''}
-Runs ${d.player.runs||''} Wkts ${d.player.wkts||''}`;
+/* SPONSORS */
+if(data.sponsors?.length){
+clearInterval(sponsorTimer);
+index=0;
+function rotate(){
+sponsor.innerText=data.sponsors[index];
+index=(index+1)%data.sponsors.length;
 }
-
-if(d.lineups?.show){
-lineups.style.display="block";
-lineups.innerHTML=`
-<b>Team A</b><br>
-${d.lineups.A.map(p=>p.name).join("<br>")}
-<hr>
-<b>Team B</b><br>
-${d.lineups.B.map(p=>p.name).join("<br>")}
-`;
+rotate();
+if(data.rotate){
+sponsorTimer=setInterval(rotate,5000);
 }
-
-if(d.sponsors)
-sponsorBar.innerText=d.sponsors.join(" | ");
-
-if(d.fullSponsor){
-document.body.style.background=`url(${d.fullSponsor}) center/contain no-repeat black`;
-}
-
-if(d.moment){
-moment.innerText=d.moment;
-moment.classList.add("show");
-setTimeout(()=>moment.classList.remove("show"),3000);
 }
 
 });
