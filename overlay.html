@@ -1,64 +1,130 @@
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Cricket Overlay</title>
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <style>
-body { margin:0; font-family: Arial; color:white; background:transparent; }
-#overlay { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
-.scoreboard { position:top:20px; left:20px; font-size:28px; }
-.lower { position:bottom:20px; left:20px; background:rgba(0,0,0,0.6); padding:10px; border-radius:10px; display:none; }
-.sponsors { position:top:80px; left:20px; display:flex; gap:10px; }
+body{margin:0;background:transparent;color:white;font-family:Arial}
+
+#scoreWrap{
+position:absolute;
+top:40px;
+left:50%;
+transform:translateX(-50%);
+display:flex;
+align-items:center;
+background:rgba(0,0,0,.6);
+padding:12px 25px;
+border-radius:14px;
+}
+
+#lower{
+position:absolute;
+bottom:60px;
+left:60px;
+background:rgba(0,0,0,.6);
+padding:15px;
+border-radius:14px;
+display:none;
+}
+
+#moment{
+position:absolute;
+top:40%;
+width:100%;
+text-align:center;
+font-size:150px;
+opacity:0;
+transition:.4s;
+}
+
+#embedContainer{
+position:absolute;
+bottom:0;
+left:50%;
+transform:translateX(-50%);
+}
+
+#sponsorbar{
+position:absolute;
+bottom:0;
+width:100%;
+text-align:center;
+padding:10px;
+background:rgba(0,0,0,.5);
+}
+
+.show{opacity:1}
 </style>
 </head>
 <body>
-<div id="overlay">
-  <div class="scoreboard" id="scoreboard"></div>
-  <div class="lower" id="lower">
-    <div id="playerName"></div>
-    <div id="playerStats"></div>
-    <img id="playerImage" style="height:80px;">
-  </div>
-  <div class="sponsors" id="sponsors"></div>
+
+<div id="scoreWrap"></div>
+
+<div id="lower">
+<div id="pname"></div>
+<div id="pstats"></div>
+<img id="pimg" height="80">
 </div>
 
+<div id="moment"></div>
+
+<div id="embedContainer"></div>
+<div id="sponsorbar"></div>
+
 <script>
-const PUSHER_KEY = "40ce89af9ae13d222f51";
-const PUSHER_CLUSTER = "us2";
+const pusher=new Pusher("40ce89af9ae13d222f51",{cluster:"us2"});
+const channel=pusher.subscribe("my-channel");
 
-const pusher = new Pusher(PUSHER_KEY, { cluster: PUSHER_CLUSTER });
-const channel = pusher.subscribe("my-channel");
+let sponsorIndex=0;
+let sponsorTimer=null;
 
-channel.bind("update-score", data => {
-  document.getElementById("scoreboard").innerText = `${data.teamA} ${data.score} ${data.teamB}`;
-});
+channel.bind("broadcast-update",d=>{
 
-channel.bind("show-lower", data => {
-  document.getElementById("playerName").innerText = data.name;
-  document.getElementById("playerStats").innerText = data.stats;
-  document.getElementById("playerImage").src = data.image;
-  document.getElementById("lower").style.display = "block";
-});
+if(d.teamA){
+scoreWrap.innerHTML=
+`${d.tournament||""} | ${d.teamA} ${d.score||""} ${d.teamB}
+(Ov ${d.overs||""} | RRR ${d.rrr||""})`;
+}
 
-channel.bind("hide-lower", data => {
-  document.getElementById("lower").style.display = "none";
-});
+if(d.player){
+lower.style.display="block";
+pname.innerText=d.player.name;
+pstats.innerText=`${d.player.runs||""}(${d.player.balls||""}) W:${d.player.wickets||""}`;
+pimg.src=d.player.image||"";
+setTimeout(()=>lower.style.display="none",6000);
+}
 
-channel.bind("update-sponsors", data => {
-  const sponsorsDiv = document.getElementById("sponsors");
-  sponsorsDiv.innerHTML = "";
-  data.sponsors.split(",").forEach(url=>{
-    const img = document.createElement("img");
-    img.src = url.trim();
-    img.style.height = "50px";
-    sponsorsDiv.appendChild(img);
-  });
-});
+if(d.moment){
+moment.innerText=d.moment;
+moment.classList.add("show");
+setTimeout(()=>moment.classList.remove("show"),3000);
+}
 
-channel.bind("moment", data => {
-  alert("Moment: " + data.type);
+if(d.embed){
+if(d.embed.show){
+embedContainer.innerHTML=`
+<iframe src="${d.embed.url}" width="800"
+height="${d.embed.height}"
+style="margin-top:${d.embed.cropTop}px;border:none"></iframe>`;
+}else embedContainer.innerHTML="";
+}
+
+if(d.sponsors){
+if(d.autoRotate){
+clearInterval(sponsorTimer);
+sponsorTimer=setInterval(()=>{
+sponsorbar.innerText=d.sponsors[sponsorIndex];
+sponsorIndex=(sponsorIndex+1)%d.sponsors.length;
+},d.interval*1000);
+}else{
+sponsorbar.innerText=d.sponsors.join(" | ");
+}
+}
+
 });
 </script>
+
 </body>
 </html>
