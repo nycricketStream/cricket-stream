@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Cricket Pro Tournament Dashboard</title>
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+<style>
+body { font-family: Arial; background:#0e0e0e; color:white; padding:20px; }
+.section { background:#1c1c1c; padding:15px; border-radius:12px; margin-bottom:20px; }
+h2 { color:#00bfff; }
+input, textarea, button, select {
+  padding:8px; margin:5px; border-radius:6px; border:none;
+}
+button { background:#00bfff; color:black; font-weight:bold; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<h1>🏏 PRO Tournament Dashboard</h1>
+
+<div class="section">
+<h2>Tournament</h2>
+<input id="tournament" placeholder="Tournament Name">
+</div>
+
+<div class="section">
+<h2>Teams</h2>
+<input id="teamA" placeholder="Team A Name">
+<input type="color" id="colorA" value="#0033cc">
+<br>
+<input id="teamB" placeholder="Team B Name">
+<input type="color" id="colorB" value="#cc0000">
+</div>
+
+<div class="section">
+<h2>Score</h2>
+<input id="score" placeholder="120/3 (15.2)">
+<button onclick="sendEvent('update-score')">Update Score</button>
+</div>
+
+<div class="section">
+<h2>Lower Third</h2>
+<input id="playerName" placeholder="Player Name">
+<input id="playerStats" placeholder="Matches | Runs | Wickets">
+<input id="playerImage" placeholder="Image URL">
+<button onclick="sendEvent('show-lower')">Show</button>
+<button onclick="sendEvent('hide-lower')">Hide</button>
+</div>
+
+<div class="section">
+<h2>Sponsors</h2>
+<textarea id="sponsors" placeholder="Paste sponsor logo URLs separated by commas"></textarea>
+<br>
+<select id="rotateMode">
+<option value="manual">Manual</option>
+<option value="auto">Auto Rotate</option>
+</select>
+<button onclick="sendEvent('update-sponsors')">Update Sponsors</button>
+</div>
+
+<div class="section">
+<h2>CricClubs</h2>
+<textarea id="cricEmbed" placeholder="Paste CricClubs embed URL"></textarea>
+<br>
+<select id="cricToggle">
+<option value="on">ON</option>
+<option value="off">OFF</option>
+</select>
+<button onclick="sendEvent('update-cric')">Update CricClubs</button>
+</div>
+
+<div class="section">
+<h2>Moments</h2>
+<button onclick="sendMoment('FOUR')">FOUR</button>
+<button onclick="sendMoment('SIX')">SIX</button>
+<button onclick="sendMoment('WICKET')">WICKET</button>
+</div>
+
+<script>
+const PUSHER_KEY = "YOUR_PUSHER_KEY";
+const PUSHER_CLUSTER = "YOUR_CLUSTER";
+
+const pusher = new Pusher(PUSHER_KEY, {
+  cluster: PUSHER_CLUSTER,
+  authEndpoint: "/pusher/auth",
+});
+
+const channel = pusher.subscribe("private-cricket-channel");
+
+function sendEvent(type){
+  channel.trigger("client-" + type, {
+    tournament: document.getElementById("tournament").value,
+    teamA: document.getElementById("teamA").value,
+    teamB: document.getElementById("teamB").value,
+    colorA: document.getElementById("colorA").value,
+    colorB: document.getElementById("colorB").value,
+    score: document.getElementById("score").value,
+    name: document.getElementById("playerName").value,
+    stats: document.getElementById("playerStats").value,
+    image: document.getElementById("playerImage").value,
+    sponsors: document.getElementById("sponsors").value,
+    rotateMode: document.getElementById("rotateMode").value,
+    cricEmbed: document.getElementById("cricEmbed").value,
+    cricToggle: document.getElementById("cricToggle").value
+  });
+}
+
+function sendMoment(type){
+  channel.trigger("client-moment", { type: type });
+}
+</script>
+
+</body>
+</html>
