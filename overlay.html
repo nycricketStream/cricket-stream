@@ -120,7 +120,7 @@ const pusher = new Pusher(PUSHER_KEY, {
   cluster: PUSHER_CLUSTER,
 });
 
-const channel = pusher.subscribe("private-cricket-channel");
+const channel = pusher.subscribe("my-channel");
 
 let sponsorList = [];
 let sponsorIndex = 0;
