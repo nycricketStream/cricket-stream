@@ -5,29 +5,23 @@
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <style>
 body{margin:0;background:transparent;font-family:Arial}
-#scorebar{position:absolute;bottom:0;width:100%;display:none}
-#sponsorbar{position:absolute;top:0;width:100%;display:none}
-#playerpanel{position:absolute;bottom:220px;left:40px;display:none}
-#tlogo{position:absolute;top:10px;right:20px;height:70px}
+#scoreBG{position:absolute;bottom:0;width:100%;display:none}
+#sponsorBG{position:absolute;top:0;width:100%;display:none}
+#playerBG{position:absolute;bottom:260px;left:40px;display:none}
 #moment{position:absolute;top:30%;left:50%;transform:translateX(-50%);display:none}
-
-.scoretext{position:absolute;bottom:50px;width:100%;text-align:center;color:white;font-size:28px}
-.playertext{position:absolute;bottom:260px;left:180px;color:white}
-.slogos{position:absolute;top:20px;width:100%;text-align:center}
-.slogos img{height:60px;margin:0 20px}
+.scoretext{position:absolute;bottom:60px;width:100%;text-align:center;color:white;font-size:32px}
+.playertext{position:absolute;bottom:300px;left:160px;color:white}
 </style>
 </head>
 <body>
 
-<img id="scorebar" src="assets/espn_scoreboard.png">
-<img id="sponsorbar" src="assets/sponsor_bar.png">
-<img id="playerpanel" src="assets/player_lower.png">
-<img id="tlogo" src="assets/tournament_logo.png">
+<img id="scoreBG" src="assets/scoreboard.png">
+<img id="sponsorBG" src="assets/sponsorbar.png">
+<img id="playerBG" src="assets/player_lower.png">
 <img id="moment">
 
-<div class="scoretext" id="scoreText"></div>
-<div class="playertext" id="playerText"></div>
-<div class="slogos" id="sponsorLogos"></div>
+<div id="scoreText" class="scoretext"></div>
+<div id="playerText" class="playertext"></div>
 
 <script>
 const p=new Pusher("40ce89af9ae13d222f51",{cluster:"us2"});
@@ -36,35 +30,27 @@ const ch=p.subscribe("broadcast");
 ch.bind("update",d=>{
 
 if(d.showScore){
-scorebar.style.display="block";
-scoreText.innerText=`${d.battingTeam} ${d.score} | Overs ${d.overs} | RRR ${d.rrr} | ${d.innings} Innings`;
-}else scorebar.style.display="none";
+scoreBG.style.display="block";
+scoreText.innerText=`${d.teamA} ${d.score} ${d.teamB} | Overs ${d.overs} | RRR ${d.rrr}`;
+}else scoreBG.style.display="none";
 
 if(d.showSponsors){
-sponsorbar.style.display="block";
-sponsorLogos.innerHTML=d.sponsors.map(s=>`<img src="${s}">`).join("");
-}else sponsorbar.style.display="none";
-
-if(d.tournamentLogo) tlogo.src=d.tournamentLogo;
+sponsorBG.style.display="block";
+}else sponsorBG.style.display="none";
 
 if(d.player?.name){
-playerpanel.style.display="block";
+playerBG.style.display="block";
 playerText.innerText=d.player.name+" - "+d.player.hand;
-setTimeout(()=>playerpanel.style.display="none",6000);
-}
-
-if(d.showCric && d.cricURL){
-scoreText.innerText="";
+setTimeout(()=>playerBG.style.display="none",6000);
 }
 
 if(d.moment){
+moment.src="assets/"+d.moment.toLowerCase()+".png";
 moment.style.display="block";
-moment.src="assets/moment_"+d.moment.toLowerCase()+".png";
 setTimeout(()=>moment.style.display="none",3000);
 }
 
 });
 </script>
-
 </body>
 </html>
