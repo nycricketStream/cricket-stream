@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Broadcast Overlay</title>
+<title>NYC Eagles Broadcast Overlay</title>
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
 <style>
@@ -15,6 +15,7 @@ html,body{
   font-family:'Segoe UI', Arial, sans-serif;
 }
 
+/* CONNECTION DOT */
 #connectionDot{
   position:absolute;
   top:20px;
@@ -26,72 +27,81 @@ html,body{
   z-index:9999;
 }
 
+/* LOWER THIRD */
 #lowerThird{
   position:absolute;
-  bottom:140px;
-  left:160px;
-  width:1400px;
-  height:320px;
-  transform:translateX(-150%);
+  bottom:130px;
+  left:140px;
+  width:1500px;
+  height:340px;
+  transform:translateX(-160%);
   opacity:0;
   transition:all .6s cubic-bezier(.22,.9,.3,1);
 }
 
-/* GLOBAL TEXT ALIGNMENT LINE */
+/* Alignment anchor */
 :root{
-  --textLeft:320px;
+  --textLeft:360px;
 }
 
+/* TEAM TAB */
 #ltTeam{
   position:absolute;
-  top:52px;
+  top:55px;
   left:var(--textLeft);
-  font-size:28px;
-  font-weight:800;
-  letter-spacing:.18em;
+  font-size:30px;
+  font-weight:900;
+  letter-spacing:.15em;
   color:white;
+  text-shadow:0 2px 6px rgba(0,0,0,.7);
 }
 
+/* LABEL */
 #ltLabel{
   position:absolute;
-  top:85px; /* centered inside gold strip */
+  top:105px;
   left:var(--textLeft);
-  font-size:26px;
+  font-size:28px;
   font-weight:900;
   color:black;
 }
 
+/* PLAYER NAME */
 #ltName{
   position:absolute;
-  top:135px;
+  top:150px;
   left:var(--textLeft);
-  font-size:78px;
+  font-size:86px;
   font-weight:900;
   color:white;
+  text-shadow:0 4px 12px rgba(0,0,0,.8);
   white-space:nowrap;
 }
 
+/* ROLE */
 #ltHand{
   position:absolute;
-  top:225px;
+  top:250px;
   left:var(--textLeft);
-  font-size:24px;
-  letter-spacing:.12em;
-  color:#e5e7eb;
+  font-size:26px;
+  letter-spacing:.15em;
+  color:#e2e8f0;
 }
 
-/* HEADSHOT — TRUE CENTER */
+/* HEADSHOT */
 #playerImage{
   position:absolute;
-  top:60px;   /* aligns center with circle */
-  left:60px;
-  width:200px;
-  height:200px;
+  top:65px;
+  left:80px;
+  width:220px;
+  height:220px;
   border-radius:50%;
   object-fit:cover;
   display:none;
+  box-shadow:0 10px 30px rgba(0,0,0,.6);
 }
 
+/* SCORE */
 #manualScore{
   position:absolute;
   bottom:40px;
@@ -101,25 +111,27 @@ html,body{
 }
 
 #scoreText{
-  background:#111827;
-  padding:18px 48px;
-  border-radius:8px;
-  font-size:36px;
+  background:#0f172a;
+  padding:20px 60px;
+  border-radius:10px;
+  font-size:38px;
   font-weight:900;
   letter-spacing:.1em;
   color:#fff;
+  box-shadow:0 10px 25px rgba(0,0,0,.7);
 }
 
+/* SPONSOR */
 #sponsorBox{
   position:absolute;
   top:40px;
   right:60px;
-  width:320px;
-  height:120px;
+  width:340px;
+  height:130px;
   display:none;
   align-items:center;
   justify-content:center;
-  background:rgba(0,0,0,.6);
+  background:rgba(0,0,0,.7);
   border-radius:14px;
   overflow:hidden;
 }
@@ -129,14 +141,15 @@ html,body{
   max-height:90%;
 }
 
+/* MOMENT */
 #momentStinger{
   position:absolute;
   inset:0;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:rgba(0,0,0,.75);
-  backdrop-filter:blur(4px);
+  background:rgba(0,0,0,.8);
+  backdrop-filter:blur(6px);
   opacity:0;
   pointer-events:none;
   transition:opacity .3s ease;
@@ -144,7 +157,7 @@ html,body{
 }
 
 #momentText{
-  font-size:220px;
+  font-size:240px;
   font-weight:900;
   letter-spacing:.1em;
   transform:scale(.6);
@@ -159,42 +172,59 @@ html,body{
 
 <div id="lowerThird">
 
-  <svg width="1400" height="320" viewBox="0 0 1400 320">
+<svg width="1500" height="340" viewBox="0 0 1500 340">
 
-    <!-- Blue Base -->
-    <polygon points="260,40 1350,40 1400,300 200,300"
-             fill="#081226"/>
+  <!-- MAIN PANEL -->
+  <defs>
+    <linearGradient id="panelGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0a1a35"/>
+      <stop offset="100%" stop-color="#081226"/>
+    </linearGradient>
 
-    <!-- Bottom Accent -->
-    <rect x="200" y="292" width="1200" height="6"
-          fill="#3b82f6"/>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="40%" stop-color="#facc15"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
 
-    <!-- Gold Strip -->
-    <polygon points="260,80 1320,80 1290,120 260,120"
-             fill="url(#goldGrad)"/>
+    <linearGradient id="blueAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
 
-    <!-- Headshot Ring -->
-    <circle cx="160" cy="160" r="105"
-            fill="none"
-            stroke="url(#goldGrad)"
-            stroke-width="14"/>
+  <!-- Panel -->
+  <polygon points="300,40 1450,40 1500,300 240,300"
+           fill="url(#panelGrad)"
+           stroke="#1e40af"
+           stroke-width="3"/>
 
-    <defs>
-      <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#fef08a"/>
-        <stop offset="50%" stop-color="#facc15"/>
-        <stop offset="100%" stop-color="#eab308"/>
-      </linearGradient>
-    </defs>
+  <!-- Bottom glow accent -->
+  <rect x="240" y="292" width="1200" height="6"
+        fill="url(#blueAccent)"/>
 
-  </svg>
+  <!-- Gold Strip -->
+  <polygon points="300,90 1400,90 1360,130 300,130"
+           fill="url(#goldGrad)"/>
 
-  <img id="playerImage">
+  <!-- Team Tab -->
+  <polygon points="300,40 580,40 560,85 300,85"
+           fill="url(#blueAccent)"/>
 
-  <div id="ltTeam"></div>
-  <div id="ltLabel">NEW BATSMAN</div>
-  <div id="ltName"></div>
-  <div id="ltHand"></div>
+  <!-- Headshot Ring -->
+  <circle cx="200" cy="170" r="115"
+          fill="none"
+          stroke="url(#goldGrad)"
+          stroke-width="16"/>
+
+</svg>
+
+<img id="playerImage">
+
+<div id="ltTeam"></div>
+<div id="ltLabel">NEW BATSMAN</div>
+<div id="ltName"></div>
+<div id="ltHand"></div>
 
 </div>
 
@@ -209,40 +239,39 @@ html,body{
 </div>
 
 <script>
+const PUSHER_KEY="12fcceaea77e52cf3626";
+const pusher=new Pusher(PUSHER_KEY,{cluster:'us2'});
+const channel=pusher.subscribe('broadcast');
 
-const PUSHER_KEY = "12fcceaea77e52cf3626";
-const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
-const channel = pusher.subscribe('broadcast');
-
-const dot = document.getElementById('connectionDot');
+const dot=document.getElementById('connectionDot');
 pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
 pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
 pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
 
-const lowerThird = document.getElementById('lowerThird');
-const nameEl = document.getElementById('ltName');
+const lowerThird=document.getElementById('lowerThird');
+const nameEl=document.getElementById('ltName');
 
 function autoScaleName(){
-  nameEl.style.fontSize = "78px";
-  while(nameEl.scrollWidth > 950){
-    let size = parseInt(window.getComputedStyle(nameEl).fontSize);
-    nameEl.style.fontSize = (size - 2) + "px";
+  nameEl.style.fontSize="86px";
+  while(nameEl.scrollWidth>1000){
+    let size=parseInt(window.getComputedStyle(nameEl).fontSize);
+    nameEl.style.fontSize=(size-2)+"px";
   }
 }
 
-channel.bind('player', data => {
-  if(!data) return;
+channel.bind('player',data=>{
+  if(!data)return;
 
-  document.getElementById('ltTeam').textContent = data.team || '';
-  nameEl.textContent = data.name || '';
-  document.getElementById('ltHand').textContent = data.hand || '';
+  document.getElementById('ltTeam').textContent=data.team||'';
+  nameEl.textContent=data.name||'';
+  document.getElementById('ltHand').textContent=data.hand||'';
 
   autoScaleName();
 
   if(data.image){
-    const img = document.getElementById('playerImage');
-    img.src = data.image;
-    img.style.display = 'block';
+    const img=document.getElementById('playerImage');
+    img.src=data.image;
+    img.style.display='block';
   }
 
   lowerThird.style.opacity='1';
@@ -250,15 +279,15 @@ channel.bind('player', data => {
 
   setTimeout(()=>{
     lowerThird.style.opacity='0';
-    lowerThird.style.transform='translateX(-150%)';
+    lowerThird.style.transform='translateX(-160%)';
   },7000);
 });
 
 /* SCORE */
 channel.bind('manualScore',data=>{
   document.getElementById('manualScore').style.display='block';
-  document.getElementById('scoreText').textContent =
-    `${data.score || ''} | ${data.overs || ''}`;
+  document.getElementById('scoreText').textContent=
+    `${data.score||''} | ${data.overs||''}`;
 });
 
 channel.bind('score',data=>{
@@ -269,13 +298,13 @@ channel.bind('score',data=>{
 
 /* MOMENT */
 channel.bind('moment',data=>{
-  if(!data || !data.type) return;
+  if(!data||!data.type)return;
   const stinger=document.getElementById('momentStinger');
   const text=document.getElementById('momentText');
 
   let color='#facc15';
-  if(data.type==='SIX') color='#22c55e';
-  if(data.type==='WICKET') color='#ef4444';
+  if(data.type==='SIX')color='#22c55e';
+  if(data.type==='WICKET')color='#ef4444';
 
   text.textContent=data.type;
   text.style.color=color;
@@ -288,7 +317,6 @@ channel.bind('moment',data=>{
     text.style.transform='scale(.6)';
   },2500);
 });
-
 </script>
 
 </body>
