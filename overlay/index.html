@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>YoloBox Clean Network Overlay</title>
+<title>NYC Eagles Broadcast Overlay</title>
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
 <style>
@@ -11,12 +11,13 @@ html,body{
   padding:0;
   width:1920px;
   height:1080px;
-  overflow:hidden;
   background:transparent;
+  overflow:hidden;
   font-family:'Segoe UI', Arial, sans-serif;
 }
 
-/* CONNECTION DOT */
+/* ================= CONNECTION DOT ================= */
+
 #connectionDot{
   position:absolute;
   top:20px;
@@ -28,94 +29,116 @@ html,body{
   z-index:9999;
 }
 
-/* LOWER THIRD POSITION (YoloBox safe zone) */
+/* ================= LOWER THIRD ================= */
+
 #lowerThird{
   position:absolute;
   bottom:140px;
   left:160px;
+  width:900px;
+  height:260px;
+  background:url('lowerthird_clean.png') no-repeat;
+  background-size:contain;
   transform:translateX(-130%);
   opacity:0;
-  transition:all .7s cubic-bezier(.22,.9,.3,1);
+  transition:all .6s cubic-bezier(.22,.9,.3,1);
 }
 
-/* MAIN PANEL */
-.lt-base{
-  position:relative;
-  width:900px;
-  padding:40px 60px 32px 60px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.08), transparent 40%),
-    linear-gradient(90deg,#1e293b 0%, #0b1220 100%);
-  clip-path:polygon(0 0, 94% 0, 100% 100%, 0% 100%);
-  box-shadow:
-    0 30px 80px rgba(0,0,0,.75),
-    0 0 20px rgba(47,107,255,.25);
-}
+/* TEXT POSITIONING (ALIGNED TO PNG DESIGN) */
 
-/* BOTTOM BLUE EDGE */
-.lt-base::after{
-  content:'';
+#ltTeam{
   position:absolute;
-  bottom:0;
-  left:0;
-  width:100%;
-  height:5px;
-  background:#2f6bff;
-  box-shadow:0 0 12px rgba(47,107,255,.7);
-}
-
-/* TEAM TAB */
-.lt-team{
-  position:absolute;
-  top:-32px;
-  left:0;
-  background:linear-gradient(180deg,#3b82f6,#1e40af);
-  padding:16px 34px;
-  font-size:24px;
+  top:18px;
+  left:30px;
+  font-size:22px;
   font-weight:900;
   letter-spacing:.15em;
-  text-transform:uppercase;
-  color:#fff;
-  clip-path:polygon(0 0, 100% 0, 92% 100%, 0% 100%);
-  box-shadow:0 8px 20px rgba(0,0,0,.5);
-}
-
-/* GOLD BAR */
-.lt-gold{
-  margin-top:20px;
-  background:linear-gradient(180deg,#fff176,#facc15,#eab308);
-  padding:18px 36px;
-  font-weight:900;
-  font-size:26px;
-  color:#000;
-  clip-path:polygon(0 0, 100% 0, 96% 100%, 0% 100%);
-  box-shadow:0 6px 18px rgba(0,0,0,.4);
-}
-
-/* NAME */
-.lt-name{
-  font-size:96px;
-  font-weight:900;
-  margin-top:30px;
   color:#ffffff;
-  text-shadow:0 6px 18px rgba(0,0,0,.6);
 }
 
-/* DIVIDER */
-.lt-divider{
-  height:3px;
-  width:100%;
-  background:rgba(255,255,255,.25);
-  margin-top:20px;
+#ltName{
+  position:absolute;
+  top:105px;
+  left:40px;
+  font-size:72px;
+  font-weight:900;
+  color:#ffffff;
 }
 
-/* ROLE */
-.lt-hand{
-  font-size:28px;
-  margin-top:20px;
+#ltHand{
+  position:absolute;
+  top:195px;
+  left:40px;
+  font-size:26px;
+  letter-spacing:.1em;
   color:#e5e7eb;
-  letter-spacing:.12em;
 }
+
+/* ================= MANUAL SCORE ================= */
+
+#manualScore{
+  position:absolute;
+  bottom:40px;
+  left:50%;
+  transform:translateX(-50%);
+  display:none;
+}
+
+#scoreText{
+  background:linear-gradient(90deg,#1f2937,#111827);
+  padding:18px 48px;
+  border-radius:8px;
+  font-size:36px;
+  font-weight:900;
+  letter-spacing:.1em;
+  color:#fff;
+}
+
+/* ================= SPONSOR ================= */
+
+#sponsorBox{
+  position:absolute;
+  top:40px;
+  right:60px;
+  width:320px;
+  height:120px;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.6);
+  border-radius:14px;
+  overflow:hidden;
+}
+
+#sponsorBox img{
+  max-width:90%;
+  max-height:90%;
+}
+
+/* ================= MOMENT STINGER ================= */
+
+#momentStinger{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(4px);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s ease;
+  z-index:5000;
+}
+
+#momentText{
+  font-size:200px;
+  font-weight:900;
+  letter-spacing:.1em;
+  transform:scale(.6);
+  transition:transform .4s cubic-bezier(.22,.9,.3,1);
+}
+
 </style>
 </head>
 
@@ -123,37 +146,50 @@ html,body{
 
 <div id="connectionDot"></div>
 
+<!-- LOWER THIRD -->
 <div id="lowerThird">
-  <div class="lt-base">
-    <div class="lt-team" id="ltTeam"></div>
-    <div class="lt-gold">NEW BATSMAN</div>
-    <div class="lt-name" id="ltName"></div>
-    <div class="lt-divider"></div>
-    <div class="lt-hand" id="ltHand"></div>
-  </div>
+  <div id="ltTeam"></div>
+  <div id="ltName"></div>
+  <div id="ltHand"></div>
+</div>
+
+<!-- SCORE -->
+<div id="manualScore">
+  <div id="scoreText"></div>
+</div>
+
+<!-- SPONSOR -->
+<div id="sponsorBox"></div>
+
+<!-- MOMENT -->
+<div id="momentStinger">
+  <div id="momentText"></div>
 </div>
 
 <script>
+
 const PUSHER_KEY = "12fcceaea77e52cf3626";
 const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
 const channel = pusher.subscribe('broadcast');
 
+/* ================= CONNECTION ================= */
+
 const dot = document.getElementById('connectionDot');
+
 pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
 pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
 pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
 
+/* ================= PLAYER LOWER THIRD ================= */
+
 const lowerThird = document.getElementById('lowerThird');
-const ltTeam = document.getElementById('ltTeam');
-const ltName = document.getElementById('ltName');
-const ltHand = document.getElementById('ltHand');
 
 channel.bind('player', data => {
   if(!data) return;
 
-  ltTeam.textContent = data.team || '';
-  ltName.textContent = data.name || '';
-  ltHand.textContent = data.hand || '';
+  document.getElementById('ltTeam').textContent = data.team || '';
+  document.getElementById('ltName').textContent = data.name || '';
+  document.getElementById('ltHand').textContent = data.hand || '';
 
   lowerThird.style.opacity='1';
   lowerThird.style.transform='translateX(0)';
@@ -163,6 +199,72 @@ channel.bind('player', data => {
     lowerThird.style.transform='translateX(-130%)';
   },7000);
 });
+
+/* ================= SCORE ================= */
+
+channel.bind('manualScore',data=>{
+  document.getElementById('manualScore').style.display='block';
+  document.getElementById('scoreText').textContent =
+    `${data.score || ''} | ${data.overs || ''}`;
+});
+
+channel.bind('score',data=>{
+  if(data.auto){
+    document.getElementById('manualScore').style.display='none';
+  }
+});
+
+/* ================= SPONSOR ================= */
+
+let sponsorInterval;
+
+channel.bind('sponsor',data=>{
+  const box = document.getElementById('sponsorBox');
+
+  if(!data.enabled){
+    box.style.display='none';
+    clearInterval(sponsorInterval);
+    return;
+  }
+
+  box.style.display='flex';
+  const list = data.list || [];
+  if(!list.length) return;
+
+  let i=0;
+  box.innerHTML=`<img src="${list[0]}">`;
+
+  clearInterval(sponsorInterval);
+  sponsorInterval=setInterval(()=>{
+    i=(i+1)%list.length;
+    box.innerHTML=`<img src="${list[i]}?t=${Date.now()}">`;
+  },(data.interval||8)*1000);
+});
+
+/* ================= MOMENTS (FIXED) ================= */
+
+channel.bind('moment',data=>{
+  if(!data || !data.type) return;
+
+  const stinger=document.getElementById('momentStinger');
+  const text=document.getElementById('momentText');
+
+  let color='#facc15';
+  if(data.type==='SIX') color='#22c55e';
+  if(data.type==='WICKET') color='#ef4444';
+
+  text.textContent=data.type;
+  text.style.color=color;
+
+  stinger.style.opacity='1';
+  text.style.transform='scale(1)';
+
+  setTimeout(()=>{
+    stinger.style.opacity='0';
+    text.style.transform='scale(.6)';
+  },2500);
+});
+
 </script>
 
 </body>
