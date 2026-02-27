@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Production Overlay</title>
+<title>Broadcast Overlay</title>
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
 <style>
@@ -30,159 +30,94 @@ body{
 
 #lowerThird{
   position:absolute;
-  bottom:80px;
-  left:80px;
+  bottom:90px;
+  left:90px;
   transform:translateX(-120%);
   opacity:0;
   transition:all .7s cubic-bezier(.22,.9,.3,1);
 }
 
-/* WRAPPER WIDTH MATCH */
-.lt-wrapper{
+/* Main container width */
+.lt-container{
   position:relative;
-  width:880px;
+  width:760px;
 }
 
-/* MAIN BASE — COMPACT HEIGHT */
+/* Base shape */
 .lt-base{
   position:relative;
-  background:linear-gradient(90deg,#0d1f4a 0%, #0b1220 100%);
-  padding:24px 50px 20px 150px;
-  clip-path:polygon(0 0, 94% 0, 100% 100%, 0% 100%);
-  box-shadow:0 30px 70px rgba(0,0,0,.75);
+  background:linear-gradient(90deg,#0d1f4a 0%, #101827 100%);
+  padding:28px 40px 22px 120px;
+  clip-path:polygon(0 0, 96% 0, 100% 100%, 0% 100%);
+  box-shadow:0 20px 50px rgba(0,0,0,.6);
 }
 
-/* BLUE ACCENT LINE */
+/* Subtle bottom blue line */
 .lt-base::after{
   content:'';
   position:absolute;
   bottom:0;
   left:0;
-  height:3px;
   width:100%;
+  height:2px;
   background:#2563eb;
 }
 
-/* HEADSHOT */
+/* Headshot */
 #ltImage{
   position:absolute;
-  top:-34px;
-  left:-34px;
-  width:115px;
-  height:115px;
+  top:-28px;
+  left:-28px;
+  width:95px;
+  height:95px;
   border-radius:50%;
-  border:6px solid #facc15;
+  border:5px solid #facc15;
   object-fit:cover;
-  background:#000;
   display:none;
-  box-shadow:0 8px 25px rgba(0,0,0,.6);
+  background:#000;
 }
 
-/* TEAM TAB — FLOATING */
+/* Team tab */
 .lt-team{
   position:absolute;
-  top:-20px;
-  left:150px;
+  top:-16px;
+  left:120px;
   background:#1e40af;
-  padding:7px 22px;
-  font-size:14px;
+  padding:6px 18px;
+  font-size:13px;
   font-weight:800;
-  letter-spacing:.14em;
+  letter-spacing:.12em;
   text-transform:uppercase;
-  clip-path:polygon(0 0, 100% 0, 92% 100%, 0% 100%);
+  clip-path:polygon(0 0, 100% 0, 94% 100%, 0% 100%);
 }
 
-/* GOLD STRIP */
+/* Gold strip */
 .lt-tag{
   margin-top:4px;
   background:linear-gradient(90deg,#facc15,#f59e0b);
-  padding:8px 24px;
+  padding:6px 20px;
   font-weight:900;
-  font-size:15px;
+  font-size:14px;
   display:inline-block;
   clip-path:polygon(0 0, 100% 0, 96% 100%, 0% 100%);
 }
 
-/* NAME — MATCH PROPORTION */
+/* Player name */
 .lt-name{
-  font-size:60px;
+  font-size:44px;
   font-weight:900;
-  margin-top:14px;
+  margin-top:12px;
   line-height:1;
-  color:#ffffff;
+  color:#fff;
 }
 
-/* ROLE */
+/* Role */
 .lt-hand{
-  font-size:18px;
+  font-size:15px;
   margin-top:6px;
   color:#cbd5e1;
-  letter-spacing:.08em;
+  letter-spacing:.06em;
 }
-
-/* ================= SCORE ================= */
-
-#manualScore{
-  position:absolute;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  display:none;
-}
-
-.score-panel{
-  background:linear-gradient(90deg,#0d1f4a,#111827);
-  padding:12px 36px;
-  border-radius:8px;
-  font-weight:900;
-  font-size:22px;
-}
-
-/* ================= SPONSOR ================= */
-
-#sponsorBox{
-  position:absolute;
-  top:20px;
-  right:40px;
-  width:240px;
-  height:80px;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.6);
-  border-radius:10px;
-  overflow:hidden;
-}
-
-#sponsorBox img{
-  max-width:90%;
-  max-height:90%;
-}
-
-/* ================= MOMENT ================= */
-
-#momentStinger{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.75);
-  backdrop-filter:blur(4px);
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .3s ease;
-  z-index:15000;
-}
-
-#momentText{
-  font-size:120px;
-  font-weight:900;
-  letter-spacing:.1em;
-  transform:scale(.6);
-  transition:transform .4s cubic-bezier(.22,.9,.3,1);
-}
-
 </style>
 </head>
 
@@ -191,7 +126,7 @@ body{
 <div id="connectionDot"></div>
 
 <div id="lowerThird">
-  <div class="lt-wrapper">
+  <div class="lt-container">
     <div class="lt-base">
       <img id="ltImage">
       <div class="lt-team" id="ltTeam"></div>
@@ -202,31 +137,18 @@ body{
   </div>
 </div>
 
-<div id="manualScore">
-  <div class="score-panel" id="scoreText"></div>
-</div>
-
-<div id="sponsorBox"></div>
-
-<div id="momentStinger">
-  <div id="momentText"></div>
-</div>
-
 <script>
-
 const PUSHER_KEY = "12fcceaea77e52cf3626";
 const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
 const channel = pusher.subscribe('broadcast');
 
 /* CONNECTION DOT */
 const dot = document.getElementById('connectionDot');
-
 function setStatus(state){
   if(state==='connected') dot.style.background='#22c55e';
   else if(state==='connecting') dot.style.background='#facc15';
   else dot.style.background='#ef4444';
 }
-
 pusher.connection.bind('connected',()=>setStatus('connected'));
 pusher.connection.bind('connecting',()=>setStatus('connecting'));
 pusher.connection.bind('disconnected',()=>setStatus('disconnected'));
@@ -260,65 +182,6 @@ channel.bind('player', data => {
     lowerThird.style.transform='translateX(-120%)';
   },7000);
 });
-
-/* SCORE */
-channel.bind('manualScore',data=>{
-  document.getElementById('manualScore').style.display='block';
-  document.getElementById('scoreText').textContent =
-    `${data.score || ''} | ${data.overs || ''}`;
-});
-
-channel.bind('score',data=>{
-  if(data.auto){
-    document.getElementById('manualScore').style.display='none';
-  }
-});
-
-/* SPONSOR */
-let sponsorInterval;
-channel.bind('sponsor',data=>{
-  const box = document.getElementById('sponsorBox');
-  if(!data.enabled){
-    box.style.display='none';
-    clearInterval(sponsorInterval);
-    return;
-  }
-  box.style.display='flex';
-  const list = data.list || [];
-  if(!list.length) return;
-
-  let i=0;
-  box.innerHTML=`<img src="${list[0]}">`;
-
-  clearInterval(sponsorInterval);
-  sponsorInterval=setInterval(()=>{
-    i=(i+1)%list.length;
-    box.innerHTML=`<img src="${list[i]}?t=${Date.now()}">`;
-  },(data.interval||8)*1000);
-});
-
-/* MOMENT */
-channel.bind('moment',data=>{
-  if(!data || !data.type) return;
-  const stinger=document.getElementById('momentStinger');
-  const text=document.getElementById('momentText');
-
-  let color='#facc15';
-  if(data.type==='SIX') color='#22c55e';
-  if(data.type==='WICKET') color='#ef4444';
-
-  text.textContent=data.type;
-  text.style.color=color;
-
-  stinger.style.opacity='1';
-  text.style.transform='scale(1)';
-
-  setTimeout(()=>{
-    stinger.style.opacity='0';
-    text.style.transform='scale(.6)';
-  },2500);
-});
-
 </script>
 
 </body>
