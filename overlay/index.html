@@ -16,8 +16,7 @@ html,body{
   font-family:'Segoe UI', Arial, sans-serif;
 }
 
-/* ================= CONNECTION DOT ================= */
-
+/* CONNECTION DOT */
 #connectionDot{
   position:absolute;
   top:20px;
@@ -29,14 +28,13 @@ html,body{
   z-index:9999;
 }
 
-/* ================= LOWER THIRD ================= */
-
+/* LOWER THIRD */
 #lowerThird{
   position:absolute;
-  bottom:140px;
-  left:160px;
-  width:900px;
-  height:260px;
+  bottom:120px;
+  left:140px;
+  width:960px;
+  height:640px;
   background:url('lowerthird_clean.png') no-repeat;
   background-size:contain;
   transform:translateX(-130%);
@@ -44,13 +42,13 @@ html,body{
   transition:all .6s cubic-bezier(.22,.9,.3,1);
 }
 
-/* TEXT POSITIONING (ALIGNED TO PNG DESIGN) */
+/* TEXT ALIGNED BY PERCENTAGE OF PNG */
 
 #ltTeam{
   position:absolute;
-  top:18px;
-  left:30px;
-  font-size:22px;
+  top:8%;
+  left:18%;
+  font-size:32px;
   font-weight:900;
   letter-spacing:.15em;
   color:#ffffff;
@@ -58,24 +56,23 @@ html,body{
 
 #ltName{
   position:absolute;
-  top:105px;
-  left:40px;
-  font-size:72px;
+  top:42%;
+  left:20%;
+  font-size:96px;
   font-weight:900;
   color:#ffffff;
 }
 
 #ltHand{
   position:absolute;
-  top:195px;
-  left:40px;
-  font-size:26px;
+  top:68%;
+  left:20%;
+  font-size:32px;
   letter-spacing:.1em;
   color:#e5e7eb;
 }
 
-/* ================= MANUAL SCORE ================= */
-
+/* SCORE */
 #manualScore{
   position:absolute;
   bottom:40px;
@@ -94,8 +91,7 @@ html,body{
   color:#fff;
 }
 
-/* ================= SPONSOR ================= */
-
+/* SPONSOR */
 #sponsorBox{
   position:absolute;
   top:40px;
@@ -115,8 +111,7 @@ html,body{
   max-height:90%;
 }
 
-/* ================= MOMENT STINGER ================= */
-
+/* MOMENT */
 #momentStinger{
   position:absolute;
   inset:0;
@@ -146,22 +141,18 @@ html,body{
 
 <div id="connectionDot"></div>
 
-<!-- LOWER THIRD -->
 <div id="lowerThird">
   <div id="ltTeam"></div>
   <div id="ltName"></div>
   <div id="ltHand"></div>
 </div>
 
-<!-- SCORE -->
 <div id="manualScore">
   <div id="scoreText"></div>
 </div>
 
-<!-- SPONSOR -->
 <div id="sponsorBox"></div>
 
-<!-- MOMENT -->
 <div id="momentStinger">
   <div id="momentText"></div>
 </div>
@@ -172,16 +163,13 @@ const PUSHER_KEY = "12fcceaea77e52cf3626";
 const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
 const channel = pusher.subscribe('broadcast');
 
-/* ================= CONNECTION ================= */
-
+/* CONNECTION DOT */
 const dot = document.getElementById('connectionDot');
-
 pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
 pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
 pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
 
-/* ================= PLAYER LOWER THIRD ================= */
-
+/* PLAYER LOWER THIRD */
 const lowerThird = document.getElementById('lowerThird');
 
 channel.bind('player', data => {
@@ -200,8 +188,7 @@ channel.bind('player', data => {
   },7000);
 });
 
-/* ================= SCORE ================= */
-
+/* SCORE */
 channel.bind('manualScore',data=>{
   document.getElementById('manualScore').style.display='block';
   document.getElementById('scoreText').textContent =
@@ -214,10 +201,8 @@ channel.bind('score',data=>{
   }
 });
 
-/* ================= SPONSOR ================= */
-
+/* SPONSOR */
 let sponsorInterval;
-
 channel.bind('sponsor',data=>{
   const box = document.getElementById('sponsorBox');
 
@@ -241,8 +226,7 @@ channel.bind('sponsor',data=>{
   },(data.interval||8)*1000);
 });
 
-/* ================= MOMENTS (FIXED) ================= */
-
+/* MOMENT */
 channel.bind('moment',data=>{
   if(!data || !data.type) return;
 
