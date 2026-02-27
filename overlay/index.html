@@ -193,8 +193,8 @@ body{
 <div id="connectionDot"></div>
 
 <script>
-const PUSHER_KEY = window.PUSHER_KEY || '';
-const pusher = new Pusher("12fcceaea77e52cf3626",{cluster:'us2'});
+const PUSHER_KEY = "12fcceaea77e52cf3626";
+const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
 let channel;
 let lastEventTime = Date.now();
 let sponsorInterval;
