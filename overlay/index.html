@@ -31,21 +31,34 @@ body{
 }
 
 .lt-panel{
-  background:linear-gradient(180deg,#07132b,#000814);
-  border-radius:12px;
-  padding:22px 40px;
-  min-width:540px;
-  box-shadow:0 18px 48px rgba(0,0,0,.95);
-  border:1px solid rgba(255,255,255,.15);
+  background:linear-gradient(180deg,#081a3a,#000814);
+  border-radius:14px;
+  padding:24px 44px;
+  min-width:560px;
+  box-shadow:0 22px 60px rgba(0,0,0,.95);
+  border:1px solid rgba(255,255,255,.18);
   color:#fff;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Shine Sweep */
+#shine{
+  position:absolute;
+  top:0;
+  left:-120%;
+  width:60%;
+  height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,.25),transparent);
+  transform:skewX(-25deg);
 }
 
 .lt-team{
-  font-size:16px;
+  font-size:15px;
   font-weight:800;
-  letter-spacing:.1em;
+  letter-spacing:.12em;
   color:#7dd3fc;
-  margin-bottom:8px;
+  margin-bottom:10px;
   text-transform:uppercase;
 }
 
@@ -53,26 +66,27 @@ body{
   background:linear-gradient(180deg,#fbbf24,#f59e0b);
   color:#000;
   font-weight:900;
-  font-size:14px;
-  padding:4px 14px;
+  font-size:13px;
+  padding:4px 16px;
   border-radius:4px;
   display:inline-block;
-  margin-bottom:10px;
+  margin-bottom:12px;
+  box-shadow:0 2px 12px rgba(245,158,11,.55);
 }
 
 .lt-name{
-  font-size:36px;
+  font-size:38px;
   font-weight:900;
   letter-spacing:.04em;
   text-transform:uppercase;
-  text-shadow:0 3px 8px rgba(0,0,0,.9);
+  text-shadow:0 3px 10px rgba(0,0,0,.9);
 }
 
 .lt-hand{
-  font-size:16px;
+  font-size:15px;
   color:#e2e8f0;
-  margin-top:6px;
-  letter-spacing:.05em;
+  margin-top:8px;
+  letter-spacing:.06em;
 }
 
 /* MANUAL SCORE */
@@ -85,27 +99,27 @@ body{
 }
 
 .score-panel{
-  background:linear-gradient(180deg,#07132b,#000814);
-  padding:14px 30px;
-  border-radius:10px;
-  font-weight:800;
-  letter-spacing:.05em;
+  background:linear-gradient(180deg,#081a3a,#000814);
+  padding:16px 36px;
+  border-radius:12px;
+  font-weight:900;
+  letter-spacing:.06em;
   color:#fff;
-  box-shadow:0 15px 40px rgba(0,0,0,.9);
+  box-shadow:0 18px 48px rgba(0,0,0,.9);
 }
 
-/* SPONSOR BOX */
+/* SPONSOR */
 #sponsorBox{
   position:absolute;
   top:0;
   right:0;
-  width:220px;
-  height:60px;
+  width:240px;
+  height:70px;
   display:none;
   align-items:center;
   justify-content:center;
   background:rgba(0,0,0,.6);
-  border-radius:8px;
+  border-radius:10px;
   overflow:hidden;
 }
 
@@ -131,9 +145,9 @@ body{
 
 <div class="safe-zone">
 
-  <!-- LOWER THIRD -->
   <div id="lowerThird">
     <div class="lt-panel">
+      <div id="shine"></div>
       <div class="lt-team" id="ltTeam"></div>
       <div class="lt-tag">NEW BATSMAN</div>
       <div class="lt-name" id="ltName"></div>
@@ -141,12 +155,10 @@ body{
     </div>
   </div>
 
-  <!-- MANUAL SCORE -->
   <div id="manualScore">
     <div class="score-panel" id="scoreText"></div>
   </div>
 
-  <!-- SPONSOR -->
   <div id="sponsorBox"></div>
 
 </div>
@@ -160,7 +172,6 @@ let channel;
 let lastEventTime = Date.now();
 let sponsorInterval;
 
-/* STATUS DOT */
 const dot = document.getElementById('connectionDot');
 
 function setStatus(state){
@@ -169,44 +180,34 @@ function setStatus(state){
   else dot.style.background='#ef4444';
 }
 
-pusher.connection.bind('connected',()=>{
-  setStatus('connected');
-});
+pusher.connection.bind('connected',()=>setStatus('connected'));
+pusher.connection.bind('connecting',()=>setStatus('connecting'));
+pusher.connection.bind('disconnected',()=>setStatus('disconnected'));
 
-pusher.connection.bind('connecting',()=>{
-  setStatus('connecting');
-});
-
-pusher.connection.bind('disconnected',()=>{
-  setStatus('disconnected');
-});
-
-/* HEARTBEAT */
 setInterval(()=>{
   if(Date.now()-lastEventTime>15000){
     dot.style.background='#ef4444';
   }
 },5000);
 
-/* SUBSCRIBE */
 function subscribe(){
   channel = pusher.subscribe('broadcast');
 
-  channel.bind_global(()=>{
-    lastEventTime = Date.now();
-  });
+  channel.bind_global(()=>{ lastEventTime = Date.now(); });
 
-  /* PLAYER LOWER THIRD */
   channel.bind('client-player',data=>{
     if(!data) return;
 
-    document.getElementById('ltTeam').textContent=data.team||'';
-    document.getElementById('ltName').textContent=data.name||'';
-    document.getElementById('ltHand').textContent=data.hand||'';
+    ltTeam.textContent=data.team||'';
+    ltName.textContent=data.name||'';
+    ltHand.textContent=data.hand||'';
 
     const lt=document.getElementById('lowerThird');
     lt.style.opacity='1';
     lt.style.transform='translate(-50%,0)';
+
+    shine.animate([{left:'-120%'},{left:'130%'}],
+      {duration:900,easing:'ease-out'});
 
     setTimeout(()=>{
       lt.style.opacity='0';
@@ -214,47 +215,41 @@ function subscribe(){
     },7200);
   });
 
-  /* MANUAL SCORE */
   channel.bind('client-manualScore',data=>{
-    document.getElementById('manualScore').style.display='block';
-    document.getElementById('scoreText').textContent=
+    manualScore.style.display='block';
+    scoreText.textContent=
       `${data.score||''} | ${data.overs||''}`;
   });
 
   channel.bind('client-score',data=>{
     if(data.auto){
-      document.getElementById('manualScore').style.display='none';
+      manualScore.style.display='none';
     }
   });
 
-  /* SPONSOR ROTATION */
   channel.bind('client-sponsor',data=>{
-    const box=document.getElementById('sponsorBox');
-
     if(!data.enabled){
-      box.style.display='none';
+      sponsorBox.style.display='none';
       clearInterval(sponsorInterval);
       return;
     }
 
-    box.style.display='flex';
+    sponsorBox.style.display='flex';
     const list=data.list||[];
     if(!list.length) return;
 
     let i=0;
-    box.innerHTML=`<img src='${list[0]}'>`;
+    sponsorBox.innerHTML=`<img src='${list[0]}'>`;
 
     clearInterval(sponsorInterval);
     sponsorInterval=setInterval(()=>{
       i=(i+1)%list.length;
-      box.innerHTML=`<img src='${list[i]}'>`;
+      sponsorBox.innerHTML=`<img src='${list[i]}'>`;
     },(data.interval||8)*1000);
   });
-
 }
 
 subscribe();
 </script>
-
 </body>
 </html>
