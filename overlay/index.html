@@ -28,11 +28,11 @@ html,body{
   z-index:9999;
 }
 
-/* LOWER THIRD CONTAINER */
+/* LOWER THIRD */
 #lowerThird{
   position:absolute;
-  bottom:120px;
-  left:140px;
+  bottom:140px;
+  left:160px;
   width:1400px;
   height:360px;
   transform:translateX(-150%);
@@ -40,12 +40,13 @@ html,body{
   transition:all .6s cubic-bezier(.22,.9,.3,1);
 }
 
-/* TEXT STYLING */
+/* TEXT */
+
 #ltTeam{
   position:absolute;
-  top:70px;
+  top:95px;
   left:300px;
-  font-size:32px;
+  font-size:30px;
   font-weight:800;
   letter-spacing:.15em;
   color:white;
@@ -53,18 +54,18 @@ html,body{
 
 #ltLabel{
   position:absolute;
-  top:110px;
+  top:118px;
   left:300px;
-  font-size:30px;
+  font-size:28px;
   font-weight:900;
   color:black;
 }
 
 #ltName{
   position:absolute;
-  top:160px;
+  top:170px;
   left:300px;
-  font-size:90px;
+  font-size:82px;
   font-weight:900;
   color:white;
   white-space:nowrap;
@@ -72,9 +73,9 @@ html,body{
 
 #ltHand{
   position:absolute;
-  top:265px;
+  top:260px;
   left:300px;
-  font-size:28px;
+  font-size:26px;
   letter-spacing:.12em;
   color:#e5e7eb;
 }
@@ -82,10 +83,10 @@ html,body{
 /* HEADSHOT */
 #playerImage{
   position:absolute;
-  top:60px;
-  left:40px;
-  width:240px;
-  height:240px;
+  top:80px;
+  left:55px;
+  width:210px;
+  height:210px;
   border-radius:50%;
   object-fit:cover;
   display:none;
@@ -161,26 +162,25 @@ html,body{
 
 <div id="lowerThird">
 
-  <!-- SVG BASE -->
   <svg width="1400" height="360" viewBox="0 0 1400 360">
 
     <!-- Blue Base -->
-    <polygon points="260,40 1350,40 1400,340 200,340"
-             fill="#0f172a"/>
+    <polygon points="260,60 1350,60 1400,330 200,330"
+             fill="#0b1328"/>
 
     <!-- Bottom Accent -->
-    <rect x="200" y="330" width="1200" height="6"
+    <rect x="200" y="322" width="1200" height="6"
           fill="#3b82f6"/>
 
     <!-- Gold Strip -->
-    <polygon points="260,80 1320,80 1290,130 260,130"
+    <polygon points="260,110 1320,110 1290,150 260,150"
              fill="url(#goldGrad)"/>
 
     <!-- Headshot Ring -->
-    <circle cx="160" cy="180" r="120"
+    <circle cx="160" cy="200" r="110"
             fill="none"
             stroke="url(#goldGrad)"
-            stroke-width="18"/>
+            stroke-width="14"/>
 
     <defs>
       <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -225,16 +225,14 @@ pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
 const lowerThird = document.getElementById('lowerThird');
 const nameEl = document.getElementById('ltName');
 
-/* AUTO SCALE NAME */
 function autoScaleName(){
-  nameEl.style.fontSize = "90px";
-  while(nameEl.scrollWidth > 1000){
+  nameEl.style.fontSize = "82px";
+  while(nameEl.scrollWidth > 950){
     let size = parseInt(window.getComputedStyle(nameEl).fontSize);
     nameEl.style.fontSize = (size - 2) + "px";
   }
 }
 
-/* PLAYER */
 channel.bind('player', data => {
   if(!data) return;
 
@@ -259,7 +257,7 @@ channel.bind('player', data => {
   },7000);
 });
 
-/* SCORE */
+/* Score */
 channel.bind('manualScore',data=>{
   document.getElementById('manualScore').style.display='block';
   document.getElementById('scoreText').textContent =
@@ -272,35 +270,9 @@ channel.bind('score',data=>{
   }
 });
 
-/* SPONSOR */
-let sponsorInterval;
-channel.bind('sponsor',data=>{
-  const box = document.getElementById('sponsorBox');
-
-  if(!data.enabled){
-    box.style.display='none';
-    clearInterval(sponsorInterval);
-    return;
-  }
-
-  box.style.display='flex';
-  const list = data.list || [];
-  if(!list.length) return;
-
-  let i=0;
-  box.innerHTML=`<img src="${list[0]}">`;
-
-  clearInterval(sponsorInterval);
-  sponsorInterval=setInterval(()=>{
-    i=(i+1)%list.length;
-    box.innerHTML=`<img src="${list[i]}?t=${Date.now()}">`;
-  },(data.interval||8)*1000);
-});
-
-/* MOMENT */
+/* Moment */
 channel.bind('moment',data=>{
   if(!data || !data.type) return;
-
   const stinger=document.getElementById('momentStinger');
   const text=document.getElementById('momentText');
 
