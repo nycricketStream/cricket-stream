@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Network Lower Third</title>
+<title>Broadcast Lower Third</title>
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
 <style>
@@ -13,7 +13,7 @@ body{
   font-family:'Segoe UI',Arial,sans-serif;
 }
 
-/* CONNECTION DOT (ORIGINAL SMALL) */
+/* CONNECTION DOT */
 #connectionDot{
   position:fixed;
   top:14px;
@@ -25,29 +25,28 @@ body{
   z-index:20000;
 }
 
-/* LOWER THIRD */
+/* CONTAINER */
 #lowerThird{
   position:absolute;
-  bottom:70px;
-  left:70px;
+  bottom:80px;
+  left:80px;
   transform:translateX(-120%);
   opacity:0;
   transition:all .7s cubic-bezier(.22,.9,.3,1);
 }
 
-/* MAIN PANEL */
-.lt-panel{
+/* MAIN DARK BASE */
+.lt-base{
   position:relative;
-  min-width:920px;
-  padding:32px 60px 28px 140px;
-  background:linear-gradient(180deg,#1f2937,#0f172a);
-  clip-path:polygon(0 0, 96% 0, 100% 100%, 0% 100%);
-  box-shadow:0 25px 70px rgba(0,0,0,.7);
-  color:#fff;
+  width:980px;
+  padding:36px 60px 32px 160px;
+  background:linear-gradient(180deg,#1e293b,#0f172a);
+  clip-path:polygon(0 0, 94% 0, 100% 100%, 0% 100%);
+  box-shadow:0 35px 80px rgba(0,0,0,.75);
 }
 
-/* BLUE EDGE ACCENT */
-.lt-panel::after{
+/* BLUE EDGE LINE */
+.lt-base::after{
   content:'';
   position:absolute;
   bottom:0;
@@ -60,52 +59,56 @@ body{
 /* HEADSHOT */
 #ltImage{
   position:absolute;
-  top:-38px;
-  left:-38px;
-  width:115px;
-  height:115px;
+  top:-42px;
+  left:-42px;
+  width:130px;
+  height:130px;
   border-radius:50%;
   object-fit:cover;
   border:6px solid #facc15;
   background:#000;
   display:none;
+  box-shadow:0 10px 30px rgba(0,0,0,.6);
 }
 
-/* TEAM LABEL */
+/* TEAM TAB */
 .lt-team{
+  position:absolute;
+  top:-20px;
+  left:140px;
   background:#1e40af;
-  padding:8px 20px;
+  padding:10px 24px;
   font-size:15px;
   font-weight:800;
   letter-spacing:.15em;
   text-transform:uppercase;
-  display:inline-block;
+  clip-path:polygon(0 0, 100% 0, 94% 100%, 0% 100%);
 }
 
-/* GOLD STRIP */
-.lt-tag{
-  margin-top:10px;
+/* GOLD BAR */
+.lt-gold{
+  margin-top:8px;
   background:linear-gradient(90deg,#facc15,#f59e0b);
   color:#000;
-  padding:10px 26px;
+  padding:12px 30px;
   font-weight:900;
-  font-size:16px;
+  font-size:17px;
   display:inline-block;
   clip-path:polygon(0 0, 100% 0, 96% 100%, 0% 100%);
 }
 
 /* NAME */
 .lt-name{
-  font-size:64px;
+  font-size:66px;
   font-weight:900;
   margin-top:18px;
-  line-height:1;
+  color:#fff;
 }
 
 /* ROLE */
 .lt-hand{
-  font-size:20px;
-  margin-top:10px;
+  font-size:22px;
+  margin-top:8px;
   color:#cbd5e1;
   letter-spacing:.08em;
 }
@@ -117,10 +120,10 @@ body{
 <div id="connectionDot"></div>
 
 <div id="lowerThird">
-  <div class="lt-panel">
+  <div class="lt-base">
     <img id="ltImage">
     <div class="lt-team" id="ltTeam"></div>
-    <div class="lt-tag">NEW BATSMAN</div>
+    <div class="lt-gold">NEW BATSMAN</div>
     <div class="lt-name" id="ltName"></div>
     <div class="lt-hand" id="ltHand"></div>
   </div>
@@ -131,15 +134,13 @@ const PUSHER_KEY = "12fcceaea77e52cf3626";
 const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
 const channel = pusher.subscribe('broadcast');
 
-/* CONNECTION DOT LOGIC */
+/* DOT LOGIC */
 const dot = document.getElementById('connectionDot');
-
 function setStatus(state){
   if(state==='connected') dot.style.background='#22c55e';
   else if(state==='connecting') dot.style.background='#facc15';
   else dot.style.background='#ef4444';
 }
-
 pusher.connection.bind('connected',()=>setStatus('connected'));
 pusher.connection.bind('connecting',()=>setStatus('connecting'));
 pusher.connection.bind('disconnected',()=>setStatus('disconnected'));
