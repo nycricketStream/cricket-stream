@@ -1,5 +1,0 @@
-{
-"name":"cricket-broadcast-system",
-"private":true,
-"dependencies":{"@vercel/kv":"^1.0.0"}
-}
