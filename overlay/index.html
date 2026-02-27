@@ -21,55 +21,74 @@ html,body{
   position:absolute;
   top:20px;
   left:20px;
-  width:10px;
-  height:10px;
+  width:12px;
+  height:12px;
   border-radius:50%;
   background:#facc15;
   z-index:9999;
 }
 
-/* LOWER THIRD */
+/* LOWER THIRD CONTAINER */
 #lowerThird{
   position:absolute;
   bottom:120px;
   left:140px;
-  width:960px;
-  height:640px;
-  background:url('lowerthird_clean.png') no-repeat;
-  background-size:contain;
-  transform:translateX(-130%);
+  width:1400px;
+  height:360px;
+  transform:translateX(-150%);
   opacity:0;
   transition:all .6s cubic-bezier(.22,.9,.3,1);
 }
 
-/* TEXT ALIGNED BY PERCENTAGE OF PNG */
-
+/* TEXT STYLING */
 #ltTeam{
   position:absolute;
-  top:8%;
-  left:18%;
+  top:70px;
+  left:300px;
   font-size:32px;
-  font-weight:900;
+  font-weight:800;
   letter-spacing:.15em;
-  color:#ffffff;
+  color:white;
+}
+
+#ltLabel{
+  position:absolute;
+  top:110px;
+  left:300px;
+  font-size:30px;
+  font-weight:900;
+  color:black;
 }
 
 #ltName{
   position:absolute;
-  top:42%;
-  left:20%;
-  font-size:96px;
+  top:160px;
+  left:300px;
+  font-size:90px;
   font-weight:900;
-  color:#ffffff;
+  color:white;
+  white-space:nowrap;
 }
 
 #ltHand{
   position:absolute;
-  top:68%;
-  left:20%;
-  font-size:32px;
-  letter-spacing:.1em;
+  top:265px;
+  left:300px;
+  font-size:28px;
+  letter-spacing:.12em;
   color:#e5e7eb;
+}
+
+/* HEADSHOT */
+#playerImage{
+  position:absolute;
+  top:60px;
+  left:40px;
+  width:240px;
+  height:240px;
+  border-radius:50%;
+  object-fit:cover;
+  display:none;
 }
 
 /* SCORE */
@@ -82,7 +101,7 @@ html,body{
 }
 
 #scoreText{
-  background:linear-gradient(90deg,#1f2937,#111827);
+  background:#111827;
   padding:18px 48px;
   border-radius:8px;
   font-size:36px;
@@ -127,13 +146,12 @@ html,body{
 }
 
 #momentText{
-  font-size:200px;
+  font-size:220px;
   font-weight:900;
   letter-spacing:.1em;
   transform:scale(.6);
   transition:transform .4s cubic-bezier(.22,.9,.3,1);
 }
-
 </style>
 </head>
 
@@ -142,9 +160,45 @@ html,body{
 <div id="connectionDot"></div>
 
 <div id="lowerThird">
+
+  <!-- SVG BASE -->
+  <svg width="1400" height="360" viewBox="0 0 1400 360">
+
+    <!-- Blue Base -->
+    <polygon points="260,40 1350,40 1400,340 200,340"
+             fill="#0f172a"/>
+
+    <!-- Bottom Accent -->
+    <rect x="200" y="330" width="1200" height="6"
+          fill="#3b82f6"/>
+
+    <!-- Gold Strip -->
+    <polygon points="260,80 1320,80 1290,130 260,130"
+             fill="url(#goldGrad)"/>
+
+    <!-- Headshot Ring -->
+    <circle cx="160" cy="180" r="120"
+            fill="none"
+            stroke="url(#goldGrad)"
+            stroke-width="18"/>
+
+    <defs>
+      <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#fef08a"/>
+        <stop offset="50%" stop-color="#facc15"/>
+        <stop offset="100%" stop-color="#eab308"/>
+      </linearGradient>
+    </defs>
+
+  </svg>
+
+  <img id="playerImage">
+
   <div id="ltTeam"></div>
+  <div id="ltLabel">NEW BATSMAN</div>
   <div id="ltName"></div>
   <div id="ltHand"></div>
+
 </div>
 
 <div id="manualScore">
@@ -163,28 +217,45 @@ const PUSHER_KEY = "12fcceaea77e52cf3626";
 const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
 const channel = pusher.subscribe('broadcast');
 
-/* CONNECTION DOT */
 const dot = document.getElementById('connectionDot');
 pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
 pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
 pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
 
-/* PLAYER LOWER THIRD */
 const lowerThird = document.getElementById('lowerThird');
+const nameEl = document.getElementById('ltName');
 
+/* AUTO SCALE NAME */
+function autoScaleName(){
+  nameEl.style.fontSize = "90px";
+  while(nameEl.scrollWidth > 1000){
+    let size = parseInt(window.getComputedStyle(nameEl).fontSize);
+    nameEl.style.fontSize = (size - 2) + "px";
+  }
+}
+
+/* PLAYER */
 channel.bind('player', data => {
   if(!data) return;
 
   document.getElementById('ltTeam').textContent = data.team || '';
-  document.getElementById('ltName').textContent = data.name || '';
+  nameEl.textContent = data.name || '';
   document.getElementById('ltHand').textContent = data.hand || '';
+
+  autoScaleName();
+
+  if(data.image){
+    const img = document.getElementById('playerImage');
+    img.src = data.image;
+    img.style.display = 'block';
+  }
 
   lowerThird.style.opacity='1';
   lowerThird.style.transform='translateX(0)';
 
   setTimeout(()=>{
     lowerThird.style.opacity='0';
-    lowerThird.style.transform='translateX(-130%)';
+    lowerThird.style.transform='translateX(-150%)';
   },7000);
 });
 
