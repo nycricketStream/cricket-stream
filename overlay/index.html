@@ -211,11 +211,11 @@ pusher.connection.bind('connected',()=>setStatus('connected'));
 pusher.connection.bind('connecting',()=>setStatus('connecting'));
 pusher.connection.bind('disconnected',()=>setStatus('disconnected'));
 
-setInterval(()=>{
+/*setInterval(()=>{
   if(Date.now()-lastEventTime>15000){
     dot.style.background='#ef4444';
   }
-},5000);
+},5000);*/
 
 function subscribe(){
   channel = pusher.subscribe('broadcast');
