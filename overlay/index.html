@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Broadcast Lower Third</title>
+<title>Production Cricket Overlay</title>
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
 <style>
@@ -13,7 +13,8 @@ body{
   font-family:'Segoe UI',Arial,sans-serif;
 }
 
-/* CONNECTION DOT */
+/* ================= CONNECTION DOT ================= */
+
 #connectionDot{
   position:fixed;
   top:14px;
@@ -25,93 +26,154 @@ body{
   z-index:20000;
 }
 
-/* CONTAINER */
+/* ================= LOWER THIRD ================= */
+
 #lowerThird{
   position:absolute;
-  bottom:80px;
-  left:80px;
+  bottom:70px;
+  left:70px;
   transform:translateX(-120%);
   opacity:0;
   transition:all .7s cubic-bezier(.22,.9,.3,1);
 }
 
-/* MAIN DARK BASE */
-.lt-base{
+.lt-wrapper{
   position:relative;
-  width:980px;
-  padding:36px 60px 32px 160px;
-  background:linear-gradient(180deg,#1e293b,#0f172a);
-  clip-path:polygon(0 0, 94% 0, 100% 100%, 0% 100%);
-  box-shadow:0 35px 80px rgba(0,0,0,.75);
+  width:920px;
 }
 
-/* BLUE EDGE LINE */
+.lt-base{
+  position:relative;
+  background:linear-gradient(90deg,#0b1f4a,#111827);
+  padding:26px 50px 22px 150px;
+  clip-path:polygon(0 0, 94% 0, 100% 100%, 0% 100%);
+  box-shadow:0 25px 60px rgba(0,0,0,.7);
+}
+
 .lt-base::after{
   content:'';
   position:absolute;
   bottom:0;
   left:0;
-  height:4px;
+  height:3px;
   width:100%;
   background:#2563eb;
 }
 
-/* HEADSHOT */
 #ltImage{
   position:absolute;
-  top:-42px;
-  left:-42px;
-  width:130px;
-  height:130px;
+  top:-30px;
+  left:-30px;
+  width:110px;
+  height:110px;
   border-radius:50%;
+  border:5px solid #facc15;
   object-fit:cover;
-  border:6px solid #facc15;
   background:#000;
   display:none;
-  box-shadow:0 10px 30px rgba(0,0,0,.6);
 }
 
-/* TEAM TAB */
 .lt-team{
   position:absolute;
-  top:-20px;
-  left:140px;
-  background:#1e40af;
-  padding:10px 24px;
-  font-size:15px;
+  top:-18px;
+  left:150px;
+  background:#1e3a8a;
+  padding:8px 22px;
+  font-size:14px;
   font-weight:800;
-  letter-spacing:.15em;
+  letter-spacing:.12em;
   text-transform:uppercase;
-  clip-path:polygon(0 0, 100% 0, 94% 100%, 0% 100%);
+  clip-path:polygon(0 0, 100% 0, 92% 100%, 0% 100%);
 }
 
-/* GOLD BAR */
-.lt-gold{
-  margin-top:8px;
+.lt-tag{
+  margin-top:6px;
   background:linear-gradient(90deg,#facc15,#f59e0b);
-  color:#000;
-  padding:12px 30px;
+  padding:8px 24px;
   font-weight:900;
-  font-size:17px;
+  font-size:15px;
   display:inline-block;
-  clip-path:polygon(0 0, 100% 0, 96% 100%, 0% 100%);
+  clip-path:polygon(0 0, 100% 0, 95% 100%, 0% 100%);
 }
 
-/* NAME */
 .lt-name{
-  font-size:66px;
+  font-size:56px;
   font-weight:900;
-  margin-top:18px;
-  color:#fff;
+  margin-top:14px;
+  line-height:1;
 }
 
-/* ROLE */
 .lt-hand{
-  font-size:22px;
-  margin-top:8px;
+  font-size:18px;
+  margin-top:6px;
   color:#cbd5e1;
+}
+
+/* ================= MANUAL SCORE ================= */
+
+#manualScore{
+  position:absolute;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  display:none;
+}
+
+.score-panel{
+  background:linear-gradient(90deg,#0b1f4a,#111827);
+  padding:14px 40px;
+  border-radius:8px;
+  font-weight:900;
+  font-size:22px;
   letter-spacing:.08em;
 }
+
+/* ================= SPONSOR ================= */
+
+#sponsorBox{
+  position:absolute;
+  top:20px;
+  right:40px;
+  width:260px;
+  height:90px;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.6);
+  border-radius:12px;
+  overflow:hidden;
+}
+
+#sponsorBox img{
+  max-width:90%;
+  max-height:90%;
+}
+
+/* ================= MOMENT STINGER ================= */
+
+#momentStinger{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(4px);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s ease;
+  z-index:15000;
+}
+
+#momentText{
+  font-size:120px;
+  font-weight:900;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  transform:scale(.6);
+  transition:transform .4s cubic-bezier(.22,.9,.3,1);
+}
+
 </style>
 </head>
 
@@ -120,39 +182,55 @@ body{
 <div id="connectionDot"></div>
 
 <div id="lowerThird">
-  <div class="lt-base">
-    <img id="ltImage">
-    <div class="lt-team" id="ltTeam"></div>
-    <div class="lt-gold">NEW BATSMAN</div>
-    <div class="lt-name" id="ltName"></div>
-    <div class="lt-hand" id="ltHand"></div>
+  <div class="lt-wrapper">
+    <div class="lt-base">
+      <img id="ltImage">
+      <div class="lt-team" id="ltTeam"></div>
+      <div class="lt-tag">NEW BATSMAN</div>
+      <div class="lt-name" id="ltName"></div>
+      <div class="lt-hand" id="ltHand"></div>
+    </div>
   </div>
 </div>
 
+<div id="manualScore">
+  <div class="score-panel" id="scoreText"></div>
+</div>
+
+<div id="sponsorBox"></div>
+
+<div id="momentStinger">
+  <div id="momentText"></div>
+</div>
+
 <script>
+
 const PUSHER_KEY = "12fcceaea77e52cf3626";
 const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
 const channel = pusher.subscribe('broadcast');
 
-/* DOT LOGIC */
+/* ================= CONNECTION ================= */
+
 const dot = document.getElementById('connectionDot');
+
 function setStatus(state){
   if(state==='connected') dot.style.background='#22c55e';
   else if(state==='connecting') dot.style.background='#facc15';
   else dot.style.background='#ef4444';
 }
+
 pusher.connection.bind('connected',()=>setStatus('connected'));
 pusher.connection.bind('connecting',()=>setStatus('connecting'));
 pusher.connection.bind('disconnected',()=>setStatus('disconnected'));
 
-/* ELEMENTS */
+/* ================= LOWER THIRD ================= */
+
 const lowerThird = document.getElementById('lowerThird');
 const ltImage = document.getElementById('ltImage');
 const ltTeam = document.getElementById('ltTeam');
 const ltName = document.getElementById('ltName');
 const ltHand = document.getElementById('ltHand');
 
-/* PLAYER EVENT */
 channel.bind('player', data => {
   if(!data) return;
 
@@ -160,7 +238,7 @@ channel.bind('player', data => {
   ltName.textContent = data.name || '';
   ltHand.textContent = data.hand || '';
 
-  if(data.image && data.image.trim() !== ''){
+  if(data.image){
     ltImage.style.display='block';
     ltImage.src = data.image + '?t=' + Date.now();
   } else {
@@ -175,6 +253,72 @@ channel.bind('player', data => {
     lowerThird.style.transform='translateX(-120%)';
   },7000);
 });
+
+/* ================= MANUAL SCORE ================= */
+
+channel.bind('manualScore',data=>{
+  document.getElementById('manualScore').style.display='block';
+  document.getElementById('scoreText').textContent =
+    `${data.score || ''} | ${data.overs || ''}`;
+});
+
+channel.bind('score',data=>{
+  if(data.auto){
+    document.getElementById('manualScore').style.display='none';
+  }
+});
+
+/* ================= SPONSORS ================= */
+
+let sponsorInterval;
+
+channel.bind('sponsor',data=>{
+  const box = document.getElementById('sponsorBox');
+
+  if(!data.enabled){
+    box.style.display='none';
+    clearInterval(sponsorInterval);
+    return;
+  }
+
+  box.style.display='flex';
+  const list = data.list || [];
+  if(!list.length) return;
+
+  let i=0;
+  box.innerHTML=`<img src="${list[0]}">`;
+
+  clearInterval(sponsorInterval);
+  sponsorInterval=setInterval(()=>{
+    i=(i+1)%list.length;
+    box.innerHTML=`<img src="${list[i]}?t=${Date.now()}">`;
+  },(data.interval||8)*1000);
+});
+
+/* ================= MOMENT ================= */
+
+channel.bind('moment',data=>{
+  if(!data || !data.type) return;
+
+  const stinger=document.getElementById('momentStinger');
+  const text=document.getElementById('momentText');
+
+  let color='#facc15';
+  if(data.type==='SIX') color='#22c55e';
+  if(data.type==='WICKET') color='#ef4444';
+
+  text.textContent=data.type;
+  text.style.color=color;
+
+  stinger.style.opacity='1';
+  text.style.transform='scale(1)';
+
+  setTimeout(()=>{
+    stinger.style.opacity='0';
+    text.style.transform='scale(.6)';
+  },2500);
+});
+
 </script>
 
 </body>
