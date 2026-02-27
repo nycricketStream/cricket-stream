@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>NYC Eagles Broadcast Overlay</title>
+<title>Cricket Broadcast Overlay</title>
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
 <style>
@@ -27,31 +27,31 @@ html,body{
   z-index:9999;
 }
 
-/* LOWER THIRD */
+/* LOWER THIRD CONTAINER */
 #lowerThird{
   position:absolute;
-  bottom:130px;
-  left:140px;
-  width:1500px;
-  height:340px;
+  bottom:120px;
+  left:120px;
+  width:1600px;
+  height:360px;
   transform:translateX(-160%);
   opacity:0;
-  transition:all .6s cubic-bezier(.22,.9,.3,1);
+  transition:all .55s cubic-bezier(.22,.9,.3,1);
 }
 
-/* Alignment anchor */
+/* TEXT ALIGNMENT LINE */
 :root{
-  --textLeft:360px;
+  --textLeft:420px;
 }
 
-/* TEAM TAB */
+/* TEAM */
 #ltTeam{
   position:absolute;
-  top:55px;
+  top:70px;
   left:var(--textLeft);
-  font-size:30px;
+  font-size:32px;
   font-weight:900;
-  letter-spacing:.15em;
+  letter-spacing:.12em;
   color:white;
   text-shadow:0 2px 6px rgba(0,0,0,.7);
 }
@@ -59,46 +59,45 @@ html,body{
 /* LABEL */
 #ltLabel{
   position:absolute;
-  top:105px;
+  top:120px;
   left:var(--textLeft);
-  font-size:28px;
+  font-size:30px;
   font-weight:900;
-  color:black;
+  color:#111;
 }
 
-/* PLAYER NAME */
+/* NAME */
 #ltName{
   position:absolute;
-  top:150px;
+  top:170px;
   left:var(--textLeft);
-  font-size:86px;
+  font-size:92px;
   font-weight:900;
   color:white;
-  text-shadow:0 4px 12px rgba(0,0,0,.8);
   white-space:nowrap;
+  text-shadow:0 4px 12px rgba(0,0,0,.85);
 }
 
 /* ROLE */
 #ltHand{
   position:absolute;
-  top:250px;
+  top:280px;
   left:var(--textLeft);
-  font-size:26px;
-  letter-spacing:.15em;
-  color:#e2e8f0;
+  font-size:28px;
+  letter-spacing:.14em;
+  color:#e5e7eb;
 }
 
 /* HEADSHOT */
 #playerImage{
   position:absolute;
-  top:65px;
-  left:80px;
-  width:220px;
-  height:220px;
+  top:70px;
+  left:140px;
+  width:230px;
+  height:230px;
   border-radius:50%;
   object-fit:cover;
   display:none;
-  box-shadow:0 10px 30px rgba(0,0,0,.6);
 }
 
 /* SCORE */
@@ -114,31 +113,10 @@ html,body{
   background:#0f172a;
   padding:20px 60px;
   border-radius:10px;
-  font-size:38px;
+  font-size:40px;
   font-weight:900;
   letter-spacing:.1em;
   color:#fff;
-  box-shadow:0 10px 25px rgba(0,0,0,.7);
-}
-
-/* SPONSOR */
-#sponsorBox{
-  position:absolute;
-  top:40px;
-  right:60px;
-  width:340px;
-  height:130px;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.7);
-  border-radius:14px;
-  overflow:hidden;
-}
-
-#sponsorBox img{
-  max-width:90%;
-  max-height:90%;
 }
 
 /* MOMENT */
@@ -148,8 +126,7 @@ html,body{
   display:flex;
   align-items:center;
   justify-content:center;
-  background:rgba(0,0,0,.8);
-  backdrop-filter:blur(6px);
+  background:rgba(0,0,0,.75);
   opacity:0;
   pointer-events:none;
   transition:opacity .3s ease;
@@ -172,50 +149,54 @@ html,body{
 
 <div id="lowerThird">
 
-<svg width="1500" height="340" viewBox="0 0 1500 340">
+<svg width="1600" height="360" viewBox="0 0 1600 360">
 
-  <!-- MAIN PANEL -->
   <defs>
+
+    <!-- PANEL GRADIENT -->
     <linearGradient id="panelGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#0a1a35"/>
+      <stop offset="0%" stop-color="#0b1f3a"/>
       <stop offset="100%" stop-color="#081226"/>
     </linearGradient>
 
+    <!-- GOLD -->
     <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#fef08a"/>
-      <stop offset="40%" stop-color="#facc15"/>
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="50%" stop-color="#facc15"/>
       <stop offset="100%" stop-color="#b45309"/>
     </linearGradient>
 
-    <linearGradient id="blueAccent" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#3b82f6"/>
-      <stop offset="100%" stop-color="#1d4ed8"/>
+    <!-- BLUE TAB -->
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#1e3a8a"/>
     </linearGradient>
+
   </defs>
 
-  <!-- Panel -->
-  <polygon points="300,40 1450,40 1500,300 240,300"
+  <!-- MAIN PANEL -->
+  <polygon points="420,60 1500,60 1550,320 380,320"
            fill="url(#panelGrad)"
-           stroke="#1e40af"
+           stroke="#2563eb"
            stroke-width="3"/>
 
-  <!-- Bottom glow accent -->
-  <rect x="240" y="292" width="1200" height="6"
-        fill="url(#blueAccent)"/>
+  <!-- BOTTOM ACCENT -->
+  <rect x="380" y="312" width="1170" height="6"
+        fill="#3b82f6"/>
 
-  <!-- Gold Strip -->
-  <polygon points="300,90 1400,90 1360,130 300,130"
+  <!-- GOLD STRIP -->
+  <polygon points="420,120 1450,120 1410,160 420,160"
            fill="url(#goldGrad)"/>
 
-  <!-- Team Tab -->
-  <polygon points="300,40 580,40 560,85 300,85"
-           fill="url(#blueAccent)"/>
+  <!-- TEAM TAB -->
+  <polygon points="420,60 720,60 700,120 420,120"
+           fill="url(#blueGrad)"/>
 
-  <!-- Headshot Ring -->
-  <circle cx="200" cy="170" r="115"
+  <!-- HEADSHOT RING -->
+  <circle cx="260" cy="190" r="125"
           fill="none"
           stroke="url(#goldGrad)"
-          stroke-width="16"/>
+          stroke-width="18"/>
 
 </svg>
 
@@ -231,8 +212,6 @@ html,body{
 <div id="manualScore">
   <div id="scoreText"></div>
 </div>
-
-<div id="sponsorBox"></div>
 
 <div id="momentStinger">
   <div id="momentText"></div>
@@ -251,8 +230,9 @@ pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
 const lowerThird=document.getElementById('lowerThird');
 const nameEl=document.getElementById('ltName');
 
+/* Auto scale long names */
 function autoScaleName(){
-  nameEl.style.fontSize="86px";
+  nameEl.style.fontSize="92px";
   while(nameEl.scrollWidth>1000){
     let size=parseInt(window.getComputedStyle(nameEl).fontSize);
     nameEl.style.fontSize=(size-2)+"px";
@@ -281,19 +261,6 @@ channel.bind('player',data=>{
     lowerThird.style.opacity='0';
     lowerThird.style.transform='translateX(-160%)';
   },7000);
-});
-
-/* SCORE */
-channel.bind('manualScore',data=>{
-  document.getElementById('manualScore').style.display='block';
-  document.getElementById('scoreText').textContent=
-    `${data.score||''} | ${data.overs||''}`;
-});
-
-channel.bind('score',data=>{
-  if(data.auto){
-    document.getElementById('manualScore').style.display='none';
-  }
 });
 
 /* MOMENT */
