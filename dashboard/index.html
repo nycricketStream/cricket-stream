@@ -132,9 +132,12 @@ pusher.connection.bind('connected',()=>log('PUSHER CONNECTED'));
 pusher.connection.bind('connecting',()=>log('PUSHER CONNECTING'));
 pusher.connection.bind('disconnected',()=>log('PUSHER DISCONNECTED'));
 
-function send(event,data){
- log('SEND → '+event);
- channel.trigger('client-'+event,data);
+async function send(event,data){
+  await fetch('/api/broadcast',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({event:'client-'+event,data})
+  });
 }
 
 function showTab(evt,id){
