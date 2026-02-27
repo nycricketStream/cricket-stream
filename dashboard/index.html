@@ -105,8 +105,9 @@ Rotation Seconds<input id="rotation" value="8">
 <button id="logToggle">LOG</button>
 
 <script>
+const ADMIN_SECRET = "nystream2026@@!";
 const PUSHER_KEY=window.PUSHER_KEY||'';
-const pusher=new Pusher(PUSHER_KEY,{cluster:'us2'});
+const pusher=new Pusher("12fcceaea77e52cf3626",{cluster:'us2'});
 const channel=pusher.subscribe('broadcast');
 
 /* LOGGING SYSTEM */
@@ -185,8 +186,23 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 
 async function saveConfig(){
- const config={league:league.value,tournament:tournament.value,embedURL:embedURL.value,sponsorList:sponsorList.value,rotation:rotation.value};
- await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(config)});
+ const config={
+   league:league.value,
+   tournament:tournament.value,
+   embedURL:embedURL.value,
+   sponsorList:sponsorList.value,
+   rotation:rotation.value
+ };
+
+ await fetch('/api/config',{
+   method:'POST',
+   headers:{
+     'Content-Type':'application/json',
+     'Authorization':'Bearer ' + ADMIN_SECRET
+   },
+   body:JSON.stringify(config)
+ });
+
  alert('Config saved');
 }
 
