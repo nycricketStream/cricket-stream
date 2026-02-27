@@ -2,13 +2,12 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>NYC Eagles Broadcast Overlay</title>
+<title>Broadcast Overlay</title>
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
 <style>
 html,body{
   margin:0;
-  padding:0;
   width:1920px;
   height:1080px;
   background:transparent;
@@ -38,10 +37,15 @@ html,body{
   transition:all .6s cubic-bezier(.22,.9,.3,1);
 }
 
+/* GLOBAL TEXT ALIGNMENT LINE */
+:root{
+  --textLeft:320px;
+}
+
 #ltTeam{
   position:absolute;
-  top:40px;
-  left:300px;
+  top:52px;
+  left:var(--textLeft);
   font-size:28px;
   font-weight:800;
   letter-spacing:.18em;
@@ -50,8 +54,8 @@ html,body{
 
 #ltLabel{
   position:absolute;
-  top:78px;
-  left:300px;
+  top:85px; /* centered inside gold strip */
+  left:var(--textLeft);
   font-size:26px;
   font-weight:900;
   color:black;
@@ -59,9 +63,9 @@ html,body{
 
 #ltName{
   position:absolute;
-  top:130px;
-  left:300px;
-  font-size:80px;
+  top:135px;
+  left:var(--textLeft);
+  font-size:78px;
   font-weight:900;
   color:white;
   white-space:nowrap;
@@ -69,17 +73,18 @@ html,body{
 
 #ltHand{
   position:absolute;
-  top:230px;
-  left:300px;
+  top:225px;
+  left:var(--textLeft);
   font-size:24px;
   letter-spacing:.12em;
   color:#e5e7eb;
 }
 
+/* HEADSHOT — TRUE CENTER */
 #playerImage{
   position:absolute;
-  top:50px;
-  left:55px;
+  top:60px;   /* aligns center with circle */
+  left:60px;
   width:200px;
   height:200px;
   border-radius:50%;
@@ -165,7 +170,7 @@ html,body{
           fill="#3b82f6"/>
 
     <!-- Gold Strip -->
-    <polygon points="260,70 1320,70 1290,110 260,110"
+    <polygon points="260,80 1320,80 1290,120 260,120"
              fill="url(#goldGrad)"/>
 
     <!-- Headshot Ring -->
@@ -218,7 +223,7 @@ const lowerThird = document.getElementById('lowerThird');
 const nameEl = document.getElementById('ltName');
 
 function autoScaleName(){
-  nameEl.style.fontSize = "80px";
+  nameEl.style.fontSize = "78px";
   while(nameEl.scrollWidth > 950){
     let size = parseInt(window.getComputedStyle(nameEl).fontSize);
     nameEl.style.fontSize = (size - 2) + "px";
