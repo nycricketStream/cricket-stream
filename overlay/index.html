@@ -13,7 +13,6 @@ body{
   font-family:'Segoe UI','Montserrat',Arial,sans-serif;
 }
 
-/* SAFE ZONE */
 .safe-zone{
   position:fixed;
   inset:4%;
@@ -38,8 +37,6 @@ body{
   box-shadow:0 30px 70px rgba(0,0,0,.95);
   border:1px solid rgba(255,255,255,.15);
   color:#fff;
-  position:relative;
-  overflow:hidden;
 }
 
 .lt-content{
@@ -92,7 +89,7 @@ body{
   letter-spacing:.08em;
 }
 
-/* SCORE PANEL */
+/* SCORE */
 #manualScore{
   position:absolute;
   bottom:0;
@@ -132,7 +129,7 @@ body{
   max-height:90%;
 }
 
-/* MOMENT STINGER */
+/* MOMENT */
 #momentStinger{
   position:fixed;
   inset:0;
@@ -198,7 +195,6 @@ body{
 
 </div>
 
-<!-- MOMENT -->
 <div id="momentStinger">
   <div id="momentText"></div>
 </div>
@@ -209,11 +205,21 @@ body{
 const PUSHER_KEY = "12fcceaea77e52cf3626";
 const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
 const channel = pusher.subscribe('broadcast');
-  channel.bind_global(function(eventName, data) {
-  console.log("EVENT RECEIVED:", eventName, data);
+
+channel.bind_global((eventName,data)=>{
+  console.log("EVENT RECEIVED:",eventName,data);
 });
 
 const dot = document.getElementById('connectionDot');
+const lowerThird = document.getElementById('lowerThird');
+const ltImage = document.getElementById('ltImage');
+const ltTeam = document.getElementById('ltTeam');
+const ltName = document.getElementById('ltName');
+const ltHand = document.getElementById('ltHand');
+const manualScore = document.getElementById('manualScore');
+const scoreText = document.getElementById('scoreText');
+const sponsorBox = document.getElementById('sponsorBox');
+
 let sponsorInterval;
 
 /* CONNECTION STATUS */
@@ -221,21 +227,28 @@ pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
 pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
 pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
 
-/* PLAYER LOWER THIRD */
+/* PLAYER */
 channel.bind('player',data=>{
   if(!data) return;
 
-  ltTeam.textContent=data.team||'';
-  ltName.textContent=data.name||'';
-  ltHand.textContent=data.hand||'';
+  ltTeam.textContent = data.team || '';
+  ltName.textContent = data.name || '';
+  ltHand.textContent = data.hand || '';
 
-  const lt=document.getElementById('lowerThird');
-  lt.style.opacity='1';
-  lt.style.transform='translate(-50%,0)';
+  if(data.image && data.image.trim() !== ''){
+    ltImage.style.display = 'block';
+    ltImage.src = data.image + '?t=' + Date.now();
+    ltImage.onerror = ()=>{ ltImage.style.display='none'; };
+  } else {
+    ltImage.style.display = 'none';
+  }
+
+  lowerThird.style.opacity='1';
+  lowerThird.style.transform='translate(-50%,0)';
 
   setTimeout(()=>{
-    lt.style.opacity='0';
-    lt.style.transform='translate(-50%,120%)';
+    lowerThird.style.opacity='0';
+    lowerThird.style.transform='translate(-50%,120%)';
   },7000);
 });
 
