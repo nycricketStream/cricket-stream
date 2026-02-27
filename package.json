@@ -1,1 +1,6 @@
-{"name":"cricket-broadcast-system","private":true,"dependencies":{"@vercel/kv":"^1.0.0"}}
+/*{"name":"cricket-broadcast-system","private":true,"dependencies":{"@vercel/kv":"^1.0.0"}}*/
+{
+  "dependencies": {
+    "pusher": "^5.2.0"
+  }
+}
