@@ -211,9 +211,6 @@ const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
 const channel = pusher.subscribe('broadcast');
 
 const dot = document.getElementById('connectionDot');
-const lowerThird = document.getElementById('lowerThird');
-const ltImage = document.getElementById('ltImage');
-const sponsorBox = document.getElementById('sponsorBox');
 let sponsorInterval;
 
 /* CONNECTION STATUS */
@@ -225,40 +222,34 @@ pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
 channel.bind('player',data=>{
   if(!data) return;
 
-  ltTeam.textContent = data.team || '';
-  ltName.textContent = data.name || '';
-  ltHand.textContent = data.hand || '';
+  ltTeam.textContent=data.team||'';
+  ltName.textContent=data.name||'';
+  ltHand.textContent=data.hand||'';
 
-  if(data.image){
-    ltImage.style.display='block';
-    ltImage.src = data.image + '?t=' + Date.now();
-  } else {
-    ltImage.style.display='none';
-  }
-
-  lowerThird.style.opacity='1';
-  lowerThird.style.transform='translate(-50%,0)';
+  const lt=document.getElementById('lowerThird');
+  lt.style.opacity='1';
+  lt.style.transform='translate(-50%,0)';
 
   setTimeout(()=>{
-    lowerThird.style.opacity='0';
-    lowerThird.style.transform='translate(-50%,120%)';
+    lt.style.opacity='0';
+    lt.style.transform='translate(-50%,120%)';
   },7000);
 });
 
 /* MANUAL SCORE */
 channel.bind('manualScore',data=>{
   manualScore.style.display='block';
-  scoreText.textContent = `${data.score||''} | ${data.overs||''}`;
+  scoreText.textContent=`${data.score||''} | ${data.overs||''}`;
 });
 
-/* AUTO SCORE ENABLE */
+/* AUTO SCORE */
 channel.bind('score',data=>{
   if(data.auto){
     manualScore.style.display='none';
   }
 });
 
-/* SPONSORS */
+/* SPONSOR */
 channel.bind('sponsor',data=>{
   if(!data.enabled){
     sponsorBox.style.display='none';
