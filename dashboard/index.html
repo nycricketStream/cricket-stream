@@ -136,7 +136,7 @@ async function send(event,data){
   await fetch('/api/broadcast',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({event:'client-'+event,data})
+    body:JSON.stringify({event:event,data})
   });
 }
 
