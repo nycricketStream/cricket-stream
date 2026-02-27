@@ -2,37 +2,259 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>TV Overlay Engine</title>
+<title>TV-Level Cricket Overlay</title>
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
+
 <style>
-body{margin:0;background:transparent;overflow:hidden;font-family:'Segoe UI',Arial}
-#lower{position:fixed;bottom:6%;left:50%;transform:translate(-50%,120%);transition:.7s;opacity:0}
-.panel{background:linear-gradient(180deg,#07132b,#000814);padding:20px 40px;border-radius:12px;color:#fff}
-.name{font-size:34px;font-weight:900}
-.hand{font-size:14px;color:#e2e8f0}
-#manual{position:fixed;bottom:6%;left:50%;transform:translateX(-50%);display:none}
+body{
+  margin:0;
+  background:transparent;
+  overflow:hidden;
+  font-family:'Segoe UI','Montserrat',Arial,sans-serif;
+}
+
+/* SAFE ZONE */
+.safe-zone{
+  position:fixed;
+  inset:4%;
+  pointer-events:none;
+}
+
+/* LOWER THIRD */
+#lowerThird{
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translate(-50%,120%);
+  transition:transform .7s cubic-bezier(.22,.9,.3,1),opacity .5s;
+  opacity:0;
+}
+
+.lt-panel{
+  background:linear-gradient(180deg,#07132b,#000814);
+  border-radius:12px;
+  padding:22px 40px;
+  min-width:540px;
+  box-shadow:0 18px 48px rgba(0,0,0,.95);
+  border:1px solid rgba(255,255,255,.15);
+  color:#fff;
+}
+
+.lt-team{
+  font-size:16px;
+  font-weight:800;
+  letter-spacing:.1em;
+  color:#7dd3fc;
+  margin-bottom:8px;
+  text-transform:uppercase;
+}
+
+.lt-tag{
+  background:linear-gradient(180deg,#fbbf24,#f59e0b);
+  color:#000;
+  font-weight:900;
+  font-size:14px;
+  padding:4px 14px;
+  border-radius:4px;
+  display:inline-block;
+  margin-bottom:10px;
+}
+
+.lt-name{
+  font-size:36px;
+  font-weight:900;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  text-shadow:0 3px 8px rgba(0,0,0,.9);
+}
+
+.lt-hand{
+  font-size:16px;
+  color:#e2e8f0;
+  margin-top:6px;
+  letter-spacing:.05em;
+}
+
+/* MANUAL SCORE */
+#manualScore{
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  display:none;
+}
+
+.score-panel{
+  background:linear-gradient(180deg,#07132b,#000814);
+  padding:14px 30px;
+  border-radius:10px;
+  font-weight:800;
+  letter-spacing:.05em;
+  color:#fff;
+  box-shadow:0 15px 40px rgba(0,0,0,.9);
+}
+
+/* SPONSOR BOX */
+#sponsorBox{
+  position:absolute;
+  top:0;
+  right:0;
+  width:220px;
+  height:60px;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.6);
+  border-radius:8px;
+  overflow:hidden;
+}
+
+#sponsorBox img{
+  max-width:90%;
+  max-height:90%;
+}
+
+/* CONNECTION DOT */
+#connectionDot{
+  position:fixed;
+  top:14px;
+  left:14px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#facc15;
+  z-index:20000;
+}
 </style>
 </head>
 <body>
-<div id="lower"><div class="panel"><div id="team"></div><div class="name" id="name"></div><div class="hand" id="hand"></div></div></div>
-<div id="manual"><div class="panel" id="scoreText"></div></div>
+
+<div class="safe-zone">
+
+  <!-- LOWER THIRD -->
+  <div id="lowerThird">
+    <div class="lt-panel">
+      <div class="lt-team" id="ltTeam"></div>
+      <div class="lt-tag">NEW BATSMAN</div>
+      <div class="lt-name" id="ltName"></div>
+      <div class="lt-hand" id="ltHand"></div>
+    </div>
+  </div>
+
+  <!-- MANUAL SCORE -->
+  <div id="manualScore">
+    <div class="score-panel" id="scoreText"></div>
+  </div>
+
+  <!-- SPONSOR -->
+  <div id="sponsorBox"></div>
+
+</div>
+
+<div id="connectionDot"></div>
+
 <script>
-const PUSHER_KEY=window.PUSHER_KEY||'';
-const pusher=new Pusher(PUSHER_KEY,{cluster:'us2'});
-const channel=pusher.subscribe('broadcast');
+const PUSHER_KEY = window.PUSHER_KEY || '';
+const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
+let channel;
+let lastEventTime = Date.now();
+let sponsorInterval;
 
-channel.bind('client-player',d=>{
-team.textContent=d.team||'';
-name.textContent=d.name||'';
-hand.textContent=d.hand||'';
-lower.style.opacity='1';lower.style.transform='translate(-50%,0)';
-setTimeout(()=>{lower.style.opacity='0';lower.style.transform='translate(-50%,120%)';},7000);
+/* STATUS DOT */
+const dot = document.getElementById('connectionDot');
+
+function setStatus(state){
+  if(state==='connected') dot.style.background='#22c55e';
+  else if(state==='connecting') dot.style.background='#facc15';
+  else dot.style.background='#ef4444';
+}
+
+pusher.connection.bind('connected',()=>{
+  setStatus('connected');
 });
 
-channel.bind('client-manualScore',d=>{
-manual.style.display='block';
-scoreText.textContent=(d.score||'')+' | '+(d.overs||'');
+pusher.connection.bind('connecting',()=>{
+  setStatus('connecting');
 });
+
+pusher.connection.bind('disconnected',()=>{
+  setStatus('disconnected');
+});
+
+/* HEARTBEAT */
+setInterval(()=>{
+  if(Date.now()-lastEventTime>15000){
+    dot.style.background='#ef4444';
+  }
+},5000);
+
+/* SUBSCRIBE */
+function subscribe(){
+  channel = pusher.subscribe('broadcast');
+
+  channel.bind_global(()=>{
+    lastEventTime = Date.now();
+  });
+
+  /* PLAYER LOWER THIRD */
+  channel.bind('client-player',data=>{
+    if(!data) return;
+
+    document.getElementById('ltTeam').textContent=data.team||'';
+    document.getElementById('ltName').textContent=data.name||'';
+    document.getElementById('ltHand').textContent=data.hand||'';
+
+    const lt=document.getElementById('lowerThird');
+    lt.style.opacity='1';
+    lt.style.transform='translate(-50%,0)';
+
+    setTimeout(()=>{
+      lt.style.opacity='0';
+      lt.style.transform='translate(-50%,120%)';
+    },7200);
+  });
+
+  /* MANUAL SCORE */
+  channel.bind('client-manualScore',data=>{
+    document.getElementById('manualScore').style.display='block';
+    document.getElementById('scoreText').textContent=
+      `${data.score||''} | ${data.overs||''}`;
+  });
+
+  channel.bind('client-score',data=>{
+    if(data.auto){
+      document.getElementById('manualScore').style.display='none';
+    }
+  });
+
+  /* SPONSOR ROTATION */
+  channel.bind('client-sponsor',data=>{
+    const box=document.getElementById('sponsorBox');
+
+    if(!data.enabled){
+      box.style.display='none';
+      clearInterval(sponsorInterval);
+      return;
+    }
+
+    box.style.display='flex';
+    const list=data.list||[];
+    if(!list.length) return;
+
+    let i=0;
+    box.innerHTML=`<img src='${list[0]}'>`;
+
+    clearInterval(sponsorInterval);
+    sponsorInterval=setInterval(()=>{
+      i=(i+1)%list.length;
+      box.innerHTML=`<img src='${list[i]}'>`;
+    },(data.interval||8)*1000);
+  });
+
+}
+
+subscribe();
 </script>
+
 </body>
 </html>
