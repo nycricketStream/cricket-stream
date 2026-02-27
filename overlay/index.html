@@ -209,6 +209,9 @@ body{
 const PUSHER_KEY = "12fcceaea77e52cf3626";
 const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
 const channel = pusher.subscribe('broadcast');
+  channel.bind_global(function(eventName, data) {
+  console.log("EVENT RECEIVED:", eventName, data);
+});
 
 const dot = document.getElementById('connectionDot');
 let sponsorInterval;
