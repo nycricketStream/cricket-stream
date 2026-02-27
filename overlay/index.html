@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Broadcast Overlay</title>
+<title>Clean Network Lower Third</title>
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
 <style>
@@ -10,7 +10,7 @@ body{
   margin:0;
   background:transparent;
   overflow:hidden;
-  font-family:'Segoe UI',Arial,sans-serif;
+  font-family:'Segoe UI', Arial, sans-serif;
 }
 
 /* ================= CONNECTION DOT ================= */
@@ -31,92 +31,90 @@ body{
 #lowerThird{
   position:absolute;
   bottom:90px;
-  left:90px;
+  left:120px;
   transform:translateX(-120%);
   opacity:0;
-  transition:all .7s cubic-bezier(.22,.9,.3,1);
+  transition:all .6s cubic-bezier(.22,.9,.3,1);
 }
 
-/* Main container width */
-.lt-container{
+/* Main container */
+.lt{
   position:relative;
-  width:760px;
+  width:640px;
 }
 
-/* Base shape */
+/* Base panel */
 .lt-base{
   position:relative;
-  background:linear-gradient(90deg,#0d1f4a 0%, #101827 100%);
-  padding:28px 40px 22px 120px;
-  clip-path:polygon(0 0, 96% 0, 100% 100%, 0% 100%);
-  box-shadow:0 20px 50px rgba(0,0,0,.6);
+  padding:22px 32px 20px 32px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.06), transparent 35%),
+    linear-gradient(90deg, #1e293b 0%, #111827 100%);
+  clip-path:polygon(0 0, 95% 0, 100% 100%, 0% 100%);
+  box-shadow:0 25px 60px rgba(0,0,0,.6);
 }
 
-/* Subtle bottom blue line */
+/* Bottom blue glow edge */
 .lt-base::after{
   content:'';
   position:absolute;
   bottom:0;
   left:0;
   width:100%;
-  height:2px;
-  background:#2563eb;
+  height:3px;
+  background:#2f6bff;
 }
 
-/* Headshot */
-#ltImage{
-  position:absolute;
-  top:-28px;
-  left:-28px;
-  width:95px;
-  height:95px;
-  border-radius:50%;
-  border:5px solid #facc15;
-  object-fit:cover;
-  display:none;
-  background:#000;
-}
-
-/* Team tab */
+/* TEAM TAB */
 .lt-team{
   position:absolute;
-  top:-16px;
-  left:120px;
-  background:#1e40af;
-  padding:6px 18px;
+  top:-18px;
+  left:0;
+  background:linear-gradient(180deg,#2563eb,#1e40af);
+  padding:8px 20px;
   font-size:13px;
   font-weight:800;
-  letter-spacing:.12em;
+  letter-spacing:.14em;
   text-transform:uppercase;
-  clip-path:polygon(0 0, 100% 0, 94% 100%, 0% 100%);
-}
-
-/* Gold strip */
-.lt-tag{
-  margin-top:4px;
-  background:linear-gradient(90deg,#facc15,#f59e0b);
-  padding:6px 20px;
-  font-weight:900;
-  font-size:14px;
-  display:inline-block;
-  clip-path:polygon(0 0, 100% 0, 96% 100%, 0% 100%);
-}
-
-/* Player name */
-.lt-name{
-  font-size:44px;
-  font-weight:900;
-  margin-top:12px;
-  line-height:1;
   color:#fff;
+  clip-path:polygon(0 0, 100% 0, 92% 100%, 0% 100%);
 }
 
-/* Role */
+/* GOLD BAR */
+.lt-gold{
+  margin-top:12px;
+  background:linear-gradient(180deg,#ffe36d,#facc15);
+  padding:10px 24px;
+  font-weight:900;
+  font-size:15px;
+  color:#000;
+  display:inline-block;
+  width:100%;
+  clip-path:polygon(0 0, 100% 0, 97% 100%, 0% 100%);
+}
+
+/* PLAYER NAME */
+.lt-name{
+  font-size:48px;
+  font-weight:900;
+  margin-top:16px;
+  color:#ffffff;
+}
+
+/* WHITE DIVIDER LINE */
+.lt-divider{
+  height:2px;
+  background:rgba(255,255,255,.15);
+  margin-top:12px;
+  width:100%;
+}
+
+/* ROLE */
 .lt-hand{
   font-size:15px;
-  margin-top:6px;
+  margin-top:10px;
   color:#cbd5e1;
-  letter-spacing:.06em;
+  letter-spacing:.08em;
 }
 </style>
 </head>
@@ -126,36 +124,31 @@ body{
 <div id="connectionDot"></div>
 
 <div id="lowerThird">
-  <div class="lt-container">
+  <div class="lt">
     <div class="lt-base">
-      <img id="ltImage">
       <div class="lt-team" id="ltTeam"></div>
-      <div class="lt-tag">NEW BATSMAN</div>
+      <div class="lt-gold">NEW BATSMAN</div>
       <div class="lt-name" id="ltName"></div>
+      <div class="lt-divider"></div>
       <div class="lt-hand" id="ltHand"></div>
     </div>
   </div>
 </div>
 
 <script>
+
 const PUSHER_KEY = "12fcceaea77e52cf3626";
 const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
 const channel = pusher.subscribe('broadcast');
 
 /* CONNECTION DOT */
 const dot = document.getElementById('connectionDot');
-function setStatus(state){
-  if(state==='connected') dot.style.background='#22c55e';
-  else if(state==='connecting') dot.style.background='#facc15';
-  else dot.style.background='#ef4444';
-}
-pusher.connection.bind('connected',()=>setStatus('connected'));
-pusher.connection.bind('connecting',()=>setStatus('connecting'));
-pusher.connection.bind('disconnected',()=>setStatus('disconnected'));
+pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
+pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
+pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
 
 /* LOWER THIRD */
 const lowerThird = document.getElementById('lowerThird');
-const ltImage = document.getElementById('ltImage');
 const ltTeam = document.getElementById('ltTeam');
 const ltName = document.getElementById('ltName');
 const ltHand = document.getElementById('ltHand');
@@ -167,13 +160,6 @@ channel.bind('player', data => {
   ltName.textContent = data.name || '';
   ltHand.textContent = data.hand || '';
 
-  if(data.image && data.image.trim() !== ''){
-    ltImage.style.display='block';
-    ltImage.src = data.image + '?t=' + Date.now();
-  } else {
-    ltImage.style.display='none';
-  }
-
   lowerThird.style.opacity='1';
   lowerThird.style.transform='translateX(0)';
 
@@ -182,6 +168,7 @@ channel.bind('player', data => {
     lowerThird.style.transform='translateX(-120%)';
   },7000);
 });
+
 </script>
 
 </body>
