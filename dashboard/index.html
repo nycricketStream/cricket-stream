@@ -2,21 +2,25 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Cricket Broadcast Dashboard</title>
+<title>Cricket Broadcast Dashboard (Restored Layout)</title>
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
+
 <style>
 body{margin:0;font-family:Segoe UI,Arial;background:#060b18;color:#e5e7eb;display:flex}
-.sidebar{width:260px;background:linear-gradient(180deg,#081a3a,#030712);height:100vh;padding:18px;border-right:1px solid rgba(59,130,246,.25)}
+.sidebar{width:260px;background:linear-gradient(180deg,#081a3a,#030712);height:100vh;padding:18px 14px;border-right:1px solid rgba(59,130,246,.25)}
 .sidebar h2{margin-top:0;color:#60a5fa}
-.tab-btn{width:100%;padding:12px;margin-bottom:10px;border:none;border-radius:10px;background:#0a1226;color:white;text-align:left;cursor:pointer}
+.tab-btn{width:100%;padding:12px;margin-bottom:12px;border:none;border-radius:10px;background:#0a1226;color:white;text-align:left;cursor:pointer}
 .tab-btn.active{background:#2563eb}
 .main{flex:1;padding:28px}
-.tab{display:none;background:#0c1426;padding:24px;border-radius:16px}
+.tab{display:none;background:#0c1426;padding:26px;border-radius:16px}
 .tab.active{display:block}
-input,textarea,select{width:100%;padding:10px;margin-bottom:12px;border-radius:8px;border:1px solid #1f2937;background:#020617;color:#fff}
-button{width:100%;padding:10px;border:none;border-radius:8px;background:#1d4ed8;color:white;cursor:pointer;margin-top:6px}
-#logPanel{position:fixed;bottom:10px;left:10px;width:360px;max-height:240px;overflow:auto;background:rgba(0,0,0,.9);color:#22c55e;font-family:monospace;font-size:11px;padding:8px;border-radius:6px;display:none;z-index:99999}
-#logToggle{position:fixed;bottom:10px;right:10px;padding:6px 12px;background:#111827;color:#22c55e;border:none;border-radius:6px}
+input,textarea,select{width:100%;padding:10px;margin-bottom:14px;border-radius:8px;border:1px solid #1f2937;background:#020617;color:#fff}
+button{width:100%;padding:10px;border:none;border-radius:8px;background:#1d4ed8;color:white;cursor:pointer;margin-top:8px}
+button:disabled{opacity:.5;cursor:not-allowed}
+
+/* DASHBOARD LOG PANEL */
+#logPanel{position:fixed;bottom:10px;left:10px;width:340px;max-height:240px;overflow:auto;background:rgba(0,0,0,.85);color:#22c55e;font-family:monospace;font-size:11px;padding:8px;border-radius:6px;display:none;z-index:99999}
+#logToggle{position:fixed;bottom:10px;right:10px;width:auto;padding:6px 10px;font-size:12px;border-radius:6px;background:#111827;color:#22c55e;z-index:99999}
 </style>
 </head>
 <body>
@@ -24,9 +28,14 @@ button{width:100%;padding:10px;border:none;border-radius:8px;background:#1d4ed8;
 <div class="sidebar">
 <h2>Broadcast</h2>
 <button class="tab-btn active" onclick="showTab(event,'match')">Match Setup</button>
+<button class="tab-btn" onclick="showTab(event,'branding')">League Branding</button>
+<button class="tab-btn" onclick="showTab(event,'cricclubs')">CricClubs</button>
+<button class="tab-btn" onclick="showTab(event,'scoreinfo')">Score Info</button>
 <button class="tab-btn" onclick="showTab(event,'player')">Player Graphic</button>
-<button class="tab-btn" onclick="showTab(event,'manual')">Manual Score</button>
+<button class="tab-btn" onclick="showTab(event,'sponsors')">Sponsors</button>
 <button class="tab-btn" onclick="showTab(event,'moments')">Moments</button>
+<button class="tab-btn" onclick="saveConfig()">💾 Save Config</button>
+<button class="tab-btn" onclick="loadConfig()">📂 Load Config</button>
 </div>
 
 <div class="main">
@@ -37,22 +46,49 @@ Team A<input id="teamA">
 Team A Players<textarea id="teamAPlayers"></textarea>
 Team B<input id="teamB">
 Team B Players<textarea id="teamBPlayers"></textarea>
-Batting<select id="batting"></select>
-<button onclick="send('match',{teamA:teamA.value,teamB:teamB.value,batting:batting.value})">Update Match</button>
+Batting Team<select id="batting"></select>
+Innings<select id="innings"><option>1st Innings</option><option>2nd Innings</option></select>
+<button onclick="send('match',{teamA:teamA.value,teamB:teamB.value,batting:batting.value,innings:innings.value,teamAPlayers:teamAPlayers.value.split('\n'),teamBPlayers:teamBPlayers.value.split('\n')})">Update Match</button>
+</div>
+
+<div id="branding" class="tab">
+<h3>League Branding</h3>
+League<input id="league">
+Tournament<input id="tournament">
+<button onclick="send('branding',{league:league.value,tournament:tournament.value})">Update Branding</button>
+</div>
+
+<div id="cricclubs" class="tab">
+<h3>CricClubs Auto Score</h3>
+<label><input type="checkbox" id="useCricclubs" checked> Enable CricClubs</label>
+Embed Link<input id="embedURL">
+<button onclick="send('score',{auto:true,url:embedURL.value})">Update CricClubs</button>
+</div>
+
+<div id="scoreinfo" class="tab">
+<h3>Manual Score Info (Backup)</h3>
+Manual Score<input id="manualScore" placeholder="145/6">
+Overs<input id="manualOvers" placeholder="18.2">
+<button id="manualUpdateBtn" onclick="send('manualScore',{score:manualScore.value,overs:manualOvers.value})">Update Manual Score</button>
 </div>
 
 <div id="player" class="tab">
 <h3>Player Lower Third</h3>
 Player<select id="playerSelect"></select>
-Handedness<select id="handed"><option>Right-Hand</option><option>Left-Hand</option></select>
-<button onclick="send('player',{team:batting.value,name:playerSelect.value,hand:handed.value})">Show Player</button>
+Handedness<select id="handed">
+<option value="Right-Hand">Right-Hand</option>
+<option value="Left-Hand">Left-Hand</option>
+</select>
+Player Image URL<input id="playerImg">
+<button onclick="send('player',{team:batting.value,label:'NEW BATSMAN',name:playerSelect.value,hand:handed.value})">Show Player</button>
 </div>
 
-<div id="manual" class="tab">
-<h3>Manual Score</h3>
-Score<input id="manualScore">
-Overs<input id="manualOvers">
-<button onclick="send('manualScore',{score:manualScore.value,overs:manualOvers.value})">Send Manual Score</button>
+<div id="sponsors" class="tab">
+<h3>Sponsors</h3>
+<label><input type="checkbox" id="showSponsors" checked> Show Sponsor Bar</label>
+<textarea id="sponsorList" placeholder="One sponsor image URL per line"></textarea>
+Rotation Seconds<input id="rotation" value="8">
+<button onclick="send('sponsor',{enabled:showSponsors.checked,list:sponsorList.value.split('\n'),interval:rotation.value})">Update Sponsors</button>
 </div>
 
 <div id="moments" class="tab">
@@ -64,6 +100,7 @@ Overs<input id="manualOvers">
 
 </div>
 
+<!-- LOG PANEL UI -->
 <div id="logPanel"></div>
 <button id="logToggle">LOG</button>
 
@@ -72,13 +109,33 @@ const PUSHER_KEY=window.PUSHER_KEY||'';
 const pusher=new Pusher(PUSHER_KEY,{cluster:'us2'});
 const channel=pusher.subscribe('broadcast');
 
-function log(m){const t=new Date().toLocaleTimeString();logPanel.innerHTML+=`[${t}] ${m}<br>`;}
-logToggle.onclick=()=>{logPanel.style.display=logPanel.style.display==='none'?'block':'none';};
-window.addEventListener('keydown',e=>{if(e.key&&e.key.toLowerCase()==='l'){logToggle.click();}});
-pusher.connection.bind('connected',()=>log('CONNECTED'));
-pusher.connection.bind('disconnected',()=>log('DISCONNECTED'));
+/* LOGGING SYSTEM */
+const logPanel=document.getElementById('logPanel');
+const logToggle=document.getElementById('logToggle');
 
-function send(e,d){log('SEND → '+e);channel.trigger('client-'+e,d);}
+function log(msg){
+ const time=new Date().toLocaleTimeString();
+ logPanel.innerHTML+=`[${time}] ${msg}<br>`;
+ logPanel.scrollTop=logPanel.scrollHeight;
+}
+
+function toggleLog(){
+ logPanel.style.display=logPanel.style.display==='none'?'block':'none';
+}
+
+logToggle.addEventListener('click',toggleLog);
+window.addEventListener('keydown',e=>{
+ if(e.key && e.key.toLowerCase()==='l') toggleLog();
+});
+
+pusher.connection.bind('connected',()=>log('PUSHER CONNECTED'));
+pusher.connection.bind('connecting',()=>log('PUSHER CONNECTING'));
+pusher.connection.bind('disconnected',()=>log('PUSHER DISCONNECTED'));
+
+function send(event,data){
+ log('SEND → '+event);
+ channel.trigger('client-'+event,data);
+}
 
 function showTab(evt,id){
  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -87,26 +144,62 @@ function showTab(evt,id){
  if(evt) evt.target.classList.add('active');
 }
 
-function updateBatting(){
- batting.innerHTML='';
- if(teamA.value) batting.add(new Option(teamA.value,teamA.value));
- if(teamB.value) batting.add(new Option(teamB.value,teamB.value));
- updatePlayers();
+function updateBattingTeams(){
+ const teamA=document.getElementById('teamA');
+ const teamB=document.getElementById('teamB');
+ const sel=document.getElementById('batting');
+ sel.innerHTML='';
+ if(teamA.value) sel.add(new Option(teamA.value,teamA.value));
+ if(teamB.value) sel.add(new Option(teamB.value,teamB.value));
+ updatePlayerDropdown();
 }
 
-function updatePlayers(){
- playerSelect.innerHTML='';
- let list=[];
- if(batting.value===teamA.value) list=teamAPlayers.value.split('\n');
- if(batting.value===teamB.value) list=teamBPlayers.value.split('\n');
- list.map(p=>p.trim()).filter(Boolean).forEach(p=>playerSelect.add(new Option(p,p)));
+function updatePlayerDropdown(){
+ const teamA=document.getElementById('teamA');
+ const teamB=document.getElementById('teamB');
+ const teamAPlayers=document.getElementById('teamAPlayers');
+ const teamBPlayers=document.getElementById('teamBPlayers');
+ const batting=document.getElementById('batting');
+ const dropdown=document.getElementById('playerSelect');
+ if(!dropdown) return;
+ dropdown.innerHTML='';
+ let players=[];
+ if(batting.value===teamA.value){ players=teamAPlayers.value.split('\n'); }
+ else if(batting.value===teamB.value){ players=teamBPlayers.value.split('\n'); }
+ players.map(p=>p.trim()).filter(Boolean).forEach(p=>dropdown.add(new Option(p,p)));
 }
 
-teamA.oninput=updateBatting;
-teamB.oninput=updateBatting;
-teamAPlayers.oninput=updatePlayers;
-teamBPlayers.oninput=updatePlayers;
-batting.onchange=updatePlayers;
+function toggleScoreInfo(){
+ const enabled=document.getElementById('useCricclubs').checked;
+ document.getElementById('manualUpdateBtn').disabled=enabled;
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+ document.getElementById('teamA').addEventListener('input',updateBattingTeams);
+ document.getElementById('teamB').addEventListener('input',updateBattingTeams);
+ document.getElementById('teamAPlayers').addEventListener('input',updatePlayerDropdown);
+ document.getElementById('teamBPlayers').addEventListener('input',updatePlayerDropdown);
+ document.getElementById('batting').addEventListener('change',updatePlayerDropdown);
+ document.getElementById('useCricclubs').addEventListener('change',toggleScoreInfo);
+ toggleScoreInfo();
+});
+
+async function saveConfig(){
+ const config={league:league.value,tournament:tournament.value,embedURL:embedURL.value,sponsorList:sponsorList.value,rotation:rotation.value};
+ await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(config)});
+ alert('Config saved');
+}
+
+async function loadConfig(){
+ const r=await fetch('/api/config');
+ const c=await r.json();
+ league.value=c.league||'';
+ tournament.value=c.tournament||'';
+ embedURL.value=c.embedURL||'';
+ sponsorList.value=c.sponsorList||'';
+ rotation.value=c.rotation||8;
+ alert('Config loaded');
+}
 </script>
 </body>
 </html>
