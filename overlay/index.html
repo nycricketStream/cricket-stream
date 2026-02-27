@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Production Cricket Overlay</title>
+<title>Production Overlay</title>
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
 <style>
@@ -30,26 +30,29 @@ body{
 
 #lowerThird{
   position:absolute;
-  bottom:70px;
-  left:70px;
+  bottom:80px;
+  left:80px;
   transform:translateX(-120%);
   opacity:0;
   transition:all .7s cubic-bezier(.22,.9,.3,1);
 }
 
+/* WRAPPER WIDTH MATCH */
 .lt-wrapper{
   position:relative;
-  width:920px;
+  width:880px;
 }
 
+/* MAIN BASE — COMPACT HEIGHT */
 .lt-base{
   position:relative;
-  background:linear-gradient(90deg,#0b1f4a,#111827);
-  padding:26px 50px 22px 150px;
+  background:linear-gradient(90deg,#0d1f4a 0%, #0b1220 100%);
+  padding:24px 50px 20px 150px;
   clip-path:polygon(0 0, 94% 0, 100% 100%, 0% 100%);
-  box-shadow:0 25px 60px rgba(0,0,0,.7);
+  box-shadow:0 30px 70px rgba(0,0,0,.75);
 }
 
+/* BLUE ACCENT LINE */
 .lt-base::after{
   content:'';
   position:absolute;
@@ -60,56 +63,64 @@ body{
   background:#2563eb;
 }
 
+/* HEADSHOT */
 #ltImage{
   position:absolute;
-  top:-30px;
-  left:-30px;
-  width:110px;
-  height:110px;
+  top:-34px;
+  left:-34px;
+  width:115px;
+  height:115px;
   border-radius:50%;
-  border:5px solid #facc15;
+  border:6px solid #facc15;
   object-fit:cover;
   background:#000;
   display:none;
+  box-shadow:0 8px 25px rgba(0,0,0,.6);
 }
 
+/* TEAM TAB — FLOATING */
 .lt-team{
   position:absolute;
-  top:-18px;
+  top:-20px;
   left:150px;
-  background:#1e3a8a;
-  padding:8px 22px;
+  background:#1e40af;
+  padding:7px 22px;
   font-size:14px;
   font-weight:800;
-  letter-spacing:.12em;
+  letter-spacing:.14em;
   text-transform:uppercase;
   clip-path:polygon(0 0, 100% 0, 92% 100%, 0% 100%);
 }
 
+/* GOLD STRIP */
 .lt-tag{
-  margin-top:6px;
+  margin-top:4px;
   background:linear-gradient(90deg,#facc15,#f59e0b);
   padding:8px 24px;
   font-weight:900;
   font-size:15px;
   display:inline-block;
-  clip-path:polygon(0 0, 100% 0, 95% 100%, 0% 100%);
+  clip-path:polygon(0 0, 100% 0, 96% 100%, 0% 100%);
 }
 
+/* NAME — MATCH PROPORTION */
 .lt-name{
-  font-size:56px;
+  font-size:60px;
   font-weight:900;
   margin-top:14px;
   line-height:1;
+  color:#ffffff;
 }
 
+/* ROLE */
 .lt-hand{
   font-size:18px;
   margin-top:6px;
   color:#cbd5e1;
+  letter-spacing:.08em;
 }
 
-/* ================= MANUAL SCORE ================= */
+/* ================= SCORE ================= */
 
 #manualScore{
   position:absolute;
@@ -120,12 +131,11 @@ body{
 }
 
 .score-panel{
-  background:linear-gradient(90deg,#0b1f4a,#111827);
-  padding:14px 40px;
+  background:linear-gradient(90deg,#0d1f4a,#111827);
+  padding:12px 36px;
   border-radius:8px;
   font-weight:900;
   font-size:22px;
-  letter-spacing:.08em;
 }
 
 /* ================= SPONSOR ================= */
@@ -134,13 +144,13 @@ body{
   position:absolute;
   top:20px;
   right:40px;
-  width:260px;
-  height:90px;
+  width:240px;
+  height:80px;
   display:none;
   align-items:center;
   justify-content:center;
   background:rgba(0,0,0,.6);
-  border-radius:12px;
+  border-radius:10px;
   overflow:hidden;
 }
 
@@ -149,7 +159,7 @@ body{
   max-height:90%;
 }
 
-/* ================= MOMENT STINGER ================= */
+/* ================= MOMENT ================= */
 
 #momentStinger{
   position:fixed;
@@ -157,7 +167,7 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  background:rgba(0,0,0,.7);
+  background:rgba(0,0,0,.75);
   backdrop-filter:blur(4px);
   opacity:0;
   pointer-events:none;
@@ -169,7 +179,6 @@ body{
   font-size:120px;
   font-weight:900;
   letter-spacing:.1em;
-  text-transform:uppercase;
   transform:scale(.6);
   transition:transform .4s cubic-bezier(.22,.9,.3,1);
 }
@@ -209,8 +218,7 @@ const PUSHER_KEY = "12fcceaea77e52cf3626";
 const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
 const channel = pusher.subscribe('broadcast');
 
-/* ================= CONNECTION ================= */
-
+/* CONNECTION DOT */
 const dot = document.getElementById('connectionDot');
 
 function setStatus(state){
@@ -223,8 +231,7 @@ pusher.connection.bind('connected',()=>setStatus('connected'));
 pusher.connection.bind('connecting',()=>setStatus('connecting'));
 pusher.connection.bind('disconnected',()=>setStatus('disconnected'));
 
-/* ================= LOWER THIRD ================= */
-
+/* LOWER THIRD */
 const lowerThird = document.getElementById('lowerThird');
 const ltImage = document.getElementById('ltImage');
 const ltTeam = document.getElementById('ltTeam');
@@ -238,7 +245,7 @@ channel.bind('player', data => {
   ltName.textContent = data.name || '';
   ltHand.textContent = data.hand || '';
 
-  if(data.image){
+  if(data.image && data.image.trim() !== ''){
     ltImage.style.display='block';
     ltImage.src = data.image + '?t=' + Date.now();
   } else {
@@ -254,8 +261,7 @@ channel.bind('player', data => {
   },7000);
 });
 
-/* ================= MANUAL SCORE ================= */
-
+/* SCORE */
 channel.bind('manualScore',data=>{
   document.getElementById('manualScore').style.display='block';
   document.getElementById('scoreText').textContent =
@@ -268,19 +274,15 @@ channel.bind('score',data=>{
   }
 });
 
-/* ================= SPONSORS ================= */
-
+/* SPONSOR */
 let sponsorInterval;
-
 channel.bind('sponsor',data=>{
   const box = document.getElementById('sponsorBox');
-
   if(!data.enabled){
     box.style.display='none';
     clearInterval(sponsorInterval);
     return;
   }
-
   box.style.display='flex';
   const list = data.list || [];
   if(!list.length) return;
@@ -295,11 +297,9 @@ channel.bind('sponsor',data=>{
   },(data.interval||8)*1000);
 });
 
-/* ================= MOMENT ================= */
-
+/* MOMENT */
 channel.bind('moment',data=>{
   if(!data || !data.type) return;
-
   const stinger=document.getElementById('momentStinger');
   const text=document.getElementById('momentText');
 
