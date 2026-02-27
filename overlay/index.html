@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Cricket Overlay</title>
+<title>Broadcast Overlay</title>
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
 <style>
@@ -15,7 +15,7 @@ html,body{
   font-family:'Segoe UI', Arial, sans-serif;
 }
 
-/* CONNECTION DOT */
+/* Connection Dot */
 #connectionDot{
   position:absolute;
   top:20px;
@@ -27,74 +27,76 @@ html,body{
   z-index:9999;
 }
 
-/* LOWER THIRD */
+/* Lower Third Container */
 #lowerThird{
   position:absolute;
-  bottom:160px;
-  left:160px;
-  width:1600px;
-  height:340px;
-  transform:translateX(-160%);
+  bottom:170px;
+  left:150px;
+  width:1550px;
+  height:320px;
+  transform:translateX(-140%);
   opacity:0;
   transition:all .55s cubic-bezier(.22,.9,.3,1);
 }
 
-/* TEXT BASELINE ALIGNMENT */
+/* Text alignment anchor */
 :root{
-  --textLeft:480px;
+  --textLeft:460px;
 }
 
+/* Text styles */
 #ltTeam{
   position:absolute;
-  top:72px;
+  top:58px;
   left:var(--textLeft);
-  font-size:34px;
+  font-size:32px;
   font-weight:900;
   letter-spacing:.12em;
-  color:white;
+  color:#fff;
 }
 
 #ltLabel{
   position:absolute;
-  top:122px;
+  top:108px;
   left:var(--textLeft);
-  font-size:30px;
+  font-size:28px;
   font-weight:900;
   color:#111;
 }
 
 #ltName{
   position:absolute;
-  top:168px;
+  top:148px;
   left:var(--textLeft);
-  font-size:96px;
+  font-size:94px;
   font-weight:900;
-  color:white;
+  color:#fff;
   white-space:nowrap;
-  text-shadow:0 4px 10px rgba(0,0,0,.85);
+  text-shadow:0 4px 8px rgba(0,0,0,.85);
 }
 
 #ltHand{
   position:absolute;
-  top:276px;
+  top:250px;
   left:var(--textLeft);
-  font-size:30px;
+  font-size:28px;
   letter-spacing:.14em;
   color:#e5e7eb;
 }
 
+/* Headshot */
 #playerImage{
   position:absolute;
-  top:60px;
-  left:190px;
-  width:240px;
-  height:240px;
+  top:45px;
+  left:180px;
+  width:220px;
+  height:220px;
   border-radius:50%;
   object-fit:cover;
   display:none;
 }
 
-/* MOMENT */
+/* Moment */
 #momentStinger{
   position:absolute;
   inset:0;
@@ -123,24 +125,24 @@ html,body{
 
 <div id="lowerThird">
 
-<svg width="1600" height="340" viewBox="0 0 1600 340">
+<svg width="1550" height="320" viewBox="0 0 1550 320">
 
 <defs>
 
-<!-- PANEL GRADIENT -->
+<!-- Panel Gradient -->
 <linearGradient id="panelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-  <stop offset="0%" stop-color="#1b263b"/>
+  <stop offset="0%" stop-color="#1c2d4f"/>
   <stop offset="100%" stop-color="#0a1426"/>
 </linearGradient>
 
-<!-- GOLD -->
+<!-- Gold -->
 <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
   <stop offset="0%" stop-color="#fde047"/>
   <stop offset="50%" stop-color="#facc15"/>
   <stop offset="100%" stop-color="#b45309"/>
 </linearGradient>
 
-<!-- BLUE TAB -->
+<!-- Blue Tab -->
 <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
   <stop offset="0%" stop-color="#2563eb"/>
   <stop offset="100%" stop-color="#1e3a8a"/>
@@ -148,29 +150,31 @@ html,body{
 
 </defs>
 
-<!-- MAIN PANEL (Exact Trapezoid Match) -->
-<polygon points="420,40 1500,40 1540,300 380,300"
-         fill="url(#panelGrad)"
-         stroke="#3b82f6"
-         stroke-width="3"/>
+<!-- MAIN BODY (flat bottom) -->
+<rect x="380" y="40" width="1080" height="250"
+      fill="url(#panelGrad)"/>
 
-<!-- BOTTOM ELECTRIC EDGE -->
-<polygon points="380,296 1540,296 1520,305 360,305"
-         fill="#3b82f6"/>
+<!-- RIGHT ANGLED CAP -->
+<polygon points="1460,40 1520,40 1540,290 1460,290"
+         fill="url(#panelGrad)"/>
 
-<!-- GOLD STRIP (Exact Thickness + Taper) -->
-<polygon points="420,110 1460,110 1420,150 420,150"
+<!-- BOTTOM ELECTRIC LINE -->
+<rect x="360" y="288" width="1180" height="4"
+      fill="#3b82f6"/>
+
+<!-- GOLD STRIP -->
+<polygon points="420,95 1440,95 1400,135 420,135"
          fill="url(#goldGrad)"/>
 
 <!-- TEAM TAB -->
-<polygon points="420,40 760,40 740,110 420,110"
+<polygon points="420,40 720,40 700,95 420,95"
          fill="url(#blueGrad)"/>
 
 <!-- HEADSHOT RING -->
-<circle cx="310" cy="170" r="130"
+<circle cx="290" cy="165" r="115"
         fill="none"
         stroke="url(#goldGrad)"
-        stroke-width="18"/>
+        stroke-width="16"/>
 
 </svg>
 
@@ -201,8 +205,8 @@ const lowerThird=document.getElementById('lowerThird');
 const nameEl=document.getElementById('ltName');
 
 function autoScaleName(){
-  nameEl.style.fontSize="96px";
-  while(nameEl.scrollWidth>950){
+  nameEl.style.fontSize="94px";
+  while(nameEl.scrollWidth>900){
     let size=parseInt(window.getComputedStyle(nameEl).fontSize);
     nameEl.style.fontSize=(size-2)+"px";
   }
@@ -228,7 +232,7 @@ channel.bind('player',data=>{
 
   setTimeout(()=>{
     lowerThird.style.opacity='0';
-    lowerThird.style.transform='translateX(-160%)';
+    lowerThird.style.transform='translateX(-140%)';
   },7000);
 });
 
