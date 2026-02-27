@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>TV Overlay Engine</title>
+<script src="https://js.pusher.com/8.2/pusher.min.js"></script>
+<style>
+body{margin:0;background:transparent;overflow:hidden;font-family:'Segoe UI',Arial}
+#lower{position:fixed;bottom:6%;left:50%;transform:translate(-50%,120%);transition:.7s;opacity:0}
+.panel{background:linear-gradient(180deg,#07132b,#000814);padding:20px 40px;border-radius:12px;color:#fff}
+.name{font-size:34px;font-weight:900}
+.hand{font-size:14px;color:#e2e8f0}
+</style>
+</head>
+<body>
+<div id="lower"><div class="panel"><div id="team"></div><div class="name" id="name"></div><div class="hand" id="hand"></div></div></div>
+<script>
+const PUSHER_KEY=window.PUSHER_KEY||'';
+const pusher=new Pusher(PUSHER_KEY,{cluster:'us2'});
+const channel=pusher.subscribe('broadcast');
+channel.bind('client-player',d=>{
+team.textContent=d.team||'';
+name.textContent=d.name||'';
+hand.textContent=d.hand||'';
+lower.style.opacity='1';lower.style.transform='translate(-50%,0)';
+setTimeout(()=>{lower.style.opacity='0';lower.style.transform='translate(-50%,120%)';},7000);
+});
+</script>
+</body>
+</html>
