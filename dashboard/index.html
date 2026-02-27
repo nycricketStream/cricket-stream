@@ -105,7 +105,6 @@ Rotation Seconds<input id="rotation" value="8">
 <button id="logToggle">LOG</button>
 
 <script>
-const ADMIN_SECRET = "nystream2026@@!";
 const PUSHER_KEY=window.PUSHER_KEY||'';
 const pusher=new Pusher("12fcceaea77e52cf3626",{cluster:'us2'});
 const channel=pusher.subscribe('broadcast');
@@ -198,7 +197,6 @@ async function saveConfig(){
    method:'POST',
    headers:{
      'Content-Type':'application/json',
-     'Authorization':'Bearer ' + ADMIN_SECRET
    },
    body:JSON.stringify(config)
  });
