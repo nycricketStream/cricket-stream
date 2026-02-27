@@ -71,7 +71,6 @@ body{
   border-radius:4px;
   display:inline-block;
   margin-bottom:12px;
-  box-shadow:0 2px 12px rgba(245,158,11,.55);
 }
 
 .lt-name{
@@ -128,6 +127,30 @@ body{
   max-height:90%;
 }
 
+/* MOMENT STINGER */
+#momentStinger{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(4px);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .35s ease;
+  z-index:15000;
+}
+
+#momentText{
+  font-size:120px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  transform:scale(.6);
+  transition:transform .4s cubic-bezier(.22,.9,.3,1);
+}
+
 /* CONNECTION DOT */
 #connectionDot{
   position:fixed;
@@ -163,6 +186,10 @@ body{
 
 </div>
 
+<div id="momentStinger">
+  <div id="momentText"></div>
+</div>
+
 <div id="connectionDot"></div>
 
 <script>
@@ -195,6 +222,7 @@ function subscribe(){
 
   channel.bind_global(()=>{ lastEventTime = Date.now(); });
 
+  /* PLAYER LOWER THIRD */
   channel.bind('client-player',data=>{
     if(!data) return;
 
@@ -215,6 +243,7 @@ function subscribe(){
     },7200);
   });
 
+  /* MANUAL SCORE */
   channel.bind('client-manualScore',data=>{
     manualScore.style.display='block';
     scoreText.textContent=
@@ -227,6 +256,7 @@ function subscribe(){
     }
   });
 
+  /* SPONSORS */
   channel.bind('client-sponsor',data=>{
     if(!data.enabled){
       sponsorBox.style.display='none';
@@ -247,6 +277,30 @@ function subscribe(){
       sponsorBox.innerHTML=`<img src='${list[i]}'>`;
     },(data.interval||8)*1000);
   });
+
+  /* MOMENT ANIMATIONS */
+  channel.bind('client-moment',data=>{
+    if(!data || !data.type) return;
+
+    const stinger=document.getElementById('momentStinger');
+    const text=document.getElementById('momentText');
+
+    let color='#fbbf24';
+    if(data.type==='SIX') color='#22c55e';
+    if(data.type==='WICKET') color='#ef4444';
+
+    text.textContent=data.type;
+    text.style.color=color;
+
+    stinger.style.opacity='1';
+    text.style.transform='scale(1)';
+
+    setTimeout(()=>{
+      stinger.style.opacity='0';
+      text.style.transform='scale(.6)';
+    },2500);
+  });
+
 }
 
 subscribe();
