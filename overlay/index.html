@@ -15,9 +15,9 @@ html,body{
   font-family:'Segoe UI','Arial Black',sans-serif;
 }
 
-/* ============================= */
+/* ========================= */
 /* CONNECTION DOT */
-/* ============================= */
+/* ========================= */
 #connectionDot{
   position:absolute;
   top:20px;
@@ -29,9 +29,9 @@ html,body{
   z-index:9999;
 }
 
-/* ============================= */
+/* ========================= */
 /* LOWER THIRD */
-/* ============================= */
+/* ========================= */
 #lowerThird{
   position:absolute;
   bottom:220px;
@@ -113,24 +113,28 @@ html,body{
   z-index:10;
 }
 
-/* ============================= */
-/* MOMENT BOX */
-/* ============================= */
-#momentBox{
+/* ========================= */
+/* MOMENT DISPLAY */
+/* ========================= */
+#momentContainer{
   position:absolute;
   bottom:520px;
   left:50%;
   transform:translateX(-50%) scale(.8);
-  padding:30px 80px;
-  font-size:90px;
-  font-weight:900;
-  background:#FFD700;
-  color:#000;
-  border-radius:14px;
   opacity:0;
   transition:all .3s ease;
   z-index:9999;
+}
+
+#momentBox{
+  padding:30px 100px;
+  font-size:100px;
+  font-weight:900;
+  background:#FFD700;
+  color:#000;
+  border-radius:16px;
   letter-spacing:.05em;
+  text-align:center;
 }
 </style>
 </head>
@@ -179,13 +183,16 @@ html,body{
 
 </div>
 
-<div id="momentBox"></div>
+<!-- MOMENT -->
+<div id="momentContainer">
+  <div id="momentBox"></div>
+</div>
 
 <script>
 
-/* ============================= */
+/* ========================= */
 /* PUSHER SETUP */
-/* ============================= */
+/* ========================= */
 
 const PUSHER_KEY="12fcceaea77e52cf3626";
 
@@ -208,6 +215,8 @@ const teamEl = document.getElementById('ltTeam');
 const nameEl = document.getElementById('ltName');
 const handEl = document.getElementById('ltHand');
 const imgEl = document.getElementById('playerImage');
+
+const momentContainer = document.getElementById('momentContainer');
 const momentBox = document.getElementById('momentBox');
 
 /* TIMERS */
@@ -224,9 +233,9 @@ function autoScale(){
   }
 }
 
-/* ============================= */
+/* ========================= */
 /* PLAYER EVENT */
-/* ============================= */
+/* ========================= */
 channel.bind('player', data => {
 
   if(!data) return;
@@ -255,9 +264,9 @@ channel.bind('player', data => {
   },7000);
 });
 
-/* ============================= */
+/* ========================= */
 /* MOMENT EVENT */
-/* ============================= */
+/* ========================= */
 channel.bind('moment', data => {
 
   if(!data || !data.type) return;
@@ -272,12 +281,12 @@ channel.bind('moment', data => {
 
   momentBox.textContent = text;
 
-  momentBox.style.opacity="1";
-  momentBox.style.transform="translateX(-50%) scale(1)";
+  momentContainer.style.opacity="1";
+  momentContainer.style.transform="translateX(-50%) scale(1)";
 
   momentTimer = setTimeout(()=>{
-    momentBox.style.opacity="0";
-    momentBox.style.transform="translateX(-50%) scale(.8)";
+    momentContainer.style.opacity="0";
+    momentContainer.style.transform="translateX(-50%) scale(.8)";
   },4000);
 });
 
