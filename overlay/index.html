@@ -12,10 +12,12 @@ html,body{
   height:1080px;
   background:transparent;
   overflow:hidden;
-  font-family:'Arial Black','Segoe UI',sans-serif;
+  font-family:'Segoe UI','Arial Black',sans-serif;
 }
 
+/* ========================= */
 /* CONNECTION DOT */
+/* ========================= */
 #connectionDot{
   position:absolute;
   top:20px;
@@ -27,29 +29,30 @@ html,body{
   z-index:9999;
 }
 
-/* LOWER THIRD */
+/* ========================= */
+/* LOWER THIRD CONTAINER */
+/* ========================= */
 #lowerThird{
   position:absolute;
   bottom:220px;
   left:160px;
   width:1500px;
   height:260px;
-  transform:translateX(-140%);
   opacity:0;
-  transition:all .5s cubic-bezier(.22,.9,.3,1);
+  transform:translateX(-120%);
+  transition:all .45s cubic-bezier(.22,.9,.3,1);
 }
 
 /* ========================= */
-/* CENTERED TEXT STYLING */
+/* TEXT LAYOUT */
 /* ========================= */
-
 #ltTeam{
   position:absolute;
   top:55px;
   width:100%;
   text-align:center;
   font-size:24px;
-  font-weight:900;
+  font-weight:800;
   letter-spacing:.15em;
   color:#ffffff;
   text-transform:uppercase;
@@ -61,8 +64,8 @@ html,body{
   width:100%;
   text-align:center;
   font-size:22px;
-  font-weight:900;
-  color:#000000;
+  font-weight:800;
+  color:#000;
 }
 
 #ltName{
@@ -76,7 +79,6 @@ html,body{
   white-space:nowrap;
 }
 
-/* White separator between name and handedness */
 #separator{
   position:absolute;
   top:190px;
@@ -100,20 +102,19 @@ html,body{
 }
 
 /* ========================= */
-/* SMALLER HEADSHOT */
-/* 80% overlapping gold */
+/* HEADSHOT */
+/* Smaller + 80% over gold */
 /* ========================= */
-
 #playerImage{
   position:absolute;
-  top:65px; /* positioned so ~80% sits over gold */
+  top:70px;             /* overlaps gold */
   left:110px;
-  width:120px;
-  height:120px;
+  width:110px;
+  height:110px;
   border-radius:50%;
   object-fit:cover;
+  border:4px solid #FFD700;
   display:none;
-  border:5px solid #FFD700;
   z-index:10;
 }
 </style>
@@ -139,11 +140,11 @@ html,body{
   </linearGradient>
 </defs>
 
-<!-- MAIN DARK PANEL -->
+<!-- MAIN PANEL -->
 <polygon points="320,40 1400,40 1360,220 360,220"
          fill="url(#panelGrad)"/>
 
-<!-- BLUE TEAM TAB -->
+<!-- TEAM TAB -->
 <polygon points="360,40 700,40 680,90 360,90"
          fill="url(#blueGrad)"/>
 
@@ -164,40 +165,52 @@ html,body{
 </div>
 
 <script>
-
 const PUSHER_KEY="12fcceaea77e52cf3626";
-const pusher=new Pusher(PUSHER_KEY,{cluster:'us2',forceTLS:true});
-const channel=pusher.subscribe('broadcast');
 
-const dot=document.getElementById('connectionDot');
+const pusher = new Pusher(PUSHER_KEY,{
+  cluster:'us2',
+  forceTLS:true
+});
+
+const channel = pusher.subscribe('broadcast');
+
+const dot = document.getElementById('connectionDot');
+const lowerThird = document.getElementById('lowerThird');
+const teamEl = document.getElementById('ltTeam');
+const nameEl = document.getElementById('ltName');
+const handEl = document.getElementById('ltHand');
+const imgEl = document.getElementById('playerImage');
+
+/* CONNECTION INDICATOR */
 pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
 pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
 pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
 
-const lowerThird=document.getElementById('lowerThird');
-const nameEl=document.getElementById('ltName');
-
-function autoScaleName(){
+/* AUTO SCALE NAME */
+function autoScale(){
   nameEl.style.fontSize="80px";
-  while(nameEl.scrollWidth>1100){
-    let size=parseInt(window.getComputedStyle(nameEl).fontSize);
-    nameEl.style.fontSize=(size-2)+"px";
+  while(nameEl.scrollWidth > 1100){
+    let size = parseInt(window.getComputedStyle(nameEl).fontSize);
+    if(size <= 40) break;
+    nameEl.style.fontSize = (size-2)+"px";
   }
 }
 
+/* EVENT LISTENER */
 channel.bind('player',data=>{
-  if(!data)return;
+  if(!data) return;
 
-  document.getElementById('ltTeam').textContent=data.team||'';
-  nameEl.textContent=data.name||'';
-  document.getElementById('ltHand').textContent=data.hand||'';
+  teamEl.textContent = data.team || '';
+  nameEl.textContent = data.name || '';
+  handEl.textContent = data.hand || '';
 
-  autoScaleName();
+  autoScale();
 
-  const img=document.getElementById('playerImage');
   if(data.image){
-    img.src=data.image;
-    img.style.display='block';
+    imgEl.src = data.image;
+    imgEl.style.display = 'block';
+  } else {
+    imgEl.style.display = 'none';
   }
 
   lowerThird.style.opacity='1';
@@ -205,10 +218,9 @@ channel.bind('player',data=>{
 
   setTimeout(()=>{
     lowerThird.style.opacity='0';
-    lowerThird.style.transform='translateX(-140%)';
+    lowerThird.style.transform='translateX(-120%)';
   },7000);
 });
-
 </script>
 
 </body>
