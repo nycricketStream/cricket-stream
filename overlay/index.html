@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <title>NYC Eagles Broadcast Overlay</title>
+
+<!-- Broadcast Font -->
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
 <style>
@@ -12,7 +16,7 @@ html,body{
   height:1080px;
   background:transparent;
   overflow:hidden;
-  font-family:'Segoe UI','Arial Black',sans-serif;
+  font-family:'Oswald', sans-serif;
 }
 
 /* ================= CONNECTION DOT ================= */
@@ -41,45 +45,49 @@ html,body{
   transition:all .6s cubic-bezier(.22,.9,.3,1);
 }
 
-/* ================= TEXT ================= */
+/* ================= TEAM NAME ================= */
 
-/* TEAM NAME */
 #ltTeam{
   position:absolute;
-  top:48px;                /* centered between panel top and gold */
-  left:375px;              /* just right of ring */
-  font-size:22px;
-  font-weight:900;
-  letter-spacing:.15em;
+  top:48px;
+  left:375px;
+  font-size:24px;
+  font-weight:600;
+  letter-spacing:.12em;
   color:#ffffff;
   text-transform:uppercase;
   z-index:5;
 }
 
-/* NEW BATSMAN */
+/* ================= GOLD BAR LABEL ================= */
+
 #ltLabel{
   position:absolute;
-  top:74px;                /* centered in gold ribbon */
+  top:72px;
   left:480px;
   font-size:22px;
-  font-weight:900;
-  color:#1f2937;
+  font-weight:700;
+  color:#1e293b; /* dark navy text like screenshot */
   letter-spacing:.08em;
+  text-transform:uppercase;
 }
 
-/* PLAYER NAME */
+/* ================= PLAYER NAME ================= */
+
 #ltName{
   position:absolute;
   top:102px;
   left:480px;
-  font-size:62px;
-  font-weight:900;
+  font-size:64px;
+  font-weight:700;
   color:#ffffff;
   letter-spacing:.04em;
   text-transform:uppercase;
+  text-shadow:0 2px 8px rgba(0,0,0,.6);
 }
 
-/* LINE */
+/* ================= SEPARATOR ================= */
+
 #separator{
   position:absolute;
   top:158px;
@@ -89,15 +97,18 @@ html,body{
   background:rgba(255,255,255,.6);
 }
 
-/* HANDEDNESS */
+/* ================= HANDEDNESS ================= */
+
 #ltHand{
   position:absolute;
-  top:168px;
+  top:170px;
   left:480px;
-  font-size:20px;
-  font-weight:700;
-  color:#cbd5e1;
-  letter-spacing:.12em;
+  font-size:22px;
+  font-weight:500;
+  color:#e2e8f0; /* light gray-white */
+  letter-spacing:.10em;
+  text-transform:uppercase;
+  text-shadow:0 1px 6px rgba(0,0,0,.5);
 }
 
 /* ================= GOLD RING ================= */
@@ -140,10 +151,11 @@ html,body{
 
 #momentText{
   font-size:220px;
-  font-weight:900;
+  font-weight:700;
   letter-spacing:.1em;
   transform:scale(.6);
   transition:transform .4s cubic-bezier(.22,.9,.3,1);
+  text-shadow:0 4px 15px rgba(0,0,0,.6);
 }
 
 </style>
@@ -159,7 +171,7 @@ html,body{
 
 <defs>
   <linearGradient id="blueGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-    <stop offset="0%" stop-color="#1e40af"/>
+    <stop offset="0%" stop-color="#1e3a8a"/>
     <stop offset="100%" stop-color="#0f172a"/>
   </linearGradient>
 
@@ -170,11 +182,11 @@ html,body{
   </linearGradient>
 </defs>
 
-<!-- MAIN BLUE TRAPEZOID PANEL -->
+<!-- DARK PANEL -->
 <polygon points="300,40 1120,40 1080,210 260,210"
          fill="url(#blueGrad)"/>
 
-<!-- GOLD BAR MATCHING EXACT OUTER SHAPE ANGLES -->
+<!-- GOLD BAR (EXACT SHAPE MATCH) -->
 <polygon points="300,65 1120,65 1080,105 260,105"
          fill="url(#goldGrad)"/>
 
@@ -244,7 +256,7 @@ channel.bind('player',data=>{
   },7000);
 });
 
-/* MOMENT EVENT */
+/* MOMENTS */
 channel.bind('moment',data=>{
   if(!data || !data.type) return;
   if(momentTimer) clearTimeout(momentTimer);
