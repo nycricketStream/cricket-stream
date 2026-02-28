@@ -15,6 +15,19 @@ html,body{
   font-family:'Segoe UI','Arial Black',sans-serif;
 }
 
+/* ================= CONNECTION DOT ================= */
+
+#connectionDot{
+  position:absolute;
+  top:20px;
+  left:20px;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:#facc15;
+  z-index:9999;
+}
+
 /* ================= LOWER THIRD ================= */
 
 #lowerThird{
@@ -28,8 +41,7 @@ html,body{
   transition:all .6s cubic-bezier(.22,.9,.3,1);
 }
 
-/* ================= TEAM TAB ================= */
-
+/* TEAM TAB TEXT */
 #ltTeam{
   position:absolute;
   top:28px;
@@ -41,8 +53,7 @@ html,body{
   text-transform:uppercase;
 }
 
-/* ================= GOLD STRIP TEXT ================= */
-
+/* GOLD STRIP TEXT */
 #ltLabel{
   position:absolute;
   top:72px;
@@ -82,8 +93,7 @@ html,body{
   letter-spacing:.12em;
 }
 
-/* ================= HEADSHOT ================= */
-
+/* HEADSHOT */
 #playerImage{
   position:absolute;
   top:10px;
@@ -98,8 +108,7 @@ html,body{
   z-index:10;
 }
 
-/* ================= MOMENT STINGER ================= */
-
+/* MOMENT STINGER */
 #momentStinger{
   position:absolute;
   inset:0;
@@ -121,11 +130,12 @@ html,body{
   transform:scale(.6);
   transition:transform .4s cubic-bezier(.22,.9,.3,1);
 }
-
 </style>
 </head>
 
 <body>
+
+<div id="connectionDot"></div>
 
 <div id="lowerThird">
 
@@ -180,9 +190,21 @@ html,body{
 <script>
 
 const PUSHER_KEY="12fcceaea77e52cf3626";
-const pusher=new Pusher(PUSHER_KEY,{cluster:'us2',forceTLS:true});
+
+const pusher=new Pusher(PUSHER_KEY,{
+  cluster:'us2',
+  forceTLS:true
+});
+
 const channel=pusher.subscribe('broadcast');
 
+/* CONNECTION DOT */
+const dot=document.getElementById('connectionDot');
+pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
+pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
+pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
+
+/* ELEMENTS */
 const lowerThird=document.getElementById('lowerThird');
 const teamEl=document.getElementById('ltTeam');
 const nameEl=document.getElementById('ltName');
@@ -195,7 +217,7 @@ const momentText=document.getElementById('momentText');
 let playerTimer=null;
 let momentTimer=null;
 
-/* PLAYER */
+/* PLAYER EVENT */
 channel.bind('player',data=>{
   if(!data) return;
   if(playerTimer) clearTimeout(playerTimer);
@@ -220,7 +242,7 @@ channel.bind('player',data=>{
   },7000);
 });
 
-/* MOMENTS */
+/* MOMENT EVENT */
 channel.bind('moment',data=>{
   if(!data || !data.type) return;
   if(momentTimer) clearTimeout(momentTimer);
@@ -229,18 +251,9 @@ channel.bind('moment',data=>{
   let display="";
   let color="#facc15";
 
-  if(raw==="4"||raw==="FOUR"){
-    display="FOUR";
-    color="#facc15";
-  }
-  else if(raw==="6"||raw==="SIX"){
-    display="SIX";
-    color="#22c55e";
-  }
-  else if(raw==="W"||raw==="WICKET"){
-    display="WICKET";
-    color="#ef4444";
-  }
+  if(raw==="4"||raw==="FOUR"){ display="FOUR"; color="#facc15"; }
+  else if(raw==="6"||raw==="SIX"){ display="SIX"; color="#22c55e"; }
+  else if(raw==="W"||raw==="WICKET"){ display="WICKET"; color="#ef4444"; }
 
   momentText.textContent=display;
   momentText.style.color=color;
