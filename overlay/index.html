@@ -15,101 +15,85 @@ html,body{
   font-family:'Segoe UI','Arial Black',sans-serif;
 }
 
-/* ================= CONNECTION DOT ================= */
-
-#connectionDot{
-  position:absolute;
-  top:20px;
-  left:20px;
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:#facc15;
-  z-index:9999;
-}
-
 /* ================= LOWER THIRD ================= */
 
 #lowerThird{
   position:absolute;
-  bottom:220px;
-  left:160px;
-  width:1500px;
-  height:260px;
+  bottom:260px;
+  left:200px;
+  width:1200px;
+  height:220px;
   opacity:0;
   transform:translateX(-120%);
   transition:all .6s cubic-bezier(.22,.9,.3,1);
 }
 
-/* ================= TEAM (INSIDE BLUE TAB) ================= */
+/* ================= TEAM TAB ================= */
 
 #ltTeam{
   position:absolute;
-  top:58px;
-  left:380px;
-  font-size:24px;
+  top:28px;
+  left:330px;
+  font-size:22px;
   font-weight:900;
-  letter-spacing:.18em;
+  letter-spacing:.15em;
   color:#ffffff;
   text-transform:uppercase;
-  z-index:5;
 }
 
-/* ================= CENTER TEXT ================= */
+/* ================= GOLD STRIP TEXT ================= */
 
 #ltLabel{
   position:absolute;
-  top:110px;
-  width:100%;
-  text-align:center;
+  top:72px;
+  left:360px;
   font-size:22px;
   font-weight:900;
-  color:#000;
+  color:#1f2937;
+  letter-spacing:.08em;
 }
 
 #ltName{
   position:absolute;
-  top:135px;
-  width:100%;
-  text-align:center;
-  font-size:80px;
+  top:100px;
+  left:360px;
+  font-size:60px;
   font-weight:900;
   color:#ffffff;
-  white-space:nowrap;
+  letter-spacing:.04em;
 }
 
 #separator{
   position:absolute;
-  top:205px;
-  left:50%;
-  transform:translateX(-50%);
-  width:420px;
-  height:3px;
-  background:rgba(255,255,255,0.85);
+  top:165px;
+  left:360px;
+  width:480px;
+  height:2px;
+  background:rgba(255,255,255,.6);
 }
 
 #ltHand{
   position:absolute;
-  top:220px;
-  width:100%;
-  text-align:center;
-  font-size:22px;
+  top:175px;
+  left:360px;
+  font-size:20px;
+  font-weight:700;
+  color:#cbd5e1;
   letter-spacing:.12em;
-  color:#e5e7eb;
-  text-transform:uppercase;
 }
 
 /* ================= HEADSHOT ================= */
 
 #playerImage{
   position:absolute;
-  top:85px; /* 80% overlapping gold */
-  left:160px;
-  width:100px;
-  height:100px;
+  top:10px;
+  left:130px;
+  width:160px;
+  height:160px;
   border-radius:50%;
   object-fit:cover;
-  border:4px solid #FFD700;
+  border:6px solid #facc15;
+  box-shadow:0 0 20px rgba(0,0,0,.5);
   display:none;
   z-index:10;
 }
@@ -138,54 +122,44 @@ html,body{
   transition:transform .4s cubic-bezier(.22,.9,.3,1);
 }
 
-/* Gold gloss highlight */
-#goldGloss{
-  opacity:.35;
-}
 </style>
 </head>
 
 <body>
 
-<div id="connectionDot"></div>
-
 <div id="lowerThird">
 
-<svg width="1500" height="260" viewBox="0 0 1500 260">
+<svg width="1200" height="220" viewBox="0 0 1200 220">
 
 <defs>
   <linearGradient id="panelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-    <stop offset="0%" stop-color="#111827"/>
-    <stop offset="100%" stop-color="#1f2937"/>
+    <stop offset="0%" stop-color="#1e293b"/>
+    <stop offset="100%" stop-color="#0f172a"/>
+  </linearGradient>
+
+  <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#facc15"/>
+    <stop offset="50%" stop-color="#fbbf24"/>
+    <stop offset="100%" stop-color="#f59e0b"/>
   </linearGradient>
 
   <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
     <stop offset="0%" stop-color="#2563eb"/>
     <stop offset="100%" stop-color="#1e3a8a"/>
   </linearGradient>
-
-  <linearGradient id="goldGlossGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-    <stop offset="0%" stop-color="rgba(255,255,255,.8)"/>
-    <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
-  </linearGradient>
 </defs>
 
 <!-- DARK PANEL -->
-<polygon points="320,40 1400,40 1360,220 360,220"
+<polygon points="300,40 1120,40 1080,200 260,200"
          fill="url(#panelGrad)"/>
 
-<!-- BLUE TAB -->
-<polygon points="360,40 700,40 680,95 360,95"
+<!-- GOLD STRIP -->
+<polygon points="320,70 1100,70 1065,115 285,115"
+         fill="url(#goldGrad)"/>
+
+<!-- BLUE TEAM TAB -->
+<polygon points="320,40 550,40 520,75 290,75"
          fill="url(#blueGrad)"/>
-
-<!-- THICK GOLD STRIP -->
-<polygon points="325,95 1395,95 1385,145 335,145"
-         fill="#FFD700"/>
-
-<!-- GOLD GLOSS -->
-<polygon id="goldGloss"
-         points="325,95 1395,95 1385,120 335,120"
-         fill="url(#goldGlossGrad)"/>
 
 </svg>
 
@@ -206,41 +180,20 @@ html,body{
 <script>
 
 const PUSHER_KEY="12fcceaea77e52cf3626";
-
-const pusher=new Pusher(PUSHER_KEY,{
-  cluster:'us2',
-  forceTLS:true
-});
-
+const pusher=new Pusher(PUSHER_KEY,{cluster:'us2',forceTLS:true});
 const channel=pusher.subscribe('broadcast');
 
-/* CONNECTION DOT */
-const dot=document.getElementById('connectionDot');
-pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
-pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
-pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
-
-/* ELEMENTS */
 const lowerThird=document.getElementById('lowerThird');
 const teamEl=document.getElementById('ltTeam');
 const nameEl=document.getElementById('ltName');
 const handEl=document.getElementById('ltHand');
 const imgEl=document.getElementById('playerImage');
+
 const momentStinger=document.getElementById('momentStinger');
 const momentText=document.getElementById('momentText');
 
 let playerTimer=null;
 let momentTimer=null;
-
-/* AUTO SCALE */
-function autoScale(){
-  nameEl.style.fontSize="80px";
-  while(nameEl.scrollWidth>1100){
-    let size=parseInt(window.getComputedStyle(nameEl).fontSize);
-    if(size<=40) break;
-    nameEl.style.fontSize=(size-2)+"px";
-  }
-}
 
 /* PLAYER */
 channel.bind('player',data=>{
@@ -251,12 +204,10 @@ channel.bind('player',data=>{
   nameEl.textContent=data.name||'';
   handEl.textContent=data.hand||'';
 
-  autoScale();
-
   if(data.image){
     imgEl.src=data.image;
     imgEl.style.display='block';
-  }else{
+  } else {
     imgEl.style.display='none';
   }
 
@@ -274,8 +225,7 @@ channel.bind('moment',data=>{
   if(!data || !data.type) return;
   if(momentTimer) clearTimeout(momentTimer);
 
-  let raw=data.type.toString().trim().toUpperCase();
-
+  let raw=data.type.toString().toUpperCase();
   let display="";
   let color="#facc15";
 
