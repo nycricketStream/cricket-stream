@@ -43,7 +43,6 @@ html,body{
 
 /* ================= TEXT ================= */
 
-/* TEAM */
 #ltTeam{
   position:absolute;
   top:42px;
@@ -56,10 +55,9 @@ html,body{
   z-index:5;
 }
 
-/* NEW BATSMAN — centered in gold ribbon */
 #ltLabel{
   position:absolute;
-  top:86px;              /* adjusted upward to center in gold */
+  top:86px;
   left:480px;
   font-size:22px;
   font-weight:900;
@@ -67,10 +65,9 @@ html,body{
   letter-spacing:.08em;
 }
 
-/* NAME */
 #ltName{
   position:absolute;
-  top:112px;             /* moved up slightly */
+  top:112px;
   left:480px;
   font-size:62px;
   font-weight:900;
@@ -78,20 +75,18 @@ html,body{
   letter-spacing:.04em;
 }
 
-/* LINE */
 #separator{
   position:absolute;
-  top:170px;             /* moved up */
+  top:170px;
   left:480px;
   width:500px;
   height:2px;
   background:rgba(255,255,255,.6);
 }
 
-/* HANDEDNESS */
 #ltHand{
   position:absolute;
-  top:180px;             /* moved up */
+  top:180px;
   left:480px;
   font-size:20px;
   font-weight:700;
@@ -99,29 +94,25 @@ html,body{
   letter-spacing:.12em;
 }
 
-/* ================= SINGLE GOLD RING ================= */
+/* ================= SINGLE GOLD RING (UPDATED) ================= */
 
 #photoBadge{
   position:absolute;
-  top:20%;
+  top:10%;              /* moved up slightly */
   left:250px;
-  width:120px;
-  height:120px;
+  width:105px;          /* slightly smaller */
+  height:105px;
   border-radius:50%;
-  border:3px solid #facc15;  /* single thin gold ring */
-  display:flex;
-  align-items:flex-end;      /* drop image slightly */
-  justify-content:center;
+  border:3px solid #facc15;
+  overflow:hidden;      /* ensures image fills ring */
   background:transparent;
   z-index:20;
 }
 
 #playerImage{
-  width:105px;
-  height:105px;
-  border-radius:50%;
-  object-fit:cover;
-  margin-bottom:-5px;        /* drops image slightly in ring */
+  width:100%;
+  height:100%;
+  object-fit:cover;     /* fills completely */
   display:none;
 }
 
@@ -177,8 +168,8 @@ html,body{
 <polygon points="300,40 1120,40 1080,210 260,210"
          fill="url(#blueGrad)"/>
 
-<!-- GOLD RIBBON EXTENDED TO MATCH PANEL -->
-<polygon points="300,70 1120,70 1080,115 260,115"
+<!-- GOLD BAR SAME SHAPE (INNER OFFSET BUT SAME ANGLES) -->
+<polygon points="300,70 1120,70 1080,145 260,145"
          fill="url(#goldGrad)"/>
 
 </svg>
