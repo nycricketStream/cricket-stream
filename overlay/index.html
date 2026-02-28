@@ -16,8 +16,7 @@ html,body{
   font-family:'Segoe UI', Arial, sans-serif;
 }
 
-/* ================= CONNECTION DOT ================= */
-
+/* CONNECTION DOT */
 #connectionDot{
   position:absolute;
   top:20px;
@@ -29,8 +28,7 @@ html,body{
   z-index:9999;
 }
 
-/* ================= LOWER THIRD ================= */
-
+/* LOWER THIRD */
 #lowerThird{
   position:absolute;
   bottom:140px;
@@ -43,8 +41,6 @@ html,body{
   opacity:0;
   transition:all .6s cubic-bezier(.22,.9,.3,1);
 }
-
-/* TEXT POSITIONING (ALIGNED TO PNG DESIGN) */
 
 #ltTeam{
   position:absolute;
@@ -74,8 +70,7 @@ html,body{
   color:#e5e7eb;
 }
 
-/* ================= MANUAL SCORE ================= */
-
+/* SCORE */
 #manualScore{
   position:absolute;
   bottom:40px;
@@ -94,8 +89,7 @@ html,body{
   color:#fff;
 }
 
-/* ================= SPONSOR ================= */
-
+/* SPONSOR */
 #sponsorBox{
   position:absolute;
   top:40px;
@@ -115,8 +109,7 @@ html,body{
   max-height:90%;
 }
 
-/* ================= MOMENT STINGER ================= */
-
+/* MOMENT STINGER */
 #momentStinger{
   position:absolute;
   inset:0;
@@ -138,7 +131,6 @@ html,body{
   transform:scale(.6);
   transition:transform .4s cubic-bezier(.22,.9,.3,1);
 }
-
 </style>
 </head>
 
@@ -146,22 +138,18 @@ html,body{
 
 <div id="connectionDot"></div>
 
-<!-- LOWER THIRD -->
 <div id="lowerThird">
   <div id="ltTeam"></div>
   <div id="ltName"></div>
   <div id="ltHand"></div>
 </div>
 
-<!-- SCORE -->
 <div id="manualScore">
   <div id="scoreText"></div>
 </div>
 
-<!-- SPONSOR -->
 <div id="sponsorBox"></div>
 
-<!-- MOMENT -->
 <div id="momentStinger">
   <div id="momentText"></div>
 </div>
@@ -169,23 +157,28 @@ html,body{
 <script>
 
 const PUSHER_KEY = "12fcceaea77e52cf3626";
-const pusher = new Pusher(PUSHER_KEY,{cluster:'us2'});
+
+const pusher = new Pusher(PUSHER_KEY,{
+  cluster:'us2',
+  forceTLS:true
+});
+
 const channel = pusher.subscribe('broadcast');
 
-/* ================= CONNECTION ================= */
-
+/* CONNECTION */
 const dot = document.getElementById('connectionDot');
-
 pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
 pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
 pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
 
-/* ================= PLAYER LOWER THIRD ================= */
-
+/* PLAYER LOWER THIRD */
 const lowerThird = document.getElementById('lowerThird');
+let playerTimer=null;
 
 channel.bind('player', data => {
   if(!data) return;
+
+  if(playerTimer) clearTimeout(playerTimer);
 
   document.getElementById('ltTeam').textContent = data.team || '';
   document.getElementById('ltName').textContent = data.name || '';
@@ -194,14 +187,13 @@ channel.bind('player', data => {
   lowerThird.style.opacity='1';
   lowerThird.style.transform='translateX(0)';
 
-  setTimeout(()=>{
+  playerTimer=setTimeout(()=>{
     lowerThird.style.opacity='0';
     lowerThird.style.transform='translateX(-130%)';
   },7000);
 });
 
-/* ================= SCORE ================= */
-
+/* SCORE */
 channel.bind('manualScore',data=>{
   document.getElementById('manualScore').style.display='block';
   document.getElementById('scoreText').textContent =
@@ -214,12 +206,11 @@ channel.bind('score',data=>{
   }
 });
 
-/* ================= SPONSOR ================= */
-
+/* SPONSOR */
 let sponsorInterval;
 
 channel.bind('sponsor',data=>{
-  const box = document.getElementById('sponsorBox');
+  const box=document.getElementById('sponsorBox');
 
   if(!data.enabled){
     box.style.display='none';
@@ -228,7 +219,7 @@ channel.bind('sponsor',data=>{
   }
 
   box.style.display='flex';
-  const list = data.list || [];
+  const list=data.list||[];
   if(!list.length) return;
 
   let i=0;
@@ -241,25 +232,34 @@ channel.bind('sponsor',data=>{
   },(data.interval||8)*1000);
 });
 
-/* ================= MOMENTS (FIXED) ================= */
+/* MOMENTS - PRODUCTION SAFE */
+let momentTimer=null;
 
 channel.bind('moment',data=>{
   if(!data || !data.type) return;
 
+  if(momentTimer) clearTimeout(momentTimer);
+
   const stinger=document.getElementById('momentStinger');
   const text=document.getElementById('momentText');
 
-  let color='#facc15';
-  if(data.type==='SIX') color='#22c55e';
-  if(data.type==='WICKET') color='#ef4444';
+  let type=data.type.toString().toUpperCase();
 
-  text.textContent=data.type;
+  if(type==="4") type="FOUR";
+  if(type==="6") type="SIX";
+  if(type==="W") type="WICKET";
+
+  let color='#facc15';
+  if(type==="SIX") color='#22c55e';
+  if(type==="WICKET") color='#ef4444';
+
+  text.textContent=type;
   text.style.color=color;
 
   stinger.style.opacity='1';
   text.style.transform='scale(1)';
 
-  setTimeout(()=>{
+  momentTimer=setTimeout(()=>{
     stinger.style.opacity='0';
     text.style.transform='scale(.6)';
   },2500);
