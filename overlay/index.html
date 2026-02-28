@@ -57,7 +57,7 @@ html,body{
 
 #ltLabel{
   position:absolute;
-  top:86px;
+  top:72px; /* centered inside thinner gold bar */
   left:480px;
   font-size:22px;
   font-weight:900;
@@ -67,17 +67,18 @@ html,body{
 
 #ltName{
   position:absolute;
-  top:112px;
+  top:100px;
   left:480px;
   font-size:62px;
   font-weight:900;
   color:#ffffff;
   letter-spacing:.04em;
+  text-transform:uppercase; /* ALWAYS CAPS */
 }
 
 #separator{
   position:absolute;
-  top:170px;
+  top:158px;
   left:480px;
   width:500px;
   height:2px;
@@ -86,7 +87,7 @@ html,body{
 
 #ltHand{
   position:absolute;
-  top:180px;
+  top:168px;
   left:480px;
   font-size:20px;
   font-weight:700;
@@ -94,17 +95,17 @@ html,body{
   letter-spacing:.12em;
 }
 
-/* ================= SINGLE GOLD RING (UPDATED) ================= */
+/* ================= GOLD RING ================= */
 
 #photoBadge{
   position:absolute;
-  top:10%;              /* moved up slightly */
+  top:8%;
   left:250px;
-  width:105px;          /* slightly smaller */
+  width:105px;
   height:105px;
   border-radius:50%;
   border:3px solid #facc15;
-  overflow:hidden;      /* ensures image fills ring */
+  overflow:hidden;
   background:transparent;
   z-index:20;
 }
@@ -112,7 +113,7 @@ html,body{
 #playerImage{
   width:100%;
   height:100%;
-  object-fit:cover;     /* fills completely */
+  object-fit:cover;
   display:none;
 }
 
@@ -168,8 +169,8 @@ html,body{
 <polygon points="300,40 1120,40 1080,210 260,210"
          fill="url(#blueGrad)"/>
 
-<!-- GOLD BAR SAME SHAPE (INNER OFFSET BUT SAME ANGLES) -->
-<polygon points="300,70 1120,70 1080,145 260,145"
+<!-- GOLD BAR EXACT SAME SHAPE (THINNER, TOUCHES EDGES) -->
+<polygon points="300,65 1120,65 1080,105 260,105"
          fill="url(#goldGrad)"/>
 
 </svg>
@@ -219,7 +220,7 @@ channel.bind('player',data=>{
   if(playerTimer) clearTimeout(playerTimer);
 
   teamEl.textContent=data.team||'';
-  nameEl.textContent=data.name||'';
+  nameEl.textContent=(data.name||'').toUpperCase(); /* FORCE CAPS */
   handEl.textContent=data.hand||'';
 
   if(data.image){
