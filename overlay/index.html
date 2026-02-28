@@ -43,10 +43,11 @@ html,body{
 
 /* ================= TEXT ================= */
 
+/* TEAM NAME */
 #ltTeam{
   position:absolute;
-  top:42px;
-  left:450px;
+  top:48px;                /* centered between panel top and gold */
+  left:375px;              /* just right of ring */
   font-size:22px;
   font-weight:900;
   letter-spacing:.15em;
@@ -55,9 +56,10 @@ html,body{
   z-index:5;
 }
 
+/* NEW BATSMAN */
 #ltLabel{
   position:absolute;
-  top:72px; /* centered inside thinner gold bar */
+  top:74px;                /* centered in gold ribbon */
   left:480px;
   font-size:22px;
   font-weight:900;
@@ -65,17 +67,19 @@ html,body{
   letter-spacing:.08em;
 }
 
+/* PLAYER NAME */
 #ltName{
   position:absolute;
-  top:100px;
+  top:102px;
   left:480px;
   font-size:62px;
   font-weight:900;
   color:#ffffff;
   letter-spacing:.04em;
-  text-transform:uppercase; /* ALWAYS CAPS */
+  text-transform:uppercase;
 }
 
+/* LINE */
 #separator{
   position:absolute;
   top:158px;
@@ -85,6 +89,7 @@ html,body{
   background:rgba(255,255,255,.6);
 }
 
+/* HANDEDNESS */
 #ltHand{
   position:absolute;
   top:168px;
@@ -169,7 +174,7 @@ html,body{
 <polygon points="300,40 1120,40 1080,210 260,210"
          fill="url(#blueGrad)"/>
 
-<!-- GOLD BAR EXACT SAME SHAPE (THINNER, TOUCHES EDGES) -->
+<!-- GOLD BAR MATCHING EXACT OUTER SHAPE ANGLES -->
 <polygon points="300,65 1120,65 1080,105 260,105"
          fill="url(#goldGrad)"/>
 
@@ -220,7 +225,7 @@ channel.bind('player',data=>{
   if(playerTimer) clearTimeout(playerTimer);
 
   teamEl.textContent=data.team||'';
-  nameEl.textContent=(data.name||'').toUpperCase(); /* FORCE CAPS */
+  nameEl.textContent=(data.name||'').toUpperCase();
   handEl.textContent=data.hand||'';
 
   if(data.image){
