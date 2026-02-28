@@ -15,9 +15,7 @@ html,body{
   font-family:'Segoe UI','Arial Black',sans-serif;
 }
 
-/* ========================= */
 /* CONNECTION DOT */
-/* ========================= */
 #connectionDot{
   position:absolute;
   top:20px;
@@ -29,9 +27,7 @@ html,body{
   z-index:9999;
 }
 
-/* ========================= */
 /* LOWER THIRD */
-/* ========================= */
 #lowerThird{
   position:absolute;
   bottom:220px;
@@ -43,7 +39,6 @@ html,body{
   transition:all .45s cubic-bezier(.22,.9,.3,1);
 }
 
-/* TEXT */
 #ltTeam{
   position:absolute;
   top:55px;
@@ -85,7 +80,6 @@ html,body{
   width:420px;
   height:3px;
   background:rgba(255,255,255,0.85);
-  border-radius:2px;
 }
 
 #ltHand{
@@ -99,7 +93,6 @@ html,body{
   text-transform:uppercase;
 }
 
-/* HEADSHOT */
 #playerImage{
   position:absolute;
   top:70px;
@@ -113,28 +106,19 @@ html,body{
   z-index:10;
 }
 
-/* ========================= */
-/* MOMENT DISPLAY */
-/* ========================= */
-#momentContainer{
+/* CLEAN MOMENT STYLE */
+#momentText{
   position:absolute;
   bottom:520px;
   left:50%;
-  transform:translateX(-50%) scale(.8);
+  transform:translateX(-50%) scale(.7);
+  font-size:180px;
+  font-weight:900;
+  color:#FFD700;
   opacity:0;
   transition:all .3s ease;
+  text-shadow:0 0 40px rgba(255,215,0,.6);
   z-index:9999;
-}
-
-#momentBox{
-  padding:30px 100px;
-  font-size:100px;
-  font-weight:900;
-  background:#FFD700;
-  color:#000;
-  border-radius:16px;
-  letter-spacing:.05em;
-  text-align:center;
 }
 </style>
 </head>
@@ -144,150 +128,68 @@ html,body{
 <div id="connectionDot"></div>
 
 <div id="lowerThird">
-
 <svg width="1500" height="260" viewBox="0 0 1500 260">
-
 <defs>
-  <linearGradient id="panelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-    <stop offset="0%" stop-color="#111827"/>
-    <stop offset="100%" stop-color="#1f2937"/>
-  </linearGradient>
-
-  <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-    <stop offset="0%" stop-color="#2563eb"/>
-    <stop offset="100%" stop-color="#1e3a8a"/>
-  </linearGradient>
+<linearGradient id="panelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+<stop offset="0%" stop-color="#111827"/>
+<stop offset="100%" stop-color="#1f2937"/>
+</linearGradient>
+<linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" stop-color="#2563eb"/>
+<stop offset="100%" stop-color="#1e3a8a"/>
+</linearGradient>
 </defs>
 
-<!-- MAIN PANEL -->
-<polygon points="320,40 1400,40 1360,220 360,220"
-         fill="url(#panelGrad)"/>
-
-<!-- TEAM TAB -->
-<polygon points="360,40 700,40 680,90 360,90"
-         fill="url(#blueGrad)"/>
-
-<!-- PURE GOLD BAR -->
-<polygon points="331,90 1389,90 1382,120 338,120"
-         fill="#FFD700"/>
-
+<polygon points="320,40 1400,40 1360,220 360,220" fill="url(#panelGrad)"/>
+<polygon points="360,40 700,40 680,90 360,90" fill="url(#blueGrad)"/>
+<polygon points="331,90 1389,90 1382,120 338,120" fill="#FFD700"/>
 </svg>
 
 <img id="playerImage">
-
 <div id="ltTeam"></div>
 <div id="ltLabel">NEW BATSMAN</div>
 <div id="ltName"></div>
 <div id="separator"></div>
 <div id="ltHand"></div>
-
 </div>
 
-<!-- MOMENT -->
-<div id="momentContainer">
-  <div id="momentBox"></div>
-</div>
+<div id="momentText"></div>
 
 <script>
 
-/* ========================= */
-/* PUSHER SETUP */
-/* ========================= */
-
 const PUSHER_KEY="12fcceaea77e52cf3626";
-
-const pusher = new Pusher(PUSHER_KEY,{
-  cluster:'us2',
-  forceTLS:true
-});
-
+const pusher = new Pusher(PUSHER_KEY,{cluster:'us2',forceTLS:true});
 const channel = pusher.subscribe('broadcast');
 
-/* CONNECTION DOT */
-const dot = document.getElementById('connectionDot');
+const dot=document.getElementById('connectionDot');
 pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
 pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
 pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
 
-/* ELEMENT REFERENCES */
-const lowerThird = document.getElementById('lowerThird');
-const teamEl = document.getElementById('ltTeam');
-const nameEl = document.getElementById('ltName');
-const handEl = document.getElementById('ltHand');
-const imgEl = document.getElementById('playerImage');
+const momentText=document.getElementById('momentText');
 
-const momentContainer = document.getElementById('momentContainer');
-const momentBox = document.getElementById('momentBox');
+let momentTimer=null;
 
-/* TIMERS */
-let playerTimer = null;
-let momentTimer = null;
+channel.bind('moment',data=>{
+if(!data || !data.type) return;
 
-/* AUTO SCALE NAME */
-function autoScale(){
-  nameEl.style.fontSize="80px";
-  while(nameEl.scrollWidth > 1100){
-    let size = parseInt(window.getComputedStyle(nameEl).fontSize);
-    if(size <= 40) break;
-    nameEl.style.fontSize = (size-2)+"px";
-  }
-}
+if(momentTimer) clearTimeout(momentTimer);
 
-/* ========================= */
-/* PLAYER EVENT */
-/* ========================= */
-channel.bind('player', data => {
+let text="";
+if(data.type==="4") text="4";
+if(data.type==="6") text="6";
+if(data.type==="W") text="WICKET";
 
-  if(!data) return;
+momentText.textContent=text;
 
-  if(playerTimer) clearTimeout(playerTimer);
+momentText.style.opacity="1";
+momentText.style.transform="translateX(-50%) scale(1)";
 
-  teamEl.textContent = data.team || '';
-  nameEl.textContent = data.name || '';
-  handEl.textContent = data.hand || '';
+momentTimer=setTimeout(()=>{
+momentText.style.opacity="0";
+momentText.style.transform="translateX(-50%) scale(.7)";
+},3500);
 
-  autoScale();
-
-  if(data.image){
-    imgEl.src = data.image;
-    imgEl.style.display = 'block';
-  } else {
-    imgEl.style.display = 'none';
-  }
-
-  lowerThird.style.opacity='1';
-  lowerThird.style.transform='translateX(0)';
-
-  playerTimer = setTimeout(()=>{
-    lowerThird.style.opacity='0';
-    lowerThird.style.transform='translateX(-120%)';
-  },7000);
-});
-
-/* ========================= */
-/* MOMENT EVENT */
-/* ========================= */
-channel.bind('moment', data => {
-
-  if(!data || !data.type) return;
-
-  if(momentTimer) clearTimeout(momentTimer);
-
-  let text = "";
-
-  if(data.type === "4") text = "FOUR";
-  if(data.type === "6") text = "SIX";
-  if(data.type === "W") text = "WICKET";
-
-  momentBox.textContent = text;
-
-  momentContainer.style.opacity="1";
-  momentContainer.style.transform="translateX(-50%) scale(1)";
-
-  momentTimer = setTimeout(()=>{
-    momentContainer.style.opacity="0";
-    momentContainer.style.transform="translateX(-50%) scale(.8)";
-  },4000);
 });
 
 </script>
