@@ -70,45 +70,6 @@ html,body{
   color:#e5e7eb;
 }
 
-/* SCORE */
-#manualScore{
-  position:absolute;
-  bottom:40px;
-  left:50%;
-  transform:translateX(-50%);
-  display:none;
-}
-
-#scoreText{
-  background:linear-gradient(90deg,#1f2937,#111827);
-  padding:18px 48px;
-  border-radius:8px;
-  font-size:36px;
-  font-weight:900;
-  letter-spacing:.1em;
-  color:#fff;
-}
-
-/* SPONSOR */
-#sponsorBox{
-  position:absolute;
-  top:40px;
-  right:60px;
-  width:320px;
-  height:120px;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.6);
-  border-radius:14px;
-  overflow:hidden;
-}
-
-#sponsorBox img{
-  max-width:90%;
-  max-height:90%;
-}
-
 /* MOMENT STINGER */
 #momentStinger{
   position:absolute;
@@ -144,12 +105,6 @@ html,body{
   <div id="ltHand"></div>
 </div>
 
-<div id="manualScore">
-  <div id="scoreText"></div>
-</div>
-
-<div id="sponsorBox"></div>
-
 <div id="momentStinger">
   <div id="momentText"></div>
 </div>
@@ -165,74 +120,13 @@ const pusher = new Pusher(PUSHER_KEY,{
 
 const channel = pusher.subscribe('broadcast');
 
-/* CONNECTION */
+/* CONNECTION DOT */
 const dot = document.getElementById('connectionDot');
 pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
 pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
 pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
 
-/* PLAYER LOWER THIRD */
-const lowerThird = document.getElementById('lowerThird');
-let playerTimer=null;
-
-channel.bind('player', data => {
-  if(!data) return;
-
-  if(playerTimer) clearTimeout(playerTimer);
-
-  document.getElementById('ltTeam').textContent = data.team || '';
-  document.getElementById('ltName').textContent = data.name || '';
-  document.getElementById('ltHand').textContent = data.hand || '';
-
-  lowerThird.style.opacity='1';
-  lowerThird.style.transform='translateX(0)';
-
-  playerTimer=setTimeout(()=>{
-    lowerThird.style.opacity='0';
-    lowerThird.style.transform='translateX(-130%)';
-  },7000);
-});
-
-/* SCORE */
-channel.bind('manualScore',data=>{
-  document.getElementById('manualScore').style.display='block';
-  document.getElementById('scoreText').textContent =
-    `${data.score || ''} | ${data.overs || ''}`;
-});
-
-channel.bind('score',data=>{
-  if(data.auto){
-    document.getElementById('manualScore').style.display='none';
-  }
-});
-
-/* SPONSOR */
-let sponsorInterval;
-
-channel.bind('sponsor',data=>{
-  const box=document.getElementById('sponsorBox');
-
-  if(!data.enabled){
-    box.style.display='none';
-    clearInterval(sponsorInterval);
-    return;
-  }
-
-  box.style.display='flex';
-  const list=data.list||[];
-  if(!list.length) return;
-
-  let i=0;
-  box.innerHTML=`<img src="${list[0]}">`;
-
-  clearInterval(sponsorInterval);
-  sponsorInterval=setInterval(()=>{
-    i=(i+1)%list.length;
-    box.innerHTML=`<img src="${list[i]}?t=${Date.now()}">`;
-  },(data.interval||8)*1000);
-});
-
-/* MOMENTS - PRODUCTION SAFE */
+/* MOMENTS - CORRECT COLOR LOGIC */
 let momentTimer=null;
 
 channel.bind('moment',data=>{
@@ -243,17 +137,34 @@ channel.bind('moment',data=>{
   const stinger=document.getElementById('momentStinger');
   const text=document.getElementById('momentText');
 
-  let type=data.type.toString().toUpperCase();
+  let raw = data.type.toString().trim().toUpperCase();
 
-  if(type==="4") type="FOUR";
-  if(type==="6") type="SIX";
-  if(type==="W") type="WICKET";
+  let displayText="";
+  let color="#facc15"; // default gold
 
-  let color='#facc15';
-  if(type==="SIX") color='#22c55e';
-  if(type==="WICKET") color='#ef4444';
+  /* FOUR */
+  if(raw==="4" || raw==="FOUR"){
+    displayText="FOUR";
+    color="#facc15"; // gold
+  }
 
-  text.textContent=type;
+  /* SIX */
+  else if(raw==="6" || raw==="SIX"){
+    displayText="SIX";
+    color="#22c55e"; // green
+  }
+
+  /* WICKET */
+  else if(raw==="W" || raw==="WICKET"){
+    displayText="WICKET";
+    color="#ef4444"; // red
+  }
+
+  else{
+    displayText=raw;
+  }
+
+  text.textContent=displayText;
   text.style.color=color;
 
   stinger.style.opacity='1';
