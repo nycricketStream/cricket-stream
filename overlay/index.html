@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Cricket Lower Third</title>
+<title>Cricket Broadcast Overlay</title>
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
 <style>
@@ -12,10 +12,12 @@ html,body{
   height:1080px;
   background:transparent;
   overflow:hidden;
-  font-family:'Arial Black','Segoe UI',sans-serif;
+  font-family:'Segoe UI','Arial Black',sans-serif;
 }
 
+/* ============================= */
 /* CONNECTION DOT */
+/* ============================= */
 #connectionDot{
   position:absolute;
   top:20px;
@@ -27,75 +29,108 @@ html,body{
   z-index:9999;
 }
 
+/* ============================= */
 /* LOWER THIRD */
+/* ============================= */
 #lowerThird{
   position:absolute;
   bottom:220px;
   left:160px;
   width:1500px;
   height:260px;
-  transform:translateX(-140%);
   opacity:0;
-  transition:all .5s cubic-bezier(.22,.9,.3,1);
+  transform:translateX(-120%);
+  transition:all .45s cubic-bezier(.22,.9,.3,1);
 }
 
-/* TEXT ALIGNMENT */
-:root{
-  --textLeft:390px;
-}
-
+/* TEXT */
 #ltTeam{
   position:absolute;
-  top:60px;
-  left:var(--textLeft);
+  top:55px;
+  width:100%;
+  text-align:center;
   font-size:24px;
-  font-weight:900;
-  letter-spacing:.12em;
+  font-weight:800;
+  letter-spacing:.15em;
   color:#ffffff;
   text-transform:uppercase;
 }
 
 #ltLabel{
   position:absolute;
-  top:92px;
-  left:var(--textLeft);
+  top:95px;
+  width:100%;
+  text-align:center;
   font-size:22px;
-  font-weight:900;
-  color:#111;
+  font-weight:800;
+  color:#000;
 }
 
 #ltName{
   position:absolute;
-  top:125px;
-  left:var(--textLeft);
+  top:120px;
+  width:100%;
+  text-align:center;
   font-size:80px;
   font-weight:900;
   color:#ffffff;
   white-space:nowrap;
 }
 
+#separator{
+  position:absolute;
+  top:190px;
+  left:50%;
+  transform:translateX(-50%);
+  width:420px;
+  height:3px;
+  background:rgba(255,255,255,0.85);
+  border-radius:2px;
+}
+
 #ltHand{
   position:absolute;
   top:205px;
-  left:var(--textLeft);
+  width:100%;
+  text-align:center;
   font-size:22px;
-  letter-spacing:.1em;
-  color:#d1d5db;
+  letter-spacing:.12em;
+  color:#e5e7eb;
   text-transform:uppercase;
 }
 
 /* HEADSHOT */
 #playerImage{
   position:absolute;
-  top:10px;
-  left:150px;
-  width:150px;
-  height:150px;
+  top:70px;
+  left:110px;
+  width:110px;
+  height:110px;
   border-radius:50%;
   object-fit:cover;
+  border:4px solid #FFD700;
   display:none;
-  border:6px solid #facc15;
-  z-index:5;
+  z-index:10;
+}
+
+/* ============================= */
+/* MOMENT BOX */
+/* ============================= */
+#momentBox{
+  position:absolute;
+  bottom:520px;
+  left:50%;
+  transform:translateX(-50%) scale(.8);
+  padding:30px 80px;
+  font-size:90px;
+  font-weight:900;
+  background:#FFD700;
+  color:#000;
+  border-radius:14px;
+  opacity:0;
+  transition:all .3s ease;
+  z-index:9999;
+  letter-spacing:.05em;
 }
 </style>
 </head>
@@ -114,29 +149,23 @@ html,body{
     <stop offset="100%" stop-color="#1f2937"/>
   </linearGradient>
 
-  <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-    <stop offset="0%" stop-color="#fde047"/>
-    <stop offset="50%" stop-color="#facc15"/>
-    <stop offset="100%" stop-color="#b45309"/>
-  </linearGradient>
-
   <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
     <stop offset="0%" stop-color="#2563eb"/>
     <stop offset="100%" stop-color="#1e3a8a"/>
   </linearGradient>
 </defs>
 
-<!-- MAIN DARK PANEL -->
+<!-- MAIN PANEL -->
 <polygon points="320,40 1400,40 1360,220 360,220"
          fill="url(#panelGrad)"/>
 
-<!-- BLUE TEAM TAB -->
+<!-- TEAM TAB -->
 <polygon points="360,40 700,40 680,90 360,90"
          fill="url(#blueGrad)"/>
 
-<!-- GOLD BAR (EXACT SAME ANGLE AS DARK PANEL) -->
+<!-- PURE GOLD BAR -->
 <polygon points="331,90 1389,90 1382,120 338,120"
-         fill="url(#goldGrad)"/>
+         fill="#FFD700"/>
 
 </svg>
 
@@ -145,54 +174,111 @@ html,body{
 <div id="ltTeam"></div>
 <div id="ltLabel">NEW BATSMAN</div>
 <div id="ltName"></div>
+<div id="separator"></div>
 <div id="ltHand"></div>
 
 </div>
 
+<div id="momentBox"></div>
+
 <script>
 
-const PUSHER_KEY="12fcceaea77e52cf3626";
-const pusher=new Pusher(PUSHER_KEY,{cluster:'us2'});
-const channel=pusher.subscribe('broadcast');
+/* ============================= */
+/* PUSHER SETUP */
+/* ============================= */
 
-const dot=document.getElementById('connectionDot');
+const PUSHER_KEY="12fcceaea77e52cf3626";
+
+const pusher = new Pusher(PUSHER_KEY,{
+  cluster:'us2',
+  forceTLS:true
+});
+
+const channel = pusher.subscribe('broadcast');
+
+/* CONNECTION DOT */
+const dot = document.getElementById('connectionDot');
 pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
 pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
 pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
 
-const lowerThird=document.getElementById('lowerThird');
-const nameEl=document.getElementById('ltName');
+/* ELEMENT REFERENCES */
+const lowerThird = document.getElementById('lowerThird');
+const teamEl = document.getElementById('ltTeam');
+const nameEl = document.getElementById('ltName');
+const handEl = document.getElementById('ltHand');
+const imgEl = document.getElementById('playerImage');
+const momentBox = document.getElementById('momentBox');
 
-function autoScaleName(){
+/* TIMERS */
+let playerTimer = null;
+let momentTimer = null;
+
+/* AUTO SCALE NAME */
+function autoScale(){
   nameEl.style.fontSize="80px";
-  while(nameEl.scrollWidth>900){
-    let size=parseInt(window.getComputedStyle(nameEl).fontSize);
-    nameEl.style.fontSize=(size-2)+"px";
+  while(nameEl.scrollWidth > 1100){
+    let size = parseInt(window.getComputedStyle(nameEl).fontSize);
+    if(size <= 40) break;
+    nameEl.style.fontSize = (size-2)+"px";
   }
 }
 
-channel.bind('player',data=>{
-  if(!data)return;
+/* ============================= */
+/* PLAYER EVENT */
+/* ============================= */
+channel.bind('player', data => {
 
-  document.getElementById('ltTeam').textContent=data.team||'';
-  nameEl.textContent=data.name||'';
-  document.getElementById('ltHand').textContent=data.hand||'';
+  if(!data) return;
 
-  autoScaleName();
+  if(playerTimer) clearTimeout(playerTimer);
+
+  teamEl.textContent = data.team || '';
+  nameEl.textContent = data.name || '';
+  handEl.textContent = data.hand || '';
+
+  autoScale();
 
   if(data.image){
-    const img=document.getElementById('playerImage');
-    img.src=data.image;
-    img.style.display='block';
+    imgEl.src = data.image;
+    imgEl.style.display = 'block';
+  } else {
+    imgEl.style.display = 'none';
   }
 
   lowerThird.style.opacity='1';
   lowerThird.style.transform='translateX(0)';
 
-  setTimeout(()=>{
+  playerTimer = setTimeout(()=>{
     lowerThird.style.opacity='0';
-    lowerThird.style.transform='translateX(-140%)';
+    lowerThird.style.transform='translateX(-120%)';
   },7000);
+});
+
+/* ============================= */
+/* MOMENT EVENT */
+/* ============================= */
+channel.bind('moment', data => {
+
+  if(!data || !data.type) return;
+
+  if(momentTimer) clearTimeout(momentTimer);
+
+  let text = "";
+
+  if(data.type === "4") text = "FOUR";
+  if(data.type === "6") text = "SIX";
+  if(data.type === "W") text = "WICKET";
+
+  momentBox.textContent = text;
+
+  momentBox.style.opacity="1";
+  momentBox.style.transform="translateX(-50%) scale(1)";
+
+  momentTimer = setTimeout(()=>{
+    momentBox.style.opacity="0";
+    momentBox.style.transform="translateX(-50%) scale(.8)";
+  },4000);
 });
 
 </script>
