@@ -39,13 +39,16 @@ html,body{
   transition:all .5s cubic-bezier(.22,.9,.3,1);
 }
 
-/* CENTERED TEXT */
+/* ========================= */
+/* CENTERED TEXT STYLING */
+/* ========================= */
+
 #ltTeam{
   position:absolute;
   top:55px;
   width:100%;
   text-align:center;
-  font-size:26px;
+  font-size:24px;
   font-weight:900;
   letter-spacing:.15em;
   color:#ffffff;
@@ -57,14 +60,14 @@ html,body{
   top:95px;
   width:100%;
   text-align:center;
-  font-size:24px;
+  font-size:22px;
   font-weight:900;
-  color:#000;
+  color:#000000;
 }
 
 #ltName{
   position:absolute;
-  top:125px;
+  top:120px;
   width:100%;
   text-align:center;
   font-size:80px;
@@ -73,19 +76,21 @@ html,body{
   white-space:nowrap;
 }
 
+/* White separator between name and handedness */
 #separator{
   position:absolute;
-  top:195px;
+  top:190px;
   left:50%;
   transform:translateX(-50%);
   width:420px;
   height:3px;
-  background:#ffffffcc;
+  background:rgba(255,255,255,0.85);
+  border-radius:2px;
 }
 
 #ltHand{
   position:absolute;
-  top:210px;
+  top:205px;
   width:100%;
   text-align:center;
   font-size:22px;
@@ -94,17 +99,21 @@ html,body{
   text-transform:uppercase;
 }
 
-/* HEADSHOT */
+/* ========================= */
+/* SMALLER HEADSHOT */
+/* 80% overlapping gold */
+/* ========================= */
+
 #playerImage{
   position:absolute;
-  top:30px; /* allows ~80px overlap into gold */
-  left:130px;
-  width:170px;
-  height:170px;
+  top:65px; /* positioned so ~80% sits over gold */
+  left:110px;
+  width:120px;
+  height:120px;
   border-radius:50%;
   object-fit:cover;
   display:none;
-  border:6px solid #FFD700;
+  border:5px solid #FFD700;
   z-index:10;
 }
 </style>
@@ -138,7 +147,7 @@ html,body{
 <polygon points="360,40 700,40 680,90 360,90"
          fill="url(#blueGrad)"/>
 
-<!-- PURE GOLD BAR (FULL SHAPE MATCH) -->
+<!-- PURE GOLD BAR -->
 <polygon points="331,90 1389,90 1382,120 338,120"
          fill="#FFD700"/>
 
@@ -157,7 +166,7 @@ html,body{
 <script>
 
 const PUSHER_KEY="12fcceaea77e52cf3626";
-const pusher=new Pusher(PUSHER_KEY,{cluster:'us2'});
+const pusher=new Pusher(PUSHER_KEY,{cluster:'us2',forceTLS:true});
 const channel=pusher.subscribe('broadcast');
 
 const dot=document.getElementById('connectionDot');
@@ -185,8 +194,8 @@ channel.bind('player',data=>{
 
   autoScaleName();
 
+  const img=document.getElementById('playerImage');
   if(data.image){
-    const img=document.getElementById('playerImage');
     img.src=data.image;
     img.style.display='block';
   }
