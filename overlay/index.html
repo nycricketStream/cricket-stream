@@ -1,43 +1,201 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-			<title>Cricket Lower Third</title>
-			<script src="https://js.pusher.com/8.2/pusher.min.js"/>
-			<style>html,body{ margin:0; width:1920px; height:1080px; background:transparent; overflow:hidden; font-family:'Arial Black','Segoe UI',sans-serif; } /* CONNECTION DOT */ #connectionDot{ position:absolute; top:20px; left:20px; width:12px; height:12px; border-radius:50%; background:#facc15; z-index:9999; } /* LOWER THIRD */ #lowerThird{ position:absolute; bottom:220px; left:160px; width:1500px; height:260px; transform:translateX(-140%); opacity:0; transition:all .5s cubic-bezier(.22,.9,.3,1); } /* TEXT ALIGNMENT */ :root{ --textLeft:390px; } #ltTeam{ position:absolute; top:60px; left:var(--textLeft); font-size:24px; font-weight:900; letter-spacing:.12em; color:#ffffff; text-transform:uppercase; } #ltLabel{ position:absolute; top:92px; left:var(--textLeft); font-size:22px; font-weight:900; color:#111; } #ltName{ position:absolute; top:125px; left:var(--textLeft); font-size:80px; font-weight:900; color:#ffffff; white-space:nowrap; } #ltHand{ position:absolute; top:205px; left:var(--textLeft); font-size:22px; letter-spacing:.1em; color:#d1d5db; text-transform:uppercase; } /* HEADSHOT */ #playerImage{ position:absolute; top:10px; left:150px; width:150px; height:150px; border-radius:50%; object-fit:cover; display:none; border:6px solid #facc15; z-index:5; }</style>
-		</head>
-		<body>
-			<div id="connectionDot"/>
-			<div id="lowerThird">
-				<svg width="1500" height="260" viewBox="0 0 1500 260">
-					<defs>
-						<linearGradient id="panelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-							<stop offset="0%" stop-color="#111827"/>
-							<stop offset="100%" stop-color="#1f2937"/>
-						</linearGradient>
-						<linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-							<stop offset="0%" stop-color="#fde047"/>
-							<stop offset="50%" stop-color="#facc15"/>
-							<stop offset="100%" stop-color="#b45309"/>
-						</linearGradient>
-						<linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-							<stop offset="0%" stop-color="#2563eb"/>
-							<stop offset="100%" stop-color="#1e3a8a"/>
-						</linearGradient>
-					</defs>
-					<!-- MAIN DARK PANEL -->
-					<polygon points="320,40 1400,40 1360,220 360,220" fill="url(#panelGrad)"/>
-					<!-- BLUE TEAM TAB -->
-					<polygon points="360,40 700,40 680,90 360,90" fill="url(#blueGrad)"/>
-					<!-- GOLD BAR (EXACT SAME ANGLE AS DARK PANEL) -->
-					<polygon points="331,90 1389,90 1382,120 338,120" fill="url(#goldGrad)"/>
-				</svg>
-				<img id="playerImage">
-					<div id="ltTeam"/>
-					<div id="ltLabel">NEW BATSMAN</div>
-					<div id="ltName"/>
-					<div id="ltHand"/>
-				</div>
-				<script>const PUSHER_KEY="12fcceaea77e52cf3626"; const pusher=new Pusher(PUSHER_KEY,{cluster:'us2'}); const channel=pusher.subscribe('broadcast'); const dot=document.getElementById('connectionDot'); pusher.connection.bind('connected',()=>dot.style.background='#22c55e'); pusher.connection.bind('connecting',()=>dot.style.background='#facc15'); pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444'); const lowerThird=document.getElementById('lowerThird'); const nameEl=document.getElementById('ltName'); function autoScaleName(){ nameEl.style.fontSize="80px"; while(nameEl.scrollWidth>900){ let size=parseInt(window.getComputedStyle(nameEl).fontSize); nameEl.style.fontSize=(size-2)+"px"; } } channel.bind('player',data=>{ if(!data)return; document.getElementById('ltTeam').textContent=data.team||''; nameEl.textContent=data.name||''; document.getElementById('ltHand').textContent=data.hand||''; autoScaleName(); if(data.image){ const img=document.getElementById('playerImage'); img.src=data.image; img.style.display='block'; } lowerThird.style.opacity='1'; lowerThird.style.transform='translateX(0)'; setTimeout(()=>{ lowerThird.style.opacity='0'; lowerThird.style.transform='translateX(-140%)'; },7000); });</script>
-			</body>
-		</html>
+<head>
+<meta charset="UTF-8">
+<title>Cricket Lower Third</title>
+<script src="https://js.pusher.com/8.2/pusher.min.js"></script>
+
+<style>
+html,body{
+  margin:0;
+  width:1920px;
+  height:1080px;
+  background:transparent;
+  overflow:hidden;
+  font-family:'Arial Black','Segoe UI',sans-serif;
+}
+
+/* CONNECTION DOT */
+#connectionDot{
+  position:absolute;
+  top:20px;
+  left:20px;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:#facc15;
+  z-index:9999;
+}
+
+/* LOWER THIRD */
+#lowerThird{
+  position:absolute;
+  bottom:220px;
+  left:160px;
+  width:1500px;
+  height:260px;
+  transform:translateX(-140%);
+  opacity:0;
+  transition:all .5s cubic-bezier(.22,.9,.3,1);
+}
+
+/* TEXT ALIGNMENT */
+:root{
+  --textLeft:390px;
+}
+
+#ltTeam{
+  position:absolute;
+  top:60px;
+  left:var(--textLeft);
+  font-size:24px;
+  font-weight:900;
+  letter-spacing:.12em;
+  color:#ffffff;
+  text-transform:uppercase;
+}
+
+#ltLabel{
+  position:absolute;
+  top:92px;
+  left:var(--textLeft);
+  font-size:22px;
+  font-weight:900;
+  color:#111;
+}
+
+#ltName{
+  position:absolute;
+  top:125px;
+  left:var(--textLeft);
+  font-size:80px;
+  font-weight:900;
+  color:#ffffff;
+  white-space:nowrap;
+}
+
+#ltHand{
+  position:absolute;
+  top:205px;
+  left:var(--textLeft);
+  font-size:22px;
+  letter-spacing:.1em;
+  color:#d1d5db;
+  text-transform:uppercase;
+}
+
+/* HEADSHOT */
+#playerImage{
+  position:absolute;
+  top:10px;
+  left:150px;
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  object-fit:cover;
+  display:none;
+  border:6px solid #facc15;
+  z-index:5;
+}
+</style>
+</head>
+
+<body>
+
+<div id="connectionDot"></div>
+
+<div id="lowerThird">
+
+<svg width="1500" height="260" viewBox="0 0 1500 260">
+
+<defs>
+  <linearGradient id="panelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#111827"/>
+    <stop offset="100%" stop-color="#1f2937"/>
+  </linearGradient>
+
+  <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#fde047"/>
+    <stop offset="50%" stop-color="#facc15"/>
+    <stop offset="100%" stop-color="#b45309"/>
+  </linearGradient>
+
+  <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#2563eb"/>
+    <stop offset="100%" stop-color="#1e3a8a"/>
+  </linearGradient>
+</defs>
+
+<!-- MAIN DARK PANEL -->
+<polygon points="320,40 1400,40 1360,220 360,220"
+         fill="url(#panelGrad)"/>
+
+<!-- BLUE TEAM TAB -->
+<polygon points="360,40 700,40 680,90 360,90"
+         fill="url(#blueGrad)"/>
+
+<!-- GOLD BAR (EXACT SAME ANGLE AS DARK PANEL) -->
+<polygon points="331,90 1389,90 1382,120 338,120"
+         fill="url(#goldGrad)"/>
+
+</svg>
+
+<img id="playerImage">
+
+<div id="ltTeam"></div>
+<div id="ltLabel">NEW BATSMAN</div>
+<div id="ltName"></div>
+<div id="ltHand"></div>
+
+</div>
+
+<script>
+
+const PUSHER_KEY="12fcceaea77e52cf3626";
+const pusher=new Pusher(PUSHER_KEY,{cluster:'us2'});
+const channel=pusher.subscribe('broadcast');
+
+const dot=document.getElementById('connectionDot');
+pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
+pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
+pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
+
+const lowerThird=document.getElementById('lowerThird');
+const nameEl=document.getElementById('ltName');
+
+function autoScaleName(){
+  nameEl.style.fontSize="80px";
+  while(nameEl.scrollWidth>900){
+    let size=parseInt(window.getComputedStyle(nameEl).fontSize);
+    nameEl.style.fontSize=(size-2)+"px";
+  }
+}
+
+channel.bind('player',data=>{
+  if(!data)return;
+
+  document.getElementById('ltTeam').textContent=data.team||'';
+  nameEl.textContent=data.name||'';
+  document.getElementById('ltHand').textContent=data.hand||'';
+
+  autoScaleName();
+
+  if(data.image){
+    const img=document.getElementById('playerImage');
+    img.src=data.image;
+    img.style.display='block';
+  }
+
+  lowerThird.style.opacity='1';
+  lowerThird.style.transform='translateX(0)';
+
+  setTimeout(()=>{
+    lowerThird.style.opacity='0';
+    lowerThird.style.transform='translateX(-140%)';
+  },7000);
+});
+
+</script>
+
+</body>
+</html>
