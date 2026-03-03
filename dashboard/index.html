@@ -89,6 +89,7 @@ Overs<input id="manualOvers" placeholder="18.2">
 Score: <span id="liveScore">0/0</span><br>
 Overs: <span id="liveOvers">0.0</span><br>
 Run Rate: <span id="liveRR">0.00</span><br>
+Extras: <span id="liveExtras">0</span><br>
 Required Runs: <span id="liveReqRuns">-</span><br>
 Required RR: <span id="liveReqRR">-</span>
 </div>
@@ -359,6 +360,12 @@ let bowlerStats = {};
 let batsmanStats = {};
 let currentOverBalls = 0;
 let lockedOut = false;
+let extrasStats = {
+  wide: 0,
+  noball: 0,
+  bye: 0,
+  legbye: 0
+};
 
 function calculateOvers(){
  return Math.floor(liveBalls/6) + "." + (liveBalls % 6);
@@ -399,6 +406,14 @@ function updateLiveDisplay(){
  document.getElementById('liveReqRuns').innerText = calculateRequiredRuns();
  document.getElementById('liveReqRR').innerText = calculateRequiredRR();
 
+ const totalExtras =
+  extrasStats.wide +
+  extrasStats.noball +
+  extrasStats.bye +
+  extrasStats.legbye;
+
+document.getElementById('liveExtras').innerText = totalExtras;
+
  send('manualScore',{
    score: liveTotal + "/" + liveWickets,
    overs: calculateOvers(),
@@ -407,7 +422,7 @@ function updateLiveDisplay(){
    requiredRR: calculateRequiredRR()
  });
  renderBowlerStats();
-renderBatsmanStats();
+ renderBatsmanStats();
 }
 
 function renderBowlerStats(){
@@ -513,6 +528,10 @@ function addExtra(type){
 
  liveTotal++;
 
+ if(extrasStats[type] !== undefined){
+  extrasStats[type]++;
+}
+
  if(currentBowler){
    ensureBowler(currentBowler);
    bowlerStats[currentBowler].runs++;
@@ -573,7 +592,11 @@ function undoLast(){
 
  if(last.type === 'extra'){
    liveTotal--;
-
+  
+  if(extrasStats[last.extra] !== undefined){
+      extrasStats[last.extra] = Math.max(extrasStats[last.extra] - 1, 0);
+    }
+  
    if(last.bowler && bowlerStats[last.bowler]){
      bowlerStats[last.bowler].runs--;
    }
