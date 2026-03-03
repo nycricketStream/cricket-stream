@@ -121,7 +121,33 @@ Bowler<select id="bowler"></select>
  
 <div id="advancedLiveTab" style="display:none">
   <h4>Advanced Stats</h4>
-  <p>Advanced scoring panel will go here.</p>
+ <h4>Batsman Stats</h4>
+<table>
+<thead>
+<tr>
+<th>Batter</th>
+<th>R</th>
+<th>B</th>
+<th>4s</th>
+<th>6s</th>
+<th>SR</th>
+</tr>
+</thead>
+<tbody id="batsmanStatsBody"></tbody>
+</table>
+  <h4>Bowler Stats</h4>
+  <table>
+    <thead>
+    <tr>
+    <th>Bowler</th>
+    <th>Overs</th>
+    <th>Runs</th>
+    <th>Wkts</th>
+    <th>Econ</th>
+    </tr>
+    </thead>
+    <tbody id="bowlerStatsBody"></tbody>
+  </table>
 </div> 
 </div>
 <!-- LIVE SCORING END -->
@@ -322,6 +348,7 @@ let liveWickets = 0;
 let liveBalls = 0;
 let liveHistory = [];
 let bowlerStats = {};
+let batsmanStats = {};
 
 function calculateOvers(){
  return Math.floor(liveBalls/6) + "." + (liveBalls % 6);
@@ -369,21 +396,58 @@ function updateLiveDisplay(){
    requiredRuns: calculateRequiredRuns(),
    requiredRR: calculateRequiredRR()
  });
+ renderBowlerStats();
+renderBatsmanStats();
+}
+
+function renderBowlerStats(){
+  const body = document.getElementById('bowlerStatsBody');
+  if(!body) return;
+
+  body.innerHTML = '';
+
+  Object.keys(bowlerStats).forEach(name=>{
+    const stats = bowlerStats[name];
+
+    const overs = Math.floor(stats.balls/6) + "." + (stats.balls % 6);
+    const economy = stats.balls
+      ? (stats.runs / (stats.balls/6)).toFixed(2)
+      : "0.00";
+
+    body.innerHTML += `
+      <tr>
+        <td>${name}</td>
+        <td>${overs}</td>
+        <td>${stats.runs}</td>
+        <td>${stats.wickets}</td>
+        <td>${economy}</td>
+      </tr>
+    `;
+  });
 }
 
 function addRun(r){
- const currentBowler = document.getElementById('bowler')?.value;
+ const striker = document.getElementById('striker')?.value;
+const currentBowler = document.getElementById('bowler')?.value;
 
- liveHistory.push({type:'run', runs:r, bowler:currentBowler});
+liveHistory.push({type:'run', runs:r, bowler:currentBowler, striker:striker});
 
- liveTotal += r;
- liveBalls++;
+liveTotal += r;
+liveBalls++;
 
- if(currentBowler){
-   ensureBowler(currentBowler);
-   bowlerStats[currentBowler].runs += r;
-   bowlerStats[currentBowler].balls++;
- }
+if(striker){
+ ensureBatsman(striker);
+ batsmanStats[striker].runs += r;
+ batsmanStats[striker].balls++;
+ if(r === 4) batsmanStats[striker].fours++;
+ if(r === 6) batsmanStats[striker].sixes++;
+}
+
+if(currentBowler){
+ ensureBowler(currentBowler);
+ bowlerStats[currentBowler].runs += r;
+ bowlerStats[currentBowler].balls++;
+}
 
  if(r % 2 === 1){
    rotateStrike();
@@ -397,19 +461,24 @@ function addRun(r){
 }
 
 function addWicket(){
- const currentBowler = document.getElementById('bowler')?.value;
+const striker = document.getElementById('striker')?.value;
+const currentBowler = document.getElementById('bowler')?.value;
 
- liveHistory.push({type:'wicket', bowler:currentBowler});
+liveHistory.push({type:'wicket', bowler:currentBowler, striker:striker});
 
- liveWickets++;
- liveBalls++;
+liveWickets++;
+liveBalls++;
 
- if(currentBowler){
-   ensureBowler(currentBowler);
-   bowlerStats[currentBowler].balls++;
-   bowlerStats[currentBowler].wickets++;
- }
+if(striker){
+ ensureBatsman(striker);
+ batsmanStats[striker].balls++;
+}
 
+if(currentBowler){
+ ensureBowler(currentBowler);
+ bowlerStats[currentBowler].balls++;
+ bowlerStats[currentBowler].wickets++;
+}
  if(liveBalls % 6 === 0){
    rotateStrike();
  }
@@ -418,24 +487,30 @@ function addWicket(){
 }
 
 function addExtra(type){
- const currentBowler = document.getElementById('bowler')?.value;
+const striker = document.getElementById('striker')?.value;
+const currentBowler = document.getElementById('bowler')?.value;
 
- liveHistory.push({type:'extra', extra:type, bowler:currentBowler});
+liveHistory.push({type:'extra', extra:type, bowler:currentBowler, striker:striker});
 
- liveTotal++;
+liveTotal++;
+
+if(currentBowler){
+ ensureBowler(currentBowler);
+ bowlerStats[currentBowler].runs++;
+}
+
+if(type === "bye" || type === "legbye"){
+ liveBalls++;
+
+ if(striker){
+   ensureBatsman(striker);
+   batsmanStats[striker].balls++;
+ }
 
  if(currentBowler){
-   ensureBowler(currentBowler);
-   bowlerStats[currentBowler].runs++;
+   bowlerStats[currentBowler].balls++;
  }
-
- if(type === "bye" || type === "legbye"){
-   liveBalls++;
-   if(currentBowler){
-     bowlerStats[currentBowler].balls++;
-   }
- }
-
+}
  updateLiveDisplay();
 }
 
@@ -447,6 +522,13 @@ function undoLast(){
    liveTotal -= last.runs;
    liveBalls--;
 
+    if(last.striker && batsmanStats[last.striker]){
+     batsmanStats[last.striker].runs -= last.runs;
+     batsmanStats[last.striker].balls--;
+     if(last.runs === 4) batsmanStats[last.striker].fours--;
+     if(last.runs === 6) batsmanStats[last.striker].sixes--;
+   }
+  
    if(last.bowler && bowlerStats[last.bowler]){
      bowlerStats[last.bowler].runs -= last.runs;
      bowlerStats[last.bowler].balls--;
@@ -457,6 +539,9 @@ function undoLast(){
    liveWickets--;
    liveBalls--;
 
+   if(last.striker && batsmanStats[last.striker]){
+  batsmanStats[last.striker].balls--;
+ }
    if(last.bowler && bowlerStats[last.bowler]){
      bowlerStats[last.bowler].balls--;
      bowlerStats[last.bowler].wickets--;
@@ -471,11 +556,10 @@ function undoLast(){
    }
 
    if(last.extra === "bye" || last.extra === "legbye"){
-     liveBalls--;
-     if(last.bowler && bowlerStats[last.bowler]){
-       bowlerStats[last.bowler].balls--;
-     }
+   if(last.striker && batsmanStats[last.striker]){
+     batsmanStats[last.striker].balls--;
    }
+  }
  }
 
  updateLiveDisplay();
@@ -502,6 +586,42 @@ function ensureBowler(name){
  }
 }
 
+function ensureBatsman(name){
+ if(!batsmanStats[name]){
+   batsmanStats[name] = {
+     runs: 0,
+     balls: 0,
+     fours: 0,
+     sixes: 0
+   };
+ }
+}
+ 
+function renderBatsmanStats(){
+ const body = document.getElementById('batsmanStatsBody');
+ if(!body) return;
+
+ body.innerHTML = '';
+
+ Object.keys(batsmanStats).forEach(name=>{
+   const stats = batsmanStats[name];
+   const strikeRate = stats.balls
+     ? ((stats.runs / stats.balls) * 100).toFixed(1)
+     : "0.0";
+
+   body.innerHTML += `
+     <tr>
+       <td>${name}</td>
+       <td>${stats.runs}</td>
+       <td>${stats.balls}</td>
+       <td>${stats.fours}</td>
+       <td>${stats.sixes}</td>
+       <td>${strikeRate}</td>
+     </tr>
+   `;
+ });
+}
+ 
 function showLiveSubTab(tab){
   const basic = document.getElementById('basicLiveTab');
   const advanced = document.getElementById('advancedLiveTab');
