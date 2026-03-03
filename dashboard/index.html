@@ -504,33 +504,33 @@ if(currentBowler){
 }
 
 function addExtra(type){
-if(!validateBeforeBall()) return;
-const striker = document.getElementById('striker')?.value;
-const currentBowler = document.getElementById('bowler')?.value;
+ if(!validateBeforeBall()) return;
 
-liveHistory.push({type:'extra', extra:type, bowler:currentBowler, striker:striker});
+ const striker = document.getElementById('striker')?.value;
+ const currentBowler = document.getElementById('bowler')?.value;
 
-liveTotal++;
+ liveHistory.push({type:'extra', extra:type, bowler:currentBowler, striker:striker});
 
-if(currentBowler){
- ensureBowler(currentBowler);
- bowlerStats[currentBowler].runs++;
-}
-
-if(type === "bye" || type === "legbye"){
- liveBalls++;
- currentOverBalls++;
-}
-
- if(striker){
-   ensureBatsman(striker);
-   batsmanStats[striker].balls++;
- }
+ liveTotal++;
 
  if(currentBowler){
-   bowlerStats[currentBowler].balls++;
+   ensureBowler(currentBowler);
+   bowlerStats[currentBowler].runs++;
  }
-}
+
+ if(type === "bye" || type === "legbye"){
+   liveBalls++;
+   currentOverBalls++;
+
+   if(striker){
+     ensureBatsman(striker);
+     batsmanStats[striker].balls++;
+   }
+
+   if(currentBowler){
+     bowlerStats[currentBowler].balls++;
+   }
+ }
  updateLiveDisplay();
 }
 
