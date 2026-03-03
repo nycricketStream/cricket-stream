@@ -137,6 +137,39 @@ let wickets=0;
 let balls=0;
 let history=[];
 
+ function updateBattingTeams(){
+ const teamA=document.getElementById('teamA');
+ const teamB=document.getElementById('teamB');
+ const sel=document.getElementById('batting');
+ sel.innerHTML='';
+ if(teamA.value) sel.add(new Option(teamA.value,teamA.value));
+ if(teamB.value) sel.add(new Option(teamB.value,teamB.value));
+ updatePlayerDropdown();
+}
+
+function updatePlayerDropdown(){
+ const teamA=document.getElementById('teamA');
+ const teamB=document.getElementById('teamB');
+ const teamAPlayers=document.getElementById('teamAPlayers');
+ const teamBPlayers=document.getElementById('teamBPlayers');
+ const batting=document.getElementById('batting');
+ const dropdown=document.getElementById('playerSelect');
+ if(!dropdown) return;
+ dropdown.innerHTML='';
+ let players=[];
+ if(batting.value===teamA.value){ players=teamAPlayers.value.split('\n'); }
+ else if(batting.value===teamB.value){ players=teamBPlayers.value.split('\n'); }
+ players.map(p=>p.trim()).filter(Boolean).forEach(p=>dropdown.add(new Option(p,p)));
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+ document.getElementById('teamA').addEventListener('input',updateBattingTeams);
+ document.getElementById('teamB').addEventListener('input',updateBattingTeams);
+ document.getElementById('teamAPlayers').addEventListener('input',updatePlayerDropdown);
+ document.getElementById('teamBPlayers').addEventListener('input',updatePlayerDropdown);
+ document.getElementById('batting').addEventListener('change',updatePlayerDropdown);
+});
+
 function calculateOvers(){
  return Math.floor(balls/6)+"."+(balls%6);
 }
