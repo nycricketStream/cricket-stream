@@ -85,6 +85,10 @@ Run Rate: <span id="liveRR">0.00</span><br>
 Required Runs: <span id="liveReqRuns">-</span><br>
 Required RR: <span id="liveReqRR">-</span>
 </div>
+
+<h4>Batters</h4>
+Striker<select id="striker"></select>
+Non-Striker<select id="nonStriker"></select>
  
 <h4>Runs</h4>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
@@ -189,7 +193,9 @@ function updateBattingTeams(){
  sel.innerHTML='';
  if(teamA.value) sel.add(new Option(teamA.value,teamA.value));
  if(teamB.value) sel.add(new Option(teamB.value,teamB.value));
+
  updatePlayerDropdown();
+ updateStrikerDropdown();   
 }
 
 function updatePlayerDropdown(){
@@ -207,6 +213,35 @@ function updatePlayerDropdown(){
  players.map(p=>p.trim()).filter(Boolean).forEach(p=>dropdown.add(new Option(p,p)));
 }
 
+function updateStrikerDropdown(){
+ const teamA=document.getElementById('teamA');
+ const teamB=document.getElementById('teamB');
+ const teamAPlayers=document.getElementById('teamAPlayers');
+ const teamBPlayers=document.getElementById('teamBPlayers');
+ const batting=document.getElementById('batting');
+
+ const strikerSel=document.getElementById('striker');
+ const nonStrikerSel=document.getElementById('nonStriker');
+
+ if(!strikerSel || !nonStrikerSel) return;
+
+ strikerSel.innerHTML='';
+ nonStrikerSel.innerHTML='';
+
+ let players=[];
+
+ if(batting.value===teamA.value){
+   players=teamAPlayers.value.split('\n');
+ } else if(batting.value===teamB.value){
+   players=teamBPlayers.value.split('\n');
+ }
+
+ players.map(p=>p.trim()).filter(Boolean).forEach(p=>{
+   strikerSel.add(new Option(p,p));
+   nonStrikerSel.add(new Option(p,p));
+ });
+}
+
 function toggleScoreInfo(){
  const enabled=document.getElementById('useCricclubs').checked;
  document.getElementById('manualUpdateBtn').disabled=enabled;
@@ -218,6 +253,7 @@ window.addEventListener('DOMContentLoaded',()=>{
  document.getElementById('teamAPlayers').addEventListener('input',updatePlayerDropdown);
  document.getElementById('teamBPlayers').addEventListener('input',updatePlayerDropdown);
  document.getElementById('batting').addEventListener('change',updatePlayerDropdown);
+ document.getElementById('batting').addEventListener('change',updateStrikerDropdown);
  document.getElementById('useCricclubs').addEventListener('change',toggleScoreInfo);
  toggleScoreInfo();
 });
@@ -312,6 +348,12 @@ function addRun(r){
  liveHistory.push({type:'run', runs:r});
  liveTotal += r;
  liveBalls++;
+ if(r % 2 === 1){
+  rotateStrike();
+ } 
+ if(liveBalls % 6 === 0){
+  rotateStrike();
+ } 
  updateLiveDisplay();
 }
 
@@ -355,6 +397,17 @@ function undoLast(){
  }
 
  updateLiveDisplay();
+}
+
+function rotateStrike(){
+ const strikerSel=document.getElementById('striker');
+ const nonStrikerSel=document.getElementById('nonStriker');
+
+ if(!strikerSel || !nonStrikerSel) return;
+
+ const temp=strikerSel.value;
+ strikerSel.value=nonStrikerSel.value;
+ nonStrikerSel.value=temp;
 }
 </script>
 </body>
