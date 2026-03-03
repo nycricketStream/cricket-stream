@@ -78,6 +78,13 @@ Overs<input id="manualOvers" placeholder="18.2">
  <!-- LIVE SCORING -->
 <div id="livescoring" class="tab">
 <h3>Live Scoring</h3>
+ 
+<div style="display:flex;gap:8px;margin-bottom:15px">
+  <button id="basicTabBtn" onclick="showLiveSubTab('basic')">Basic</button>
+  <button id="advancedTabBtn" onclick="showLiveSubTab('advanced')">Advanced</button>
+</div>
+
+<div id="basicLiveTab">
 <div style="font-size:20px;margin-bottom:15px">
 Score: <span id="liveScore">0/0</span><br>
 Overs: <span id="liveOvers">0.0</span><br>
@@ -110,7 +117,12 @@ Bowler<select id="bowler"></select>
 <button onclick="addExtra('noball')">No Ball</button>
 <button onclick="addExtra('bye')">Bye</button>
 <button onclick="addExtra('legbye')">Leg Bye</button>
-
+</div>
+ 
+<div id="advancedLiveTab" style="display:none">
+  <h4>Advanced Stats</h4>
+  <p>Advanced scoring panel will go here.</p>
+</div> 
 </div>
 <!-- LIVE SCORING END -->
  
@@ -488,6 +500,25 @@ function ensureBowler(name){
      wickets: 0
    };
  }
+}
+
+function showLiveSubTab(tab){
+  const basic = document.getElementById('basicLiveTab');
+  const advanced = document.getElementById('advancedLiveTab');
+  const basicBtn = document.getElementById('basicTabBtn');
+  const advancedBtn = document.getElementById('advancedTabBtn');
+
+  if(tab === 'basic'){
+    basic.style.display = 'block';
+    advanced.style.display = 'none';
+    basicBtn.style.background = '#2563eb';
+    advancedBtn.style.background = '#1d4ed8';
+  } else {
+    basic.style.display = 'none';
+    advanced.style.display = 'block';
+    basicBtn.style.background = '#1d4ed8';
+    advancedBtn.style.background = '#2563eb';
+  }
 }
 </script>
 </body>
