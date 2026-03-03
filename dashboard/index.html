@@ -16,8 +16,8 @@ body{margin:0;font-family:Segoe UI,Arial;background:#060b18;color:#e5e7eb;displa
 .tab.active{display:block}
 input,textarea,select{width:100%;padding:10px;margin-bottom:14px;border-radius:8px;border:1px solid #1f2937;background:#020617;color:#fff}
 button{width:100%;padding:10px;border:none;border-radius:8px;background:#1d4ed8;color:white;cursor:pointer;margin-top:8px}
-table{width:100%;border-collapse:collapse;margin-top:15px}
-th,td{border:1px solid #1f2937;padding:6px;text-align:center;font-size:12px}
+.flexRow{display:flex;gap:10px}
+.flexCol{flex:1}
 </style>
 </head>
 <body>
@@ -47,23 +47,7 @@ Innings<select id="innings">
 <option value="2">2nd Innings</option>
 </select>
 Target<input id="target">
-Total Overs<input id="maxOvers" value="20">
-Powerplay Overs<input id="powerplayOvers" value="6">
 <button onclick="initPlayers()">Update Match</button>
-</div>
-
-<div id="branding" class="tab">
-<h3>League Branding</h3>
-League<input id="league">
-Tournament<input id="tournament">
-<button onclick="send('branding',{league:league.value,tournament:tournament.value})">Update Branding</button>
-</div>
-
-<div id="scoreinfo" class="tab">
-<h3>Manual Backup</h3>
-Manual Score<input id="manualScore">
-Overs<input id="manualOvers">
-<button onclick="pushScore()">Push Manual Score</button>
 </div>
 
 <div id="scoring" class="tab">
@@ -72,9 +56,7 @@ Overs<input id="manualOvers">
 <div style="font-size:22px;margin-bottom:15px">
 <strong>Total:</strong> <span id="liveScore">0/0</span><br>
 <strong>Overs:</strong> <span id="liveOvers">0.0</span><br>
-<strong>Run Rate:</strong> <span id="liveRR">0.00</span><br>
-<strong>Req RR:</strong> <span id="liveReqRR">-</span><br>
-<strong>Phase:</strong> <span id="livePhase">Powerplay</span>
+<strong>Run Rate:</strong> <span id="liveRR">0.00</span>
 </div>
 
 <h4>Striker</h4>
@@ -84,12 +66,14 @@ Overs<input id="manualOvers">
 <select id="nonStriker"></select>
 
 <h4>Bowler</h4>
-<input id="bowlerName">
+<select id="bowlerSelect"></select>
 
 <button onclick="rotateStrike()">Manual Rotate</button>
+<button onclick="undoLast()">Undo Last Ball</button>
 
 <h4>Runs</h4>
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+<div class="flexRow">
+<div class="flexCol">
 <button onclick="addRuns(0)">0</button>
 <button onclick="addRuns(1)">1</button>
 <button onclick="addRuns(2)">2</button>
@@ -98,14 +82,19 @@ Overs<input id="manualOvers">
 <button onclick="addRuns(6)">6</button>
 </div>
 
+<div class="flexCol">
 <h4>Extras</h4>
 <button onclick="addExtra('wide')">Wide</button>
 <button onclick="addExtra('noball')">No Ball</button>
 <button onclick="addExtra('bye')">Bye</button>
 <button onclick="addExtra('legbye')">Leg Bye</button>
+</div>
 
+<div class="flexCol">
 <h4>Wicket</h4>
 <button onclick="addWicket()">Add Wicket</button>
+</div>
+</div>
 
 </div>
 
@@ -131,13 +120,14 @@ async function send(event,data){
  });
 }
 
-/* ===== AUTO MATCH BINDING RESTORED ===== */
+/* ===== MATCH AUTO BINDING ===== */
 
 function updateBattingTeams(){
  batting.innerHTML="";
  if(teamA.value) batting.add(new Option(teamA.value,teamA.value));
  if(teamB.value) batting.add(new Option(teamB.value,teamB.value));
  updatePlayerDropdown();
+ updateBowlerDropdown();
 }
 
 function updatePlayerDropdown(){
@@ -157,15 +147,32 @@ function updatePlayerDropdown(){
  });
 }
 
+function updateBowlerDropdown(){
+ let players=[];
+ if(batting.value===teamA.value){
+  players=teamBPlayers.value.split('\n');
+ } else if(batting.value===teamB.value){
+  players=teamAPlayers.value.split('\n');
+ }
+ bowlerSelect.innerHTML="";
+ players.map(p=>p.trim()).filter(Boolean).forEach(p=>{
+  bowlerSelect.add(new Option(p,p));
+ });
+}
+
 teamA.addEventListener('input',updateBattingTeams);
 teamB.addEventListener('input',updateBattingTeams);
 teamAPlayers.addEventListener('input',updatePlayerDropdown);
 teamBPlayers.addEventListener('input',updatePlayerDropdown);
-batting.addEventListener('change',updatePlayerDropdown);
+batting.addEventListener('change',()=>{
+ updatePlayerDropdown();
+ updateBowlerDropdown();
+});
 
-/* ===== STABLE SCORING ENGINE ===== */
+/* ===== SCORING ENGINE ===== */
 
 let total=0,wkts=0,balls=0;
+let history=[];
 
 function calculateOvers(){return Math.floor(balls/6)+"."+(balls%6);}
 function runRate(){return balls?(total/(balls/6)).toFixed(2):"0.00";}
@@ -178,6 +185,7 @@ function updateDisplay(){
 }
 
 function addRuns(r){
+ history.push({type:'run',runs:r});
  total+=r;balls++;
  if(r%2===1)rotateStrike();
  if(balls%6===0)rotateStrike();
@@ -185,13 +193,34 @@ function addRuns(r){
 }
 
 function addExtra(type){
+ history.push({type:'extra',extra:type});
  total++;
  if(type==="bye"||type==="legbye") balls++;
  updateDisplay();
 }
 
 function addWicket(){
+ history.push({type:'wicket'});
  wkts++;balls++;
+ updateDisplay();
+}
+
+function undoLast(){
+ let last=history.pop();
+ if(!last) return;
+
+ if(last.type==='run'){
+  total-=last.runs;
+  balls--;
+ }
+ if(last.type==='extra'){
+  total--;
+  if(last.extra==="bye"||last.extra==="legbye") balls--;
+ }
+ if(last.type==='wicket'){
+  wkts--;balls--;
+ }
+
  updateDisplay();
 }
 
@@ -209,7 +238,8 @@ function pushScore(){
   overs:calculateOvers(),
   runRate:runRate(),
   striker:striker.value,
-  nonStriker:nonStriker.value
+  nonStriker:nonStriker.value,
+  bowler:bowlerSelect.value
  });
 }
 
@@ -232,5 +262,6 @@ function showTab(evt,id){
  if(evt) evt.target.classList.add('active');
 }
 </script>
+
 </body>
 </html>
