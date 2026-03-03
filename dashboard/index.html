@@ -16,7 +16,6 @@ body{margin:0;font-family:Segoe UI,Arial;background:#060b18;color:#e5e7eb;displa
 .tab.active{display:block}
 input,textarea,select{width:100%;padding:10px;margin-bottom:14px;border-radius:8px;border:1px solid #1f2937;background:#020617;color:#fff}
 button{width:100%;padding:10px;border:none;border-radius:8px;background:#1d4ed8;color:white;cursor:pointer;margin-top:8px}
-button:disabled{opacity:.5;cursor:not-allowed}
 .scoreBox{font-size:24px;margin-bottom:15px}
 .scoreButtons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
 </style>
@@ -47,6 +46,10 @@ Team B<input id="teamB">
 Team B Players<textarea id="teamBPlayers"></textarea>
 Batting Team<select id="batting"></select>
 Innings<select id="innings"><option>1st Innings</option><option>2nd Innings</option></select>
+
+Total Overs<input id="maxOvers" value="20">
+Target (2nd Innings Only)<input id="target" placeholder="e.g. 150">
+
 <button onclick="send('match',{teamA:teamA.value,teamB:teamB.value,batting:batting.value,innings:innings.value,teamAPlayers:teamAPlayers.value.split('\n'),teamBPlayers:teamBPlayers.value.split('\n')})">Update Match</button>
 </div>
 
@@ -73,7 +76,9 @@ Overs<input id="manualOvers" placeholder="18.2">
 <div class="scoreBox">
 <strong>Score:</strong> <span id="liveScore">0/0</span><br>
 <strong>Overs:</strong> <span id="liveOvers">0.0</span><br>
-<strong>Run Rate:</strong> <span id="liveRR">0.00</span>
+<strong>Run Rate:</strong> <span id="liveRR">0.00</span><br>
+<strong>Required Runs:</strong> <span id="liveReqRuns">-</span><br>
+<strong>Required RR:</strong> <span id="liveReqRR">-</span>
 </div>
 
 <div class="scoreButtons">
@@ -140,15 +145,35 @@ function runRate(){
  return balls? (totalRuns/(balls/6)).toFixed(2) : "0.00";
 }
 
+function requiredRuns(){
+ const targetVal=parseInt(document.getElementById('target').value);
+ if(!targetVal || document.getElementById('innings').value!=="2nd Innings") return "-";
+ return Math.max(targetVal-totalRuns,0);
+}
+
+function requiredRR(){
+ const targetVal=parseInt(document.getElementById('target').value);
+ const maxOvers=parseInt(document.getElementById('maxOvers').value||20);
+ if(!targetVal || document.getElementById('innings').value!=="2nd Innings") return "-";
+ const ballsLeft=(maxOvers*6)-balls;
+ const runsLeft=targetVal-totalRuns;
+ if(ballsLeft<=0 || runsLeft<=0) return "-";
+ return (runsLeft/(ballsLeft/6)).toFixed(2);
+}
+
 function updateDisplay(){
  document.getElementById('liveScore').innerText=totalRuns+"/"+wickets;
  document.getElementById('liveOvers').innerText=calculateOvers();
  document.getElementById('liveRR').innerText=runRate();
+ document.getElementById('liveReqRuns').innerText=requiredRuns();
+ document.getElementById('liveReqRR').innerText=requiredRR();
 
  send('manualScore',{
    score:totalRuns+"/"+wickets,
    overs:calculateOvers(),
-   runRate:runRate()
+   runRate:runRate(),
+   requiredRuns:requiredRuns(),
+   requiredRR:requiredRR()
  });
 }
 
