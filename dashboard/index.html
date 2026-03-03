@@ -17,11 +17,8 @@ body{margin:0;font-family:Segoe UI,Arial;background:#060b18;color:#e5e7eb;displa
 input,textarea,select{width:100%;padding:10px;margin-bottom:14px;border-radius:8px;border:1px solid #1f2937;background:#020617;color:#fff}
 button{width:100%;padding:10px;border:none;border-radius:8px;background:#1d4ed8;color:white;cursor:pointer;margin-top:8px}
 button:disabled{opacity:.5;cursor:not-allowed}
-
 .scoreBox{font-size:24px;margin-bottom:15px}
 .scoreButtons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
-.sideBySide{display:flex;gap:20px;margin-top:15px}
-.sideCol{flex:1}
 </style>
 </head>
 <body>
@@ -63,19 +60,20 @@ Tournament<input id="tournament">
 
 <!-- MANUAL BACKUP -->
 <div id="scoreinfo" class="tab">
-<h3>Manual Score Info (Backup)</h3>
+<h3>Manual Score Info (Override)</h3>
 Manual Score<input id="manualScore" placeholder="145/6">
 Overs<input id="manualOvers" placeholder="18.2">
-<button onclick="send('manualScore',{score:manualScore.value,overs:manualOvers.value})">Update Manual Score</button>
+<button onclick="sendManualOverride()">Override Score</button>
 </div>
 
-<!-- LIVE SCORING (NEW) -->
+<!-- LIVE SCORING -->
 <div id="livescoring" class="tab">
 <h3>Live Scoring</h3>
 
 <div class="scoreBox">
 <strong>Score:</strong> <span id="liveScore">0/0</span><br>
-<strong>Overs:</strong> <span id="liveOvers">0.0</span>
+<strong>Overs:</strong> <span id="liveOvers">0.0</span><br>
+<strong>Run Rate:</strong> <span id="liveRR">0.00</span>
 </div>
 
 <div class="scoreButtons">
@@ -89,15 +87,11 @@ Overs<input id="manualOvers" placeholder="18.2">
 <button onclick="undo()">UNDO</button>
 </div>
 
-<div class="sideBySide">
-<div class="sideCol">
 <h4>Extras</h4>
 <button onclick="addExtra('wide')">Wide</button>
 <button onclick="addExtra('noball')">No Ball</button>
 <button onclick="addExtra('bye')">Bye</button>
 <button onclick="addExtra('legbye')">Leg Bye</button>
-</div>
-</div>
 
 </div>
 
@@ -142,10 +136,20 @@ function calculateOvers(){
  return Math.floor(balls/6)+"."+(balls%6);
 }
 
+function runRate(){
+ return balls? (totalRuns/(balls/6)).toFixed(2) : "0.00";
+}
+
 function updateDisplay(){
  document.getElementById('liveScore').innerText=totalRuns+"/"+wickets;
  document.getElementById('liveOvers').innerText=calculateOvers();
- send('manualScore',{score:totalRuns+"/"+wickets,overs:calculateOvers()});
+ document.getElementById('liveRR').innerText=runRate();
+
+ send('manualScore',{
+   score:totalRuns+"/"+wickets,
+   overs:calculateOvers(),
+   runRate:runRate()
+ });
 }
 
 function addRun(r){
@@ -177,10 +181,16 @@ function undo(){
  if(last.type==='extra'){ totalRuns--; if(last.extra==="bye"||last.extra==="legbye") balls--; }
  updateDisplay();
 }
+
+function sendManualOverride(){
+ send('manualScore',{
+   score:manualScore.value,
+   overs:manualOvers.value
+ });
+}
 </script>
 
 <script>
-// ===== EXISTING SCRIPT (UNCHANGED BELOW) =====
 const PUSHER_KEY=window.PUSHER_KEY||'';
 const pusher=new Pusher("12fcceaea77e52cf3626",{cluster:'us2'});
 const channel=pusher.subscribe('broadcast');
