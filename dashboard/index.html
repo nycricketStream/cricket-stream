@@ -89,6 +89,9 @@ Required RR: <span id="liveReqRR">-</span>
 <h4>Batters</h4>
 Striker<select id="striker"></select>
 Non-Striker<select id="nonStriker"></select>
+
+<h4>Bowler</h4>
+Bowler<select id="bowler"></select>
  
 <h4>Runs</h4>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
@@ -222,26 +225,35 @@ function updateStrikerDropdown(){
 
  const strikerSel=document.getElementById('striker');
  const nonStrikerSel=document.getElementById('nonStriker');
+ const bowlerSel=document.getElementById('bowler');
 
- if(!strikerSel || !nonStrikerSel) return;
+ if(!strikerSel || !nonStrikerSel || !bowlerSel) return;
 
  strikerSel.innerHTML='';
  nonStrikerSel.innerHTML='';
+ bowlerSel.innerHTML='';
 
- let players=[];
+ let batPlayers=[];
+ let bowlPlayers=[];
 
  if(batting.value===teamA.value){
-   players=teamAPlayers.value.split('\n');
+   batPlayers=teamAPlayers.value.split('\n');
+   bowlPlayers=teamBPlayers.value.split('\n');
  } else if(batting.value===teamB.value){
-   players=teamBPlayers.value.split('\n');
+   batPlayers=teamBPlayers.value.split('\n');
+   bowlPlayers=teamAPlayers.value.split('\n');
  }
 
- players.map(p=>p.trim()).filter(Boolean).forEach(p=>{
+ batPlayers.map(p=>p.trim()).filter(Boolean).forEach(p=>{
    strikerSel.add(new Option(p,p));
    nonStrikerSel.add(new Option(p,p));
  });
-}
 
+ bowlPlayers.map(p=>p.trim()).filter(Boolean).forEach(p=>{
+   bowlerSel.add(new Option(p,p));
+ });
+}
+ 
 function toggleScoreInfo(){
  const enabled=document.getElementById('useCricclubs').checked;
  document.getElementById('manualUpdateBtn').disabled=enabled;
@@ -254,6 +266,8 @@ window.addEventListener('DOMContentLoaded',()=>{
  document.getElementById('teamBPlayers').addEventListener('input',updatePlayerDropdown);
  document.getElementById('batting').addEventListener('change',updatePlayerDropdown);
  document.getElementById('batting').addEventListener('change',updateStrikerDropdown);
+ document.getElementById('teamAPlayers').addEventListener('input',updateStrikerDropdown);
+ document.getElementById('teamBPlayers').addEventListener('input',updateStrikerDropdown);
  document.getElementById('useCricclubs').addEventListener('change',toggleScoreInfo);
  toggleScoreInfo();
 });
