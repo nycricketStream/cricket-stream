@@ -49,6 +49,8 @@ Team B<input id="teamB">
 Team B Players<textarea id="teamBPlayers"></textarea>
 Batting Team<select id="batting"></select>
 Innings<select id="innings"><option>1st Innings</option><option>2nd Innings</option></select>
+Total Overs<input id="maxOvers" value="50">
+Target (2nd Innings Only)<input id="target" placeholder="e.g. 250">
 <button onclick="send('match',{teamA:teamA.value,teamB:teamB.value,batting:batting.value,innings:innings.value,teamAPlayers:teamAPlayers.value.split('\n'),teamBPlayers:teamBPlayers.value.split('\n')})">Update Match</button>
 </div>
 
@@ -73,13 +75,15 @@ Overs<input id="manualOvers" placeholder="18.2">
 <button id="manualUpdateBtn" onclick="send('manualScore',{score:manualScore.value,overs:manualOvers.value})">Update Manual Score</button>
 </div>
 
- /*=========== Live scoring =============*/
+ <!-- LIVE SCORING -->
 <div id="livescoring" class="tab">
 <h3>Live Scoring</h3>
 <div style="font-size:20px;margin-bottom:15px">
 Score: <span id="liveScore">0/0</span><br>
 Overs: <span id="liveOvers">0.0</span><br>
-Run Rate: <span id="liveRR">0.00</span>
+Run Rate: <span id="liveRR">0.00</span><br>
+Required Runs: <span id="liveReqRuns">-</span><br>
+Required RR: <span id="liveReqRR">-</span>
 </div>
  
 <h4>Runs</h4>
@@ -101,7 +105,7 @@ Run Rate: <span id="liveRR">0.00</span>
 <button onclick="addExtra('legbye')">Leg Bye</button>
 
 </div>
-/*======= Live scoring end ============*/
+<!-- LIVE SCORING END -->
  
 <div id="player" class="tab">
 <h3>Player Lower Third</h3>
@@ -264,15 +268,43 @@ function calculateRR(){
  return liveBalls ? (liveTotal / (liveBalls/6)).toFixed(2) : "0.00";
 }
 
+function calculateRequiredRuns(){
+ const targetVal = parseInt(document.getElementById('target')?.value);
+ const inningsVal = document.getElementById('innings')?.value;
+
+ if(!targetVal || inningsVal !== "2nd Innings") return "-";
+ return Math.max(targetVal - liveTotal, 0);
+}
+
+function calculateRequiredRR(){
+ const targetVal = parseInt(document.getElementById('target')?.value);
+ const inningsVal = document.getElementById('innings')?.value;
+ const maxOversVal = parseInt(document.getElementById('maxOvers')?.value || 20);
+
+ if(!targetVal || inningsVal !== "2nd Innings") return "-";
+
+ const ballsLeft = (maxOversVal * 6) - liveBalls;
+ const runsLeft = targetVal - liveTotal;
+
+ if(ballsLeft <= 0 || runsLeft <= 0) return "-";
+
+ return (runsLeft / (ballsLeft/6)).toFixed(2);
+}
+
 function updateLiveDisplay(){
  document.getElementById('liveScore').innerText = liveTotal + "/" + liveWickets;
  document.getElementById('liveOvers').innerText = calculateOvers();
  document.getElementById('liveRR').innerText = calculateRR();
 
- // Push to overlay using existing event
+ document.getElementById('liveReqRuns').innerText = calculateRequiredRuns();
+ document.getElementById('liveReqRR').innerText = calculateRequiredRR();
+
  send('manualScore',{
    score: liveTotal + "/" + liveWickets,
-   overs: calculateOvers()
+   overs: calculateOvers(),
+   runRate: calculateRR(),
+   requiredRuns: calculateRequiredRuns(),
+   requiredRR: calculateRequiredRR()
  });
 }
 
