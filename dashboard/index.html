@@ -1,351 +1,236 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Cricket Broadcast Dashboard</title>
-    <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
+<meta charset="UTF-8">
+<title>Cricket Broadcast Dashboard</title>
+<script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Segoe UI,Arial;
-            background: #060b18;
-            color: #e5e7eb;
-            display: flex
-        }
-
-        .sidebar {
-            width: 260px;
-            background: linear-gradient(180deg,#081a3a,#030712);
-            height: 100vh;
-            padding: 18px 14px;
-            border-right: 1px solid rgba(59,130,246,.25)
-        }
-
-            .sidebar h2 {
-                margin-top: 0;
-                color: #60a5fa
-            }
-
-        .tab-btn {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 12px;
-            border: none;
-            border-radius: 10px;
-            background: #0a1226;
-            color: white;
-            text-align: left;
-            cursor: pointer
-        }
-
-            .tab-btn.active {
-                background: #2563eb
-            }
-
-        .main {
-            flex: 1;
-            padding: 28px
-        }
-
-        .tab {
-            display: none;
-            background: #0c1426;
-            padding: 26px;
-            border-radius: 16px
-        }
-
-            .tab.active {
-                display: block
-            }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 14px;
-            border-radius: 8px;
-            border: 1px solid #1f2937;
-            background: #020617;
-            color: #fff
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            background: #1d4ed8;
-            color: white;
-            cursor: pointer;
-            margin-top: 8px
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px
-        }
-
-        th, td {
-            border: 1px solid #1f2937;
-            padding: 6px;
-            text-align: center;
-            font-size: 12px
-        }
-    </style>
+<style>
+body{margin:0;font-family:Segoe UI,Arial;background:#060b18;color:#e5e7eb;display:flex}
+.sidebar{width:260px;background:linear-gradient(180deg,#081a3a,#030712);height:100vh;padding:18px 14px;border-right:1px solid rgba(59,130,246,.25)}
+.sidebar h2{margin-top:0;color:#60a5fa}
+.tab-btn{width:100%;padding:12px;margin-bottom:12px;border:none;border-radius:10px;background:#0a1226;color:white;text-align:left;cursor:pointer}
+.tab-btn.active{background:#2563eb}
+.main{flex:1;padding:28px}
+.tab{display:none;background:#0c1426;padding:26px;border-radius:16px}
+.tab.active{display:block}
+input,textarea,select{width:100%;padding:10px;margin-bottom:14px;border-radius:8px;border:1px solid #1f2937;background:#020617;color:#fff}
+button{width:100%;padding:10px;border:none;border-radius:8px;background:#1d4ed8;color:white;cursor:pointer;margin-top:8px}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th,td{border:1px solid #1f2937;padding:6px;text-align:center;font-size:12px}
+</style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <h2>Broadcast</h2>
-        <button class="tab-btn active" onclick="showTab(event,'match')">Match Setup</button>
-        <button class="tab-btn" onclick="showTab(event,'branding')">League Branding</button>
-        <button class="tab-btn" onclick="showTab(event,'scoreinfo')">Score Info</button>
-        <button class="tab-btn" onclick="showTab(event,'scoring')">Live Scoring</button>
-        <button class="tab-btn" onclick="showTab(event,'player')">Player Graphic</button>
-        <button class="tab-btn" onclick="showTab(event,'sponsors')">Sponsors</button>
-        <button class="tab-btn" onclick="showTab(event,'moments')">Moments</button>
-    </div>
+<div class="sidebar">
+<h2>Broadcast</h2>
+<button class="tab-btn active" onclick="showTab(event,'match')">Match Setup</button>
+<button class="tab-btn" onclick="showTab(event,'branding')">League Branding</button>
+<button class="tab-btn" onclick="showTab(event,'scoreinfo')">Score Info</button>
+<button class="tab-btn" onclick="showTab(event,'scoring')">Live Scoring</button>
+<button class="tab-btn" onclick="showTab(event,'player')">Player Graphic</button>
+<button class="tab-btn" onclick="showTab(event,'sponsors')">Sponsors</button>
+<button class="tab-btn" onclick="showTab(event,'moments')">Moments</button>
+</div>
 
-    <div class="main">
+<div class="main">
 
-        <div id="match" class="tab active">
-            <h3>Match Setup</h3>
-            Team A<input id="teamA">
-            Team A Players<textarea id="teamAPlayers"></textarea>
-            Team B<input id="teamB">
-            Team B Players<textarea id="teamBPlayers"></textarea>
-            Batting Team<select id="batting"></select>
-            Innings<select id="innings">
-                <option value="1">1st Innings</option>
-                <option value="2">2nd Innings</option>
-            </select>
-            Target<input id="target">
-            Total Overs<input id="maxOvers" value="20">
-            Powerplay Overs<input id="powerplayOvers" value="6">
-            <button onclick="initPlayers()">Update Match</button>
-        </div>
+<div id="match" class="tab active">
+<h3>Match Setup</h3>
+Team A<input id="teamA">
+Team A Players<textarea id="teamAPlayers"></textarea>
+Team B<input id="teamB">
+Team B Players<textarea id="teamBPlayers"></textarea>
+Batting Team<select id="batting"></select>
+Innings<select id="innings">
+<option value="1">1st Innings</option>
+<option value="2">2nd Innings</option>
+</select>
+Target<input id="target">
+Total Overs<input id="maxOvers" value="20">
+Powerplay Overs<input id="powerplayOvers" value="6">
+<button onclick="initPlayers()">Update Match</button>
+</div>
 
-        <div id="branding" class="tab">
-            <h3>League Branding</h3>
-            League<input id="league">
-            Tournament<input id="tournament">
-            <button onclick="send('branding',{league:league.value,tournament:tournament.value})">Update Branding</button>
-        </div>
+<div id="branding" class="tab">
+<h3>League Branding</h3>
+League<input id="league">
+Tournament<input id="tournament">
+<button onclick="send('branding',{league:league.value,tournament:tournament.value})">Update Branding</button>
+</div>
 
-        <div id="scoreinfo" class="tab">
-            <h3>Manual Backup</h3>
-            Manual Score<input id="manualScore">
-            Overs<input id="manualOvers">
-            <button onclick="pushScore()">Push Manual Score</button>
-        </div>
+<div id="scoreinfo" class="tab">
+<h3>Manual Backup</h3>
+Manual Score<input id="manualScore">
+Overs<input id="manualOvers">
+<button onclick="pushScore()">Push Manual Score</button>
+</div>
 
-        <div id="scoring" class="tab">
-            <h3>Live Scoring</h3>
+<div id="scoring" class="tab">
+<h3>Live Scoring</h3>
 
-            <div style="font-size:22px;margin-bottom:15px">
-                <strong>Total:</strong> <span id="liveScore">0/0</span><br>
-                <strong>Overs:</strong> <span id="liveOvers">0.0</span><br>
-                <strong>Run Rate:</strong> <span id="liveRR">0.00</span><br>
-                <strong>Req RR:</strong> <span id="liveReqRR">-</span><br>
-                <strong>Phase:</strong> <span id="livePhase">Powerplay</span>
-            </div>
+<div style="font-size:22px;margin-bottom:15px">
+<strong>Total:</strong> <span id="liveScore">0/0</span><br>
+<strong>Overs:</strong> <span id="liveOvers">0.0</span><br>
+<strong>Run Rate:</strong> <span id="liveRR">0.00</span><br>
+<strong>Req RR:</strong> <span id="liveReqRR">-</span><br>
+<strong>Phase:</strong> <span id="livePhase">Powerplay</span>
+</div>
 
-            <h4>Striker</h4>
-            <select id="striker"></select>
+<h4>Striker</h4>
+<select id="striker"></select>
 
-            <h4>Non-Striker</h4>
-            <select id="nonStriker"></select>
+<h4>Non-Striker</h4>
+<select id="nonStriker"></select>
 
-            <h4>Bowler</h4>
-            <input id="bowlerName">
+<h4>Bowler</h4>
+<input id="bowlerName">
 
-            <button onclick="rotateStrike()">Manual Rotate</button>
+<button onclick="rotateStrike()">Manual Rotate</button>
 
-            <h4>Runs</h4>
-            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
-                <button onclick="addRuns(0)">0</button>
-                <button onclick="addRuns(1)">1</button>
-                <button onclick="addRuns(2)">2</button>
-                <button onclick="addRuns(3)">3</button>
-                <button onclick="addRuns(4)">4</button>
-                <button onclick="addRuns(6)">6</button>
-            </div>
+<h4>Runs</h4>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+<button onclick="addRuns(0)">0</button>
+<button onclick="addRuns(1)">1</button>
+<button onclick="addRuns(2)">2</button>
+<button onclick="addRuns(3)">3</button>
+<button onclick="addRuns(4)">4</button>
+<button onclick="addRuns(6)">6</button>
+</div>
 
-            <h4>Extras</h4>
-            <button onclick="addExtra('wide')">Wide</button>
-            <button onclick="addExtra('noball')">No Ball</button>
-            <button onclick="addExtra('bye')">Bye</button>
-            <button onclick="addExtra('legbye')">Leg Bye</button>
+<h4>Extras</h4>
+<button onclick="addExtra('wide')">Wide</button>
+<button onclick="addExtra('noball')">No Ball</button>
+<button onclick="addExtra('bye')">Bye</button>
+<button onclick="addExtra('legbye')">Leg Bye</button>
 
-            <h4>Wicket</h4>
-            <button onclick="addWicket()">Add Wicket</button>
+<h4>Wicket</h4>
+<button onclick="addWicket()">Add Wicket</button>
 
-            <h3>Batting Card</h3>
-            <table>
-                <thead><tr><th>Name</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead>
-                <tbody id="batBody"></tbody>
-            </table>
+</div>
 
-            <h3>Bowling Card</h3>
-            <table>
-                <thead><tr><th>Name</th><th>O</th><th>M</th><th>R</th><th>W</th><th>Econ</th></tr></thead>
-                <tbody id="bowlBody"></tbody>
-            </table>
+<div id="player" class="tab">
+<h3>Player Lower Third</h3>
+Player<select id="playerSelect"></select>
+Handedness<select id="handed">
+<option value="Right-Hand">Right-Hand</option>
+<option value="Left-Hand">Left-Hand</option>
+</select>
+Player Image URL<input id="playerImg">
+<button onclick="showPlayer()">Show Player</button>
+</div>
 
-        </div>
-    </div>
+</div>
 
-    <script>
-        async function send(event, data) {
-            await fetch('/api/broadcast', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ event, data })
-            });
-        }
+<script>
+async function send(event,data){
+ await fetch('/api/broadcast',{
+  method:'POST',
+  headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({event,data})
+ });
+}
 
-        /* SAFE ENGINE STATE */
-        let total = 0, wkts = 0, balls = 0;
-        let battingStats = {}, bowlingStats = {}, currentOverRuns = 0;
+/* ===== AUTO MATCH BINDING RESTORED ===== */
 
-        function safeNumber(v, d = 0) { v = parseFloat(v); return isNaN(v) ? d : v; }
+function updateBattingTeams(){
+ batting.innerHTML="";
+ if(teamA.value) batting.add(new Option(teamA.value,teamA.value));
+ if(teamB.value) batting.add(new Option(teamB.value,teamB.value));
+ updatePlayerDropdown();
+}
 
-        function initPlayers() {
-            let players = (batting.value === teamA.value ? teamAPlayers.value : teamBPlayers.value) || "";
-            let list = players.split('\n').map(p => p.trim()).filter(Boolean);
-            striker.innerHTML = ""; nonStriker.innerHTML = "";
-            list.forEach(p => {
-                striker.add(new Option(p, p));
-                nonStriker.add(new Option(p, p));
-                battingStats[p] = { runs: 0, balls: 0, fours: 0, sixes: 0 };
-            });
-        }
+function updatePlayerDropdown(){
+ let players=[];
+ if(batting.value===teamA.value){
+  players=teamAPlayers.value.split('\n');
+ } else if(batting.value===teamB.value){
+  players=teamBPlayers.value.split('\n');
+ }
+ playerSelect.innerHTML="";
+ striker.innerHTML="";
+ nonStriker.innerHTML="";
+ players.map(p=>p.trim()).filter(Boolean).forEach(p=>{
+  playerSelect.add(new Option(p,p));
+  striker.add(new Option(p,p));
+  nonStriker.add(new Option(p,p));
+ });
+}
 
-        function calculateOvers() { return Math.floor(balls / 6) + "." + (balls % 6); }
-        function runRate() { return balls ? (total / (balls / 6)).toFixed(2) : "0.00"; }
-        function reqRR() {
-            if (innings.value !== "2") return "-";
-            let targetRuns = safeNumber(target.value);
-            if (!targetRuns) return "-";
-            let remain = targetRuns - total;
-            let max = safeNumber(maxOvers.value, 20) * 6;
-            let left = max - balls;
-            return left > 0 ? (remain / (left / 6)).toFixed(2) : "-";
-        }
-        function phase() {
-            return (balls / 6) <= safeNumber(powerplayOvers.value, 6) ? "Powerplay" : "Middle";
-        }
+teamA.addEventListener('input',updateBattingTeams);
+teamB.addEventListener('input',updateBattingTeams);
+teamAPlayers.addEventListener('input',updatePlayerDropdown);
+teamBPlayers.addEventListener('input',updatePlayerDropdown);
+batting.addEventListener('change',updatePlayerDropdown);
 
-        function updateDisplay() {
-            liveScore.innerText = total + "/" + wkts;
-            liveOvers.innerText = calculateOvers();
-            liveRR.innerText = runRate();
-            liveReqRR.innerText = reqRR();
-            livePhase.innerText = phase();
-            renderTables();
-            pushScore();
-        }
+/* ===== STABLE SCORING ENGINE ===== */
 
-        function ensureBatsman(name) {
-            if (!battingStats[name])
-                battingStats[name] = { runs: 0, balls: 0, fours: 0, sixes: 0 };
-        }
+let total=0,wkts=0,balls=0;
 
-        function ensureBowler(name) {
-            if (!bowlingStats[name])
-                bowlingStats[name] = { balls: 0, runs: 0, wickets: 0, maidens: 0 };
-        }
+function calculateOvers(){return Math.floor(balls/6)+"."+(balls%6);}
+function runRate(){return balls?(total/(balls/6)).toFixed(2):"0.00";}
 
-        function addRuns(r) {
-            let s = striker.value || "Striker";
-            let b = bowlerName.value || "Bowler";
-            ensureBatsman(s); ensureBowler(b);
+function updateDisplay(){
+ liveScore.innerText=total+"/"+wkts;
+ liveOvers.innerText=calculateOvers();
+ liveRR.innerText=runRate();
+ pushScore();
+}
 
-            total += r; balls++; currentOverRuns += r;
+function addRuns(r){
+ total+=r;balls++;
+ if(r%2===1)rotateStrike();
+ if(balls%6===0)rotateStrike();
+ updateDisplay();
+}
 
-            battingStats[s].runs += r;
-            battingStats[s].balls++;
-            if (r === 4) battingStats[s].fours++;
-            if (r === 6) battingStats[s].sixes++;
+function addExtra(type){
+ total++;
+ if(type==="bye"||type==="legbye") balls++;
+ updateDisplay();
+}
 
-            bowlingStats[b].balls++;
-            bowlingStats[b].runs += r;
+function addWicket(){
+ wkts++;balls++;
+ updateDisplay();
+}
 
-            if (r % 2 === 1) rotateStrike();
-            if (balls % 6 === 0) {
-                if (currentOverRuns === 0) bowlingStats[b].maidens++;
-                currentOverRuns = 0;
-                rotateStrike();
-            }
+function rotateStrike(){
+ let t=striker.value;
+ striker.value=nonStriker.value;
+ nonStriker.value=t;
+}
 
-            updateDisplay();
-        }
+function pushScore(){
+ send('score',{
+  live:true,
+  total:total,
+  wickets:wkts,
+  overs:calculateOvers(),
+  runRate:runRate(),
+  striker:striker.value,
+  nonStriker:nonStriker.value
+ });
+}
 
-        function addExtra(type) {
-            let b = bowlerName.value || "Bowler";
-            ensureBowler(b);
-            total++;
-            bowlingStats[b].runs++;
-            if (type === "bye" || type === "legbye") {
-                balls++;
-            }
-            updateDisplay();
-        }
+/* ===== PLAYER GRAPHIC ===== */
 
-        function addWicket() {
-            let b = bowlerName.value || "Bowler";
-            ensureBowler(b);
-            total += 0; wkts++; balls++;
-            bowlingStats[b].balls++;
-            bowlingStats[b].wickets++;
-            updateDisplay();
-        }
+function showPlayer(){
+ send('player',{
+  team:batting.value,
+  label:'NEW BATSMAN',
+  name:playerSelect.value,
+  hand:handed.value,
+  image:playerImg.value
+ });
+}
 
-        function rotateStrike() {
-            let t = striker.value;
-            striker.value = nonStriker.value;
-            nonStriker.value = t;
-        }
-
-        function renderTables() {
-            batBody.innerHTML = "";
-            Object.keys(battingStats).forEach(p => {
-                let s = battingStats[p];
-                let sr = s.balls ? ((s.runs / s.balls) * 100).toFixed(1) : "0.0";
-                batBody.innerHTML += `<tr><td>${p}</td><td>${s.runs}</td><td>${s.balls}</td><td>${s.fours}</td><td>${s.sixes}</td><td>${sr}</td></tr>`;
-            });
-
-            bowlBody.innerHTML = "";
-            Object.keys(bowlingStats).forEach(p => {
-                let s = bowlingStats[p];
-                let o = Math.floor(s.balls / 6) + "." + (s.balls % 6);
-                let e = s.balls ? (s.runs / (s.balls / 6)).toFixed(2) : "0.00";
-                bowlBody.innerHTML += `<tr><td>${p}</td><td>${o}</td><td>${s.maidens}</td><td>${s.runs}</td><td>${s.wickets}</td><td>${e}</td></tr>`;
-            });
-        }
-
-        function pushScore() {
-            send('score', {
-                live: true,
-                total: total,
-                wickets: wkts,
-                overs: calculateOvers(),
-                runRate: runRate(),
-                reqRR: reqRR(),
-                striker: battingStats[striker.value] || {},
-                nonStriker: battingStats[nonStriker.value] || {},
-                bowler: bowlingStats[bowlerName.value] || {},
-                phase: phase()
-            });
-        }
-
-        function showTab(evt, id) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            if (evt) evt.target.classList.add('active');
-        }
-    </script>
+function showTab(evt,id){
+ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+ if(evt) evt.target.classList.add('active');
+}
+</script>
 </body>
 </html>
