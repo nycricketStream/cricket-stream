@@ -309,6 +309,7 @@ let liveTotal = 0;
 let liveWickets = 0;
 let liveBalls = 0;
 let liveHistory = [];
+let bowlerStats = {};
 
 function calculateOvers(){
  return Math.floor(liveBalls/6) + "." + (liveBalls % 6);
@@ -359,31 +360,68 @@ function updateLiveDisplay(){
 }
 
 function addRun(r){
- liveHistory.push({type:'run', runs:r});
+ const currentBowler = document.getElementById('bowler')?.value;
+
+ liveHistory.push({type:'run', runs:r, bowler:currentBowler});
+
  liveTotal += r;
  liveBalls++;
+
+ if(currentBowler){
+   ensureBowler(currentBowler);
+   bowlerStats[currentBowler].runs += r;
+   bowlerStats[currentBowler].balls++;
+ }
+
  if(r % 2 === 1){
-  rotateStrike();
- } 
+   rotateStrike();
+ }
+
  if(liveBalls % 6 === 0){
-  rotateStrike();
- } 
+   rotateStrike();
+ }
+
  updateLiveDisplay();
 }
 
 function addWicket(){
- liveHistory.push({type:'wicket'});
+ const currentBowler = document.getElementById('bowler')?.value;
+
+ liveHistory.push({type:'wicket', bowler:currentBowler});
+
  liveWickets++;
  liveBalls++;
+
+ if(currentBowler){
+   ensureBowler(currentBowler);
+   bowlerStats[currentBowler].balls++;
+   bowlerStats[currentBowler].wickets++;
+ }
+
+ if(liveBalls % 6 === 0){
+   rotateStrike();
+ }
+
  updateLiveDisplay();
 }
 
 function addExtra(type){
- liveHistory.push({type:'extra', extra:type});
+ const currentBowler = document.getElementById('bowler')?.value;
+
+ liveHistory.push({type:'extra', extra:type, bowler:currentBowler});
+
  liveTotal++;
+
+ if(currentBowler){
+   ensureBowler(currentBowler);
+   bowlerStats[currentBowler].runs++;
+ }
 
  if(type === "bye" || type === "legbye"){
    liveBalls++;
+   if(currentBowler){
+     bowlerStats[currentBowler].balls++;
+   }
  }
 
  updateLiveDisplay();
@@ -396,17 +434,35 @@ function undoLast(){
  if(last.type === 'run'){
    liveTotal -= last.runs;
    liveBalls--;
+
+   if(last.bowler && bowlerStats[last.bowler]){
+     bowlerStats[last.bowler].runs -= last.runs;
+     bowlerStats[last.bowler].balls--;
+   }
  }
 
  if(last.type === 'wicket'){
    liveWickets--;
    liveBalls--;
+
+   if(last.bowler && bowlerStats[last.bowler]){
+     bowlerStats[last.bowler].balls--;
+     bowlerStats[last.bowler].wickets--;
+   }
  }
 
  if(last.type === 'extra'){
    liveTotal--;
+
+   if(last.bowler && bowlerStats[last.bowler]){
+     bowlerStats[last.bowler].runs--;
+   }
+
    if(last.extra === "bye" || last.extra === "legbye"){
      liveBalls--;
+     if(last.bowler && bowlerStats[last.bowler]){
+       bowlerStats[last.bowler].balls--;
+     }
    }
  }
 
@@ -422,6 +478,16 @@ function rotateStrike(){
  const temp=strikerSel.value;
  strikerSel.value=nonStrikerSel.value;
  nonStrikerSel.value=temp;
+}
+
+function ensureBowler(name){
+ if(!bowlerStats[name]){
+   bowlerStats[name] = {
+     balls: 0,
+     runs: 0,
+     wickets: 0
+   };
+ }
 }
 </script>
 </body>
