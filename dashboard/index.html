@@ -14,15 +14,11 @@ body{margin:0;font-family:Segoe UI,Arial;background:#060b18;color:#e5e7eb;displa
 .main{flex:1;padding:28px}
 .tab{display:none;background:#0c1426;padding:26px;border-radius:16px}
 .tab.active{display:block}
-input,textarea,select{width:100%;padding:8px;margin-bottom:10px;border-radius:6px;border:1px solid #1f2937;background:#020617;color:#fff}
-button{width:100%;padding:8px;border:none;border-radius:6px;background:#1d4ed8;color:white;cursor:pointer;margin-top:6px}
+input,textarea,select{width:100%;padding:10px;margin-bottom:14px;border-radius:8px;border:1px solid #1f2937;background:#020617;color:#fff}
+button{width:100%;padding:10px;border:none;border-radius:8px;background:#1d4ed8;color:white;cursor:pointer;margin-top:8px}
 button:disabled{opacity:.5;cursor:not-allowed}
-.subtabs{display:flex;gap:6px;margin-bottom:15px}
-.subtab-btn{flex:1;padding:8px;border-radius:6px;border:none;background:#111827;color:white;cursor:pointer}
-.subtab-btn.active{background:#2563eb}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}
-th,td{border:1px solid #1f2937;padding:4px;text-align:center}
+
+/* DASHBOARD LOG PANEL */
 #logPanel{position:fixed;bottom:10px;left:10px;width:340px;max-height:240px;overflow:auto;background:rgba(0,0,0,.85);color:#22c55e;font-family:monospace;font-size:11px;padding:8px;border-radius:6px;display:none;z-index:99999}
 #logToggle{position:fixed;bottom:10px;right:10px;width:auto;padding:6px 10px;font-size:12px;border-radius:6px;background:#111827;color:#22c55e;z-index:99999}
 </style>
@@ -33,8 +29,9 @@ th,td{border:1px solid #1f2937;padding:4px;text-align:center}
 <h2>Broadcast</h2>
 <button class="tab-btn active" onclick="showTab(event,'match')">Match Setup</button>
 <button class="tab-btn" onclick="showTab(event,'branding')">League Branding</button>
+<button class="tab-btn" onclick="showTab(event,'cricclubs')">CricClubs</button>
 <button class="tab-btn" onclick="showTab(event,'scoreinfo')">Score Info</button>
-<button class="tab-btn" onclick="showTab(event,'livescoring')">Live Scoring</button>
+ <button class="tab-btn" onclick="showTab(event,'livescoring')">Live Scoring</button>
 <button class="tab-btn" onclick="showTab(event,'player')">Player Graphic</button>
 <button class="tab-btn" onclick="showTab(event,'sponsors')">Sponsors</button>
 <button class="tab-btn" onclick="showTab(event,'moments')">Moments</button>
@@ -44,7 +41,6 @@ th,td{border:1px solid #1f2937;padding:4px;text-align:center}
 
 <div class="main">
 
-<!-- MATCH SETUP (UNCHANGED) -->
 <div id="match" class="tab active">
 <h3>Match Setup</h3>
 Team A<input id="teamA">
@@ -53,12 +49,9 @@ Team B<input id="teamB">
 Team B Players<textarea id="teamBPlayers"></textarea>
 Batting Team<select id="batting"></select>
 Innings<select id="innings"><option>1st Innings</option><option>2nd Innings</option></select>
-Total Overs<input id="maxOvers" value="20">
-Target<input id="target">
-<button onclick="sendMatch()">Update Match</button>
+<button onclick="send('match',{teamA:teamA.value,teamB:teamB.value,batting:batting.value,innings:innings.value,teamAPlayers:teamAPlayers.value.split('\n'),teamBPlayers:teamBPlayers.value.split('\n')})">Update Match</button>
 </div>
 
-<!-- BRANDING (UNCHANGED) -->
 <div id="branding" class="tab">
 <h3>League Branding</h3>
 League<input id="league">
@@ -66,224 +59,92 @@ Tournament<input id="tournament">
 <button onclick="send('branding',{league:league.value,tournament:tournament.value})">Update Branding</button>
 </div>
 
-<!-- SCORE INFO (UNCHANGED) -->
+<div id="cricclubs" class="tab">
+<h3>CricClubs Auto Score</h3>
+<label><input type="checkbox" id="useCricclubs" checked> Enable CricClubs</label>
+Embed Link<input id="embedURL">
+<button onclick="send('score',{auto:true,url:embedURL.value})">Update CricClubs</button>
+</div>
+
 <div id="scoreinfo" class="tab">
-<h3>Manual Score Info (Override)</h3>
-Manual Score<input id="manualScore">
-Overs<input id="manualOvers">
-<button onclick="sendManualOverride()">Override Score</button>
+<h3>Manual Score Info (Backup)</h3>
+Manual Score<input id="manualScore" placeholder="145/6">
+Overs<input id="manualOvers" placeholder="18.2">
+<button id="manualUpdateBtn" onclick="send('manualScore',{score:manualScore.value,overs:manualOvers.value})">Update Manual Score</button>
 </div>
 
-<!-- LIVE SCORING (NEW) -->
 <div id="livescoring" class="tab">
-
 <h3>Live Scoring</h3>
-
-<div class="subtabs">
-<button class="subtab-btn active" onclick="showSubTab(event,'basic')">Basic</button>
-<button class="subtab-btn" onclick="showSubTab(event,'advanced')">Advanced</button>
+<p>Live scoring system will be added here.</p>
 </div>
 
-<div id="basic" class="subtab active">
-
-Score: <span id="liveScore">0/0</span><br>
-Overs: <span id="liveOvers">0.0</span><br>
-Run Rate: <span id="liveRR">0.00</span><br>
-Required Runs: <span id="liveReqRuns">-</span><br>
-Required RR: <span id="liveReqRR">-</span>
-
-<div class="grid">
-<button onclick="scoreRun(0)">0</button>
-<button onclick="scoreRun(1)">1</button>
-<button onclick="scoreRun(2)">2</button>
-<button onclick="scoreRun(3)">3</button>
-<button onclick="scoreRun(4)">4</button>
-<button onclick="scoreRun(6)">6</button>
-<button onclick="addWicket()">W</button>
-<button onclick="undo()">UNDO</button>
+<div id="player" class="tab">
+<h3>Player Lower Third</h3>
+Player<select id="playerSelect"></select>
+Handedness<select id="handed">
+<option value="Right-Hand">Right-Hand</option>
+<option value="Left-Hand">Left-Hand</option>
+</select>
+Player Image URL<input id="playerImg">
+<button onclick="send('player',{team:batting.value,label:'NEW BATSMAN',name:playerSelect.value,hand:handed.value,image:playerImg.value})">Show Player</button>
 </div>
 
-<button onclick="addExtra('wide')">Wide</button>
-<button onclick="addExtra('noball')">No Ball</button>
-<button onclick="addExtra('bye')">Bye</button>
-<button onclick="addExtra('legbye')">Leg Bye</button>
-
+<div id="sponsors" class="tab">
+<h3>Sponsors</h3>
+<label><input type="checkbox" id="showSponsors" checked> Show Sponsor Bar</label>
+<textarea id="sponsorList" placeholder="One sponsor image URL per line"></textarea>
+Rotation Seconds<input id="rotation" value="8">
+<button onclick="send('sponsor',{enabled:showSponsors.checked,list:sponsorList.value.split('\n'),interval:rotation.value})">Update Sponsors</button>
 </div>
 
-<div id="advanced" class="subtab" style="display:none">
-
-Striker<select id="striker"></select>
-Non-Striker<select id="nonStriker"></select>
-Bowler<select id="bowler"></select>
-
-<h4>Batsman Stats</h4>
-<table>
-<thead><tr><th>Name</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead>
-<tbody id="batsmanTable"></tbody>
-</table>
-
-<h4>Bowler Stats</h4>
-<table>
-<thead><tr><th>Name</th><th>O</th><th>R</th><th>W</th><th>Econ</th></tr></thead>
-<tbody id="bowlerTable"></tbody>
-</table>
-
+<div id="moments" class="tab">
+<h3>Moments</h3>
+<button onclick="send('moment',{type:'FOUR'})">FOUR</button>
+<button onclick="send('moment',{type:'SIX'})">SIX</button>
+<button onclick="send('moment',{type:'WICKET'})">WICKET</button>
 </div>
 
 </div>
 
-<!-- PLAYER / SPONSORS / MOMENTS REMAIN UNCHANGED BELOW -->
-
-</div>
-
+<!-- LOG PANEL UI -->
 <div id="logPanel"></div>
 <button id="logToggle">LOG</button>
 
 <script>
+const PUSHER_KEY=window.PUSHER_KEY||'';
+const pusher=new Pusher("12fcceaea77e52cf3626",{cluster:'us2'});
+const channel=pusher.subscribe('broadcast');
 
-/* ===== MATCH DROPDOWN FIX (RESTORED) ===== */
+/* LOGGING SYSTEM */
+const logPanel=document.getElementById('logPanel');
+const logToggle=document.getElementById('logToggle');
 
-function updateBattingTeams(){
- batting.innerHTML='';
- if(teamA.value) batting.add(new Option(teamA.value,teamA.value));
- if(teamB.value) batting.add(new Option(teamB.value,teamB.value));
- updateAdvancedPlayers();
+function log(msg){
+ const time=new Date().toLocaleTimeString();
+ logPanel.innerHTML+=`[${time}] ${msg}<br>`;
+ logPanel.scrollTop=logPanel.scrollHeight;
 }
 
-function updateAdvancedPlayers(){
- const bat=batting.value;
- let batPlayers=[],bowlPlayers=[];
- if(bat===teamA.value){
-  batPlayers=teamAPlayers.value.split('\n');
-  bowlPlayers=teamBPlayers.value.split('\n');
- }else{
-  batPlayers=teamBPlayers.value.split('\n');
-  bowlPlayers=teamAPlayers.value.split('\n');
- }
-
- striker.innerHTML='';
- nonStriker.innerHTML='';
- bowler.innerHTML='';
-
- batPlayers.map(p=>p.trim()).filter(Boolean).forEach(p=>{
-  striker.add(new Option(p,p));
-  nonStriker.add(new Option(p,p));
- });
-
- bowlPlayers.map(p=>p.trim()).filter(Boolean).forEach(p=>{
-  bowler.add(new Option(p,p));
- });
+function toggleLog(){
+ logPanel.style.display=logPanel.style.display==='none'?'block':'none';
 }
 
-teamA.addEventListener('input',updateBattingTeams);
-teamB.addEventListener('input',updateBattingTeams);
-teamAPlayers.addEventListener('input',updateAdvancedPlayers);
-teamBPlayers.addEventListener('input',updateAdvancedPlayers);
-batting.addEventListener('change',updateAdvancedPlayers);
+logToggle.addEventListener('click',toggleLog);
+window.addEventListener('keydown',e=>{
+ if(e.key && e.key.toLowerCase()==='l') toggleLog();
+});
 
-/* ===== SCORING ENGINE ===== */
+pusher.connection.bind('connected',()=>log('PUSHER CONNECTED'));
+pusher.connection.bind('connecting',()=>log('PUSHER CONNECTING'));
+pusher.connection.bind('disconnected',()=>log('PUSHER DISCONNECTED'));
 
-let total=0,wkts=0,balls=0;
-let history=[];
-let batsmen={},bowlers={};
-
-function overs(){return Math.floor(balls/6)+"."+(balls%6);}
-function rr(){return balls?(total/(balls/6)).toFixed(2):"0.00";}
-function requiredRuns(){ if(innings.value!=="2nd Innings"||!target.value) return "-"; return Math.max(parseInt(target.value)-total,0);}
-function requiredRR(){ if(innings.value!=="2nd Innings"||!target.value) return "-"; const ballsLeft=(parseInt(maxOvers.value)*6)-balls; const runsLeft=parseInt(target.value)-total; if(ballsLeft<=0||runsLeft<=0) return "-"; return (runsLeft/(ballsLeft/6)).toFixed(2);}
-
-function updateDisplay(){
- liveScore.innerText=total+"/"+wkts;
- liveOvers.innerText=overs();
- liveRR.innerText=rr();
- liveReqRuns.innerText=requiredRuns();
- liveReqRR.innerText=requiredRR();
- renderTables();
- send('manualScore',{score:total+"/"+wkts,overs:overs(),runRate:rr(),requiredRuns:requiredRuns(),requiredRR:requiredRR()});
+async function send(event,data){
+  await fetch('/api/broadcast',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({event:event,data})
+  });
 }
-
-function ensureBatsman(n){ if(!batsmen[n]) batsmen[n]={runs:0,balls:0,fours:0,sixes:0};}
-function ensureBowler(n){ if(!bowlers[n]) bowlers[n]={balls:0,runs:0,wickets:0};}
-
-function scoreRun(r){
- const s=striker.value,b=bowler.value;
- ensureBatsman(s); ensureBowler(b);
- history.push({type:'run',r,s,b});
- total+=r; balls++;
- batsmen[s].runs+=r; batsmen[s].balls++;
- if(r===4)batsmen[s].fours++;
- if(r===6)batsmen[s].sixes++;
- bowlers[b].runs+=r; bowlers[b].balls++;
- if(r%2===1) rotateStrike();
- if(balls%6===0) rotateStrike();
- updateDisplay();
-}
-
-function addWicket(){
- const s=striker.value,b=bowler.value;
- ensureBatsman(s); ensureBowler(b);
- history.push({type:'wicket',s,b});
- wkts++; balls++;
- batsmen[s].balls++;
- bowlers[b].balls++; bowlers[b].wickets++;
- if(balls%6===0) rotateStrike();
- updateDisplay();
-}
-
-function addExtra(type){
- const b=bowler.value;
- ensureBowler(b);
- history.push({type:'extra',type,b});
- total++; bowlers[b].runs++;
- if(type==="bye"||type==="legbye"){ balls++; if(balls%6===0) rotateStrike(); }
- updateDisplay();
-}
-
-function undo(){
- const last=history.pop();
- if(!last) return;
- if(last.type==='run'){
-  total-=last.r; balls--;
-  batsmen[last.s].runs-=last.r; batsmen[last.s].balls--;
-  if(last.r===4)batsmen[last.s].fours--;
-  if(last.r===6)batsmen[last.s].sixes--;
-  bowlers[last.b].runs-=last.r; bowlers[last.b].balls--;
- }
- if(last.type==='wicket'){
-  wkts--; balls--;
-  batsmen[last.s].balls--;
-  bowlers[last.b].balls--; bowlers[last.b].wickets--;
- }
- if(last.type==='extra'){
-  total--; bowlers[last.b].runs--;
-  if(last.type==="bye"||last.type==="legbye") balls--;
- }
- updateDisplay();
-}
-
-function rotateStrike(){
- const t=striker.value;
- striker.value=nonStriker.value;
- nonStriker.value=t;
-}
-
-function renderTables(){
- batsmanTable.innerHTML='';
- Object.keys(batsmen).forEach(n=>{
-  const d=batsmen[n];
-  const sr=d.balls?( (d.runs/d.balls)*100 ).toFixed(1):"0.0";
-  batsmanTable.innerHTML+=`<tr><td>${n}</td><td>${d.runs}</td><td>${d.balls}</td><td>${d.fours}</td><td>${d.sixes}</td><td>${sr}</td></tr>`;
- });
- bowlerTable.innerHTML='';
- Object.keys(bowlers).forEach(n=>{
-  const d=bowlers[n];
-  const o=Math.floor(d.balls/6)+"."+(d.balls%6);
-  const econ=d.balls?(d.runs/(d.balls/6)).toFixed(2):"0.00";
-  bowlerTable.innerHTML+=`<tr><td>${n}</td><td>${o}</td><td>${d.runs}</td><td>${d.wickets}</td><td>${econ}</td></tr>`;
- });
-}
-
-/* ===== UI ===== */
 
 function showTab(evt,id){
  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -292,25 +153,76 @@ function showTab(evt,id){
  if(evt) evt.target.classList.add('active');
 }
 
-function showSubTab(evt,id){
- document.querySelectorAll('.subtab').forEach(t=>t.style.display='none');
- document.getElementById(id).style.display='block';
- document.querySelectorAll('.subtab-btn').forEach(b=>b.classList.remove('active'));
- evt.target.classList.add('active');
+function updateBattingTeams(){
+ const teamA=document.getElementById('teamA');
+ const teamB=document.getElementById('teamB');
+ const sel=document.getElementById('batting');
+ sel.innerHTML='';
+ if(teamA.value) sel.add(new Option(teamA.value,teamA.value));
+ if(teamB.value) sel.add(new Option(teamB.value,teamB.value));
+ updatePlayerDropdown();
 }
 
-function sendMatch(){
- send('match',{teamA:teamA.value,teamB:teamB.value,batting:batting.value,innings:innings.value,teamAPlayers:teamAPlayers.value.split('\n'),teamBPlayers:teamBPlayers.value.split('\n')});
+function updatePlayerDropdown(){
+ const teamA=document.getElementById('teamA');
+ const teamB=document.getElementById('teamB');
+ const teamAPlayers=document.getElementById('teamAPlayers');
+ const teamBPlayers=document.getElementById('teamBPlayers');
+ const batting=document.getElementById('batting');
+ const dropdown=document.getElementById('playerSelect');
+ if(!dropdown) return;
+ dropdown.innerHTML='';
+ let players=[];
+ if(batting.value===teamA.value){ players=teamAPlayers.value.split('\n'); }
+ else if(batting.value===teamB.value){ players=teamBPlayers.value.split('\n'); }
+ players.map(p=>p.trim()).filter(Boolean).forEach(p=>dropdown.add(new Option(p,p)));
 }
 
-function sendManualOverride(){
- send('manualScore',{score:manualScore.value,overs:manualOvers.value});
+function toggleScoreInfo(){
+ const enabled=document.getElementById('useCricclubs').checked;
+ document.getElementById('manualUpdateBtn').disabled=enabled;
 }
 
-async function send(event,data){
- await fetch('/api/broadcast',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event,data})});
+window.addEventListener('DOMContentLoaded',()=>{
+ document.getElementById('teamA').addEventListener('input',updateBattingTeams);
+ document.getElementById('teamB').addEventListener('input',updateBattingTeams);
+ document.getElementById('teamAPlayers').addEventListener('input',updatePlayerDropdown);
+ document.getElementById('teamBPlayers').addEventListener('input',updatePlayerDropdown);
+ document.getElementById('batting').addEventListener('change',updatePlayerDropdown);
+ document.getElementById('useCricclubs').addEventListener('change',toggleScoreInfo);
+ toggleScoreInfo();
+});
+
+async function saveConfig(){
+ const config={
+   league:league.value,
+   tournament:tournament.value,
+   embedURL:embedURL.value,
+   sponsorList:sponsorList.value,
+   rotation:rotation.value
+ };
+
+ await fetch('/api/config',{
+   method:'POST',
+   headers:{
+     'Content-Type':'application/json',
+   },
+   body:JSON.stringify(config)
+ });
+
+ alert('Config saved');
 }
 
+async function loadConfig(){
+ const r=await fetch('/api/config');
+ const c=await r.json();
+ league.value=c.league||'';
+ tournament.value=c.tournament||'';
+ embedURL.value=c.embedURL||'';
+ sponsorList.value=c.sponsorList||'';
+ rotation.value=c.rotation||8;
+ alert('Config loaded');
+}
 </script>
 </body>
 </html>
