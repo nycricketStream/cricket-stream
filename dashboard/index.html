@@ -25,31 +25,37 @@ button{width:100%;padding:10px;border:none;border-radius:8px;background:#1d4ed8;
 <div class="sidebar">
 <h2>Broadcast</h2>
 <button class="tab-btn active" onclick="showTab(event,'match')">Match Setup</button>
-<button class="tab-btn" onclick="showTab(event,'branding')">League Branding</button>
-<button class="tab-btn" onclick="showTab(event,'scoreinfo')">Score Info</button>
 <button class="tab-btn" onclick="showTab(event,'scoring')">Live Scoring</button>
 <button class="tab-btn" onclick="showTab(event,'player')">Player Graphic</button>
-<button class="tab-btn" onclick="showTab(event,'sponsors')">Sponsors</button>
-<button class="tab-btn" onclick="showTab(event,'moments')">Moments</button>
 </div>
 
 <div class="main">
 
+<!-- MATCH SETUP -->
 <div id="match" class="tab active">
 <h3>Match Setup</h3>
+
 Team A<input id="teamA">
 Team A Players<textarea id="teamAPlayers"></textarea>
+
 Team B<input id="teamB">
 Team B Players<textarea id="teamBPlayers"></textarea>
+
 Batting Team<select id="batting"></select>
+
 Innings<select id="innings">
 <option value="1">1st Innings</option>
 <option value="2">2nd Innings</option>
 </select>
+
+Total Overs<input id="maxOvers" value="20">
+
 Target<input id="target">
+
 <button onclick="initPlayers()">Update Match</button>
 </div>
 
+<!-- LIVE SCORING -->
 <div id="scoring" class="tab">
 <h3>Live Scoring</h3>
 
@@ -72,7 +78,9 @@ Target<input id="target">
 <button onclick="undoLast()">Undo Last Ball</button>
 
 <h4>Runs</h4>
+
 <div class="flexRow">
+
 <div class="flexCol">
 <button onclick="addRuns(0)">0</button>
 <button onclick="addRuns(1)">1</button>
@@ -94,10 +102,12 @@ Target<input id="target">
 <h4>Wicket</h4>
 <button onclick="addWicket()">Add Wicket</button>
 </div>
-</div>
 
 </div>
 
+</div>
+
+<!-- PLAYER GRAPHIC -->
 <div id="player" class="tab">
 <h3>Player Lower Third</h3>
 Player<select id="playerSelect"></select>
@@ -120,7 +130,7 @@ async function send(event,data){
  });
 }
 
-/* ===== MATCH AUTO BINDING ===== */
+/* ===== AUTO BINDING ===== */
 
 function updateBattingTeams(){
  batting.innerHTML="";
@@ -208,19 +218,9 @@ function addWicket(){
 function undoLast(){
  let last=history.pop();
  if(!last) return;
-
- if(last.type==='run'){
-  total-=last.runs;
-  balls--;
- }
- if(last.type==='extra'){
-  total--;
-  if(last.extra==="bye"||last.extra==="legbye") balls--;
- }
- if(last.type==='wicket'){
-  wkts--;balls--;
- }
-
+ if(last.type==='run'){ total-=last.runs; balls--; }
+ if(last.type==='extra'){ total--; if(last.extra==="bye"||last.extra==="legbye") balls--; }
+ if(last.type==='wicket'){ wkts--; balls--; }
  updateDisplay();
 }
 
@@ -242,8 +242,6 @@ function pushScore(){
   bowler:bowlerSelect.value
  });
 }
-
-/* ===== PLAYER GRAPHIC ===== */
 
 function showPlayer(){
  send('player',{
