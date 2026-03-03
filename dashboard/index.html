@@ -307,6 +307,14 @@ window.addEventListener('DOMContentLoaded',()=>{
  document.getElementById('teamAPlayers').addEventListener('input',updateStrikerDropdown);
  document.getElementById('teamBPlayers').addEventListener('input',updateStrikerDropdown);
  document.getElementById('useCricclubs').addEventListener('change',toggleScoreInfo);
+ document.getElementById('bowler').addEventListener('change', function(){
+ currentOverBalls = 0;
+});
+ document.getElementById('striker').addEventListener('change', function(){
+ if(this.value){
+   lockedOut = false;
+ }
+});
  toggleScoreInfo();
 });
 
@@ -349,6 +357,8 @@ let liveBalls = 0;
 let liveHistory = [];
 let bowlerStats = {};
 let batsmanStats = {};
+let currentOverBalls = 0;
+let lockedOut = false;
 
 function calculateOvers(){
  return Math.floor(liveBalls/6) + "." + (liveBalls % 6);
@@ -427,13 +437,15 @@ function renderBowlerStats(){
 }
 
 function addRun(r){
- const striker = document.getElementById('striker')?.value;
+if(!validateBeforeBall()) return;
+const striker = document.getElementById('striker')?.value;
 const currentBowler = document.getElementById('bowler')?.value;
 
 liveHistory.push({type:'run', runs:r, bowler:currentBowler, striker:striker});
 
 liveTotal += r;
 liveBalls++;
+currentOverBalls++;
 
 if(striker){
  ensureBatsman(striker);
@@ -461,13 +473,18 @@ if(currentBowler){
 }
 
 function addWicket(){
+if(!validateBeforeBall()) return;
 const striker = document.getElementById('striker')?.value;
 const currentBowler = document.getElementById('bowler')?.value;
 
+document.getElementById('striker').value = "";
+lockedOut = true;
+ 
 liveHistory.push({type:'wicket', bowler:currentBowler, striker:striker});
 
 liveWickets++;
 liveBalls++;
+currentOverBalls++;
 
 if(striker){
  ensureBatsman(striker);
@@ -487,6 +504,7 @@ if(currentBowler){
 }
 
 function addExtra(type){
+if(!validateBeforeBall()) return;
 const striker = document.getElementById('striker')?.value;
 const currentBowler = document.getElementById('bowler')?.value;
 
@@ -501,6 +519,8 @@ if(currentBowler){
 
 if(type === "bye" || type === "legbye"){
  liveBalls++;
+ currentOverBalls++;
+}
 
  if(striker){
    ensureBatsman(striker);
@@ -574,6 +594,29 @@ function rotateStrike(){
  const temp=strikerSel.value;
  strikerSel.value=nonStrikerSel.value;
  nonStrikerSel.value=temp;
+}
+
+function validateBeforeBall(){
+ const striker = document.getElementById('striker')?.value;
+ const bowler = document.getElementById('bowler')?.value;
+
+ if(!striker){
+   alert("Select Striker before scoring.");
+   return false;
+ }
+ if(!bowler){
+   alert("Select Bowler before scoring.");
+   return false;
+ }
+ if(lockedOut){
+   alert("Select new batsman before continuing.");
+   return false;
+ }
+ if(currentOverBalls >= 6){
+   alert("Over complete. Select a new bowler.");
+   return false;
+ }
+ return true;
 }
 
 function ensureBowler(name){
