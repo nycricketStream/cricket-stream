@@ -541,6 +541,7 @@ function undoLast(){
  if(last.type === 'run'){
    liveTotal -= last.runs;
    liveBalls--;
+   currentOverBalls = Math.max(currentOverBalls - 1, 0);
 
     if(last.striker && batsmanStats[last.striker]){
      batsmanStats[last.striker].runs -= last.runs;
@@ -558,6 +559,8 @@ function undoLast(){
  if(last.type === 'wicket'){
    liveWickets--;
    liveBalls--;
+   currentOverBalls = Math.max(currentOverBalls - 1, 0);
+   lockedOut = false;
 
    if(last.striker && batsmanStats[last.striker]){
   batsmanStats[last.striker].balls--;
@@ -576,9 +579,16 @@ function undoLast(){
    }
 
    if(last.extra === "bye" || last.extra === "legbye"){
-   if(last.striker && batsmanStats[last.striker]){
-     batsmanStats[last.striker].balls--;
-   }
+  liveBalls--;
+  currentOverBalls = Math.max(currentOverBalls - 1, 0);
+
+  if(last.striker && batsmanStats[last.striker]){
+    batsmanStats[last.striker].balls--;
+  }
+
+  if(last.bowler && bowlerStats[last.bowler]){
+    bowlerStats[last.bowler].balls--;
+  }
   }
  }
 
