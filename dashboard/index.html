@@ -16,8 +16,12 @@ body{margin:0;font-family:Segoe UI,Arial;background:#060b18;color:#e5e7eb;displa
 .tab.active{display:block}
 input,textarea,select{width:100%;padding:10px;margin-bottom:14px;border-radius:8px;border:1px solid #1f2937;background:#020617;color:#fff}
 button{width:100%;padding:10px;border:none;border-radius:8px;background:#1d4ed8;color:white;cursor:pointer;margin-top:8px}
-.flexRow{display:flex;gap:10px}
-.flexCol{flex:1}
+button:disabled{opacity:.5;cursor:not-allowed}
+
+.scoreBox{font-size:24px;margin-bottom:15px}
+.scoreButtons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.sideBySide{display:flex;gap:20px;margin-top:15px}
+.sideCol{flex:1}
 </style>
 </head>
 <body>
@@ -25,89 +29,79 @@ button{width:100%;padding:10px;border:none;border-radius:8px;background:#1d4ed8;
 <div class="sidebar">
 <h2>Broadcast</h2>
 <button class="tab-btn active" onclick="showTab(event,'match')">Match Setup</button>
-<button class="tab-btn" onclick="showTab(event,'scoring')">Live Scoring</button>
+<button class="tab-btn" onclick="showTab(event,'branding')">League Branding</button>
+<button class="tab-btn" onclick="showTab(event,'scoreinfo')">Score Info</button>
+<button class="tab-btn" onclick="showTab(event,'livescoring')">Live Scoring</button>
 <button class="tab-btn" onclick="showTab(event,'player')">Player Graphic</button>
+<button class="tab-btn" onclick="showTab(event,'sponsors')">Sponsors</button>
+<button class="tab-btn" onclick="showTab(event,'moments')">Moments</button>
+<button class="tab-btn" onclick="saveConfig()">💾 Save Config</button>
+<button class="tab-btn" onclick="loadConfig()">📂 Load Config</button>
 </div>
 
 <div class="main">
 
-<!-- MATCH SETUP -->
+<!-- MATCH -->
 <div id="match" class="tab active">
 <h3>Match Setup</h3>
-
 Team A<input id="teamA">
 Team A Players<textarea id="teamAPlayers"></textarea>
-
 Team B<input id="teamB">
 Team B Players<textarea id="teamBPlayers"></textarea>
-
 Batting Team<select id="batting"></select>
-
-Innings<select id="innings">
-<option value="1">1st Innings</option>
-<option value="2">2nd Innings</option>
-</select>
-
-Total Overs<input id="maxOvers" value="20">
-
-Target<input id="target">
-
-<button onclick="initPlayers()">Update Match</button>
+Innings<select id="innings"><option>1st Innings</option><option>2nd Innings</option></select>
+<button onclick="send('match',{teamA:teamA.value,teamB:teamB.value,batting:batting.value,innings:innings.value,teamAPlayers:teamAPlayers.value.split('\n'),teamBPlayers:teamBPlayers.value.split('\n')})">Update Match</button>
 </div>
 
-<!-- LIVE SCORING -->
-<div id="scoring" class="tab">
+<!-- BRANDING -->
+<div id="branding" class="tab">
+<h3>League Branding</h3>
+League<input id="league">
+Tournament<input id="tournament">
+<button onclick="send('branding',{league:league.value,tournament:tournament.value})">Update Branding</button>
+</div>
+
+<!-- MANUAL BACKUP -->
+<div id="scoreinfo" class="tab">
+<h3>Manual Score Info (Backup)</h3>
+Manual Score<input id="manualScore" placeholder="145/6">
+Overs<input id="manualOvers" placeholder="18.2">
+<button onclick="send('manualScore',{score:manualScore.value,overs:manualOvers.value})">Update Manual Score</button>
+</div>
+
+<!-- LIVE SCORING (NEW) -->
+<div id="livescoring" class="tab">
 <h3>Live Scoring</h3>
 
-<div style="font-size:22px;margin-bottom:15px">
-<strong>Total:</strong> <span id="liveScore">0/0</span><br>
-<strong>Overs:</strong> <span id="liveOvers">0.0</span><br>
-<strong>Run Rate:</strong> <span id="liveRR">0.00</span>
+<div class="scoreBox">
+<strong>Score:</strong> <span id="liveScore">0/0</span><br>
+<strong>Overs:</strong> <span id="liveOvers">0.0</span>
 </div>
 
-<h4>Striker</h4>
-<select id="striker"></select>
-
-<h4>Non-Striker</h4>
-<select id="nonStriker"></select>
-
-<h4>Bowler</h4>
-<select id="bowlerSelect"></select>
-
-<button onclick="rotateStrike()">Manual Rotate</button>
-<button onclick="undoLast()">Undo Last Ball</button>
-
-<h4>Runs</h4>
-
-<div class="flexRow">
-
-<div class="flexCol">
-<button onclick="addRuns(0)">0</button>
-<button onclick="addRuns(1)">1</button>
-<button onclick="addRuns(2)">2</button>
-<button onclick="addRuns(3)">3</button>
-<button onclick="addRuns(4)">4</button>
-<button onclick="addRuns(6)">6</button>
+<div class="scoreButtons">
+<button onclick="addRun(0)">0</button>
+<button onclick="addRun(1)">1</button>
+<button onclick="addRun(2)">2</button>
+<button onclick="addRun(3)">3</button>
+<button onclick="addRun(4)">4</button>
+<button onclick="addRun(6)">6</button>
+<button onclick="addWicket()">W</button>
+<button onclick="undo()">UNDO</button>
 </div>
 
-<div class="flexCol">
+<div class="sideBySide">
+<div class="sideCol">
 <h4>Extras</h4>
 <button onclick="addExtra('wide')">Wide</button>
 <button onclick="addExtra('noball')">No Ball</button>
 <button onclick="addExtra('bye')">Bye</button>
 <button onclick="addExtra('legbye')">Leg Bye</button>
 </div>
-
-<div class="flexCol">
-<h4>Wicket</h4>
-<button onclick="addWicket()">Add Wicket</button>
 </div>
 
 </div>
 
-</div>
-
-<!-- PLAYER GRAPHIC -->
+<!-- PLAYER -->
 <div id="player" class="tab">
 <h3>Player Lower Third</h3>
 Player<select id="playerSelect"></select>
@@ -116,141 +110,87 @@ Handedness<select id="handed">
 <option value="Left-Hand">Left-Hand</option>
 </select>
 Player Image URL<input id="playerImg">
-<button onclick="showPlayer()">Show Player</button>
+<button onclick="send('player',{team:batting.value,label:'NEW BATSMAN',name:playerSelect.value,hand:handed.value,image:playerImg.value})">Show Player</button>
+</div>
+
+<!-- SPONSORS -->
+<div id="sponsors" class="tab">
+<h3>Sponsors</h3>
+<label><input type="checkbox" id="showSponsors" checked> Show Sponsor Bar</label>
+<textarea id="sponsorList" placeholder="One sponsor image URL per line"></textarea>
+Rotation Seconds<input id="rotation" value="8">
+<button onclick="send('sponsor',{enabled:showSponsors.checked,list:sponsorList.value.split('\n'),interval:rotation.value})">Update Sponsors</button>
+</div>
+
+<!-- MOMENTS -->
+<div id="moments" class="tab">
+<h3>Moments</h3>
+<button onclick="send('moment',{type:'FOUR'})">FOUR</button>
+<button onclick="send('moment',{type:'SIX'})">SIX</button>
+<button onclick="send('moment',{type:'WICKET'})">WICKET</button>
 </div>
 
 </div>
 
 <script>
-async function send(event,data){
- await fetch('/api/broadcast',{
-  method:'POST',
-  headers:{'Content-Type':'application/json'},
-  body:JSON.stringify({event,data})
- });
-}
-
-/* ===== AUTO BINDING ===== */
-
-function updateBattingTeams(){
- batting.innerHTML="";
- if(teamA.value) batting.add(new Option(teamA.value,teamA.value));
- if(teamB.value) batting.add(new Option(teamB.value,teamB.value));
- updatePlayerDropdown();
- updateBowlerDropdown();
-}
-
-function updatePlayerDropdown(){
- let players=[];
- if(batting.value===teamA.value){
-  players=teamAPlayers.value.split('\n');
- } else if(batting.value===teamB.value){
-  players=teamBPlayers.value.split('\n');
- }
- playerSelect.innerHTML="";
- striker.innerHTML="";
- nonStriker.innerHTML="";
- players.map(p=>p.trim()).filter(Boolean).forEach(p=>{
-  playerSelect.add(new Option(p,p));
-  striker.add(new Option(p,p));
-  nonStriker.add(new Option(p,p));
- });
-}
-
-function updateBowlerDropdown(){
- let players=[];
- if(batting.value===teamA.value){
-  players=teamBPlayers.value.split('\n');
- } else if(batting.value===teamB.value){
-  players=teamAPlayers.value.split('\n');
- }
- bowlerSelect.innerHTML="";
- players.map(p=>p.trim()).filter(Boolean).forEach(p=>{
-  bowlerSelect.add(new Option(p,p));
- });
-}
-
-teamA.addEventListener('input',updateBattingTeams);
-teamB.addEventListener('input',updateBattingTeams);
-teamAPlayers.addEventListener('input',updatePlayerDropdown);
-teamBPlayers.addEventListener('input',updatePlayerDropdown);
-batting.addEventListener('change',()=>{
- updatePlayerDropdown();
- updateBowlerDropdown();
-});
-
-/* ===== SCORING ENGINE ===== */
-
-let total=0,wkts=0,balls=0;
+let totalRuns=0;
+let wickets=0;
+let balls=0;
 let history=[];
 
-function calculateOvers(){return Math.floor(balls/6)+"."+(balls%6);}
-function runRate(){return balls?(total/(balls/6)).toFixed(2):"0.00";}
+function calculateOvers(){
+ return Math.floor(balls/6)+"."+(balls%6);
+}
 
 function updateDisplay(){
- liveScore.innerText=total+"/"+wkts;
- liveOvers.innerText=calculateOvers();
- liveRR.innerText=runRate();
- pushScore();
+ document.getElementById('liveScore').innerText=totalRuns+"/"+wickets;
+ document.getElementById('liveOvers').innerText=calculateOvers();
+ send('manualScore',{score:totalRuns+"/"+wickets,overs:calculateOvers()});
 }
 
-function addRuns(r){
+function addRun(r){
  history.push({type:'run',runs:r});
- total+=r;balls++;
- if(r%2===1)rotateStrike();
- if(balls%6===0)rotateStrike();
- updateDisplay();
-}
-
-function addExtra(type){
- history.push({type:'extra',extra:type});
- total++;
- if(type==="bye"||type==="legbye") balls++;
+ totalRuns+=r;
+ balls++;
  updateDisplay();
 }
 
 function addWicket(){
  history.push({type:'wicket'});
- wkts++;balls++;
+ wickets++;
+ balls++;
  updateDisplay();
 }
 
-function undoLast(){
- let last=history.pop();
+function addExtra(type){
+ history.push({type:'extra',extra:type});
+ totalRuns++;
+ if(type==="bye"||type==="legbye") balls++;
+ updateDisplay();
+}
+
+function undo(){
+ const last=history.pop();
  if(!last) return;
- if(last.type==='run'){ total-=last.runs; balls--; }
- if(last.type==='extra'){ total--; if(last.extra==="bye"||last.extra==="legbye") balls--; }
- if(last.type==='wicket'){ wkts--; balls--; }
+ if(last.type==='run'){ totalRuns-=last.runs; balls--; }
+ if(last.type==='wicket'){ wickets--; balls--; }
+ if(last.type==='extra'){ totalRuns--; if(last.extra==="bye"||last.extra==="legbye") balls--; }
  updateDisplay();
 }
+</script>
 
-function rotateStrike(){
- let t=striker.value;
- striker.value=nonStriker.value;
- nonStriker.value=t;
-}
+<script>
+// ===== EXISTING SCRIPT (UNCHANGED BELOW) =====
+const PUSHER_KEY=window.PUSHER_KEY||'';
+const pusher=new Pusher("12fcceaea77e52cf3626",{cluster:'us2'});
+const channel=pusher.subscribe('broadcast');
 
-function pushScore(){
- send('score',{
-  live:true,
-  total:total,
-  wickets:wkts,
-  overs:calculateOvers(),
-  runRate:runRate(),
-  striker:striker.value,
-  nonStriker:nonStriker.value,
-  bowler:bowlerSelect.value
- });
-}
-
-function showPlayer(){
- send('player',{
-  team:batting.value,
-  label:'NEW BATSMAN',
-  name:playerSelect.value,
-  hand:handed.value,
-  image:playerImg.value
- });
+async function send(event,data){
+  await fetch('/api/broadcast',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({event:event,data})
+  });
 }
 
 function showTab(evt,id){
