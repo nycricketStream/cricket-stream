@@ -149,6 +149,16 @@ Bowler<select id="bowler"></select>
     </thead>
     <tbody id="bowlerStatsBody"></tbody>
   </table>
+ <h4 style="margin-top:25px">Extras Breakdown</h4>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody id="extrasBreakdownBody"></tbody>
+</table>
 </div> 
 </div>
 <!-- LIVE SCORING END -->
@@ -423,6 +433,7 @@ document.getElementById('liveExtras').innerText = totalExtras;
  });
  renderBowlerStats();
  renderBatsmanStats();
+ renderExtrasBreakdown();
 }
 
 function renderBowlerStats(){
@@ -696,6 +707,25 @@ function renderBatsmanStats(){
      </tr>
    `;
  });
+}
+
+function renderExtrasBreakdown(){
+ const body = document.getElementById('extrasBreakdownBody');
+ if(!body) return;
+
+ body.innerHTML = `
+   <tr><td>Wides</td><td>${extrasStats.wide}</td></tr>
+   <tr><td>No Balls</td><td>${extrasStats.noball}</td></tr>
+   <tr><td>Byes</td><td>${extrasStats.bye}</td></tr>
+   <tr><td>Leg Byes</td><td>${extrasStats.legbye}</td></tr>
+   <tr><td><strong>Total</strong></td>
+       <td><strong>${
+         extrasStats.wide +
+         extrasStats.noball +
+         extrasStats.bye +
+         extrasStats.legbye
+       }</strong></td></tr>
+ `;
 }
  
 function showLiveSubTab(tab){
