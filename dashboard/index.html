@@ -63,7 +63,6 @@
          <h2>Broadcast</h2>
          <button class="tab-btn active" onclick="showTab(event,'match')">Match Setup</button>
          <button class="tab-btn" onclick="showTab(event,'branding')">League Branding</button>
-         <button class="tab-btn" onclick="showTab(event,'cricclubs')">CricClubs</button>
          <button class="tab-btn" onclick="showTab(event,'scoreinfo')">Score Info</button>
          <button class="tab-btn" onclick="showTab(event,'livescoring')">Live Scoring</button>
          <button class="tab-btn" onclick="showTab(event,'player')">Player Graphic</button>
@@ -97,12 +96,6 @@
             League<input id="league">
             Tournament<input id="tournament">
             <button onclick="send('branding',{league:league.value,tournament:tournament.value})">Update Branding</button>
-         </div>
-         <div id="cricclubs" class="tab">
-            <h3>CricClubs Auto Score</h3>
-            <label><input type="checkbox" id="useCricclubs" checked> Enable CricClubs</label>
-            Embed Link<input id="embedURL">
-            <button onclick="send('score',{auto:true,url:embedURL.value})">Update CricClubs</button>
          </div>
          <div id="scoreinfo" class="tab">
             <h3>Manual Score Info (Backup)</h3>
@@ -276,10 +269,49 @@
          </div>
          <div id="sponsors" class="tab">
             <h3>Sponsors</h3>
-            <label><input type="checkbox" id="showSponsors" checked> Show Sponsor Bar</label>
+            <label>
+            <input type="checkbox" id="showSponsors" checked> Show Sponsor Bar
+            </label>
             <textarea id="sponsorList" placeholder="One sponsor image URL per line"></textarea>
-            Rotation Seconds<input id="rotation" value="8">
-            <button onclick="send('sponsor',{enabled:showSponsors.checked,list:sponsorList.value.split('\n'),interval:rotation.value})">Update Sponsors</button>
+            Rotation Seconds
+            <input id="rotation" value="8">        
+            <button onclick="send('sponsor',{
+               enabled:showSponsors.checked,
+               list:sponsorList.value.split('\n'),
+               interval:rotation.value
+               })">
+            Update Sponsors
+            </button>
+            <hr style="margin:20px 0;border-color:#1f2937">
+            <h3>Fullscreen Sponsor</h3>
+            Sponsor Image URL
+            <input id="fullscreenSponsorImg">
+            <button onclick="send('fullscreenSponsor',{image:fullscreenSponsorImg.value})">
+            Show Fullscreen Ad
+            </button>
+            <button onclick="send('fullscreenSponsor',{hide:true})">
+            Hide Fullscreen Ad
+            </button>
+            <hr style="margin:20px 0;border-color:#1f2937">
+            <h3>Sponsor Presets</h3>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+               <button onclick="triggerPresetSponsor('https://example.com/ad1.jpg')">
+               Sponsor 1
+               </button>
+               <button onclick="triggerPresetSponsor('https://example.com/ad2.jpg')">
+               Sponsor 2
+               </button>
+               <button onclick="triggerPresetSponsor('https://example.com/ad3.jpg')">
+               Sponsor 3
+               </button>
+               <button onclick="triggerPresetSponsor('https://example.com/ad4.jpg')">
+               Sponsor 4
+               </button>         
+            </div>
+            <button style="margin-top:10px"
+               onclick="send('fullscreenSponsor',{hide:true})">
+            Hide Preset Ad
+            </button>
          </div>
          <div id="moments" class="tab">
             <h3>Moments</h3>
@@ -405,11 +437,6 @@
             bowlerSel.add(new Option(p,p));
           });
          }
-          
-         function toggleScoreInfo(){
-          const enabled=document.getElementById('useCricclubs').checked;
-          document.getElementById('manualUpdateBtn').disabled=enabled;
-         }
          
          window.addEventListener('DOMContentLoaded',()=>{
           document.getElementById('teamA').addEventListener('input',updateBattingTeams);
@@ -420,7 +447,6 @@
           document.getElementById('batting').addEventListener('change',updateStrikerDropdown);
           document.getElementById('teamAPlayers').addEventListener('input',updateStrikerDropdown);
           document.getElementById('teamBPlayers').addEventListener('input',updateStrikerDropdown);
-          document.getElementById('useCricclubs').addEventListener('change',toggleScoreInfo);
           document.getElementById('bowler').addEventListener('change', function(){
           currentOverBalls = 0;
          });
@@ -434,7 +460,7 @@
             lockedOut = false;
           }
          });
-         toggleScoreInfo();
+         loadSavedMatch();
          });
          
          async function saveConfig(){
@@ -548,6 +574,7 @@
           renderPartnership();
           renderCurrentBatters();
           renderLastWicket();
+          autoSaveMatch();
          }
          
          function renderBowlerStats(){
@@ -1120,6 +1147,11 @@
           `;    
          }
          
+         /* ===== SPONSOR PRESET TRIGGER ===== */
+         function triggerPresetSponsor(url){
+          send('fullscreenSponsor',{image:url});
+         }
+         
          function showLiveSubTab(tab){
            const basic = document.getElementById('basicLiveTab');
            const advanced = document.getElementById('advancedLiveTab');
@@ -1137,6 +1169,55 @@
              basicBtn.style.background = '#1d4ed8';
              advancedBtn.style.background = '#2563eb';
            }
+         }
+         
+         function autoSaveMatch(){
+         const state = {
+         liveTotal,
+         liveWickets,
+         liveBalls,
+         liveHistory,
+         bowlerStats,
+         batsmanStats,
+         extrasStats,
+         currentOverBalls,
+         teamA:teamA.value,
+         teamB:teamB.value,
+         teamAPlayers:teamAPlayers.value,
+         teamBPlayers:teamBPlayers.value,
+         batting:batting.value,
+         innings:innings.value,
+         target:target.value,
+         maxOvers:maxOvers.value
+         };         
+         localStorage.setItem("cricketMatchState", JSON.stringify(state));    
+         }
+         
+         function loadSavedMatch(){
+         const saved = localStorage.getItem("cricketMatchState");
+         if(!saved) return;
+         
+         const state = JSON.parse(saved);        
+         liveTotal = state.liveTotal;
+         liveWickets = state.liveWickets;
+         liveBalls = state.liveBalls;
+         liveHistory = state.liveHistory;
+         bowlerStats = state.bowlerStats;
+         batsmanStats = state.batsmanStats;
+         extrasStats = state.extrasStats;
+         currentOverBalls = state.currentOverBalls;
+         
+         teamA.value = state.teamA;
+         teamB.value = state.teamB;
+         teamAPlayers.value = state.teamAPlayers;
+         teamBPlayers.value = state.teamBPlayers;
+         batting.value = state.batting;
+         innings.value = state.innings;
+         target.value = state.target;
+         maxOvers.value = state.maxOvers;
+         
+         updateBattingTeams();
+         updateLiveDisplay();
          }
       </script>
    </body>
