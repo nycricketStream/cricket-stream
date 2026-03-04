@@ -222,13 +222,33 @@
                </div>
                <h4 style="margin-top:25px">Current Partnership</h4>
                <div id="partnershipPanel" style="
-               background:#020617;
-               border:1px solid #1f2937;
-               border-radius:6px;
-               padding:12px;
-               font-size:14px;
-               line-height:1.6;">
-               0 runs (0 balls)
+                  background:#020617;
+                  border:1px solid #1f2937;
+                  border-radius:6px;
+                  padding:12px;
+                  font-size:14px;
+                  line-height:1.6;">
+                  0 runs (0 balls)
+               </div>
+               <h4 style="margin-top:25px">Current Batters</h4>
+               <div id="currentBattersPanel" style="
+                  background:#020617;
+                  border:1px solid #1f2937;
+                  border-radius:6px;
+                  padding:12px;
+                  font-size:14px;
+                  line-height:1.6;">
+                  -
+               </div>
+               <h4 style="margin-top:25px">Last Wicket</h4>
+               <div id="lastWicketPanel" style="
+                  background:#020617;
+                  border:1px solid #1f2937;
+                  border-radius:6px;
+                  padding:12px;
+                  font-size:14px;
+                  line-height:1.6;">
+                  -
                </div>
                <h4 style="margin-top:25px">Extras Breakdown</h4>
                <table class="stats-table">
@@ -526,6 +546,8 @@
           renderFallOfWickets();
           renderCurrentOver();
           renderPartnership();
+          renderCurrentBatters();
+          renderLastWicket();
          }
          
          function renderBowlerStats(){
@@ -891,7 +913,7 @@
            }         
           });      
          }
-
+         
          function renderPartnership(){
           const panel = document.getElementById("partnershipPanel");
           if(!panel) return;
@@ -990,39 +1012,114 @@
          overs = overs.slice(-3);
          tracker.innerText = overs.join(" | ") || "-";
          }
-
+         
          function getRunsPerOver(){
           let runsPerOver = [];
           let currentRuns = 0;
           let ballCount = 0;
          
-          liveHistory.forEach(ball=>{   
+          liveHistory.forEach(ball=>{
+         
            if(ball.type === "run"){
             currentRuns += ball.runs;
             ballCount++;
-           }        
+           }
            else if(ball.type === "wicket"){
             ballCount++;
-           }        
-           else if(ball.type === "extra"){        
-            currentRuns += 1;    
-            if(ball.extra === "bye" || ball.extra === "legbye"){
-             ballCount++;
-            }    
-           }      
+           }
+           else if(ball.type === "extra"){
+            // wides and no balls add runs but not balls
+            if(ball.extra === "wide" || ball.extra === "noball"){
+              currentRuns += 1;
+            }
+         
+            // byes and leg byes count as balls
+            if(ball.extra === "bye"){
+              currentRuns += 1;
+              ballCount++;
+            }
+         
+            if(ball.extra === "legbye"){
+              currentRuns += 1;
+              ballCount++;
+            }
+           }
+         
            if(ballCount === 6){
             runsPerOver.push(currentRuns);
             currentRuns = 0;
             ballCount = 0;
-           }      
+           }
           });
-         
           if(ballCount > 0){
            runsPerOver.push(currentRuns);
-          }         
+          }
           return runsPerOver;
          }
-          
+         
+         function renderCurrentBatters(){
+          const panel = document.getElementById("currentBattersPanel");
+          if(!panel) return;
+         
+          const striker = document.getElementById("striker")?.value;
+          const nonStriker = document.getElementById("nonStriker")?.value;
+         
+          if(!striker && !nonStriker){
+           panel.innerHTML = "-";
+           return;
+          }
+         
+          let html = "";
+         
+          if(striker && batsmanStats[striker]){
+           const s = batsmanStats[striker];     
+           html += `
+           <div><strong>${striker}*</strong> ${s.runs} (${s.balls})</div>
+           `;
+          }
+         
+          if(nonStriker && batsmanStats[nonStriker]){    
+           const n = batsmanStats[nonStriker];
+         
+           html += `
+           <div>${nonStriker} ${n.runs} (${n.balls})</div>
+           `;
+         
+          }
+          panel.innerHTML = html;
+         }
+         
+         function renderLastWicket(){
+          const panel = document.getElementById("lastWicketPanel");
+          if(!panel) return;
+         
+          let lastWicket = null;
+          let ballIndex = 0;
+         
+          liveHistory.forEach((ball,i)=>{
+         
+           if(ball.type === "wicket"){
+            lastWicket = ball;
+            ballIndex = i;
+           }        
+          });
+         
+          if(!lastWicket){
+           panel.innerHTML = "-";
+           return;
+          }
+         
+          const batsman = lastWicket.striker;         
+          const stats = batsmanStats[batsman] || {runs:0,balls:0};   
+          const over =
+           Math.floor((ballIndex+1)/6) + "." + ((ballIndex+1)%6);
+         
+          panel.innerHTML = `
+          <strong>${batsman}</strong> ${stats.runs} (${stats.balls})<br>
+          ${liveTotal}/${liveWickets}  ${over} ov
+          `;    
+         }
+         
          function showLiveSubTab(tab){
            const basic = document.getElementById('basicLiveTab');
            const advanced = document.getElementById('advancedLiveTab');
