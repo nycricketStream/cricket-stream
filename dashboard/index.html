@@ -577,13 +577,20 @@
             bowlerStats[currentBowler].wickets++;
           }
          
-          document.getElementById('striker').value = "";
-          lockedOut = true;
-         
           if(liveBalls % 6 === 0){
-            rotateStrike();
-          }
+           // wicket on last ball of over
+           const nonStriker = document.getElementById('nonStriker')?.value;
+           if(nonStriker){
+             document.getElementById('striker').value = nonStriker;
+           }
+           // new batsman goes to non striker end
+           document.getElementById('nonStriker').value = "";
          
+         }else{
+           // normal wicket (balls 1-5)
+           document.getElementById('striker').value = "";
+         }
+         lockedOut = true;
           updateLiveDisplay();
          }
          
@@ -645,10 +652,15 @@
           }
          
           if(last.type === 'wicket'){
-            liveWickets--;
-            liveBalls--;
-            currentOverBalls = Math.max(currentOverBalls - 1, 0);
-            lockedOut = false;
+           liveWickets--;
+           liveBalls--;
+           currentOverBalls = Math.max(currentOverBalls - 1, 0);
+           lockedOut = false;
+         
+           // restore previous striker
+           if(last.striker){
+             document.getElementById('striker').value = last.striker;
+           }
          
           if(last.striker && batsmanStats[last.striker]){
            batsmanStats[last.striker].balls--;
