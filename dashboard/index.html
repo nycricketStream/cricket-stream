@@ -109,7 +109,20 @@ Bowler<select id="bowler"></select>
 <button onclick="addRun(3)">3</button>
 <button onclick="addRun(4)">4</button>
 <button onclick="addRun(6)">6</button>
-<button onclick="addWicket()">WICKET</button>
+<select id="dismissalType">
+<option value="Bowled">Bowled</option>
+<option value="Caught">Caught</option>
+<option value="LBW">LBW</option>
+<option value="Run Out">Run Out</option>
+<option value="Stumped">Stumped</option>
+<option value="Hit Wicket">Hit Wicket</option>
+<option value="Obstructing the Field">Obstructing the Field</option>
+<option value="Hit the Ball Twice">Hit the Ball Twice</option>
+<option value="Handled the Ball">Handled the Ball</option>
+<option value="Timed Out">Timed Out</option>
+</select>
+
+<button onclick="addWicket()">OUT</button>
 <button onclick="undoLast()">UNDO</button>
 </div>
 
@@ -121,8 +134,8 @@ Bowler<select id="bowler"></select>
 </div>
  
 <div id="advancedLiveTab" style="display:none">
-  <h4>Advanced Stats</h4>
- <h4>Batsman Stats</h4>
+<h4>Advanced Stats</h4>
+<h4>Batsman Stats</h4>
 <table>
 <thead>
 <tr>
@@ -132,6 +145,7 @@ Bowler<select id="bowler"></select>
 <th>4s</th>
 <th>6s</th>
 <th>SR</th>
+<th>Dismissal</th>
 </tr>
 </thead>
 <tbody id="batsmanStatsBody"></tbody>
@@ -499,29 +513,40 @@ if(currentBowler){
 }
 
 function addWicket(){
-if(!validateBeforeBall()) return;
-const striker = document.getElementById('striker')?.value;
-const currentBowler = document.getElementById('bowler')?.value;
+ if(!validateBeforeBall()) return;
 
-document.getElementById('striker').value = "";
-lockedOut = true;
- 
-liveHistory.push({type:'wicket', bowler:currentBowler, striker:striker});
+ const striker = document.getElementById('striker')?.value;
+ const currentBowler = document.getElementById('bowler')?.value;
+ const dismissal = document.getElementById('dismissalType')?.value;
 
-liveWickets++;
-liveBalls++;
-currentOverBalls++;
+ liveHistory.push({
+   type:'wicket',
+   bowler:currentBowler,
+   striker:striker,
+   dismissal:dismissal
+ });
 
-if(striker){
- ensureBatsman(striker);
- batsmanStats[striker].balls++;
-}
+ liveWickets++;
+ liveBalls++;
+ currentOverBalls++;
 
-if(currentBowler){
- ensureBowler(currentBowler);
- bowlerStats[currentBowler].balls++;
- bowlerStats[currentBowler].wickets++;
-}
+ if(striker){
+   ensureBatsman(striker);
+   batsmanStats[striker].balls++;
+   batsmanStats[striker].out = true;
+   batsmanStats[striker].dismissal = dismissal;
+   batsmanStats[striker].bowler = currentBowler;
+ }
+
+ if(currentBowler){
+   ensureBowler(currentBowler);
+   bowlerStats[currentBowler].balls++;
+   bowlerStats[currentBowler].wickets++;
+ }
+
+ document.getElementById('striker').value = "";
+ lockedOut = true;
+
  if(liveBalls % 6 === 0){
    rotateStrike();
  }
@@ -592,10 +617,13 @@ function undoLast(){
    currentOverBalls = Math.max(currentOverBalls - 1, 0);
    lockedOut = false;
 
-   if(last.striker && batsmanStats[last.striker]){
+ if(last.striker && batsmanStats[last.striker]){
   batsmanStats[last.striker].balls--;
+  batsmanStats[last.striker].out = false;
+  batsmanStats[last.striker].dismissal = "";
+  batsmanStats[last.striker].bowler = "";
  }
-   if(last.bowler && bowlerStats[last.bowler]){
+ if(last.bowler && bowlerStats[last.bowler]){
      bowlerStats[last.bowler].balls--;
      bowlerStats[last.bowler].wickets--;
    }
@@ -679,7 +707,10 @@ function ensureBatsman(name){
      runs: 0,
      balls: 0,
      fours: 0,
-     sixes: 0
+     sixes: 0,
+     out: false,
+     dismissal: "",
+     bowler: ""
    };
  }
 }
@@ -696,16 +727,21 @@ function renderBatsmanStats(){
      ? ((stats.runs / stats.balls) * 100).toFixed(1)
      : "0.0";
 
-   body.innerHTML += `
-     <tr>
-       <td>${name}</td>
-       <td>${stats.runs}</td>
-       <td>${stats.balls}</td>
-       <td>${stats.fours}</td>
-       <td>${stats.sixes}</td>
-       <td>${strikeRate}</td>
-     </tr>
-   `;
+ body.innerHTML += `
+ <tr>
+   <td>${name}</td>
+   <td>${stats.runs}</td>
+   <td>${stats.balls}</td>
+   <td>${stats.fours}</td>
+   <td>${stats.sixes}</td>
+   <td>${strikeRate}</td>
+   <td>
+     ${stats.out
+       ? stats.dismissal + " b " + stats.bowler
+       : "Not Out"}
+   </td>
+ </tr>
+ `;
  });
 }
 
