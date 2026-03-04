@@ -199,6 +199,27 @@
                   </thead>
                   <tbody id="bowlerStatsBody"></tbody>
                </table>
+               <h4 style="margin-top:25px">Fall of Wickets</h4>
+               <table class="stats-table">
+                  <thead>
+                     <tr>
+                        <th>Score</th>
+                        <th>Batsman</th>
+                        <th>Over</th>
+                     </tr>
+                  </thead>
+                  <tbody id="fallOfWicketsBody"></tbody>
+               </table>
+               <h4 style="margin-top:25px">Current Over</h4>
+               <div id="currentOverTracker" style="
+                  font-size:18px;
+                  background:#020617;
+                  padding:10px;
+                  border:1px solid #1f2937;
+                  border-radius:6px;
+                  letter-spacing:3px;">
+                  -
+               </div>
                <h4 style="margin-top:25px">Extras Breakdown</h4>
                <table class="stats-table">
                   <thead>
@@ -486,6 +507,8 @@
           renderBowlerStats();
           renderBatsmanStats();
           renderExtrasBreakdown();
+          renderFallOfWickets();
+          renderCurrentOver();
          }
          
          function renderBowlerStats(){
@@ -814,6 +837,69 @@
                   extrasStats.legbye
                 }</strong></td></tr>
           `;
+         }
+         
+         function renderFallOfWickets(){
+         
+          const body = document.getElementById('fallOfWicketsBody');
+          if(!body) return;
+         
+          body.innerHTML = '';
+         
+          let wickets = 0;
+         
+          liveHistory.forEach((ball,i)=>{
+         
+           if(ball.type === 'wicket'){
+         
+            wickets++;
+         
+            const over =
+             Math.floor((i+1)/6) + "." + ((i+1)%6);
+         
+            body.innerHTML += `
+            <tr>
+              <td>${liveTotal}/${wickets}</td>
+              <td>${ball.striker}</td>
+              <td>${over}</td>
+            </tr>
+            `;
+           }
+         
+          });
+         
+         }
+         
+         function renderCurrentOver(){
+         
+          const tracker = document.getElementById('currentOverTracker');
+          if(!tracker) return;
+         
+          const start = Math.floor((liveBalls-1)/6)*6;
+         
+          const balls = liveHistory.slice(start);
+         
+          let display = '';
+         
+          balls.forEach(ball=>{
+         
+           if(ball.type === 'run'){
+            display += ball.runs + " ";
+           }
+           else if(ball.type === 'wicket'){
+            display += "W ";
+           }
+           else if(ball.type === 'extra'){
+            if(ball.extra === 'wide') display += "Wd ";
+            if(ball.extra === 'noball') display += "Nb ";
+            if(ball.extra === 'bye') display += "B ";
+            if(ball.extra === 'legbye') display += "Lb ";
+           }
+         
+          });
+         
+          tracker.innerText = display || "-";
+         
          }
           
          function showLiveSubTab(tab){
