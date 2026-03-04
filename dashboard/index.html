@@ -312,6 +312,25 @@
                onclick="send('fullscreenSponsor',{hide:true})">
             Hide Preset Ad
             </button>
+            <hr style="margin:20px 0;border-color:#1f2937">
+            <h3>Sponsor Presets</h3>
+            Preset 1 Image
+            <input id="preset1">
+            Preset 2 Image
+            <input id="preset2">
+            Preset 3 Image
+            <input id="preset3">
+            Preset 4 Image
+            <input id="preset4">
+            <button onclick="saveSponsorPresets()">Save Presets</button>
+            <hr style="margin:15px 0;border-color:#1f2937">
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+            <button onclick="triggerPreset(1)">Sponsor 1</button>
+            <button onclick="triggerPreset(2)">Sponsor 2</button>
+            <button onclick="triggerPreset(3)">Sponsor 3</button>
+            <button onclick="triggerPreset(4)">Sponsor 4</button>
+            </div>
+            <button onclick="send('fullscreenSponsor',{hide:true})">Hide Ad</button>
          </div>
          <div id="moments" class="tab">
             <h3>Moments</h3>
@@ -461,6 +480,7 @@
           }
          });
          loadSavedMatch();
+         loadSponsorPresets();
          });
          
          async function saveConfig(){
@@ -1150,6 +1170,34 @@
          /* ===== SPONSOR PRESET TRIGGER ===== */
          function triggerPresetSponsor(url){
           send('fullscreenSponsor',{image:url});
+         }
+
+         function saveSponsorPresets(){
+         const presets={
+         p1:document.getElementById("preset1").value,
+         p2:document.getElementById("preset2").value,
+         p3:document.getElementById("preset3").value,
+         p4:document.getElementById("preset4").value
+         };
+         localStorage.setItem("sponsorPresets",JSON.stringify(presets));
+         alert("Sponsor presets saved");
+         }
+         
+         function triggerPreset(num){
+         const presets=JSON.parse(localStorage.getItem("sponsorPresets"));
+         if(!presets)return;
+         const url=presets["p"+num];
+         if(!url)return;
+         send('fullscreenSponsor',{image:url});
+         }
+         
+         function loadSponsorPresets(){
+         const presets=JSON.parse(localStorage.getItem("sponsorPresets"));
+         if(!presets)return;
+         document.getElementById("preset1").value=presets.p1||"";
+         document.getElementById("preset2").value=presets.p2||"";
+         document.getElementById("preset3").value=presets.p3||"";
+         document.getElementById("preset4").value=presets.p4||"";
          }
          
          function showLiveSubTab(tab){
