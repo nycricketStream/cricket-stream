@@ -220,6 +220,16 @@
                   letter-spacing:3px;">
                   -
                </div>
+               <h4 style="margin-top:25px">Current Partnership</h4>
+               <div id="partnershipPanel" style="
+               background:#020617;
+               border:1px solid #1f2937;
+               border-radius:6px;
+               padding:12px;
+               font-size:14px;
+               line-height:1.6;">
+               0 runs (0 balls)
+               </div>
                <h4 style="margin-top:25px">Extras Breakdown</h4>
                <table class="stats-table">
                   <thead>
@@ -509,6 +519,7 @@
           renderExtrasBreakdown();
           renderFallOfWickets();
           renderCurrentOver();
+          renderPartnership();
          }
          
          function renderBowlerStats(){
@@ -636,10 +647,17 @@
            extrasStats[type]++;
          }
          
-          if(currentBowler){
-            ensureBowler(currentBowler);
-            bowlerStats[currentBowler].runs++;
-          }
+         if(currentBowler){
+             ensureBowler(currentBowler);           
+             // wides and no balls count to bowler
+             if(type === "wide" || type === "noball"){
+               bowlerStats[currentBowler].runs++;
+             }           
+             // byes / leg byes do NOT count to bowler
+             if(type === "bye" || type === "legbye"){
+               // no run added to bowler
+             }
+            }
          
           if(type === "bye" || type === "legbye"){
             liveBalls++;
@@ -839,17 +857,13 @@
           `;
          }
          
-         function renderFallOfWickets(){
-         
+         function renderFallOfWickets(){         
           const body = document.getElementById('fallOfWicketsBody');
           if(!body) return;
          
-          body.innerHTML = '';
-         
+          body.innerHTML = '';   
           let wickets = 0;
-         
           liveHistory.forEach((ball,i)=>{
-         
            if(ball.type === 'wicket'){
          
             wickets++;
@@ -864,25 +878,56 @@
               <td>${over}</td>
             </tr>
             `;
-           }
+           }         
+          });      
+         }
+
+         function renderPartnership(){
+          const panel = document.getElementById("partnershipPanel");
+          if(!panel) return;
          
+          let runs = 0;
+          let balls = 0;
+         
+          let lastWicketIndex = -1;
+         
+          liveHistory.forEach((ball,i)=>{
+            if(ball.type === "wicket"){
+              lastWicketIndex = i;
+            }
           });
          
+          const partnershipBalls = liveHistory.slice(lastWicketIndex + 1);         
+          partnershipBalls.forEach(ball=>{  
+            if(ball.type === "run"){
+              runs += ball.runs;
+              balls++;
+            }
+         
+            if(ball.type === "extra"){
+              runs += 1;
+         
+              if(ball.extra === "bye" || ball.extra === "legbye"){
+                balls++;
+              }
+            }         
+          });
+         
+          panel.innerHTML = `
+          <strong>${runs} runs</strong> (${balls} balls)
+          `;         
          }
          
          function renderCurrentOver(){
-         
           const tracker = document.getElementById('currentOverTracker');
           if(!tracker) return;
-         
+      
           const start = Math.floor((liveBalls-1)/6)*6;
-         
           const balls = liveHistory.slice(start);
          
           let display = '';
          
-          balls.forEach(ball=>{
-         
+          balls.forEach(ball=>{         
            if(ball.type === 'run'){
             display += ball.runs + " ";
            }
@@ -894,12 +939,9 @@
             if(ball.extra === 'noball') display += "Nb ";
             if(ball.extra === 'bye') display += "B ";
             if(ball.extra === 'legbye') display += "Lb ";
-           }
-         
+           }  
           });
-         
           tracker.innerText = display || "-";
-         
          }
           
          function showLiveSubTab(tab){
