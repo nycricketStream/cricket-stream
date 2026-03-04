@@ -276,10 +276,10 @@
             Rotation Seconds
             <input id="rotation" value="8">        
             <button onclick="send('sponsor',{
-            enabled:showSponsors.checked,
-            list:sponsorList.value.split('\n'),
-            interval:parseInt(rotation.value||8)*1000
-            })">
+               enabled:showSponsors.checked,
+               list:sponsorList.value.split('\n'),
+               interval:parseInt(rotation.value||8)*1000
+               })">
             Update Sponsors
             </button>
             <hr style="margin:20px 0;border-color:#1f2937">
@@ -302,10 +302,10 @@
             <button onclick="saveSponsorPresets()">Save Presets</button>
             <hr style="margin:15px 0;border-color:#1f2937">
             <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
-            <button onclick="triggerPreset(1)">Sponsor 1</button>
-            <button onclick="triggerPreset(2)">Sponsor 2</button>
-            <button onclick="triggerPreset(3)">Sponsor 3</button>
-            <button onclick="triggerPreset(4)">Sponsor 4</button>
+               <button onclick="triggerPreset(1)">Sponsor 1</button>
+               <button onclick="triggerPreset(2)">Sponsor 2</button>
+               <button onclick="triggerPreset(3)">Sponsor 3</button>
+               <button onclick="triggerPreset(4)">Sponsor 4</button>
             </div>
          </div>
          <div id="moments" class="tab">
@@ -1142,7 +1142,7 @@
           ${liveTotal}/${liveWickets}  ${over} ov
           `;    
          }
-
+         
          function saveSponsorPresets(){
          const presets={
          p1:document.getElementById("preset1").value,
