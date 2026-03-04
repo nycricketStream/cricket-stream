@@ -286,33 +286,13 @@
             <h3>Fullscreen Sponsor</h3>
             Sponsor Image URL
             <input id="fullscreenSponsorImg">
-            <button onclick="send('fullscreenSponsor',{image:fullscreenSponsorImg.value})">
-            Show Fullscreen Ad
-            </button>
+            Ad Duration (seconds)
+            <input id="fullscreenTime" value="8">
+            <button onclick="send('fullscreenSponsor',{image:fullscreenSponsorImg.value,duration:parseInt(fullscreenTime.value||8)*1000})">Show Fullscreen Ad</button>
+            <button onclick="send('fullscreenSponsor',{hide:true})">Hide Fullscreen Ad</button>
             <button onclick="send('fullscreenSponsor',{hide:true})">
             Hide Fullscreen Ad
             </button>
-            <hr style="margin:20px 0;border-color:#1f2937">
-            <h3>Sponsor Presets</h3>
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
-               <button onclick="triggerPresetSponsor('https://example.com/ad1.jpg')">
-               Sponsor 1
-               </button>
-               <button onclick="triggerPresetSponsor('https://example.com/ad2.jpg')">
-               Sponsor 2
-               </button>
-               <button onclick="triggerPresetSponsor('https://example.com/ad3.jpg')">
-               Sponsor 3
-               </button>
-               <button onclick="triggerPresetSponsor('https://example.com/ad4.jpg')">
-               Sponsor 4
-               </button>         
-            </div>
-            <button style="margin-top:10px"
-               onclick="send('fullscreenSponsor',{hide:true})">
-            Hide Preset Ad
-            </button>
-            <hr style="margin:20px 0;border-color:#1f2937">
             <h3>Sponsor Presets</h3>
             Preset 1 Image
             <input id="preset1">
@@ -1166,11 +1146,6 @@
           ${liveTotal}/${liveWickets}  ${over} ov
           `;    
          }
-         
-         /* ===== SPONSOR PRESET TRIGGER ===== */
-         function triggerPresetSponsor(url){
-          send('fullscreenSponsor',{image:url});
-         }
 
          function saveSponsorPresets(){
          const presets={
@@ -1188,7 +1163,8 @@
          if(!presets)return;
          const url=presets["p"+num];
          if(!url)return;
-         send('fullscreenSponsor',{image:url});
+         const time=parseInt(document.getElementById("fullscreenTime").value||8)*1000;
+         send('fullscreenSponsor',{image:url,duration:time});
          }
          
          function loadSponsorPresets(){
