@@ -11,7 +11,7 @@ body{margin:0;font-family:Segoe UI,Arial;background:#060b18;color:#e5e7eb;displa
 .sidebar h2{margin-top:0;color:#60a5fa}
 .tab-btn{width:100%;padding:12px;margin-bottom:12px;border:none;border-radius:10px;background:#0a1226;color:white;text-align:left;cursor:pointer}
 .tab-btn.active{background:#2563eb}
-.main{flex:1;padding:28px}
+.main{flex:1;padding:14px 28px}
 .tab{display:none;background:#0c1426;padding:26px;border-radius:16px}
 .tab.active{display:block}
 input,textarea,select{width:100%;padding:10px;margin-bottom:14px;border-radius:8px;border:1px solid #1f2937;background:#020617;color:#fff}
@@ -21,6 +21,44 @@ button:disabled{opacity:.5;cursor:not-allowed}
 /* DASHBOARD LOG PANEL */
 #logPanel{position:fixed;bottom:10px;left:10px;width:340px;max-height:240px;overflow:auto;background:rgba(0,0,0,.85);color:#22c55e;font-family:monospace;font-size:11px;padding:8px;border-radius:6px;display:none;z-index:99999}
 #logToggle{position:fixed;bottom:10px;right:10px;width:auto;padding:6px 10px;font-size:12px;border-radius:6px;background:#111827;color:#22c55e;z-index:99999}
+
+/* ===== STATS TABLE STYLE ===== */
+.stats-table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+font-size:14px;
+}
+
+.stats-table th{
+background:#0f172a;
+padding:8px;
+border:1px solid #1f2937;
+text-align:center;
+}
+
+.stats-table td{
+padding:8px;
+border:1px solid #1f2937;
+text-align:center;
+}
+
+.stats-table tr:nth-child(even){
+background:#0b1220;
+}
+ 
+/* ===== LIVE SCORING GRID ===== */
+.live-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:16px;
+}
+
+.live-col{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
 </style>
 </head>
 <body>
@@ -85,6 +123,8 @@ Overs<input id="manualOvers" placeholder="18.2">
 </div>
 
 <div id="basicLiveTab">
+<div class="live-grid">
+<div class="live-col">
 <div style="font-size:20px;margin-bottom:15px">
 Score: <span id="liveScore">0/0</span><br>
 Overs: <span id="liveOvers">0.0</span><br>
@@ -100,7 +140,9 @@ Non-Striker<select id="nonStriker"></select>
 
 <h4>Bowler</h4>
 Bowler<select id="bowler"></select>
+</div>
  
+<div class="live-col"> 
 <h4>Runs</h4>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
 <button onclick="addRun(0)">0</button>
@@ -125,6 +167,8 @@ Bowler<select id="bowler"></select>
 <button onclick="addWicket()">OUT</button>
 <button onclick="undoLast()">UNDO</button>
 </div>
+</div>
+</div>
 
 <h4>Extras</h4>
 <button onclick="addExtra('wide')">Wide</button>
@@ -134,9 +178,8 @@ Bowler<select id="bowler"></select>
 </div>
  
 <div id="advancedLiveTab" style="display:none">
-<h4>Advanced Stats</h4>
 <h4>Batsman Stats</h4>
-<table>
+<table class="stats-table">
 <thead>
 <tr>
 <th>Batter</th>
@@ -151,7 +194,7 @@ Bowler<select id="bowler"></select>
 <tbody id="batsmanStatsBody"></tbody>
 </table>
   <h4>Bowler Stats</h4>
-  <table>
+  <table class="stats-table">
     <thead>
     <tr>
     <th>Bowler</th>
@@ -164,7 +207,7 @@ Bowler<select id="bowler"></select>
     <tbody id="bowlerStatsBody"></tbody>
   </table>
  <h4 style="margin-top:25px">Extras Breakdown</h4>
-<table>
+<<table class="stats-table">>
 <thead>
 <tr>
 <th>Type</th>
