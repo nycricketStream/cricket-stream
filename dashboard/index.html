@@ -276,10 +276,10 @@
             Rotation Seconds
             <input id="rotation" value="8">        
             <button onclick="send('sponsor',{
-               enabled:showSponsors.checked,
-               list:sponsorList.value.split('\n'),
-               interval:rotation.value
-               })">
+            enabled:showSponsors.checked,
+            list:sponsorList.value.split('\n'),
+            interval:parseInt(rotation.value||8)*1000
+            })">
             Update Sponsors
             </button>
             <hr style="margin:20px 0;border-color:#1f2937">
@@ -290,9 +290,6 @@
             <input id="fullscreenTime" value="8">
             <button onclick="send('fullscreenSponsor',{image:fullscreenSponsorImg.value,duration:parseInt(fullscreenTime.value||8)*1000})">Show Fullscreen Ad</button>
             <button onclick="send('fullscreenSponsor',{hide:true})">Hide Fullscreen Ad</button>
-            <button onclick="send('fullscreenSponsor',{hide:true})">
-            Hide Fullscreen Ad
-            </button>
             <h3>Sponsor Presets</h3>
             Preset 1 Image
             <input id="preset1">
@@ -310,7 +307,6 @@
             <button onclick="triggerPreset(3)">Sponsor 3</button>
             <button onclick="triggerPreset(4)">Sponsor 4</button>
             </div>
-            <button onclick="send('fullscreenSponsor',{hide:true})">Hide Ad</button>
          </div>
          <div id="moments" class="tab">
             <h3>Moments</h3>
