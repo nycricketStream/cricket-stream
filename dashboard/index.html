@@ -517,6 +517,7 @@
             overs: calculateOvers(),
             runRate: calculateRR(),
             requiredRuns: calculateRequiredRuns(),
+            runsPerOver: getRunsPerOver(),
             requiredRR: calculateRequiredRR()
           });
           renderBowlerStats();
@@ -930,27 +931,96 @@
          function renderCurrentOver(){
           const tracker = document.getElementById('currentOverTracker');
           if(!tracker) return;
-      
-          const start = Math.floor((liveBalls-1)/6)*6;
-          const balls = liveHistory.slice(start);
          
-          let display = '';
+          let balls = [];
+          let ballCount = 0;
          
-          balls.forEach(ball=>{         
+          liveHistory.forEach(ball=>{
+           let symbol = "";
+         
            if(ball.type === 'run'){
-            display += ball.runs + " ";
+             symbol = ball.runs;
+             ballCount++;
            }
            else if(ball.type === 'wicket'){
-            display += "W ";
+             symbol = "W";
+             ballCount++;
            }
+         
            else if(ball.type === 'extra'){
-            if(ball.extra === 'wide') display += "Wd ";
-            if(ball.extra === 'noball') display += "Nb ";
-            if(ball.extra === 'bye') display += "B ";
-            if(ball.extra === 'legbye') display += "Lb ";
-           }  
+             if(ball.extra === 'wide'){
+               symbol = "Wd";
+             }
+         
+             if(ball.extra === 'noball'){
+               symbol = "Nb";
+             }
+         
+             if(ball.extra === 'bye'){
+               symbol = "B";
+               ballCount++;
+             }
+         
+             if(ball.extra === 'legbye'){
+               symbol = "Lb";
+               ballCount++;
+             }
+           }
+           balls.push(symbol);
+         });
+         
+         // group balls into overs
+         let overs = [];
+         let currentOver = [];
+         
+         balls.forEach((b,i)=>{
+          currentOver.push(b);
+         
+          if(currentOver.length === 6){
+            overs.push(currentOver.join(" "));
+            currentOver = [];
+          }
+         });
+         
+         if(currentOver.length){
+          overs.push(currentOver.join(" "));
+         }
+         
+         // keep only last 3 overs
+         overs = overs.slice(-3);
+         tracker.innerText = overs.join(" | ") || "-";
+         }
+
+         function getRunsPerOver(){
+          let runsPerOver = [];
+          let currentRuns = 0;
+          let ballCount = 0;
+         
+          liveHistory.forEach(ball=>{   
+           if(ball.type === "run"){
+            currentRuns += ball.runs;
+            ballCount++;
+           }        
+           else if(ball.type === "wicket"){
+            ballCount++;
+           }        
+           else if(ball.type === "extra"){        
+            currentRuns += 1;    
+            if(ball.extra === "bye" || ball.extra === "legbye"){
+             ballCount++;
+            }    
+           }      
+           if(ballCount === 6){
+            runsPerOver.push(currentRuns);
+            currentRuns = 0;
+            ballCount = 0;
+           }      
           });
-          tracker.innerText = display || "-";
+         
+          if(ballCount > 0){
+           runsPerOver.push(currentRuns);
+          }         
+          return runsPerOver;
          }
           
          function showLiveSubTab(tab){
