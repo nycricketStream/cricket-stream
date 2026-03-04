@@ -25,9 +25,15 @@ button:disabled{opacity:.5;cursor:not-allowed}
 /* ===== STATS TABLE STYLE ===== */
 .stats-table{
 width:100%;
+max-width:1100px;
 border-collapse:collapse;
 margin-top:10px;
 font-size:14px;
+}
+
+.striker-row{
+background:#1e3a8a !important;
+font-weight:600;
 }
 
 .stats-table th{
@@ -166,10 +172,9 @@ Bowler<select id="bowler"></select>
 <button onclick="addWicket()">OUT</button>
 <button onclick="undoLast()">UNDO</button>
 </div>
-</div>
-</div>
-
+ 
 <h4>Extras</h4>
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
 <button onclick="addExtra('wide')">Wide</button>
 <button onclick="addExtra('noball')">No Ball</button>
 <button onclick="addExtra('bye')">Bye</button>
@@ -764,13 +769,13 @@ function renderBatsmanStats(){
  body.innerHTML = '';
 
  Object.keys(batsmanStats).forEach(name=>{
+   const striker = document.getElementById('striker')?.value;
    const stats = batsmanStats[name];
    const strikeRate = stats.balls
      ? ((stats.runs / stats.balls) * 100).toFixed(1)
      : "0.0";
 
- body.innerHTML += `
- <tr>
+ <tr class="${name === striker ? 'striker-row' : ''}">
    <td>${name}</td>
    <td>${stats.runs}</td>
    <td>${stats.balls}</td>
