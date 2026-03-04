@@ -373,7 +373,12 @@
             lockedOut = false;
           }
          });
-          toggleScoreInfo();
+         document.getElementById('nonStriker').addEventListener('change', function(){
+          if(this.value){
+            lockedOut = false;
+          }
+         });
+         toggleScoreInfo();
          });
          
          async function saveConfig(){
