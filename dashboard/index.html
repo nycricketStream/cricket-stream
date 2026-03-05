@@ -729,7 +729,6 @@
          
           if(liveBalls % 6 === 0){
             rotateStrike();
-            currentOverBalls = 0;
          }
          
           updateLiveDisplay();
@@ -767,13 +766,12 @@
             bowlerStats[currentBowler].wickets++;
           }
          
-          if(liveBalls % 6 === 0){
+        if(liveBalls % 6 === 0){
          const nonStriker = document.getElementById('nonStriker')?.value;
          if(nonStriker){
          document.getElementById('striker').value = nonStriker;
          }
          document.getElementById('nonStriker').value = "";
-         currentOverBalls = 0;
          }else{
                     // normal wicket (balls 1-5)
            document.getElementById('striker').value = "";
