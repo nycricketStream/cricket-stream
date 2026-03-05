@@ -603,42 +603,48 @@
          bowlerOvers = Math.floor(b.balls/6) + "." + (b.balls % 6);
          }
 
-         let balls=[];
-         let count=0;
+        let balls=[];
+         let legalBalls=0;
          
          for(let i=liveHistory.length-1;i>=0;i--){
          const b=liveHistory[i];
          
          if(b.type==="run"){
          balls.unshift(b.runs);
-         count++;
+         legalBalls++;
          }
          
          else if(b.type==="wicket"){
          balls.unshift("W");
-         count++;
+         legalBalls++;
          }
          
          else if(b.type==="extra"){
-         if(b.extra==="wide")balls.unshift("Wd");
-         if(b.extra==="noball")balls.unshift("Nb");
+         
+         if(b.extra==="wide"){
+         balls.unshift("Wd");
+         }
+         
+         if(b.extra==="noball"){
+         balls.unshift("Nb");
+         }
          
          if(b.extra==="bye"){
          balls.unshift("B");
-         count++;
+         legalBalls++;
          }
          
          if(b.extra==="legbye"){
          balls.unshift("Lb");
-         count++;
-         }
+         legalBalls++;
          }
          
-         if(count>=6)break;
          }
-
+         
+         if(legalBalls===6)break;
+         }
+         
          const thisOver=balls.join(" ");
-         
          send('manualScore',{
          score:liveTotal+"/"+liveWickets,
          overs:calculateOvers(),
