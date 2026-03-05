@@ -515,6 +515,7 @@
          let liveWickets = 0;
          let liveBalls = 0;
          let lastBowler = "";
+         let lastDismissal = ""; 
          let liveHistory = [];
          let bowlerStats = {};
          let batsmanStats = {};
@@ -665,6 +666,7 @@
          bat2Score:nonStrikerRuns+" ("+nonStrikerBalls+")",
          bowlerName:bowlerName,
          bowlerStats:bowlerWickets+"-"+bowlerRuns+" ("+bowlerOvers+")",
+         dismissal:lastDismissal,
          thisOver:thisOver,
          runsPerOver:getRunsPerOver()
          });
@@ -750,6 +752,7 @@
           const striker = document.getElementById('striker')?.value;
           const currentBowler = document.getElementById('bowler')?.value;
           const dismissal = document.getElementById('dismissalType')?.value;
+         lastDismissal = dismissal + " b " + currentBowler;
          
           liveHistory.push({
          type:'wicket',
