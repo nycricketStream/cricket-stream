@@ -557,7 +557,58 @@
          
           return (runsLeft / (ballsLeft/6)).toFixed(2);
          }
+
+         function getThisOver(){ 
+         let balls=[];
+         let legalBalls=liveBalls%6;
          
+         if(legalBalls===0 && liveBalls>0){
+         legalBalls=6;
+         }
+         
+         let counted=0;
+         
+         for(let i=liveHistory.length-1;i>=0;i--){
+         
+         const b=liveHistory[i];
+         let symbol="";
+         
+         if(b.type==="run"){
+         symbol=b.runs;
+         counted++;
+         }
+         
+         else if(b.type==="wicket"){
+         symbol="W";
+         counted++;
+         }
+         
+         else if(b.type==="extra"){
+         
+         if(b.extra==="wide") symbol="Wd";
+         if(b.extra==="noball") symbol="Nb";
+         
+         if(b.extra==="bye"){
+         symbol="B";
+         counted++;
+         }
+         
+         if(b.extra==="legbye"){
+         symbol="Lb";
+         counted++;
+         }
+         
+         }
+         
+         balls.unshift(symbol);
+         
+         if(counted===legalBalls) break;
+         
+         }
+         
+         return balls.join(" ");
+         }
+                  
          function updateLiveDisplay(){
           document.getElementById('liveScore').innerText = liveTotal + "/" + liveWickets;
           document.getElementById('liveOvers').innerText = calculateOvers();
@@ -603,37 +654,7 @@
          bowlerWickets = b.wickets;
          bowlerOvers = Math.floor(b.balls/6) + "." + (b.balls % 6);
          }
-
-       let balls=[];
-      let legalBalls=0;
-      
-      for(let i=liveHistory.length-1;i>=0;i--){
-      const b=liveHistory[i];
-      let symbol="";
-      
-      if(b.type==="run"){
-      symbol=b.runs;
-      legalBalls++;
-      }
-      
-      else if(b.type==="wicket"){
-      symbol="W";
-      legalBalls++;
-      }
-      
-      else if(b.type==="extra"){
-      if(b.extra==="wide") symbol="Wd";
-      if(b.extra==="noball") symbol="Nb";
-      if(b.extra==="bye"){symbol="B";legalBalls++;}
-      if(b.extra==="legbye"){symbol="Lb";legalBalls++;}
-      }
-      
-      balls.unshift(symbol);
-      
-      if(legalBalls===6)break;
-      }
-         
-         const thisOver=balls.join(" ");
+         const thisOver=getThisOver();
          send('manualScore',{
          score:liveTotal+"/"+liveWickets,
          overs:calculateOvers(),
