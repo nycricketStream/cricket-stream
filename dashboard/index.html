@@ -573,14 +573,50 @@
          
          document.getElementById('liveExtras').innerText = totalExtras;
          
-          send('manualScore',{
-            score: liveTotal + "/" + liveWickets,
-            overs: calculateOvers(),
-            runRate: calculateRR(),
-            requiredRuns: calculateRequiredRuns(),
-            runsPerOver: getRunsPerOver(),
-            requiredRR: calculateRequiredRR()
-          });
+          const strikerName = document.getElementById('striker')?.value || "";
+         const nonStrikerName = document.getElementById('nonStriker')?.value || "";
+         const bowlerName = document.getElementById('bowler')?.value || "";
+         
+         let strikerRuns = 0;
+         let strikerBalls = 0;
+         let nonStrikerRuns = 0;
+         let nonStrikerBalls = 0;
+         
+         if(batsmanStats[strikerName]){
+         strikerRuns = batsmanStats[strikerName].runs;
+         strikerBalls = batsmanStats[strikerName].balls;
+         }
+         
+         if(batsmanStats[nonStrikerName]){
+         nonStrikerRuns = batsmanStats[nonStrikerName].runs;
+         nonStrikerBalls = batsmanStats[nonStrikerName].balls;
+         }
+         
+         let bowlerRuns = 0;
+         let bowlerWickets = 0;
+         let bowlerOvers = "0.0";
+         
+         if(bowlerStats[bowlerName]){
+         const b = bowlerStats[bowlerName];
+         bowlerRuns = b.runs;
+         bowlerWickets = b.wickets;
+         bowlerOvers = Math.floor(b.balls/6) + "." + (b.balls % 6);
+         }
+         
+         send('manualScore',{
+         score: liveTotal + "/" + liveWickets,
+         overs: calculateOvers(),
+         runRate: calculateRR(),
+         
+         bat1: strikerName + "*",
+         bat1Score: strikerRuns + " (" + strikerBalls + ")",
+         
+         bat2: nonStrikerName,
+         bat2Score: nonStrikerRuns + " (" + nonStrikerBalls + ")",
+         
+         bowlerName: bowlerName,
+         bowlerStats: bowlerWickets + "-" + bowlerRuns + " (" + bowlerOvers + ")"
+         });
           renderBowlerStats();
           renderBatsmanStats();
           renderExtrasBreakdown();
