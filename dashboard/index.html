@@ -1140,53 +1140,60 @@
          panel.innerHTML=html;
          }
 
-        function renderCurrentOver(){       
-         const tracker=document.getElementById('currentOverTracker');
-         if(!tracker)return;
-         
-         let balls=[];
-         let legalBalls=0;
-         
-         for(let i=liveHistory.length-1;i>=0;i--){
-         
-         const ball=liveHistory[i];
-         let symbol="";
-         
-         if(ball.type==="run"){
-         symbol=ball.runs;
-         legalBalls++;
-         }
-         
-         else if(ball.type==="wicket"){
-         symbol="W";
-         legalBalls++;
-         }
-         
-         else if(ball.type==="extra"){
-         
-         if(ball.extra==="wide") symbol="Wd";
-         if(ball.extra==="noball") symbol="Nb";
-         
-         if(ball.extra==="bye"){
-         symbol="B";
-         legalBalls++;
-         }
-         
-         if(ball.extra==="legbye"){
-         symbol="Lb";
-         legalBalls++;
-         }
-         
-         }
-         
-         balls.unshift(symbol);
-         
-         if(legalBalls===6)break;
-         
-         }
-         
-         tracker.innerText=balls.join(" ") || "-";
-         }
+       function renderCurrentOver(){
+      
+      const tracker=document.getElementById('currentOverTracker');
+      if(!tracker)return;
+      
+      let balls=[];
+      let legalBalls=liveBalls % 6;
+      
+      if(legalBalls===0 && liveBalls>0){
+      legalBalls=6;
+      }
+      
+      let counted=0;
+      
+      for(let i=liveHistory.length-1;i>=0;i--){
+      
+      const b=liveHistory[i];
+      let symbol="";
+      
+      if(b.type==="run"){
+      symbol=b.runs;
+      counted++;
+      }
+      
+      else if(b.type==="wicket"){
+      symbol="W";
+      counted++;
+      }
+      
+      else if(b.type==="extra"){
+      
+      if(b.extra==="wide") symbol="Wd";
+      if(b.extra==="noball") symbol="Nb";
+      
+      if(b.extra==="bye"){
+      symbol="B";
+      counted++;
+      }
+      
+      if(b.extra==="legbye"){
+      symbol="Lb";
+      counted++;
+      }
+      
+      }
+      
+      balls.unshift(symbol);
+      
+      if(counted===legalBalls) break;
+      
+      }
+      
+      tracker.innerText=balls.join(" ") || "-";
+      }
                   
          function renderLastWicket(){
           const panel = document.getElementById("lastWicketPanel");
