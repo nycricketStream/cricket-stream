@@ -1025,42 +1025,48 @@
          }
          
          function renderPartnership(){
-          const panel = document.getElementById("partnershipPanel");
-          if(!panel) return;
+         const panel=document.getElementById("partnershipPanel");
+         if(!panel)return;
          
-          let runs = 0;
-          let balls = 0;
+         let runs=0;
+         let balls=0;
          
-          let lastWicketIndex = -1;
+         let lastWicketIndex=-1;
          
-          liveHistory.forEach((ball,i)=>{
-            if(ball.type === "wicket"){
-              lastWicketIndex = i;
-            }
-          });
-         
-          const partnershipBalls = liveHistory.slice(lastWicketIndex + 1);         
-          partnershipBalls.forEach(ball=>{  
-            if(ball.type === "run"){
-              runs += ball.runs;
-              balls++;
-            }
-         
-            if(ball.type === "extra"){
-              runs += 1;
-         
-              if(ball.extra === "bye" || ball.extra === "legbye"){
-                balls++;
-              }
-            }         
-          });
-         
-          panel.innerHTML = `
-          <strong>${runs} runs</strong> (${balls} balls)
-          `;         
+         for(let i=0;i<liveHistory.length;i++){
+         if(liveHistory[i].type==="wicket"){
+         lastWicketIndex=i;
+         }
          }
          
-        
+         for(let i=lastWicketIndex+1;i<liveHistory.length;i++){
+         
+         const ball=liveHistory[i];
+         
+         if(ball.type==="run"){
+         runs+=ball.runs;
+         balls++;
+         }
+         
+         else if(ball.type==="extra"){
+         
+         runs+=1;
+         
+         if(ball.extra==="bye"||ball.extra==="legbye"){
+         balls++;
+         }
+         
+         }
+         
+         else if(ball.type==="wicket"){
+         balls++;
+         }
+         
+         }
+         
+         panel.innerHTML=`<strong>${runs} runs</strong> (${balls} balls)`;
+         }
+                 
          
          function getRunsPerOver(){
           let runsPerOver = [];
@@ -1107,35 +1113,30 @@
          }
          
          function renderCurrentBatters(){
-          const panel = document.getElementById("currentBattersPanel");
-          if(!panel) return;
+         const panel=document.getElementById("currentBattersPanel");
+         if(!panel)return;
          
-          const striker = document.getElementById("striker")?.value;
-          const nonStriker = document.getElementById("nonStriker")?.value;
+         const striker=document.getElementById("striker")?.value;
+         const nonStriker=document.getElementById("nonStriker")?.value;
          
-          if(!striker && !nonStriker){
-           panel.innerHTML = "-";
-           return;
-          }
+         if(!striker && !nonStriker){
+         panel.innerHTML="-";
+         return;
+         }
          
-          let html = "";
+         let html="";
          
-          if(striker && batsmanStats[striker]){
-           const s = batsmanStats[striker];     
-           html += `
-           <div><strong>${striker}*</strong> ${s.runs} (${s.balls})</div>
-           `;
-          }
+         if(striker){
+         const s=batsmanStats[striker]||{runs:0,balls:0};
+         html+=`<div><strong>${striker}*</strong> ${s.runs} (${s.balls})</div>`;
+         }
          
-          if(nonStriker && batsmanStats[nonStriker]){    
-           const n = batsmanStats[nonStriker];
+         if(nonStriker){
+         const n=batsmanStats[nonStriker]||{runs:0,balls:0};
+         html+=`<div>${nonStriker} ${n.runs} (${n.balls})</div>`;
+         }
          
-           html += `
-           <div>${nonStriker} ${n.runs} (${n.balls})</div>
-           `;
-         
-          }
-          panel.innerHTML = html;
+         panel.innerHTML=html;
          }
 
          function renderCurrentOver(){
