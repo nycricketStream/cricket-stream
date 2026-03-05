@@ -1,287 +1,1021 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>NYC Eagles Broadcast Overlay v1</title>
+    <meta charset="UTF-8">
+    <title>NYC Eagles Broadcast Overlay</title>
 
-<!-- Broadcast Font -->
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+    <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
-<script src="https://js.pusher.com/8.2/pusher.min.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            width: 1920px;
+            height: 1080px;
+            background: transparent;
+            overflow: hidden;
+            font-family: 'Oswald',sans-serif;
+        }
 
-<style>
-html,body{
-  margin:0;
-  width:1920px;
-  height:1080px;
-  background:transparent;
-  overflow:hidden;
-  font-family:'Oswald', sans-serif;
-}
+        /* CONNECTION DOT */
+        #connectionDot {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #facc15;
+            z-index: 9999;
+        }
 
-/* ================= CONNECTION DOT ================= */
+        /* LOWER THIRD */
+        #lowerThird {
+            position: absolute;
+            width: 1200px;
+            height: 377px;
+            bottom: 50px;
+            left: 40px;
+            opacity: 0;
+            transform: translateX(-120%);
+            transition: all .6s cubic-bezier(.22,.9,.3,1);
+        }
 
-#connectionDot{
-  position:absolute;
-  top:20px;
-  left:20px;
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  background:#facc15;
-  z-index:9999;
-}
+        #panelBg {
+            position: absolute;
+            width: 1200px;
+            height: 377px;
+            background: url('/assets/images/lowerthird.png') no-repeat;
+            background-size: contain;
+            pointer-events: none;
+        }
 
-/* ================= LOWER THIRD ================= */
+        #photoMask {
+            position: absolute;
+            width: 87px;
+            height: 87px;
+            left: 40px;
+            top: 138px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
 
-#lowerThird{
-  position:absolute;
-  bottom:260px;
-  left:200px;
-  width:1200px;
-  height:240px;
-  opacity:0;
-  transform:translateX(-120%);
-  transition:all .6s cubic-bezier(.22,.9,.3,1);
-}
+        #playerImage {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
 
-/* ================= TEAM NAME ================= */
+        #ltTeam {
+            position: absolute;
+            top: 107px;
+            left: 0px; /* start of blue strip */
+            width: 240px; /* width of strip */
 
-#ltTeam{
-  position:absolute;
-  top:48px;
-  left:375px;
-  font-size:24px;
-  font-weight:600;
-  letter-spacing:.12em;
-  color:#ffffff;
-  text-transform:uppercase;
-  z-index:5;
-}
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            text-align: center;
+        }
 
-/* ================= GOLD BAR LABEL ================= */
+        #ltLabel {
+            position: absolute;
+            left: 0px;
+            top: 137px;
+            width: 600px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #111;
+            text-align: center;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
 
-#ltLabel{
-  position:absolute;
-  top:72px;
-  left:480px;
-  font-size:22px;
-  font-weight:700;
-  color:#1e293b; /* dark navy text like screenshot */
-  letter-spacing:.08em;
-  text-transform:uppercase;
-}
+        #ltName {
+            position: absolute;
+            left: 0px;
+            top: 157px;
+            width: 600px;
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            text-transform: uppercase;
+        }
 
-/* ================= PLAYER NAME ================= */
+        #separator {
+            position: absolute;
+            left: 140px;
+            top: 195px;
+            width: 300px;
+            height: 2px;
+            background: rgba(255,255,255,.6);
+        }
 
-#ltName{
-  position:absolute;
-  top:102px;
-  left:480px;
-  font-size:64px;
-  font-weight:700;
-  color:#ffffff;
-  letter-spacing:.04em;
-  text-transform:uppercase;
-  text-shadow:0 2px 8px rgba(0,0,0,.6);
-}
+        #ltHand {
+            position: absolute;
+            left: 0px;
+            top: 207px;
+            width: 600px;
+            font-size: 16px;
+            color: #e5e7eb;          
+            text-align: center;
+            text-transform: uppercase;
+        }
 
-/* ================= SEPARATOR ================= */
+        /* ================= MOMENT STINGER ================= */
 
-#separator{
-  position:absolute;
-  top:158px;
-  left:480px;
-  width:500px;
-  height:2px;
-  background:rgba(255,255,255,.6);
-}
+        #momentStinger {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent; /* fully transparent */
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .15s ease;
+            z-index: 5000;
+        }
 
-/* ================= HANDEDNESS ================= */
+        #momentGlow {
+            position: absolute;
+            width: 900px;
+            height: 900px;
+            border-radius: 50%;
+            filter: blur(160px);
+            opacity: .75; /* stronger for daylight */
+            transform: scale(.6);
+            transition: transform .4s ease;
+        }
 
-#ltHand{
-  position:absolute;
-  top:170px;
-  left:480px;
-  font-size:22px;
-  font-weight:500;
-  color:#e2e8f0; /* light gray-white */
-  letter-spacing:.10em;
-  text-transform:uppercase;
-  text-shadow:0 1px 6px rgba(0,0,0,.5);
-}
+        #momentImage {
+            max-width: 1200px;
+            width: 75%;
+            transform: scale(.4);
+            opacity: 0;
+            z-index: 2;
+        }
 
-/* ================= GOLD RING ================= */
+        #momentFallback {
+            position: absolute;
+            font-size: 200px;
+            font-weight: 700;
+            letter-spacing: .1em;
+            display: none;
+            z-index: 2;
+        }
 
-#photoBadge{
-  position:absolute;
-  top:8%;
-  left:250px;
-  width:105px;
-  height:105px;
-  border-radius:50%;
-  border:3px solid #facc15;
-  overflow:hidden;
-  background:transparent;
-  z-index:20;
-}
+        /* Animations */
+        /* ENTRY ANIMATION */
+        @keyframes momentIn {
+            0% {
+                transform: scale(.4);
+                opacity: 0;
+            }
 
-#playerImage{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:none;
-}
+            60% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
 
-/* ================= MOMENT STINGER ================= */
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
 
-#momentStinger{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.75);
-  backdrop-filter:blur(6px);
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .3s ease;
-  z-index:5000;
-}
+        /* EXIT ANIMATION */
+        @keyframes momentOut {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
 
-#momentText{
-  font-size:220px;
-  font-weight:700;
-  letter-spacing:.1em;
-  transform:scale(.6);
-  transition:transform .4s cubic-bezier(.22,.9,.3,1);
-  text-shadow:0 4px 15px rgba(0,0,0,.6);
-}
+            100% {
+                transform: scale(.6);
+                opacity: 0;
+            }
+        }
 
-</style>
+
+        /* WICKET SHAKE */
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-12px);
+            }
+
+            40% {
+                transform: translateX(12px);
+            }
+
+            60% {
+                transform: translateX(-8px);
+            }
+
+            80% {
+                transform: translateX(8px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        /* ================= LEAGUE BUG (ALWAYS ON) ================= */
+
+        #leagueBug {
+            position: absolute;
+            top: 60px;
+            right: 80px;
+            padding: 14px 32px;
+            background: rgba(0, 0, 0, 0.3); /* transparent */
+            backdrop-filter: blur(8px); /* glass effect */
+
+            border-left: 4px solid #facc15; /* gold accent */
+
+            border-radius: 4px;
+            z-index: 9000;
+            opacity: 0;
+            transform: translateX(40px);
+            transition: all .6s cubic-bezier(.22,.9,.3,1);
+        }
+
+        #leagueBug.show {
+            opacity: 0.8;
+            transform: translateX(0);
+        }
+
+        #leagueText {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        #tournamentText {
+            font-size: 14px;
+            color: #e5e7eb;
+            text-transform: uppercase;
+        }
+
+        #scoreFrame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1920px;
+            height: 1080px;
+            border: none;
+            display: none;
+            z-index: 1;
+        }
+
+        /* ================= TOP SPONSOR BAR ================= */
+
+        #topSponsorBar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1920px;
+            height: 140px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(-100%);
+            transition: transform .6s cubic-bezier(.22,.9,.3,1), opacity .4s ease;
+            z-index: 10000;
+        }
+
+        #topSponsorBar.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #topSponsorImage {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #scoreboard {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translate(-50%,120%);
+            width: 1700px;
+            height: 100px;
+            background: linear-gradient(90deg,#020617,#0f172a);
+            border-top: 4px solid #facc15;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            color: white;
+            z-index: 9000;
+            transition: transform .6s cubic-bezier(.22,.9,.3,1)
+        }
+
+        #scoreboard.show {
+            transform: translate(-50%,0)
+        }
+
+        #sbTeamA, #sbTeamB {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        #logoA, #logoB {
+            width: 46px;
+            height: 46px;
+            object-fit: contain
+        }
+
+        #nameA, #nameB {
+            font-size: 20px;
+            font-weight: 600
+        }
+
+        #sbScoreBlock {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 200px
+        }
+
+        #sbScore {
+            font-size: 36px;
+            font-weight: 700
+        }
+
+        #sbOvers {
+            font-size: 18px;
+            color: #e5e7eb
+        }
+
+        #sbRR {
+            font-size: 16px;
+            color: #cbd5f5
+        }
+
+        #sbBatters {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            font-size: 18px
+        }
+
+        .batRow {
+            display: flex;
+            gap: 10px
+        }
+
+        #sbBowler {
+            display: flex;
+            flex-direction: column;
+            font-size: 18px;
+            text-align: right
+        }
+
+        #sbThisOver {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 16px;
+            min-width: 140px
+        }
+
+        #thisOverLabel {
+            font-size: 12px;
+            color: #cbd5f5;
+            letter-spacing: 1px
+        }
+
+        #thisOverBalls {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 4px
+        }
+
+        .ball {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 4px;
+            background: #475569;
+            color: white
+        }
+
+        .ball.four {
+            background: #2563eb
+        }
+
+        .ball.six {
+            background: #f59e0b
+        }
+
+        .ball.wicket {
+            background: #dc2626
+        }
+
+        .ball.extra {
+            background: #7c3aed
+        }
+
+        .boundaryGlow {
+            box-shadow: 0 0 20px #facc15;
+        }
+
+        .teamAColor {
+            border-top: 4px solid #2563eb;
+        }
+
+        .teamBColor {
+            border-top: 4px solid #dc2626;
+        }
+
+        #runworm {
+            position: absolute;
+            bottom: 160px;
+            left: 60px;
+            width: 320px;
+            height: 120px;
+            background: rgba(0,0,0,.5);
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            z-index: 8000
+        }
+        #runworm {
+            display: none;
+        }
+        .wormBar {
+            flex: 1;
+            background: #38bdf8;
+            border-radius: 3px;
+            min-height: 8px;
+        }
+
+        #wicketGraphic {
+            position: absolute;
+            bottom: 160px;
+            left: 50%;
+            transform: translate(-50%,40px);
+            background: #7f1d1d;
+            border-left: 6px solid #ef4444;
+            padding: 14px 28px;
+            border-radius: 6px;
+            color: white;
+            text-align: center;
+            opacity: 0;
+            transition: all .45s cubic-bezier(.22,.9,.3,1);
+            z-index: 9500;
+        }
+
+        #wicketGraphic.show {
+            opacity: 1;
+            transform: translate(-50%,0);
+        }
+
+        #wicketText {
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: #fca5a5;
+        }
+
+        #wicketPlayer {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        #wicketScore {
+            font-size: 16px;
+            color: #fecaca;
+        }
+
+        .fullscreen-sponsor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .4s;
+        }
+
+        .fullscreen-sponsor.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .fullscreen-sponsor img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+    </style>
 </head>
 
 <body>
 
-<div id="connectionDot"></div>
+    <div id="connectionDot"></div>
+    <iframe id="scoreFrame"></iframe>
 
-<div id="lowerThird">
+    <div id="lowerThird">
+        <div id="panelBg"></div>
 
-<svg width="1200" height="240" viewBox="0 0 1200 240">
+        <div id="photoMask">
+            <img id="playerImage">
+        </div>
 
-<defs>
-  <linearGradient id="blueGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-    <stop offset="0%" stop-color="#1e3a8a"/>
-    <stop offset="100%" stop-color="#0f172a"/>
-  </linearGradient>
+        <div id="ltTeam"></div>
+        <div id="ltLabel"></div>
+        <div id="ltName"></div>
+        <div id="ltHand"></div>
+    </div>
 
-  <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-    <stop offset="0%" stop-color="#facc15"/>
-    <stop offset="50%" stop-color="#fbbf24"/>
-    <stop offset="100%" stop-color="#f59e0b"/>
-  </linearGradient>
-</defs>
+    <div id="momentStinger">
+        <div id="momentGlow"></div>
+        <img id="momentImage">
+        <div id="momentFallback"></div>
+    </div>
 
-<!-- DARK PANEL -->
-<polygon points="300,40 1120,40 1080,210 260,210"
-         fill="url(#blueGrad)"/>
+    <div id="leagueBug">
+        <div id="leagueText"></div>
+        <div id="tournamentText"></div>
+    </div>
 
-<!-- GOLD BAR (EXACT SHAPE MATCH) -->
-<polygon points="300,65 1120,65 1080,105 260,105"
-         fill="url(#goldGrad)"/>
+    <div id="topSponsorBar">
+        <img id="topSponsorImage">
+    </div>
 
-</svg>
+    <div id="wicketGraphic">
+        <div id="wicketText">WICKET</div>
+        <div id="wicketPlayer"></div>
+        <div id="wicketScore"></div>
+    </div>
 
-<div id="photoBadge">
-  <img id="playerImage">
-</div>
+    <div id="scoreboard">
+        <div id="sbTeamA">
+            <img id="logoA">
+            <span id="nameA">TEAM A</span>
+        </div>
 
-<div id="ltTeam"></div>
-<div id="ltLabel">NEW BATSMAN</div>
-<div id="ltName"></div>
-<div id="separator"></div>
-<div id="ltHand"></div>
+        <div id="sbScoreBlock">
+            <div id="sbScore">0/0</div>
+            <div id="sbOvers">(0.0)</div>
+            <div id="sbRR">RR 0.00</div>
+        </div>
 
-</div>
+        <div id="sbBatters">
+            <div class="batRow"><span id="bat1">Batter1*</span><span id="bat1Score">0 (0)</span></div>
+            <div class="batRow"><span id="bat2">Batter2</span><span id="bat2Score">0 (0)</span></div>
+        </div>
 
-<div id="momentStinger">
-  <div id="momentText"></div>
-</div>
+        <div id="sbBowler">
+            <span id="bowlerName">Bowler</span>
+            <span id="bowlerStats">0-0 (0)</span>
+        </div>
 
-<script>
+        <div id="sbThisOver">
+            <span id="thisOverLabel">THIS OVER</span>
+            <span id="thisOverBalls">-</span>
+        </div>
 
-const PUSHER_KEY="12fcceaea77e52cf3626";
-const pusher=new Pusher(PUSHER_KEY,{cluster:'us2',forceTLS:true});
-const channel=pusher.subscribe('broadcast');
+        <div id="sbTeamB">
+            <img id="logoB">
+            <span id="nameB">TEAM B</span>
+        </div>
+    </div>
 
-const dot=document.getElementById('connectionDot');
-pusher.connection.bind('connected',()=>dot.style.background='#22c55e');
-pusher.connection.bind('connecting',()=>dot.style.background='#facc15');
-pusher.connection.bind('disconnected',()=>dot.style.background='#ef4444');
+    <div id="runworm"></div>
 
-const lowerThird=document.getElementById('lowerThird');
-const teamEl=document.getElementById('ltTeam');
-const nameEl=document.getElementById('ltName');
-const handEl=document.getElementById('ltHand');
-const imgEl=document.getElementById('playerImage');
+    <div id="fullscreenSponsor" class="fullscreen-sponsor">
+        <img id="fullscreenSponsorImg">
+    </div>
 
-const momentStinger=document.getElementById('momentStinger');
-const momentText=document.getElementById('momentText');
+    <script>
 
-let playerTimer=null;
-let momentTimer=null;
+        const PUSHER_KEY = "12fcceaea77e52cf3626";
+        const pusher = new Pusher(PUSHER_KEY, { cluster: 'us2', forceTLS: true });
+        const channel = pusher.subscribe('broadcast');
 
-/* PLAYER EVENT */
-channel.bind('player',data=>{
-  if(!data) return;
-  if(playerTimer) clearTimeout(playerTimer);
+        const logoA = document.getElementById("logoA");
+        const logoB = document.getElementById("logoB");
+        const nameA = document.getElementById("nameA");
+        const nameB = document.getElementById("nameB");
 
-  teamEl.textContent=data.team||'';
-  nameEl.textContent=(data.name||'').toUpperCase();
-  handEl.textContent=data.hand||'';
+        const sbScore = document.getElementById("sbScore");
+        const sbOvers = document.getElementById("sbOvers");
+        const sbRR = document.getElementById("sbRR");
+        const bat1 = document.getElementById("bat1");
+        const bat1Score = document.getElementById("bat1Score");
+        const bat2 = document.getElementById("bat2");
+        const bat2Score = document.getElementById("bat2Score");
 
-  if(data.image){
-    imgEl.src=data.image;
-    imgEl.style.display='block';
-  } else {
-    imgEl.style.display='none';
-  }
+        const bowlerName = document.getElementById("bowlerName");
+        const bowlerStats = document.getElementById("bowlerStats");
+        const thisOverBalls = document.getElementById("thisOverBalls");
 
-  lowerThird.style.opacity='1';
-  lowerThird.style.transform='translateX(0)';
+        const wicketGraphic = document.getElementById("wicketGraphic");
+        const wicketPlayer = document.getElementById("wicketPlayer");
+        const wicketScore = document.getElementById("wicketScore");
 
-  playerTimer=setTimeout(()=>{
-    lowerThird.style.opacity='0';
-    lowerThird.style.transform='translateX(-120%)';
-  },7000);
-});
+        let lastScore = "";
+        let battingTeam = "";
 
-/* MOMENTS */
-channel.bind('moment',data=>{
-  if(!data || !data.type) return;
-  if(momentTimer) clearTimeout(momentTimer);
+        channel.bind('match', data => {
+            if (!data) return;
 
-  let raw=data.type.toString().toUpperCase();
-  let display="";
-  let color="#facc15";
+            nameA.textContent = (data.teamA || "").toUpperCase();
+            nameB.textContent = (data.teamB || "").toUpperCase();
 
-  if(raw==="4"||raw==="FOUR"){ display="FOUR"; color="#facc15"; }
-  else if(raw==="6"||raw==="SIX"){ display="SIX"; color="#22c55e"; }
-  else if(raw==="W"||raw==="WICKET"){ display="WICKET"; color="#ef4444"; }
+            if (data.teamALogo) logoA.src = data.teamALogo;
+            if (data.teamBLogo) logoB.src = data.teamBLogo;
 
-  momentText.textContent=display;
-  momentText.style.color=color;
+            battingTeam = data.batting || "";
 
-  momentStinger.style.opacity='1';
-  momentText.style.transform='scale(1)';
+            const bar = document.getElementById("scoreboard");
 
-  momentTimer=setTimeout(()=>{
-    momentStinger.style.opacity='0';
-    momentText.style.transform='scale(.6)';
-  },2500);
-});
+            bar.classList.remove("teamAColor", "teamBColor");
 
-</script>
+            if (battingTeam === data.teamA) {
+                bar.classList.add("teamAColor");
+            } else {
+                bar.classList.add("teamBColor");
+            }
+        });
+
+        channel.bind('manualScore', data => {
+            if (!data) return;
+
+            document.getElementById("scoreboard").classList.add("show");
+            detectMoment(data);
+            renderRunWorm(data);
+
+            if (data.score) sbScore.textContent = data.score;
+            if (data.overs) sbOvers.textContent = "(" + data.overs + ")";
+            if (data.runRate) sbRR.textContent = "RR " + data.runRate;
+
+            if (data.bat1) bat1.textContent = data.bat1.toUpperCase();
+            if (data.bat1Score) bat1Score.textContent = data.bat1Score;
+
+            if (data.bat2) bat2.textContent = data.bat2.toUpperCase();
+            if (data.bat2Score) bat2Score.textContent = data.bat2Score;
+
+            if (data.bowlerName) bowlerName.textContent = data.bowlerName.toUpperCase();
+            if (data.bowlerStats) bowlerStats.textContent = data.bowlerStats;
+
+            if (data.thisOver) {
+                renderBalls(data.thisOver);
+            }
+
+            if (data.dismissal) {
+                showWicket(data);
+            }
+        });
+
+        channel.bind('fullscreenSponsor', data => {
+            const box = document.getElementById("fullscreenSponsor");
+            const img = document.getElementById("fullscreenSponsorImg");
+
+            if (!box || !img) return;
+
+            if (data.hide) {
+                box.classList.remove("show");
+                return;
+            }
+
+            if (data.image) {
+                img.src = data.image;
+                box.classList.add("show");
+
+                setTimeout(() => {
+                    box.classList.remove("show");
+                }, data.duration || 8000);
+            }
+
+        });
+
+        const dot = document.getElementById('connectionDot');
+        pusher.connection.bind('connected', () => dot.style.background = '#22c55e');
+        pusher.connection.bind('connecting', () => dot.style.background = '#facc15');
+        pusher.connection.bind('disconnected', () => dot.style.background = '#ef4444');
+
+
+
+        const lowerThird = document.getElementById('lowerThird');
+        const teamEl = document.getElementById('ltTeam');
+        const imgEl = document.getElementById('playerImage');
+        const nameEl = document.getElementById('ltName');
+        const handEl = document.getElementById('ltHand');
+        const labelEl = document.getElementById('ltLabel');
+
+        let playerTimer = null;
+
+        channel.bind('player', data => {
+            if (!data) return;
+            if (playerTimer) clearTimeout(playerTimer);
+
+            teamEl.textContent = (data.team || '').toUpperCase();
+            nameEl.textContent = (data.name || '').toUpperCase();
+            handEl.textContent = (data.hand + " Batsman" || '').toUpperCase();
+            labelEl.textContent = (data.label || '').toUpperCase();
+
+            if (data.image) {
+                imgEl.src = data.image;
+                imgEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none';
+            }
+
+            lowerThird.style.opacity = '1';
+            lowerThird.style.transform = 'translateX(0)';
+
+            playerTimer = setTimeout(() => {
+                lowerThird.style.opacity = '0';
+                lowerThird.style.transform = 'translateX(-120%)';
+            }, 7000);
+        });
+
+        const momentStinger = document.getElementById('momentStinger');
+        const momentImage = document.getElementById('momentImage');
+        const momentGlow = document.getElementById('momentGlow');
+        const momentFallback = document.getElementById('momentFallback');
+
+
+        let momentTimer = null;
+
+        /* MOMENTS WITH PNG */
+        channel.bind('moment', data => {
+            if (!data || !data.type) return;
+            if (momentTimer) clearTimeout(momentTimer);
+
+            let raw = data.type.toString().toUpperCase();
+            let file = "";
+            let glowColor = "#facc15";
+            let fallbackText = "";
+
+            if (raw === "4" || raw === "FOUR") {
+                file = "/assets/moments/four.png";
+                glowColor = "#facc15";
+                fallbackText = "FOUR";
+            }
+            else if (raw === "6" || raw === "SIX") {
+                file = "/assets/moments/six.png";
+                glowColor = "#22c55e";
+                fallbackText = "SIX";
+            }
+            else if (raw === "W" || raw === "WICKET") {
+                file = "/assets/moments/wicket.png";
+                glowColor = "#ef4444";
+                fallbackText = "WICKET";
+            }
+            else return;
+
+            momentImage.src = file;
+            momentGlow.style.background = glowColor;
+
+            momentFallback.textContent = fallbackText;
+            momentFallback.style.color = glowColor;
+            momentFallback.style.display = "none";
+
+            momentStinger.style.opacity = "1";
+            momentGlow.style.transform = "scale(1)";
+
+            momentImage.style.animation = "momentIn .45s cubic-bezier(.22,.9,.3,1) forwards";
+
+            momentImage.onerror = () => {
+                momentImage.style.display = "none";
+                momentFallback.style.display = "block";
+                momentFallback.style.animation = "momentIn .5s cubic-bezier(.22,.9,.3,1) forwards";
+            };
+
+            // Wicket shake effect
+            if (raw === "W" || raw === "WICKET") {
+                momentStinger.style.animation = "shake .45s ease";
+                setTimeout(() => momentStinger.style.animation = "", 450);
+            }
+
+            momentTimer = setTimeout(() => {
+                momentImage.style.animation = "momentOut .35s ease forwards";
+                momentFallback.style.animation = "momentOut .35s ease forwards";
+                momentGlow.style.transform = "scale(.6)";
+
+                setTimeout(() => {
+                    momentStinger.style.opacity = "0";
+                }, 350);
+
+            }, 2200);
+        });
+
+        const leagueBug = document.getElementById('leagueBug');
+        const leagueText = document.getElementById('leagueText');
+        const tournamentText = document.getElementById('tournamentText');
+        let leagueTimer = null;
+
+        channel.bind('branding', data => {
+            if (!data) return;
+
+            leagueText.textContent = (data.league || '').toUpperCase();
+            tournamentText.textContent = (data.tournament || '').toUpperCase();
+
+            leagueBug.classList.add('show');
+        });
+
+        const scoreFrame = document.getElementById('scoreFrame');
+
+        channel.bind('score', data => {
+            console.log("Score event received:", data);
+
+            if (!data || !data.url) return;
+
+            if (data.auto === true) {
+                scoreFrame.src = data.url;
+                scoreFrame.style.display = "block";
+            }
+        });
+
+        const topSponsorBar = document.getElementById('topSponsorBar');
+        const topSponsorImage = document.getElementById('topSponsorImage');
+
+        let sponsorList = [];
+        let sponsorIndex = 0;
+        let sponsorTimer = null;
+
+        channel.bind('sponsor', data => {
+            console.log("Sponsor event:", data);
+
+            clearInterval(sponsorTimer);
+
+            if (!data || data.enabled !== true) {
+                topSponsorBar.classList.remove('show');
+                return;
+            }
+
+            sponsorList = (data.list || []).filter(x => x && x.trim() !== "");
+
+            if (sponsorList.length === 0) {
+                topSponsorBar.classList.remove('show');
+                return;
+            }
+
+            sponsorIndex = 0;
+            topSponsorImage.src = "/assets/sponsors/" + sponsorList[sponsorIndex];
+
+            topSponsorBar.classList.add('show');
+
+            const interval = parseInt(data.interval || 8) * 1000;
+
+            sponsorTimer = setInterval(() => {
+                sponsorIndex = (sponsorIndex + 1) % sponsorList.length;
+
+                topSponsorImage.style.opacity = 0;
+
+                setTimeout(() => {
+                    topSponsorImage.src = "/assets/sponsors/" + sponsorList[sponsorIndex];
+                    topSponsorImage.style.opacity = 1;
+                }, 300);
+
+            }, interval);
+        });
+
+        function renderBalls(over) {
+
+            thisOverBalls.innerHTML = "";
+
+            const balls = over.split(" ");
+
+            balls.forEach(b => {
+
+                const el = document.createElement("span");
+                el.className = "ball";
+
+                if (b === "4") el.classList.add("four");
+                else if (b === "6") el.classList.add("six");
+                else if (b === "W") el.classList.add("wicket");
+                else if (b === "Wd" || b === "Nb") el.classList.add("extra");
+
+                el.textContent = b;
+
+                thisOverBalls.appendChild(el);
+
+            });
+        }
+
+        function detectMoment(data) {
+            if (!data.thisOver) return;
+
+            const balls = data.thisOver.split(" ");
+            const lastBall = balls[balls.length - 1];
+
+            const bar = document.getElementById("scoreboard");
+
+            if (lastBall === "4") {
+                showMoment("FOUR");
+                bar.classList.add("boundaryGlow");
+                setTimeout(() => bar.classList.remove("boundaryGlow"), 800);
+            }
+
+            if (lastBall === "6") {
+                showMoment("SIX");
+                bar.classList.add("boundaryGlow");
+                setTimeout(() => bar.classList.remove("boundaryGlow"), 800);
+            }
+
+            if (lastBall === "W") {
+
+                setTimeout(() => {
+                    showWicket(data);
+                }, 300);
+            }
+        }
+
+        function showMoment(type) {
+
+            let glow = "#facc15";
+            let text = type;
+
+            if (type === "SIX") glow = "#22c55e";
+            if (type === "WICKET") glow = "#ef4444";
+
+            momentGlow.style.background = glow;
+
+            momentFallback.textContent = text;
+            momentFallback.style.display = "block";
+
+            momentStinger.style.opacity = "1";
+
+            momentFallback.style.animation = "momentIn .45s forwards";
+
+            setTimeout(() => {
+                momentFallback.style.animation = "momentOut .35s forwards";
+
+                setTimeout(() => {
+                    momentStinger.style.opacity = "0";
+                }, 350);
+
+            }, 2200);
+        }
+
+        function showWicket(data) {
+            const player = data.bat1.replace("*", "");
+            const score = data.bat1Score || "";
+            const dismissal = data.dismissal || "";
+
+            wicketPlayer.textContent = player.toUpperCase();
+            wicketScore.textContent = score + " • " + dismissal.toUpperCase();
+
+            wicketGraphic.classList.add("show");
+
+            setTimeout(() => {
+                wicketGraphic.classList.remove("show");
+            }, 5000);
+        }
+
+        function renderRunWorm(data) {
+            if (!data.runsPerOver) return;
+
+            const worm = document.getElementById("runworm");
+            worm.innerHTML = "";
+
+            const overs = data.runsPerOver.slice(-10);
+
+            overs.forEach(r => {
+
+                const bar = document.createElement("div");
+                bar.className = "wormBar";
+
+                bar.style.height = (10 + r * 5) + "px";
+
+                worm.appendChild(bar);
+
+            });
+        }
+    </script>
 
 </body>
 </html>
