@@ -1140,27 +1140,26 @@
          panel.innerHTML=html;
          }
 
-         function renderCurrentOver(){
+        function renderCurrentOver(){       
          const tracker=document.getElementById('currentOverTracker');
          if(!tracker)return;
          
-         let overs=[];
-         let current=[];
-         let legalBallCount=0;
+         let balls=[];
+         let legalBalls=0;
          
-         for(let i=0;i<liveHistory.length;i++){
+         for(let i=liveHistory.length-1;i>=0;i--){
          
          const ball=liveHistory[i];
          let symbol="";
          
          if(ball.type==="run"){
          symbol=ball.runs;
-         legalBallCount++;
+         legalBalls++;
          }
          
          else if(ball.type==="wicket"){
          symbol="W";
-         legalBallCount++;
+         legalBalls++;
          }
          
          else if(ball.type==="extra"){
@@ -1170,35 +1169,25 @@
          
          if(ball.extra==="bye"){
          symbol="B";
-         legalBallCount++;
+         legalBalls++;
          }
          
          if(ball.extra==="legbye"){
          symbol="Lb";
-         legalBallCount++;
+         legalBalls++;
          }
          
          }
          
-         current.push(symbol);
+         balls.unshift(symbol);
          
-         if(legalBallCount===6){
-         overs.push(current.join(" "));
-         current=[];
-         legalBallCount=0;
-         }
+         if(legalBalls===6)break;
          
          }
          
-         if(current.length>0){
-         overs.push(current.join(" "));
+         tracker.innerText=balls.join(" ") || "-";
          }
-         
-         overs=overs.slice(-3);
-         
-         tracker.innerText=overs.join(" | ") || "-";
-         }
-         
+                  
          function renderLastWicket(){
           const panel = document.getElementById("lastWicketPanel");
           if(!panel) return;
