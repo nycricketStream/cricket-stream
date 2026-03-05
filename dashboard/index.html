@@ -742,11 +742,13 @@
           const dismissal = document.getElementById('dismissalType')?.value;
          
           liveHistory.push({
-            type:'wicket',
-            bowler:currentBowler,
-            striker:striker,
-            dismissal:dismissal
-          });
+         type:'wicket',
+         bowler:currentBowler,
+         striker:striker,
+         dismissal:dismissal,
+         scoreAtWicket: liveTotal,
+         wicketNumber: liveWickets + 1
+         });
          
           liveWickets++;
           liveBalls++;
@@ -1004,29 +1006,26 @@
           `;
          }
          
-         function renderFallOfWickets(){         
-          const body = document.getElementById('fallOfWicketsBody');
-          if(!body) return;
+         function renderFallOfWickets(){
+         const body=document.getElementById('fallOfWicketsBody');
+         if(!body)return;
          
-          body.innerHTML = '';   
-          let wickets = 0;
-          liveHistory.forEach((ball,i)=>{
-           if(ball.type === 'wicket'){
+         body.innerHTML='';
          
-            wickets++;
+         liveHistory.forEach((ball,i)=>{
+         if(ball.type==='wicket'){
          
-            const over =
-             Math.floor((i+1)/6) + "." + ((i+1)%6);
+         const over=Math.floor((i+1)/6)+"."+((i+1)%6);
          
-            body.innerHTML += `
-            <tr>
-              <td>${liveTotal}/${wickets}</td>
-              <td>${ball.striker}</td>
-              <td>${over}</td>
-            </tr>
-            `;
-           }         
-          });      
+         body.innerHTML+=`
+         <tr>
+         <td>${ball.scoreAtWicket}/${ball.wicketNumber}</td>
+         <td>${ball.striker}</td>
+         <td>${over}</td>
+         </tr>
+         `;
+         }
+         });
          }
          
          function renderPartnership(){
