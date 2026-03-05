@@ -602,6 +602,14 @@
          bowlerWickets = b.wickets;
          bowlerOvers = Math.floor(b.balls/6) + "." + (b.balls % 6);
          }
+
+         let thisOver="";
+         const tracker=document.getElementById('currentOverTracker')?.innerText||"";
+         if(tracker.includes("|")){
+         thisOver=tracker.split("|").pop().trim();
+         }else{
+         thisOver=tracker;
+         }
          
          send('manualScore',{
          score:liveTotal+"/"+liveWickets,
@@ -613,7 +621,7 @@
          bat2Score:nonStrikerRuns+" ("+nonStrikerBalls+")",
          bowlerName:bowlerName,
          bowlerStats:bowlerWickets+"-"+bowlerRuns+" ("+bowlerOvers+")",
-         thisOver:document.getElementById('currentOverTracker')?.innerText||""
+         thisOver:thisOver
          });
           renderBowlerStats();
           renderBatsmanStats();
