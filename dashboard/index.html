@@ -908,26 +908,32 @@
          }
          
          function validateBeforeBall(){
-          const striker = document.getElementById('striker')?.value;
-          const bowler = document.getElementById('bowler')?.value;
+         const striker=document.getElementById('striker')?.value;
+         const bowler=document.getElementById('bowler')?.value;
          
-          if(!striker){
-            alert("Select Striker before scoring.");
-            return false;
-          }
-          if(!bowler){
-            alert("Select Bowler before scoring.");
-            return false;
-          }
-          if(lockedOut){
-            alert("Select new batsman before continuing.");
-            return false;
-          }
-          if(currentOverBalls >= 6){
-            alert("Over complete. Select a new bowler.");
-            return false;
-          }
-          return true;
+         if(!striker){
+         alert("Select Striker before scoring.");
+         return false;
+         }
+         
+         if(!bowler){
+         alert("Select Bowler before scoring.");
+         return false;
+         }
+         
+         if(lockedOut){
+         alert("Select new batsman before continuing.");
+         return false;
+         }
+         
+         const ballsThisOver = liveBalls % 6;
+         
+         if(ballsThisOver === 0 && liveBalls !== 0){
+         alert("Over complete. Select a new bowler.");
+         return false;
+         }
+         
+         return true;
          }
          
          function ensureBowler(name){
