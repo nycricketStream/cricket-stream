@@ -1149,6 +1149,63 @@
           }
           panel.innerHTML = html;
          }
+
+         function renderCurrentOver(){
+         const tracker=document.getElementById('currentOverTracker');
+         if(!tracker)return;
+         
+         let overs=[];
+         let current=[];
+         let legalBalls=0;
+         
+         for(let i=0;i<liveHistory.length;i++){
+         
+         const ball=liveHistory[i];
+         let symbol="";
+         
+         if(ball.type==="run"){
+         symbol=ball.runs;
+         legalBalls++;
+         }
+         
+         else if(ball.type==="wicket"){
+         symbol="W";
+         legalBalls++;
+         }
+         
+         else if(ball.type==="extra"){
+         
+         if(ball.extra==="wide") symbol="Wd";
+         if(ball.extra==="noball") symbol="Nb";
+         
+         if(ball.extra==="bye"){
+         symbol="B";
+         legalBalls++;
+         }
+         
+         if(ball.extra==="legbye"){
+         symbol="Lb";
+         legalBalls++;
+         }
+         
+         }
+         
+         current.push(symbol);
+         
+         if(legalBalls===6){
+         overs.push(current.join(" "));
+         current=[];
+         legalBalls=0;
+         }
+         
+         }
+         
+         if(current.length) overs.push(current.join(" "));
+         
+         overs=overs.slice(-3);
+         
+         tracker.innerText=overs.join(" | ") || "-";
+         }
          
          function renderLastWicket(){
           const panel = document.getElementById("lastWicketPanel");
