@@ -604,18 +604,16 @@
          }
          
          send('manualScore',{
-         score: liveTotal + "/" + liveWickets,
-         overs: calculateOvers(),
-         runRate: calculateRR(),
-         
-         bat1: strikerName + "*",
-         bat1Score: strikerRuns + " (" + strikerBalls + ")",
-         
-         bat2: nonStrikerName,
-         bat2Score: nonStrikerRuns + " (" + nonStrikerBalls + ")",
-         
-         bowlerName: bowlerName,
-         bowlerStats: bowlerWickets + "-" + bowlerRuns + " (" + bowlerOvers + ")"
+         score:liveTotal+"/"+liveWickets,
+         overs:calculateOvers(),
+         runRate:calculateRR(),
+         bat1:strikerName+"*",
+         bat1Score:strikerRuns+" ("+strikerBalls+")",
+         bat2:nonStrikerName,
+         bat2Score:nonStrikerRuns+" ("+nonStrikerBalls+")",
+         bowlerName:bowlerName,
+         bowlerStats:bowlerWickets+"-"+bowlerRuns+" ("+bowlerOvers+")",
+         thisOver:document.getElementById('currentOverTracker')?.innerText||""
          });
           renderBowlerStats();
           renderBatsmanStats();
