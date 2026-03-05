@@ -70,6 +70,7 @@
          <button class="tab-btn" onclick="showTab(event,'moments')">Moments</button>
          <button class="tab-btn" onclick="saveConfig()">💾 Save Config</button>
          <button class="tab-btn" onclick="loadConfig()">📂 Load Config</button>
+         <button class="tab-btn" onclick="resetMatch()">🗑 Reset Match</button>
       </div>
       <div class="main">
          <!-- MATCH SETUP -->
@@ -77,10 +78,12 @@
             <h3>Match Setup</h3>
             Team A<input id="teamA">
             Team A Logo URL<input id="teamALogo" placeholder="https://example.com/logo.png">
-            Team A Players<textarea id="teamAPlayers"></textarea>
+            Team A Players
+            <textarea id="teamAPlayers"></textarea>
             Team B<input id="teamB">
             Team B Logo URL<input id="teamBLogo" placeholder="https://example.com/logo.png">
-            Team B Players<textarea id="teamBPlayers"></textarea>
+            Team B Players
+            <textarea id="teamBPlayers"></textarea>
             Batting Team<select id="batting"></select>
             Innings
             <select id="innings">
@@ -89,10 +92,9 @@
             </select>
             Total Overs<input id="maxOvers" value="50">
             Target (2nd Innings Only)<input id="target" placeholder="e.g. 250">
-           <button onclick="send('match',{teamA:teamA.value,teamB:teamB.value,teamALogo:teamALogo.value,teamBLogo:teamBLogo.value,batting:batting.value,innings:innings.value,teamAPlayers:teamAPlayers.value.split('\n'),teamBPlayers:teamBPlayers.value.split('\n')})">Update Match</button>
-            </div>
-            
-            <div id="branding" class="tab">
+            <button onclick="send('match',{teamA:teamA.value,teamB:teamB.value,teamALogo:teamALogo.value,teamBLogo:teamBLogo.value,batting:batting.value,innings:innings.value,teamAPlayers:teamAPlayers.value.split('\n'),teamBPlayers:teamBPlayers.value.split('\n')})">Update Match</button>
+         </div>
+         <div id="branding" class="tab">
             <h3>League Branding</h3>
             League<input id="league">
             Tournament<input id="tournament">
@@ -487,6 +489,24 @@
           sponsorList.value=c.sponsorList||'';
           rotation.value=c.rotation||8;
           alert('Config loaded');
+         }
+         
+         function resetMatch(){
+         localStorage.removeItem("cricketMatchState");
+         liveTotal=0;
+         liveWickets=0;
+         liveBalls=0;
+         liveHistory=[];
+         bowlerStats={};
+         batsmanStats={};
+         extrasStats={wide:0,noball:0,bye:0,legbye:0};
+         currentOverBalls=0;
+         lockedOut=false;
+         document.getElementById('striker').value="";
+         document.getElementById('nonStriker').value="";
+         document.getElementById('bowler').value="";
+         updateLiveDisplay();
+         alert("Match reset");
          }
          
          /* ================= BASIC LIVE SCORING ENGINE ================= */
