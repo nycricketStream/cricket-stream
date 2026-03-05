@@ -76,11 +76,11 @@
          <div id="match" class="tab active">
             <h3>Match Setup</h3>
             Team A<input id="teamA">
-            Team A Players
-            <textarea id="teamAPlayers"></textarea>
+            Team A Logo URL<input id="teamALogo" placeholder="https://example.com/logo.png">
+            Team A Players<textarea id="teamAPlayers"></textarea>
             Team B<input id="teamB">
-            Team B Players
-            <textarea id="teamBPlayers"></textarea>
+            Team B Logo URL<input id="teamBLogo" placeholder="https://example.com/logo.png">
+            Team B Players<textarea id="teamBPlayers"></textarea>
             Batting Team<select id="batting"></select>
             Innings
             <select id="innings">
@@ -89,8 +89,7 @@
             </select>
             Total Overs<input id="maxOvers" value="50">
             Target (2nd Innings Only)<input id="target" placeholder="e.g. 250">
-            <button onclick="send('match',{teamA:teamA.value,teamB:teamB.value,batting:batting.value,innings:innings.value,teamAPlayers:teamAPlayers.value.split('\n'),teamBPlayers:teamBPlayers.value.split('\n')})">Update Match</button>
-         </div>
+            <button onclick="send('match',{teamA:teamA.value,teamB:teamB.value,teamALogo:teamALogo.value,teamBLogo:teamBLogo.value,batting:batting.value,innings:innings.value,teamAPlayers:teamAPlayers.value.split('\n'),teamBPlayers:teamBPlayers.value.split('\n')})">Update Match</button>
          <div id="branding" class="tab">
             <h3>League Branding</h3>
             League<input id="league">
@@ -1192,7 +1191,7 @@
          }
          
          function autoSaveMatch(){
-         const state = {
+         const state={
          liveTotal,
          liveWickets,
          liveBalls,
@@ -1203,13 +1202,15 @@
          currentOverBalls,
          teamA:teamA.value,
          teamB:teamB.value,
+         teamALogo:teamALogo.value,
+         teamBLogo:teamBLogo.value,
          teamAPlayers:teamAPlayers.value,
          teamBPlayers:teamBPlayers.value,
          batting:batting.value,
          innings:innings.value,
          target:target.value,
          maxOvers:maxOvers.value
-         };         
+         };
          localStorage.setItem("cricketMatchState", JSON.stringify(state));    
          }
          
@@ -1227,8 +1228,10 @@
          extrasStats = state.extrasStats;
          currentOverBalls = state.currentOverBalls;
          
-         teamA.value = state.teamA;
-         teamB.value = state.teamB;
+         teamA.value=state.teamA;
+         teamB.value=state.teamB;
+         teamALogo.value=state.teamALogo||"";
+         teamBLogo.value=state.teamBLogo||"";
          teamAPlayers.value = state.teamAPlayers;
          teamBPlayers.value = state.teamBPlayers;
          batting.value = state.batting;
