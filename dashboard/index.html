@@ -703,7 +703,6 @@
          
          liveTotal += r;
          liveBalls++;
-         currentOverBalls++;
          
          if(striker){
           ensureBatsman(striker);
@@ -1065,66 +1064,66 @@
          }
          
          function renderCurrentOver(){
-          const tracker = document.getElementById('currentOverTracker');
-          if(!tracker) return;
+         const tracker=document.getElementById('currentOverTracker');
+         if(!tracker)return;
          
-          let balls = [];
-          let ballCount = 0;
+         let overs=[];
+         let current=[];
+         let legalBalls=0;
          
-          liveHistory.forEach(ball=>{
-           let symbol = "";
+         liveHistory.forEach(ball=>{
          
-           if(ball.type === 'run'){
-             symbol = ball.runs;
-             ballCount++;
-           }
-           else if(ball.type === 'wicket'){
-             symbol = "W";
-             ballCount++;
-           }
+         let symbol="";
          
-           else if(ball.type === 'extra'){
-             if(ball.extra === 'wide'){
-               symbol = "Wd";
-             }
-         
-             if(ball.extra === 'noball'){
-               symbol = "Nb";
-             }
-         
-             if(ball.extra === 'bye'){
-               symbol = "B";
-               ballCount++;
-             }
-         
-             if(ball.extra === 'legbye'){
-               symbol = "Lb";
-               ballCount++;
-             }
-           }
-           balls.push(symbol);
-         });
-         
-         // group balls into overs
-         let overs = [];
-         let currentOver = [];
-         
-         balls.forEach((b,i)=>{
-          currentOver.push(b);
-         
-          if(currentOver.length === 6){
-            overs.push(currentOver.join(" "));
-            currentOver = [];
-          }
-         });
-         
-         if(currentOver.length){
-          overs.push(currentOver.join(" "));
+         if(ball.type==="run"){
+         symbol=ball.runs;
+         legalBalls++;
          }
          
-         // keep only last 3 overs
-         overs = overs.slice(-3);
-         tracker.innerText = overs.join(" | ") || "-";
+         else if(ball.type==="wicket"){
+         symbol="W";
+         legalBalls++;
+         }
+         
+         else if(ball.type==="extra"){
+         
+         if(ball.extra==="wide"){
+         symbol="Wd";
+         }
+         
+         if(ball.extra==="noball"){
+         symbol="Nb";
+         }
+         
+         if(ball.extra==="bye"){
+         symbol="B";
+         legalBalls++;
+         }
+         
+         if(ball.extra==="legbye"){
+         symbol="Lb";
+         legalBalls++;
+         }
+         
+         }
+         
+         current.push(symbol);
+         
+         if(legalBalls===6){
+         overs.push(current.join(" "));
+         current=[];
+         legalBalls=0;
+         }
+         
+         });
+         
+         if(current.length){
+         overs.push(current.join(" "));
+         }
+         
+         overs=overs.slice(-3);
+         
+         tracker.innerText=overs.join(" | ") || "-";
          }
          
          function getRunsPerOver(){
