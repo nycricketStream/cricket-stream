@@ -464,7 +464,6 @@
           const config={
             league:league.value,
             tournament:tournament.value,
-            embedURL:embedURL.value,
             sponsorList:sponsorList.value,
             rotation:rotation.value
           };
@@ -485,7 +484,6 @@
           const c=await r.json();
           league.value=c.league||'';
           tournament.value=c.tournament||'';
-          embedURL.value=c.embedURL||'';
           sponsorList.value=c.sponsorList||'';
           rotation.value=c.rotation||8;
           alert('Config loaded');
@@ -1243,6 +1241,13 @@
          
          updateBattingTeams();
          updateLiveDisplay();
+         send('match',{
+         teamA:teamA.value,
+         teamB:teamB.value,
+         teamALogo:teamALogo.value,
+         teamBLogo:teamBLogo.value,
+         batting:batting.value
+         });
          }
       </script>
    </body>
