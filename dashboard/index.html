@@ -573,7 +573,7 @@
          
          document.getElementById('liveExtras').innerText = totalExtras;
          
-          const strikerName = document.getElementById('striker')?.value || "";
+         const strikerName = document.getElementById('striker')?.value || "";
          const nonStrikerName = document.getElementById('nonStriker')?.value || "";
          const bowlerName = document.getElementById('bowler')?.value || "";
          
@@ -603,13 +603,41 @@
          bowlerOvers = Math.floor(b.balls/6) + "." + (b.balls % 6);
          }
 
-         let thisOver="";
-         const tracker=document.getElementById('currentOverTracker')?.innerText||"";
-         if(tracker.includes("|")){
-         thisOver=tracker.split("|").pop().trim();
-         }else{
-         thisOver=tracker;
+         let balls=[];
+         let count=0;
+         
+         for(let i=liveHistory.length-1;i>=0;i--){
+         const b=liveHistory[i];
+         
+         if(b.type==="run"){
+         balls.unshift(b.runs);
+         count++;
          }
+         
+         else if(b.type==="wicket"){
+         balls.unshift("W");
+         count++;
+         }
+         
+         else if(b.type==="extra"){
+         if(b.extra==="wide")balls.unshift("Wd");
+         if(b.extra==="noball")balls.unshift("Nb");
+         
+         if(b.extra==="bye"){
+         balls.unshift("B");
+         count++;
+         }
+         
+         if(b.extra==="legbye"){
+         balls.unshift("Lb");
+         count++;
+         }
+         }
+         
+         if(count>=6)break;
+         }
+
+         const thisOver=balls.join(" ");
          
          send('manualScore',{
          score:liveTotal+"/"+liveWickets,
