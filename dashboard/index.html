@@ -1111,6 +1111,7 @@
           }
           return runsPerOver;
          }
+
          
          function renderCurrentBatters(){
          const panel=document.getElementById("currentBattersPanel");
@@ -1145,7 +1146,7 @@
          
          let overs=[];
          let current=[];
-         let legalBalls=0;
+         let legalBallCount=0;
          
          for(let i=0;i<liveHistory.length;i++){
          
@@ -1154,12 +1155,12 @@
          
          if(ball.type==="run"){
          symbol=ball.runs;
-         legalBalls++;
+         legalBallCount++;
          }
          
          else if(ball.type==="wicket"){
          symbol="W";
-         legalBalls++;
+         legalBallCount++;
          }
          
          else if(ball.type==="extra"){
@@ -1169,27 +1170,29 @@
          
          if(ball.extra==="bye"){
          symbol="B";
-         legalBalls++;
+         legalBallCount++;
          }
          
          if(ball.extra==="legbye"){
          symbol="Lb";
-         legalBalls++;
+         legalBallCount++;
          }
          
          }
          
          current.push(symbol);
          
-         if(legalBalls===6){
+         if(legalBallCount===6){
          overs.push(current.join(" "));
          current=[];
-         legalBalls=0;
+         legalBallCount=0;
          }
          
          }
          
-         if(current.length) overs.push(current.join(" "));
+         if(current.length>0){
+         overs.push(current.join(" "));
+         }
          
          overs=overs.slice(-3);
          
