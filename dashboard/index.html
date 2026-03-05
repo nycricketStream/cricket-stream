@@ -514,6 +514,7 @@
          let liveTotal = 0;
          let liveWickets = 0;
          let liveBalls = 0;
+         let lastBowler = "";
          let liveHistory = [];
          let bowlerStats = {};
          let batsmanStats = {};
@@ -729,7 +730,7 @@
           if(liveBalls % 6 === 0){
             rotateStrike();
          }
-         
+          lastBowler = currentBowler;
           updateLiveDisplay();
          }
          
@@ -778,6 +779,7 @@
            document.getElementById('striker').value = "";
          }
          lockedOut = true;
+         lastBowler = currentBowler;
           updateLiveDisplay();
          }
          
@@ -820,6 +822,7 @@
               bowlerStats[currentBowler].balls++;
             }
           }
+         lastBowler = currentBowler;
           updateLiveDisplay();
          }
          
@@ -928,7 +931,7 @@
          
          const ballsThisOver = liveBalls % 6;
          
-         if(ballsThisOver === 0 && liveBalls !== 0){
+         if(ballsThisOver === 0 && liveBalls !== 0 && bowler === lastBowler){
          alert("Over complete. Select a new bowler.");
          return false;
          }
