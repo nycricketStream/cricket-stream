@@ -666,7 +666,7 @@
          bat2Score:nonStrikerRuns+" ("+nonStrikerBalls+")",
          bowlerName:bowlerName,
          bowlerStats:bowlerWickets+"-"+bowlerRuns+" ("+bowlerOvers+")",
-         dismissal: lockedOut ? lastDismissal : "",
+         dismissal: lockedOut ? (strikerName + " " + strikerRuns + " (" + strikerBalls + ") " + lastDismissal) : "",
          thisOver:thisOver,
          runsPerOver:getRunsPerOver()
          });
