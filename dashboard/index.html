@@ -750,6 +750,14 @@
           bowlerStats[currentBowler].runs += r;
           bowlerStats[currentBowler].balls++;
          }
+
+            /* AUTO MOMENTS */
+         if(r === 4){
+          setTimeout(()=>send('moment',{type:'FOUR'}),200);
+         }       
+         if(r === 6){
+          setTimeout(()=>send('moment',{type:'SIX'}),200);
+         }
          
           if(r % 2 === 1){
             rotateStrike();
@@ -895,10 +903,16 @@
             }
           }
          
+          if(type === "wide" || type === "noball"){
+          if((runs - 1) % 2 === 1){
+            rotateStrike();
+          }
+         }
+         else{
           if(runs % 2 === 1){
             rotateStrike();
           }
-         
+         }       
           updateLiveDisplay();
          }
 
