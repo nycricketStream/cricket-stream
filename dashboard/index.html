@@ -335,7 +335,10 @@
          const PUSHER_KEY=window.PUSHER_KEY||'';
          const pusher=new Pusher("12fcceaea77e52cf3626",{cluster:'us2'});
          const channel=pusher.subscribe('broadcast');
-         
+        
+         let lastMoment = "";
+         let lastMomentTime = 0;
+
          /* LOGGING SYSTEM */
          const logPanel=document.getElementById('logPanel');
          const logToggle=document.getElementById('logToggle');
@@ -530,6 +533,8 @@
          let liveHistory = [];
          let bowlerStats = {};
          let batsmanStats = {};
+         let partnership50Shown = false;
+         let partnership100Shown = false;
          let currentOverBalls = 0;
          let lockedOut = false;
          let extrasStats = {
@@ -691,6 +696,7 @@
           renderFallOfWickets();
           renderCurrentOver();
           renderPartnership();
+          checkPartnershipMilestones();
           renderCurrentBatters();
           renderLastWicket();
           autoSaveMatch();
@@ -743,6 +749,8 @@
          
             if(r === 4) batsmanStats[striker].fours++;
             if(r === 6) batsmanStats[striker].sixes++;
+
+            checkMilestones(striker); 
           }
          }
          
@@ -754,10 +762,10 @@
 
             /* AUTO MOMENTS */
          if(r === 4){
-          setTimeout(()=>send('moment',{type:'FOUR'}),200);
+          setTimeout(()=>triggerMoment('FOUR'),200);
          }       
          if(r === 6){
-          setTimeout(()=>send('moment',{type:'SIX'}),200);
+          setTimeout(()=>triggerMoment('SIX'),200);
          }
          
           if(r % 2 === 1){
@@ -765,7 +773,8 @@
           }
          
           if(liveBalls % 6 === 0){
-            rotateStrike();
+          rotateStrike();
+          setTimeout(()=>sendEndOfOverGraphic(),600);
          }
           lastBowler = currentBowler;
           updateLiveDisplay();
@@ -776,12 +785,12 @@
           if(!validateBeforeBall()) return;
          
           const striker = document.getElementById('striker')?.value;
-         lastOutBatsman = striker;
+          lastOutBatsman = striker;
           const currentBowler = document.getElementById('bowler')?.value;
           const dismissal = document.getElementById('dismissalType')?.value;
-         lastDismissal = dismissal + " b " + currentBowler;
+          lastDismissal = dismissal + " b " + currentBowler;
          
-          liveHistory.push({
+         liveHistory.push({
          type:'wicket',
          bowler:currentBowler,
          striker:striker,
@@ -790,8 +799,11 @@
          wicketNumber: liveWickets + 1
          });
          
-          liveWickets++;
-          send('moment',{type:'WICKET'});
+         liveWickets++;
+         partnership50Shown = false;
+         partnership100Shown = false;
+          setTimeout(()=>triggerMoment('WICKET'),300);
+          setTimeout(()=>sendLastWicketGraphic(),1200);
           liveBalls++;
           currentOverBalls++;
          
@@ -815,6 +827,7 @@
          document.getElementById('striker').value = nonStriker;
          }
          document.getElementById('nonStriker').value = "";
+         setTimeout(()=>sendEndOfOverGraphic(),600);
          }else{
                     // normal wicket (balls 1-5)
            document.getElementById('striker').value = "";
@@ -882,6 +895,19 @@
           if(extrasStats[type] !== undefined){
             extrasStats[type] += runs;
           }
+
+         /* WIDE BOUNDARY GRAPHIC */
+         if(type === "wide" && runs === 5){
+          triggerMoment('FOUR');
+         }
+
+         if(type === "noball" && runs === 5){
+          triggerMoment('FOUR');
+         }
+         
+         if(type === "noball" && runs === 7){
+          triggerMoment('SIX');
+         }
          
           if(currentBowler){
             ensureBowler(currentBowler);
@@ -1058,7 +1084,9 @@
               sixes: 0,
               out: false,
               dismissal: "",
-              bowler: ""
+              bowler: "",
+              fiftyShown:false,
+              hundredShown:false
             };
           }
          }
@@ -1302,10 +1330,8 @@
          
          balls.unshift(symbol);
          
-         if(counted===legalBalls) break;
-         
-         }
-         
+         if(counted===legalBalls) break;     
+         }         
          tracker.innerText=balls.join(" ") || "-";
          }
 
@@ -1339,6 +1365,137 @@
           <strong>${batsman}</strong> ${stats.runs} (${stats.balls})<br>
           ${liveTotal}/${liveWickets}  ${over} ov
           `;    
+         }
+
+         /* ========== Trigger Moment ============= */
+         function triggerMoment(type){
+          const now = Date.now();
+         
+          if(lastMoment === type && (now - lastMomentTime) < 1500){
+            return;
+          }
+         
+          lastMoment = type;
+          lastMomentTime = now;
+         
+          send('moment',{type:type});
+         }
+
+         /* ============ Send Last Wicket Graphic ============ */
+         function sendLastWicketGraphic(){
+          const striker = lastOutBatsman;
+         
+          if(!striker) return;
+         
+          const stats = batsmanStats[striker] || {runs:0,balls:0};
+         
+          send('player',{
+           team: batting.value,
+           label: 'LAST WICKET',
+           name: striker + " " + stats.runs + " (" + stats.balls + ")",
+           hand: liveTotal + "/" + liveWickets + " • " + calculateOvers() + " ov",
+           image: ''
+          });
+         }
+
+         /* ============= Send End Of Over Graphic ============ */
+         function sendEndOfOverGraphic(){
+          const bowlerName = document.getElementById('bowler')?.value || "";
+          const overs = calculateOvers();
+          const rr = calculateRR();
+         
+          send('player',{
+           team: batting.value,
+           label: 'END OF OVER',
+           name: liveTotal + "/" + liveWickets + "  •  " + overs + " ov",
+           hand: "Run Rate " + rr + (bowlerName ? "  |  Bowler: " + bowlerName : ""),
+           image: ''
+          });        
+         }
+
+         /* ========== Check Milestones=============== */
+         function checkMilestones(batsman){
+          const stats = batsmanStats[batsman];
+          if(!stats) return;
+         
+          if(stats.runs >= 100 && !stats.hundredShown){         
+            stats.hundredShown = true;      
+            send('player',{
+              team: batting.value,
+              label:'CENTURY',
+              name:batsman + " " + stats.runs + " (" + stats.balls + ")",
+              hand:'',
+              image:''
+            });
+          }  else if(stats.runs >= 50 && !stats.fiftyShown){      
+            stats.fiftyShown = true;    
+            send('player',{
+              team: batting.value,
+              label:'FIFTY',
+              name:batsman + " " + stats.runs + " (" + stats.balls + ")",
+              hand:'',
+              image:''
+            });       
+          }  
+         }
+
+         /* ============== Check Partnership Milestones ================= */
+         function checkPartnershipMilestones(){
+          let runs = 0;
+          let balls = 0;
+          let lastWicketIndex = -1;
+         
+          for(let i=0;i<liveHistory.length;i++){
+           if(liveHistory[i].type==="wicket"){
+            lastWicketIndex = i;
+           }
+          }
+         
+          for(let i=lastWicketIndex+1;i<liveHistory.length;i++){     
+           const ball = liveHistory[i];
+         
+           if(ball.type==="run"){
+            runs += ball.runs;
+            balls++;
+           }
+         
+           else if(ball.type==="extra"){
+            const r = ball.runs || 1;
+            runs += r;
+         
+            if(ball.extra==="bye" || ball.extra==="legbye"){
+             balls++;
+            }
+           }
+         
+           else if(ball.type==="wicket"){
+            balls++;
+           }         
+          }
+         
+          const striker=document.getElementById('striker')?.value||"";
+          const nonStriker=document.getElementById('nonStriker')?.value||"";
+         
+          if(runs>=100 && !partnership100Shown){    
+           partnership100Shown=true;
+         
+           send('player',{
+            team:batting.value,
+            label:'100 PARTNERSHIP',
+            name:striker+" / "+nonStriker,
+            hand:runs+" runs ("+balls+" balls)",
+            image:''
+           });
+          } else if(runs>=50 && !partnership50Shown){
+           partnership50Shown=true;
+           send('player',{
+            team:batting.value,
+            label:'50 PARTNERSHIP',
+            name:striker+" / "+nonStriker,
+            hand:runs+" runs ("+balls+" balls)",
+            image:''
+           });  
+          }
          }
 
          /* ============== Save Sponsor Presets =========== */
