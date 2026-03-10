@@ -157,10 +157,19 @@
                      </div>
                      <h4>Extras</h4>
                      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
-                        <button onclick="addExtra('wide')">Wide</button>
-                        <button onclick="addExtra('noball')">No Ball</button>
-                        <button onclick="addExtra('bye')">Bye</button>
-                        <button onclick="addExtra('legbye')">Leg Bye</button>
+                        <select id="extraRuns">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        </select>
+
+                        <button onclick="scoreExtra('wide')">Wide</button>
+                        <button onclick="scoreExtra('noball')">No Ball</button>
+                        <button onclick="scoreExtra('bye')">Bye</button>
+                        <button onclick="scoreExtra('legbye')">Leg Bye</button>
                      </div>
                   </div>
                </div>
@@ -516,6 +525,7 @@
          let liveBalls = 0;
          let lastBowler = "";
          let lastDismissal = ""; 
+         let lastOutBatsman = "";
          let liveHistory = [];
          let bowlerStats = {};
          let batsmanStats = {};
@@ -535,7 +545,8 @@
          function calculateRR(){
           return liveBalls ? (liveTotal / (liveBalls/6)).toFixed(2) : "0.00";
          }
-         
+
+         /* =========== Calculate Required Run ============ */
          function calculateRequiredRuns(){
           const targetVal = parseInt(document.getElementById('target')?.value);
           const inningsVal = document.getElementById('innings')?.value;
@@ -543,7 +554,8 @@
           if(!targetVal || inningsVal !== "2nd Innings") return "-";
           return Math.max(targetVal - liveTotal, 0);
          }
-         
+
+         /* =========== Calculate Required RR =============== */
          function calculateRequiredRR(){
           const targetVal = parseInt(document.getElementById('target')?.value);
           const inningsVal = document.getElementById('innings')?.value;
@@ -558,7 +570,8 @@
          
           return (runsLeft / (ballsLeft/6)).toFixed(2);
          }
-         
+
+         /* ========== Get this Over ============ */
          function getThisOver(){ 
          let balls=[];
          let legalBalls=liveBalls%6;
@@ -609,7 +622,8 @@
          
          return balls.join(" ");
          }
-                  
+
+         /* ======= Update Live Display =========== */
          function updateLiveDisplay(){
           document.getElementById('liveScore').innerText = liveTotal + "/" + liveWickets;
           document.getElementById('liveOvers').innerText = calculateOvers();
@@ -660,13 +674,13 @@
          score:liveTotal+"/"+liveWickets,
          overs:calculateOvers(),
          runRate:calculateRR(),
-         bat1:strikerName+"*",
+         bat1:strikerName ? strikerName+"*" : "",
          bat1Score:strikerRuns+" ("+strikerBalls+")",
          bat2:nonStrikerName,
          bat2Score:nonStrikerRuns+" ("+nonStrikerBalls+")",
          bowlerName:bowlerName,
          bowlerStats:bowlerWickets+"-"+bowlerRuns+" ("+bowlerOvers+")",
-         dismissal: lockedOut ? (strikerName + " " + strikerRuns + " (" + strikerBalls + ") " + lastDismissal) : "",
+         dismissal: lockedOut ? (lastOutBatsman + " " + strikerRuns + " (" + strikerBalls + ") " + lastDismissal) : "",
          thisOver:thisOver,
          runsPerOver:getRunsPerOver()
          });
@@ -680,7 +694,8 @@
           renderLastWicket();
           autoSaveMatch();
          }
-         
+
+         /* ============= Render Bowler Stats ================= */
          function renderBowlerStats(){
            const body = document.getElementById('bowlerStatsBody');
            if(!body) return;
@@ -706,7 +721,8 @@
              `;
            });
          }
-         
+
+         /* ========== Add Run ================*/
          function addRun(r){
          if(!validateBeforeBall()) return;
          const striker = document.getElementById('striker')?.value;
@@ -745,11 +761,13 @@
           lastBowler = currentBowler;
           updateLiveDisplay();
          }
-         
+
+         /* =============== Add Wicket ========= */
          function addWicket(){
           if(!validateBeforeBall()) return;
          
           const striker = document.getElementById('striker')?.value;
+         lastOutBatsman = striker;
           const currentBowler = document.getElementById('bowler')?.value;
           const dismissal = document.getElementById('dismissalType')?.value;
          lastDismissal = dismissal + " b " + currentBowler;
@@ -796,7 +814,9 @@
          lastBowler = currentBowler;
           updateLiveDisplay();
          }
-         
+
+
+         /* ========= Add Extra ============= */
          function addExtra(type){
           if(!validateBeforeBall()) return;
          
@@ -839,7 +859,50 @@
          lastBowler = currentBowler;
           updateLiveDisplay();
          }
+
+         /* ============== Score Extra ================ */
+         function scoreExtra(type){
+         const runs = parseInt(document.getElementById("extraRuns").value);
+         const striker = document.getElementById('striker')?.value;
+         const currentBowler = document.getElementById('bowler')?.value;
          
+          liveHistory.push({type:'extra', extra:type, runs:runs, bowler:currentBowler, striker:striker});
+         
+          liveTotal += runs;
+         
+          if(extrasStats[type] !== undefined){
+            extrasStats[type] += runs;
+          }
+         
+          if(currentBowler){
+            ensureBowler(currentBowler);
+         
+            if(type === "wide" || type === "noball"){
+              bowlerStats[currentBowler].runs += runs;
+            }
+          }
+         
+          if(type === "bye" || type === "legbye"){
+            liveBalls++;
+         
+            if(striker){
+              ensureBatsman(striker);
+              batsmanStats[striker].balls++;
+            }
+         
+            if(currentBowler){
+              bowlerStats[currentBowler].balls++;
+            }
+          }
+         
+          if(runs % 2 === 1){
+            rotateStrike();
+          }
+         
+          updateLiveDisplay();
+         }
+
+         /* ============ Undo Last =================== */
          function undoLast(){
           const last = liveHistory.pop();
           if(!last) return;
@@ -867,6 +930,8 @@
            liveBalls--;
            currentOverBalls = Math.max(currentOverBalls - 1, 0);
            lockedOut = false;
+           lastOutBatsman = "";
+           lastDismissal = "";
          
            // restore previous striker
            if(last.striker){
@@ -886,33 +951,36 @@
           }
          
           if(last.type === 'extra'){
-            liveTotal--;
-           
-           if(extrasStats[last.extra] !== undefined){
-               extrasStats[last.extra] = Math.max(extrasStats[last.extra] - 1, 0);
-             }
-           
-            if(last.bowler && bowlerStats[last.bowler]){
-              bowlerStats[last.bowler].runs--;
-            }
+          const runs = last.runs || 1;
          
-            if(last.extra === "bye" || last.extra === "legbye"){
-           liveBalls--;
-           currentOverBalls = Math.max(currentOverBalls - 1, 0);
+          liveTotal -= runs;
          
-           if(last.striker && batsmanStats[last.striker]){
-             batsmanStats[last.striker].balls--;
-           }
-         
-           if(last.bowler && bowlerStats[last.bowler]){
-             bowlerStats[last.bowler].balls--;
-           }
-           }
+          if(extrasStats[last.extra] !== undefined){
+            extrasStats[last.extra] = Math.max(extrasStats[last.extra] - runs, 0);
           }
          
+          if(last.bowler && bowlerStats[last.bowler]){
+            if(last.extra === "wide" || last.extra === "noball"){
+              bowlerStats[last.bowler].runs -= runs;
+            }
+          }
+         
+          if(last.extra === "bye" || last.extra === "legbye"){
+            liveBalls--;
+         
+            if(last.striker && batsmanStats[last.striker]){
+              batsmanStats[last.striker].balls--;
+            }
+         
+            if(last.bowler && bowlerStats[last.bowler]){
+              bowlerStats[last.bowler].balls--;
+            }
+          }         
+         }         
           updateLiveDisplay();
          }
-         
+
+         /* =========== Rotate Strike ================ */
          function rotateStrike(){
           const strikerSel=document.getElementById('striker');
           const nonStrikerSel=document.getElementById('nonStriker');
@@ -923,7 +991,8 @@
           strikerSel.value=nonStrikerSel.value;
           nonStrikerSel.value=temp;
          }
-         
+
+         /* =========== Validate Before Ball =========== */
          function validateBeforeBall(){
          const striker=document.getElementById('striker')?.value;
          const bowler=document.getElementById('bowler')?.value;
@@ -952,7 +1021,8 @@
          
          return true;
          }
-         
+
+         /* ======== Ensure Bowler ========== */
          function ensureBowler(name){
           if(!bowlerStats[name]){
             bowlerStats[name] = {
@@ -962,7 +1032,8 @@
             };
           }
          }
-         
+
+         /* ============ Ensure Batsman =========== */
          function ensureBatsman(name){
           if(!batsmanStats[name]){
             batsmanStats[name] = {
@@ -976,7 +1047,8 @@
             };
           }
          }
-          
+
+         /* ========= Remder Batsman Stats ========== */
          function renderBatsmanStats(){
           const body = document.getElementById('batsmanStatsBody');
           if(!body) return;
@@ -1008,7 +1080,8 @@
             `;
           });
          }
-         
+
+         /* ============ Render Extras Breakdown ============== */
          function renderExtrasBreakdown(){
           const body = document.getElementById('extrasBreakdownBody');
           if(!body) return;
@@ -1027,7 +1100,8 @@
                 }</strong></td></tr>
           `;
          }
-         
+
+         /* =========== Render Fall Of Wickets ============= */
          function renderFallOfWickets(){
          const body=document.getElementById('fallOfWicketsBody');
          if(!body)return;
@@ -1049,7 +1123,8 @@
          }
          });
          }
-         
+
+         /* =========== Render Partnership ========== */
          function renderPartnership(){
          const panel=document.getElementById("partnershipPanel");
          if(!panel)return;
@@ -1072,16 +1147,14 @@
          if(ball.type==="run"){
          runs+=ball.runs;
          balls++;
-         }
-         
+         }        
          else if(ball.type==="extra"){
+          const r = ball.runs || 1;
+          runs += r;
          
-         runs+=1;
-         
-         if(ball.extra==="bye"||ball.extra==="legbye"){
-         balls++;
-         }
-         
+          if(ball.extra==="bye"||ball.extra==="legbye"){
+          balls++;
+          }
          }
          
          else if(ball.type==="wicket"){
@@ -1093,7 +1166,7 @@
          panel.innerHTML=`<strong>${runs} runs</strong> (${balls} balls)`;
          }
                  
-         
+         /* ============= Get Runs Per Over ==================== */
          function getRunsPerOver(){
           let runsPerOver = [];
           let currentRuns = 0;
@@ -1110,21 +1183,20 @@
            }
            else if(ball.type === "extra"){
             // wides and no balls add runs but not balls
-            if(ball.extra === "wide" || ball.extra === "noball"){
-              currentRuns += 1;
+           if(ball.extra === "wide" || ball.extra === "noball"){
+             currentRuns += ball.runs || 1;
             }
          
             // byes and leg byes count as balls
             if(ball.extra === "bye"){
-              currentRuns += 1;
-              ballCount++;
+             currentRuns += ball.runs || 1;
+             ballCount++;
             }
-         
+            
             if(ball.extra === "legbye"){
-              currentRuns += 1;
-              ballCount++;
+             currentRuns += ball.runs || 1;
+             ballCount++;
             }
-           }
          
            if(ballCount === 6){
             runsPerOver.push(currentRuns);
@@ -1138,7 +1210,7 @@
           return runsPerOver;
          }
          
-         
+         /* ============= Render Current Batters ============ */
          function renderCurrentBatters(){
          const panel=document.getElementById("currentBattersPanel");
          if(!panel)return;
@@ -1165,9 +1237,9 @@
          
          panel.innerHTML=html;
          }
-         
-         function renderCurrentOver(){
-         
+
+         /* =================== Render Current Over ============== */
+         function renderCurrentOver(){       
          const tracker=document.getElementById('currentOverTracker');
          if(!tracker)return;
          
@@ -1220,7 +1292,8 @@
          
          tracker.innerText=balls.join(" ") || "-";
          }
-                  
+
+         /* ============ Render Last Wicket =============== */
          function renderLastWicket(){
           const panel = document.getElementById("lastWicketPanel");
           if(!panel) return;
@@ -1251,7 +1324,8 @@
           ${liveTotal}/${liveWickets}  ${over} ov
           `;    
          }
-         
+
+         /* ============== Save Sponsor Presets =========== */
          function saveSponsorPresets(){
          const presets={
          p1:document.getElementById("preset1").value,
@@ -1262,7 +1336,8 @@
          localStorage.setItem("sponsorPresets",JSON.stringify(presets));
          alert("Sponsor presets saved");
          }
-         
+
+         /* ========= Trigger Preset =====================*/ 
          function triggerPreset(num){
          const presets=JSON.parse(localStorage.getItem("sponsorPresets"));
          if(!presets)return;
@@ -1271,7 +1346,8 @@
          const time=parseInt(document.getElementById("fullscreenTime").value||8)*1000;
          send('fullscreenSponsor',{image:url,duration:time});
          }
-         
+
+         /* ================ Load Sponsor Presets ============ */
          function loadSponsorPresets(){
          const presets=JSON.parse(localStorage.getItem("sponsorPresets"));
          if(!presets)return;
@@ -1280,7 +1356,8 @@
          document.getElementById("preset3").value=presets.p3||"";
          document.getElementById("preset4").value=presets.p4||"";
          }
-         
+
+         /* ========= Show Live Sub Tab ============= */
          function showLiveSubTab(tab){
            const basic = document.getElementById('basicLiveTab');
            const advanced = document.getElementById('advancedLiveTab');
@@ -1299,7 +1376,8 @@
              advancedBtn.style.background = '#2563eb';
            }
          }
-         
+
+         /* ============= Auto Save Match =============== */
          function autoSaveMatch(){
          const state={
          liveTotal,
@@ -1323,7 +1401,8 @@
          };
          localStorage.setItem("cricketMatchState", JSON.stringify(state));    
          }
-         
+
+         /* ================= Load Saved Match ================ */
          function loadSavedMatch(){
          const saved = localStorage.getItem("cricketMatchState");
          if(!saved) return;
