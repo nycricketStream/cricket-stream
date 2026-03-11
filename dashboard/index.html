@@ -62,6 +62,7 @@
       <div class="sidebar">
          <h2>Broadcast</h2>
          <button class="tab-btn active" onclick="showTab(event,'match')">Match Setup</button>
+         <button class="tab-btn" onclick="showTab(event,'lineups')">Lineups</button>
          <button class="tab-btn" onclick="showTab(event,'branding')">League Branding</button>
          <button class="tab-btn" onclick="showTab(event,'scoreinfo')">Score Info</button>
          <button class="tab-btn" onclick="showTab(event,'livescoring')">Live Scoring</button>
@@ -92,7 +93,32 @@
             </select>
             Total Overs<input id="maxOvers" value="50">
             Target (2nd Innings Only)<input id="target" placeholder="e.g. 250">
-            <button onclick="send('match',{teamA:teamA.value,teamB:teamB.value,teamALogo:teamALogo.value,teamBLogo:teamBLogo.value,batting:batting.value,innings:innings.value,teamAPlayers:teamAPlayers.value.split('\n'),teamBPlayers:teamBPlayers.value.split('\n')})">Update Match</button>
+            <button onclick="
+            send('match',{
+             teamA:teamA.value,
+             teamB:teamB.value,
+             teamALogo:teamALogo.value,
+             teamBLogo:teamBLogo.value,
+             batting:batting.value,
+             innings:innings.value,
+             teamAPlayers:teamAPlayers.value.split('\n'),
+             teamBPlayers:teamBPlayers.value.split('\n')
+            });
+            updateLiveDisplay();
+            ">Update Match</button>
+         </div>
+         <div id="lineups" class="tab">
+         <h3>Team Lineups</h3>  
+         <h4>Team A Squad</h4>
+         <textarea id="teamASquad" placeholder="One player per line"></textarea>
+         <button onclick="generateXI('A')">Generate Playing XI</button>
+         <div id="teamAXI"></div>
+         <hr style="margin:20px 0;border-color:#1f2937">
+         <h4>Team B Squad</h4>
+         <textarea id="teamBSquad" placeholder="One player per line"></textarea>
+         <button onclick="generateXI('B')">Generate Playing XI</button>
+         <div id="teamBXI"></div>
+         <button onclick="applyPlayingXI()">Apply Playing XI</button>
          </div>
          <div id="branding" class="tab">
             <h3>League Branding</h3>
@@ -459,18 +485,48 @@
           document.getElementById('teamAPlayers').addEventListener('input',updateStrikerDropdown);
           document.getElementById('teamBPlayers').addEventListener('input',updateStrikerDropdown);
           document.getElementById('bowler').addEventListener('change', function(){
+          const bowler = this.value;
           currentOverBalls = 0;
+         if(bowler&&bowler!==previousBowler){
+            setTimeout(()=>queueGraphic({team:batting.value,label:'NEW BOWLER',name:bowler,hand:'',image:''}),400);
+         }
+         previousBowler=bowler;
+          updateLiveDisplay();
          });
           document.getElementById('striker').addEventListener('change', function(){
-          if(this.value){
+          const striker = this.value;
+          const nonStriker = document.getElementById('nonStriker').value;
+
+           if(this.value && this.value === nonStriker){
+           alert("Striker and Non-Striker cannot be the same player.");
+           this.value = "";
+           return;
+          }  
+             
+          if(striker){
             lockedOut = false;
-          }
+            if(awaitingNewBatsman){
+            setTimeout(()=>queueGraphic({team:batting.value,label:'NEW BATSMAN',name:striker,hand:'',image:''}),400);
+            awaitingNewBatsman=false;
+            }
+         }
+          updateLiveDisplay();
          });
+            
          document.getElementById('nonStriker').addEventListener('change', function(){
+          const striker = document.getElementById('striker').value;
+
+          if(this.value && this.value === striker){
+           alert("Striker and Non-Striker cannot be the same player.");
+           this.value = "";
+           return;
+          }
           if(this.value){
             lockedOut = false;
           }
+          updateLiveDisplay();
          });
+            
          loadSavedMatch();
          loadSponsorPresets();
          });
@@ -513,6 +569,8 @@
          bowlerStats={};
          batsmanStats={};
          extrasStats={wide:0,noball:0,bye:0,legbye:0};
+         previousBowler="";
+         awaitingNewBatsman=false;
          currentOverBalls=0;
          lockedOut=false;
          document.getElementById('striker').value="";
@@ -537,6 +595,8 @@
          let partnership100Shown = false;
          let graphicQueue = [];
          let graphicPlaying = false;
+         let previousBowler="";
+         let awaitingNewBatsman=false;
          let currentOverBalls = 0;
          let lockedOut = false;
          let extrasStats = {
@@ -836,6 +896,8 @@
            document.getElementById('striker').value = "";
          }
          lockedOut = true;
+         awaitingNewBatsman=true;
+            
          lastBowler = currentBowler;
           updateLiveDisplay();
          }
@@ -1562,6 +1624,40 @@
             image:''
            });  
           }
+         }
+
+         /* ========== Generate X1 ================== */
+         function generateXI(team){
+         const squad = document.getElementById(team==="A"?"teamASquad":"teamBSquad").value.split("\n").map(p=>p.trim()).filter(Boolean);
+         const container = document.getElementById(team==="A"?"teamAXI":"teamBXI");
+         container.innerHTML = "";
+         squad.forEach(p=>{
+         const id="xi_"+team+"_"+p.replace(/\s+/g,"_");
+         container.innerHTML+=`<label style="display:block;margin:4px 0"><input type="checkbox" class="team${team}XI" value="${p}" onchange="limitXI(this,'${team}')"> ${p}</label>`;
+         });
+         }
+
+         /* ============== Limit X1 ================= */
+         function limitXI(box,team){
+         const checked=document.querySelectorAll(".team"+team+"XI:checked");
+         if(checked.length>11){
+         box.checked=false;
+         alert("Only 11 players allowed in Playing XI");
+         }
+         }
+
+         /* ============== Applying Playing X1 =========== */
+         function applyPlayingXI(){
+         const teamAXI=[...document.querySelectorAll(".teamAXI:checked")].map(c=>c.value);
+         const teamBXI=[...document.querySelectorAll(".teamBXI:checked")].map(c=>c.value);
+         if(teamAXI.length!==11||teamBXI.length!==11){
+         alert("Both teams must have 11 players");
+         return;
+         }
+         document.getElementById("teamAPlayers").value=teamAXI.join("\n");
+         document.getElementById("teamBPlayers").value=teamBXI.join("\n");
+         updateBattingTeams();
+         alert("Playing XI applied");
          }
 
          /* ============== Save Sponsor Presets =========== */
