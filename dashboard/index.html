@@ -94,31 +94,31 @@
             Total Overs<input id="maxOvers" value="50">
             Target (2nd Innings Only)<input id="target" placeholder="e.g. 250">
             <button onclick="
-            send('match',{
-             teamA:teamA.value,
-             teamB:teamB.value,
-             teamALogo:teamALogo.value,
-             teamBLogo:teamBLogo.value,
-             batting:batting.value,
-             innings:innings.value,
-             teamAPlayers:teamAPlayers.value.split('\n'),
-             teamBPlayers:teamBPlayers.value.split('\n')
-            });
-            updateLiveDisplay();
-            ">Update Match</button>
+               send('match',{
+               teamA:teamA.value,
+               teamB:teamB.value,
+               teamALogo:teamALogo.value,
+               teamBLogo:teamBLogo.value,
+               batting:batting.value,
+               innings:innings.value,
+               teamAPlayers:teamAPlayers.value.split('\n'),
+               teamBPlayers:teamBPlayers.value.split('\n')
+               });
+               updateLiveDisplay();
+               ">Update Match</button>
          </div>
          <div id="lineups" class="tab">
-         <h3>Team Lineups</h3>  
-         <h4>Team A Squad</h4>
-         <textarea id="teamASquad" placeholder="One player per line"></textarea>
-         <button onclick="generateXI('A')">Generate Playing XI</button>
-         <div id="teamAXI"></div>
-         <hr style="margin:20px 0;border-color:#1f2937">
-         <h4>Team B Squad</h4>
-         <textarea id="teamBSquad" placeholder="One player per line"></textarea>
-         <button onclick="generateXI('B')">Generate Playing XI</button>
-         <div id="teamBXI"></div>
-         <button onclick="applyPlayingXI()">Apply Playing XI</button>
+            <h3>Team Lineups</h3>
+            <h4>Team A Squad</h4>
+            <textarea id="teamASquad" placeholder="One player per line"></textarea>
+            <button onclick="generateXI('A')">Generate Playing XI</button>
+            <div id="teamAXI"></div>
+            <hr style="margin:20px 0;border-color:#1f2937">
+            <h4>Team B Squad</h4>
+            <textarea id="teamBSquad" placeholder="One player per line"></textarea>
+            <button onclick="generateXI('B')">Generate Playing XI</button>
+            <div id="teamBXI"></div>
+            <button onclick="applyPlayingXI()">Apply Playing XI</button>
          </div>
          <div id="branding" class="tab">
             <h3>League Branding</h3>
@@ -184,15 +184,14 @@
                      <h4>Extras</h4>
                      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
                         <select id="extraRuns">
-                        <option value="0">0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
+                           <option value="0">0</option>
+                           <option value="1">1</option>
+                           <option value="2">2</option>
+                           <option value="3">3</option>
+                           <option value="4">4</option>
+                           <option value="5">5</option>
+                           <option value="6">6</option>
                         </select>
-
                         <button onclick="scoreExtra('wide')">Wide</button>
                         <button onclick="scoreExtra('noball')">No Ball</button>
                         <button onclick="scoreExtra('bye')">Bye</button>
@@ -361,10 +360,10 @@
          const PUSHER_KEY=window.PUSHER_KEY||'';
          const pusher=new Pusher("12fcceaea77e52cf3626",{cluster:'us2'});
          const channel=pusher.subscribe('broadcast');
-        
+         
          let lastMoment = "";
          let lastMomentTime = 0;
-
+         
          /* LOGGING SYSTEM */
          const logPanel=document.getElementById('logPanel');
          const logToggle=document.getElementById('logToggle');
@@ -494,9 +493,15 @@
           updateLiveDisplay();
          });
           document.getElementById('striker').addEventListener('change', function(){
-          const striker = this.value;
+         const striker = this.value;
+         
+         if(!validateBatsman(striker)){
+         this.value = "";
+         return;
+         }
+          battingOrder = battingOrder.filter(p => p !== striker);
           const nonStriker = document.getElementById('nonStriker').value;
-
+         
            if(this.value && this.value === nonStriker){
            alert("Striker and Non-Striker cannot be the same player.");
            this.value = "";
@@ -506,7 +511,13 @@
           if(striker){
             lockedOut = false;
             if(awaitingNewBatsman){
-            setTimeout(()=>queueGraphic({team:batting.value,label:'NEW BATSMAN',name:striker,hand:'',image:''}),400);
+            setTimeout(()=>queueGraphic({
+            team:batting.value,
+            label:'NEW BATSMAN',
+            name:striker,
+            hand:'',
+            image:playerImages[striker] || ''
+            }),400);
             awaitingNewBatsman=false;
             }
          }
@@ -515,7 +526,11 @@
             
          document.getElementById('nonStriker').addEventListener('change', function(){
           const striker = document.getElementById('striker').value;
-
+         
+           if(!validateBatsman(this.value)){
+            this.value="";
+            return;
+         } 
           if(this.value && this.value === striker){
            alert("Striker and Non-Striker cannot be the same player.");
            this.value = "";
@@ -586,6 +601,8 @@
          let liveWickets = 0;
          let liveBalls = 0;
          let lastBowler = "";
+         let playerImages = {};
+         let battingOrder = [];
          let lastDismissal = ""; 
          let lastOutBatsman = "";
          let liveHistory = [];
@@ -613,7 +630,7 @@
          function calculateRR(){
           return liveBalls ? (liveTotal / (liveBalls/6)).toFixed(2) : "0.00";
          }
-
+         
          /* =========== Calculate Required Run ============ */
          function calculateRequiredRuns(){
           const targetVal = parseInt(document.getElementById('target')?.value);
@@ -622,7 +639,7 @@
           if(!targetVal || inningsVal !== "2nd Innings") return "-";
           return Math.max(targetVal - liveTotal, 0);
          }
-
+         
          /* =========== Calculate Required RR =============== */
          function calculateRequiredRR(){
           const targetVal = parseInt(document.getElementById('target')?.value);
@@ -638,7 +655,7 @@
          
           return (runsLeft / (ballsLeft/6)).toFixed(2);
          }
-
+         
          /* ========== Get this Over ============ */
          function getThisOver(){ 
          let balls=[];
@@ -690,7 +707,7 @@
          
          return balls.join(" ");
          }
-
+         
          /* ======= Update Live Display =========== */
          function updateLiveDisplay(){
           document.getElementById('liveScore').innerText = liveTotal + "/" + liveWickets;
@@ -763,7 +780,7 @@
           renderLastWicket();
           autoSaveMatch();
          }
-
+         
          /* ============= Render Bowler Stats ================= */
          function renderBowlerStats(){
            const body = document.getElementById('bowlerStatsBody');
@@ -790,7 +807,7 @@
              `;
            });
          }
-
+         
          /* ========== Add Run ================*/
          function addRun(r){
          if(!validateBeforeBall()) return;
@@ -811,7 +828,7 @@
          
             if(r === 4) batsmanStats[striker].fours++;
             if(r === 6) batsmanStats[striker].sixes++;
-
+         
             checkMilestones(striker); 
           }
          }
@@ -821,7 +838,7 @@
           bowlerStats[currentBowler].runs += r;
           bowlerStats[currentBowler].balls++;
          }
-
+         
             /* AUTO MOMENTS */
          if(r === 4){
           setTimeout(()=>triggerMoment('FOUR'),200);
@@ -841,7 +858,7 @@
           lastBowler = currentBowler;
           updateLiveDisplay();
          }
-
+         
          /* =============== Add Wicket ========= */
          function addWicket(){
           if(!validateBeforeBall()) return;
@@ -897,12 +914,33 @@
          }
          lockedOut = true;
          awaitingNewBatsman=true;
-            
+         showNextBatter();  
          lastBowler = currentBowler;
           updateLiveDisplay();
          }
-
-
+         
+         /* ============== Show Next Batter ======== */
+         function showNextBatter(){
+         if(battingOrder.length === 0) return;
+         
+         const next = battingOrder[0];
+         
+         setTimeout(()=>{
+         alert("Next Batter Suggestion: " + next);
+         },200);    
+         }
+         
+         /* ============== Validate Batsman ============ */
+         function validateBatsman(name){ 
+         if(!name) return true;
+         
+         if(batsmanStats[name] && batsmanStats[name].out){
+         alert(name + " is already out. Select another batsman.");
+         return false;
+         } 
+         return true;
+         }
+         
          /* ========= Add Extra ============= */
          function addExtra(type){
           if(!validateBeforeBall()) return;
@@ -946,7 +984,7 @@
          lastBowler = currentBowler;
           updateLiveDisplay();
          }
-
+         
          /* ============== Score Extra ================ */
          function scoreExtra(type){
          const runs = parseInt(document.getElementById("extraRuns").value);
@@ -960,12 +998,12 @@
           if(extrasStats[type] !== undefined){
             extrasStats[type] += runs;
           }
-
+         
          /* WIDE BOUNDARY GRAPHIC */
          if(type === "wide" && runs === 5){
           triggerMoment('FOUR');
          }
-
+         
          if(type === "noball" && runs === 5){
           triggerMoment('FOUR');
          }
@@ -1007,7 +1045,7 @@
          }       
           updateLiveDisplay();
          }
-
+         
          /* ============ Undo Last =================== */
          function undoLast(){
           const last = liveHistory.pop();
@@ -1085,7 +1123,7 @@
          }         
           updateLiveDisplay();
          }
-
+         
          /* =========== Rotate Strike ================ */
          function rotateStrike(){
           const strikerSel=document.getElementById('striker');
@@ -1097,7 +1135,7 @@
           strikerSel.value=nonStrikerSel.value;
           nonStrikerSel.value=temp;
          }
-
+         
          /* =========== Validate Before Ball =========== */
          function validateBeforeBall(){
          const striker=document.getElementById('striker')?.value;
@@ -1127,7 +1165,7 @@
          
          return true;
          }
-
+         
          /* ======== Ensure Bowler ========== */
          function ensureBowler(name){
           if(!bowlerStats[name]){
@@ -1138,7 +1176,7 @@
             };
           }
          }
-
+         
          /* ============ Ensure Batsman =========== */
          function ensureBatsman(name){
           if(!batsmanStats[name]){
@@ -1155,7 +1193,7 @@
             };
           }
          }
-
+         
          /* ========= Remder Batsman Stats ========== */
          function renderBatsmanStats(){
           const body = document.getElementById('batsmanStatsBody');
@@ -1188,7 +1226,7 @@
             `;
           });
          }
-
+         
          /* ============ Render Extras Breakdown ============== */
          function renderExtrasBreakdown(){
           const body = document.getElementById('extrasBreakdownBody');
@@ -1208,7 +1246,7 @@
                 }</strong></td></tr>
           `;
          }
-
+         
          /* =========== Render Fall Of Wickets ============= */
          function renderFallOfWickets(){
          const body=document.getElementById('fallOfWicketsBody');
@@ -1231,7 +1269,7 @@
          }
          });
          }
-
+         
          /* =========== Render Partnership ========== */
          function renderPartnership(){
          const panel=document.getElementById("partnershipPanel");
@@ -1346,7 +1384,7 @@
          
          panel.innerHTML=html;
          }
-
+         
          /* =================== Render Current Over ============== */
          function renderCurrentOver(){       
          const tracker=document.getElementById('currentOverTracker');
@@ -1399,7 +1437,7 @@
          }         
          tracker.innerText=balls.join(" ") || "-";
          }
-
+         
          /* ============ Render Last Wicket =============== */
          function renderLastWicket(){
           const panel = document.getElementById("lastWicketPanel");
@@ -1431,7 +1469,7 @@
           ${liveTotal}/${liveWickets}  ${over} ov
           `;    
          }
-
+         
          /* ========== Trigger Moment ============= */
          function triggerMoment(type){
           const now = Date.now();
@@ -1445,7 +1483,7 @@
          
           send('moment',{type:type});
          }
-
+         
          /* =========== Queue Graphic ================== */
          function queueGraphic(data){
           graphicQueue.push(data);
@@ -1453,7 +1491,7 @@
            playNextGraphic();
           }
          }
-
+         
          /* ========== Play Next Graphic =========================== */
          function playNextGraphic(){
           if(graphicQueue.length === 0){
@@ -1481,10 +1519,10 @@
            label: 'LAST WICKET',
            name: striker + " " + stats.runs + " (" + stats.balls + ")",
            hand: liveTotal + "/" + liveWickets + " • " + calculateOvers() + " ov",
-           image: ''
+           image: playerImages[striker] || ''
           });
          }
-
+         
          /* ============= Send End Of Over Graphic ============ */
          function sendEndOfOverGraphic(){
           const bowlerName = document.getElementById('bowler')?.value || "";
@@ -1499,7 +1537,7 @@
            image: ''
           });        
          }
-
+         
          /* ========== Check Milestones=============== */
          function checkMilestones(batsman){
           const stats = batsmanStats[batsman];
@@ -1525,7 +1563,7 @@
             });       
           }  
          }
-
+         
          /* ========= Check HatTrick ============== */
          function checkHatTrick(){
           let wickets = [];
@@ -1566,7 +1604,7 @@
            });
           } 
          }
-
+         
          /* ============== Check Partnership Milestones ================= */
          function checkPartnershipMilestones(){
           let runs = 0;
@@ -1625,18 +1663,33 @@
            });  
           }
          }
-
+         
          /* ========== Generate X1 ================== */
          function generateXI(team){
          const squad = document.getElementById(team==="A"?"teamASquad":"teamBSquad").value.split("\n").map(p=>p.trim()).filter(Boolean);
          const container = document.getElementById(team==="A"?"teamAXI":"teamBXI");
          container.innerHTML = "";
-         squad.forEach(p=>{
-         const id="xi_"+team+"_"+p.replace(/\s+/g,"_");
-         container.innerHTML+=`<label style="display:block;margin:4px 0"><input type="checkbox" class="team${team}XI" value="${p}" onchange="limitXI(this,'${team}')"> ${p}</label>`;
+         
+         squad.forEach(line=>{
+         const parts = line.split("|");
+         const name = parts[0].trim();
+         const img = parts[1] ? parts[1].trim() : "";
+         
+         if(img){
+         playerImages[name] = img;
+         }
+         
+         const id="xi_"+team+"_"+name.replace(/\s+/g,"_");
+         
+         container.innerHTML+=`
+         <label style="display:block;margin:4px 0">
+         <input type="checkbox" class="team${team}XI" value="${name}" onchange="limitXI(this,'${team}')">
+         ${name}
+         </label>
+         `;
          });
          }
-
+         
          /* ============== Limit X1 ================= */
          function limitXI(box,team){
          const checked=document.querySelectorAll(".team"+team+"XI:checked");
@@ -1645,21 +1698,29 @@
          alert("Only 11 players allowed in Playing XI");
          }
          }
-
+         
          /* ============== Applying Playing X1 =========== */
          function applyPlayingXI(){
          const teamAXI=[...document.querySelectorAll(".teamAXI:checked")].map(c=>c.value);
          const teamBXI=[...document.querySelectorAll(".teamBXI:checked")].map(c=>c.value);
+         
          if(teamAXI.length!==11||teamBXI.length!==11){
          alert("Both teams must have 11 players");
          return;
          }
+         
          document.getElementById("teamAPlayers").value=teamAXI.join("\n");
          document.getElementById("teamBPlayers").value=teamBXI.join("\n");
+         
+         if(batting.value === teamA.value){
+         battingOrder = teamAXI.slice();
+         }else{
+         battingOrder = teamBXI.slice();
+         }        
          updateBattingTeams();
          alert("Playing XI applied");
          }
-
+         
          /* ============== Save Sponsor Presets =========== */
          function saveSponsorPresets(){
          const presets={
@@ -1671,7 +1732,7 @@
          localStorage.setItem("sponsorPresets",JSON.stringify(presets));
          alert("Sponsor presets saved");
          }
-
+         
          /* ========= Trigger Preset =====================*/ 
          function triggerPreset(num){
          const presets=JSON.parse(localStorage.getItem("sponsorPresets"));
@@ -1681,7 +1742,7 @@
          const time=parseInt(document.getElementById("fullscreenTime").value||8)*1000;
          send('fullscreenSponsor',{image:url,duration:time});
          }
-
+         
          /* ================ Load Sponsor Presets ============ */
          function loadSponsorPresets(){
          const presets=JSON.parse(localStorage.getItem("sponsorPresets"));
@@ -1691,7 +1752,7 @@
          document.getElementById("preset3").value=presets.p3||"";
          document.getElementById("preset4").value=presets.p4||"";
          }
-
+         
          /* ========= Show Live Sub Tab ============= */
          function showLiveSubTab(tab){
            const basic = document.getElementById('basicLiveTab');
@@ -1711,7 +1772,7 @@
              advancedBtn.style.background = '#2563eb';
            }
          }
-
+         
          /* ============= Auto Save Match =============== */
          function autoSaveMatch(){
          const state={
@@ -1736,7 +1797,7 @@
          };
          localStorage.setItem("cricketMatchState", JSON.stringify(state));    
          }
-
+         
          /* ================= Load Saved Match ================ */
          function loadSavedMatch(){
          const saved = localStorage.getItem("cricketMatchState");
