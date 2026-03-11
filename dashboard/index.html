@@ -278,7 +278,7 @@
                <option value="Left-Hand">Left-Hand</option>
             </select>
             Player Image URL<input id="playerImg">
-            <button onclick="send('player',{team:batting.value,label:'NEW BATSMAN',name:playerSelect.value,hand:handed.value,image:playerImg.value})">Show Player</button>
+            <button onclick="queueGraphic({team:batting.value,label:'NEW BATSMAN',name:playerSelect.value,hand:handed.value,image:playerImg.value})">Show Player</button>
          </div>
          <div id="sponsors" class="tab">
             <h3>Sponsors</h3>
@@ -535,6 +535,8 @@
          let batsmanStats = {};
          let partnership50Shown = false;
          let partnership100Shown = false;
+         let graphicQueue = [];
+         let graphicPlaying = false;
          let currentOverBalls = 0;
          let lockedOut = false;
          let extrasStats = {
@@ -802,6 +804,7 @@
          liveWickets++;
          partnership50Shown = false;
          partnership100Shown = false;
+         checkHatTrick();
           setTimeout(()=>triggerMoment('WICKET'),300);
           setTimeout(()=>sendLastWicketGraphic(),1200);
           liveBalls++;
@@ -1371,7 +1374,7 @@
          function triggerMoment(type){
           const now = Date.now();
          
-          if(lastMoment === type && (now - lastMomentTime) < 1500){
+          if(lastMoment === type && (now - lastMomentTime) < 2000){
             return;
           }
          
@@ -1381,6 +1384,28 @@
           send('moment',{type:type});
          }
 
+         /* =========== Queue Graphic ================== */
+         function queueGraphic(data){
+          graphicQueue.push(data);
+          if(!graphicPlaying){
+           playNextGraphic();
+          }
+         }
+
+         /* ========== Play Next Graphic =========================== */
+         function playNextGraphic(){
+          if(graphicQueue.length === 0){
+           graphicPlaying = false;
+           return;
+          }   
+          graphicPlaying = true;
+          const g = graphicQueue.shift(); 
+          send('player', g);
+          setTimeout(()=>{
+           playNextGraphic();
+          },4000);
+         }
+         
          /* ============ Send Last Wicket Graphic ============ */
          function sendLastWicketGraphic(){
           const striker = lastOutBatsman;
@@ -1389,7 +1414,7 @@
          
           const stats = batsmanStats[striker] || {runs:0,balls:0};
          
-          send('player',{
+          queueGraphic({
            team: batting.value,
            label: 'LAST WICKET',
            name: striker + " " + stats.runs + " (" + stats.balls + ")",
@@ -1404,7 +1429,7 @@
           const overs = calculateOvers();
           const rr = calculateRR();
          
-          send('player',{
+          queueGraphic({
            team: batting.value,
            label: 'END OF OVER',
            name: liveTotal + "/" + liveWickets + "  •  " + overs + " ov",
@@ -1420,7 +1445,7 @@
          
           if(stats.runs >= 100 && !stats.hundredShown){         
             stats.hundredShown = true;      
-            send('player',{
+            queueGraphic({
               team: batting.value,
               label:'CENTURY',
               name:batsman + " " + stats.runs + " (" + stats.balls + ")",
@@ -1429,7 +1454,7 @@
             });
           }  else if(stats.runs >= 50 && !stats.fiftyShown){      
             stats.fiftyShown = true;    
-            send('player',{
+            queueGraphic({
               team: batting.value,
               label:'FIFTY',
               name:batsman + " " + stats.runs + " (" + stats.balls + ")",
@@ -1437,6 +1462,47 @@
               image:''
             });       
           }  
+         }
+
+         /* ========= Check HatTrick ============== */
+         function checkHatTrick(){
+          let wickets = [];
+          let bowler = "";
+         
+          for(let i = liveHistory.length - 1; i >= 0; i--){
+           const ball = liveHistory[i];
+           if(ball.type === "extra"){
+            continue;
+           }
+             
+           if(!bowler){
+            bowler = ball.bowler;
+           }
+         
+           if(ball.bowler !== bowler){
+            break;
+           }
+         
+           if(ball.type === "wicket"){
+            wickets.push(ball);
+           }else{
+            break;
+           }
+         
+           if(wickets.length === 3){
+            break;
+           }        
+          }
+         
+          if(wickets.length === 3){
+           queueGraphic({
+            team: batting.value,
+            label:'HAT TRICK',
+            name: bowler,
+            hand:'3 wickets in 3 balls',
+            image:''
+           });
+          } 
          }
 
          /* ============== Check Partnership Milestones ================= */
@@ -1479,7 +1545,7 @@
           if(runs>=100 && !partnership100Shown){    
            partnership100Shown=true;
          
-           send('player',{
+           queueGraphic({
             team:batting.value,
             label:'100 PARTNERSHIP',
             name:striker+" / "+nonStriker,
@@ -1488,7 +1554,7 @@
            });
           } else if(runs>=50 && !partnership50Shown){
            partnership50Shown=true;
-           send('player',{
+           queueGraphic({
             team:batting.value,
             label:'50 PARTNERSHIP',
             name:striker+" / "+nonStriker,
