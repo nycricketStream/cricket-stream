@@ -185,6 +185,19 @@
                      Req Runs: <span id="liveReqRuns">-</span><br>
                      Req RR: <span id="liveReqRR">-</span>
                   </div>
+                  <div id="nextBatterPanel" style="
+                     margin-top:12px;
+                     padding:8px;
+                     background:#111827;
+                     border:1px solid #1f2937;
+                     border-radius:6px;
+                     display:none;
+                     ">
+                     <strong>Next Batter</strong>
+                     <div id="nextBatterName" style="margin:6px 0;font-size:16px"></div>
+                     <button onclick="confirmNextBatter()">Enter Batter</button>
+                     <button onclick="manualSelectBatter()">Change Batter</button>
+                  </div>
                   <h4 style="margin-top:15px">Batters</h4>
                   Striker  
                   <select id="striker"></select>
@@ -582,11 +595,11 @@
          });
             
          loadSavedMatch();
-         loadSponsorPresets();
-         });
          setInterval(()=>{
          updateLiveDisplay();
-         },3000);
+         },10000);
+         loadSponsorPresets();
+         });
          
          async function saveConfig(){
           const config={
@@ -966,12 +979,24 @@
          /* ============== Show Next Batter ======== */
          function showNextBatter(){
          if(battingOrder.length === 0) return;
-         
          const next = battingOrder[0];
-         
-         setTimeout(()=>{
-         alert("Next Batter Suggestion: " + next);
-         },200);    
+         const panel=document.getElementById("nextBatterPanel");
+         const name=document.getElementById("nextBatterName");
+         name.innerText=next;
+         panel.style.display="block";
+         }
+
+         /* ========= Confirm Next Batter ======== */
+         function confirmNextBatter(){
+         const name=document.getElementById("nextBatterName").innerText;
+         document.getElementById("striker").value=name;
+         document.getElementById("nextBatterPanel").style.display="none";
+         }
+
+         /* ============ Manual Select Batter ========== */
+         function manualSelectBatter(){
+         document.getElementById("nextBatterPanel").style.display="none";
+         document.getElementById("striker").focus();
          }
          
          /* ============== Validate Batsman ============ */
@@ -1091,81 +1116,11 @@
          }
          
          /* ============ Undo Last =================== */
-         function undoLast(){
-          const last = liveHistory.pop();
-          if(!last) return;
-         
-          if(last.type === 'run'){
-            liveTotal -= last.runs;
-            liveBalls--;
-            currentOverBalls = Math.max(currentOverBalls - 1, 0);
-         
-             if(last.striker && batsmanStats[last.striker]){
-              batsmanStats[last.striker].runs -= last.runs;
-              batsmanStats[last.striker].balls--;
-              if(last.runs === 4) batsmanStats[last.striker].fours--;
-              if(last.runs === 6) batsmanStats[last.striker].sixes--;
-            }
-           
-            if(last.bowler && bowlerStats[last.bowler]){
-              bowlerStats[last.bowler].runs -= last.runs;
-              bowlerStats[last.bowler].balls--;
-            }
-          }
-         
-          if(last.type === 'wicket'){
-           liveWickets--;
-           liveBalls--;
-           currentOverBalls = Math.max(currentOverBalls - 1, 0);
-           lockedOut = false;
-           lastOutBatsman = "";
-           lastDismissal = "";
-         
-           // restore previous striker
-           if(last.striker){
-             document.getElementById('striker').value = last.striker;
-           }
-         
-          if(last.striker && batsmanStats[last.striker]){
-           batsmanStats[last.striker].balls--;
-           batsmanStats[last.striker].out = false;
-           batsmanStats[last.striker].dismissal = "";
-           batsmanStats[last.striker].bowler = "";
-          }
-          if(last.bowler && bowlerStats[last.bowler]){
-              bowlerStats[last.bowler].balls--;
-              bowlerStats[last.bowler].wickets--;
-            }
-          }
-         
-          if(last.type === 'extra'){
-          const runs = last.runs || 1;
-         
-          liveTotal -= runs;
-         
-          if(extrasStats[last.extra] !== undefined){
-            extrasStats[last.extra] = Math.max(extrasStats[last.extra] - runs, 0);
-          }
-         
-          if(last.bowler && bowlerStats[last.bowler]){
-            if(last.extra === "wide" || last.extra === "noball"){
-              bowlerStats[last.bowler].runs -= runs;
-            }
-          }
-         
-          if(last.extra === "bye" || last.extra === "legbye"){
-            liveBalls--;
-         
-            if(last.striker && batsmanStats[last.striker]){
-              batsmanStats[last.striker].balls--;
-            }
-         
-            if(last.bowler && bowlerStats[last.bowler]){
-              bowlerStats[last.bowler].balls--;
-            }
-          }         
-         }         
-          updateLiveDisplay();
+        function undoLast(){
+         if(liveHistory.length === 0) return;
+         liveHistory.pop();
+         recalculateMatch();
+         updateLiveDisplay();
          }
          
          /* =========== Rotate Strike ================ */
@@ -1538,29 +1493,53 @@
 
          /* =========== Recalculate Match =========== */
          function recalculateMatch(){
-         liveTotal=0;
-         liveWickets=0;
-         liveBalls=0;
-         bowlerStats={};
-         batsmanStats={};
+         liveTotal = 0;
+         liveWickets = 0;
+         liveBalls = 0;
+         bowlerStats = {};
+         batsmanStats = {};
+         extrasStats = {wide:0,noball:0,bye:0,legbye:0};
          liveHistory.forEach(ball=>{
+         const striker = ball.striker;
+         const bowler = ball.bowler;
+         if(striker) ensureBatsman(striker);
+         if(bowler) ensureBowler(bowler);
          if(ball.type==="run"){
-         liveTotal+=ball.runs;
+         liveTotal += ball.runs;
          liveBalls++;
+         batsmanStats[striker].runs += ball.runs;
+         batsmanStats[striker].balls++;
+         if(ball.runs===4) batsmanStats[striker].fours++;
+         if(ball.runs===6) batsmanStats[striker].sixes++;
+         bowlerStats[bowler].runs += ball.runs;
+         bowlerStats[bowler].balls++;
          }
          if(ball.type==="wicket"){
          liveWickets++;
          liveBalls++;
+         batsmanStats[striker].balls++;
+         batsmanStats[striker].out = true;
+         bowlerStats[bowler].balls++;
+         bowlerStats[bowler].wickets++;
          }
          if(ball.type==="extra"){
-         liveTotal+=ball.runs||1;
-         if(ball.extra==="bye"||ball.extra==="legbye"){
+         const r = ball.runs || 1;
+         liveTotal += r;
+         if(extrasStats[ball.extra] !== undefined){
+         extrasStats[ball.extra] += r;
+         }
+         if(ball.extra==="wide" || ball.extra==="noball"){
+         bowlerStats[bowler].runs += r;
+         }
+         if(ball.extra==="bye" || ball.extra==="legbye"){
          liveBalls++;
+         batsmanStats[striker].balls++;
+         bowlerStats[bowler].balls++;
          }
          }
          });
          }
-         
+                  
          /* ============ Render Last Wicket =============== */
          function renderLastWicket(){
           const panel = document.getElementById("lastWicketPanel");
@@ -1597,7 +1576,7 @@
          function triggerMoment(type){
           const now = Date.now();
          
-          if(lastMoment === type && (now - lastMomentTime) < 2000){
+          if(lastMoment === type && (now - lastMomentTime) < 5000){
             return;
           }
          
