@@ -168,6 +168,15 @@
              <div class="live-grid">
                <div class="panel">
                   <h3>Scoreboard</h3>
+                  <div style="margin-top:12px">
+                  <strong>This Over</strong>
+                  <div id="overTimeline" style="
+                     display:flex;
+                     gap:6px;
+                     margin-top:6px;
+                     flex-wrap:wrap;
+                     "></div>
+                  </div>
                   <div style="font-size:22px">
                      <strong id="liveScore">0/0</strong><br>
                      Overs: <span id="liveOvers">0.0</span><br>
@@ -808,6 +817,7 @@
           renderExtrasBreakdown();
           renderFallOfWickets();
           renderCurrentOver();
+          renderOverTimeline();
           renderPartnership();
           checkPartnershipMilestones();
           renderCurrentBatters();
@@ -1470,6 +1480,85 @@
          if(counted===legalBalls) break;     
          }         
          tracker.innerText=balls.join(" ") || "-";
+         }
+
+         /* ======== Render Over Timeline =============== */
+         function renderOverTimeline(){
+         const container=document.getElementById("overTimeline");
+         if(!container) return;
+         container.innerHTML="";
+         let legalBalls=liveBalls%6;
+         if(legalBalls===0 && liveBalls>0){
+         legalBalls=6;
+         }
+         let counted=0;
+         for(let i=liveHistory.length-1;i>=0;i--){
+         const b=liveHistory[i];
+         let symbol="";
+         if(b.type==="run"){
+         symbol=b.runs;
+         counted++;
+         }
+         else if(b.type==="wicket"){
+         symbol="W";
+         counted++;
+         }
+         else if(b.type==="extra"){
+         if(b.extra==="wide") symbol="Wd";
+         if(b.extra==="noball") symbol="Nb";
+         if(b.extra==="bye"){
+         symbol="B";
+         counted++;
+         }
+         if(b.extra==="legbye"){
+         symbol="Lb";
+         counted++;
+         }
+         }
+         const ballIndex=i;
+         const el=document.createElement("div");
+         el.style.padding="4px 8px";
+         el.style.background="#1f2937";
+         el.style.borderRadius="4px";
+         el.style.cursor="pointer";
+         el.innerText=symbol;
+         el.onclick=()=>removeBall(ballIndex);
+         container.prepend(el);
+         if(counted===legalBalls) break;
+         }
+         }
+
+         /* ===========Remove Ball ============== */
+         function removeBall(index){
+         if(!confirm("Remove this ball?")) return;
+         liveHistory.splice(index,1);
+         recalculateMatch();
+         updateLiveDisplay();
+         }
+
+         /* =========== Recalculate Match =========== */
+         function recalculateMatch(){
+         liveTotal=0;
+         liveWickets=0;
+         liveBalls=0;
+         bowlerStats={};
+         batsmanStats={};
+         liveHistory.forEach(ball=>{
+         if(ball.type==="run"){
+         liveTotal+=ball.runs;
+         liveBalls++;
+         }
+         if(ball.type==="wicket"){
+         liveWickets++;
+         liveBalls++;
+         }
+         if(ball.type==="extra"){
+         liveTotal+=ball.runs||1;
+         if(ball.extra==="bye"||ball.extra==="legbye"){
+         liveBalls++;
+         }
+         }
+         });
          }
          
          /* ============ Render Last Wicket =============== */
