@@ -48,8 +48,32 @@
          /* ===== LIVE SCORING GRID ===== */
          .live-grid{
          display:grid;
-         grid-template-columns:1fr 1fr;
-         gap:16px;
+         grid-template-columns:1.2fr 1fr 1fr;
+         gap:14px;
+         }
+         .panel{
+         background:#020617;
+         border:1px solid #1f2937;
+         border-radius:8px;
+         padding:12px;
+         }
+         
+         .run-buttons{
+         display:grid;
+         grid-template-columns:repeat(3,1fr);
+         gap:8px;
+         }
+         
+         .run-buttons button{
+         font-size:18px;
+         font-weight:600;
+         padding:14px;
+         }
+         
+         .extra-buttons{
+         display:grid;
+         grid-template-columns:repeat(2,1fr);
+         gap:8px;
          }
          .live-col{
          display:flex;
@@ -141,64 +165,70 @@
             </div>
             <!-- BASIC TAB -->
             <div id="basicLiveTab">
-               <div class="live-grid">
-                  <div class="live-col">
-                     <div style="font-size:20px;margin-bottom:15px">
-                        Score: <span id="liveScore">0/0</span><br>
-                        Overs: <span id="liveOvers">0.0</span><br>
-                        Run Rate: <span id="liveRR">0.00</span><br>
-                        Extras: <span id="liveExtras">0</span><br>
-                        Required Runs: <span id="liveReqRuns">-</span><br>
-                        Required RR: <span id="liveReqRR">-</span>
-                     </div>
-                     <h4>Batters</h4>
-                     Striker<select id="striker"></select>
-                     Non-Striker<select id="nonStriker"></select>
-                     <h4>Bowler</h4>
-                     Bowler<select id="bowler"></select>
+             <div class="live-grid">
+               <div class="panel">
+                  <h3>Scoreboard</h3>
+                  <div style="font-size:22px">
+                     <strong id="liveScore">0/0</strong><br>
+                     Overs: <span id="liveOvers">0.0</span><br>
+                     RR: <span id="liveRR">0.00</span><br>
+                     Extras: <span id="liveExtras">0</span><br>
+                     Req Runs: <span id="liveReqRuns">-</span><br>
+                     Req RR: <span id="liveReqRR">-</span>
                   </div>
-                  <div class="live-col">
-                     <h4>Runs</h4>
-                     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
-                        <button onclick="addRun(0)">0</button>
-                        <button onclick="addRun(1)">1</button>
-                        <button onclick="addRun(2)">2</button>
-                        <button onclick="addRun(3)">3</button>
-                        <button onclick="addRun(4)">4</button>
-                        <button onclick="addRun(6)">6</button>
-                        <select id="dismissalType">
-                           <option value="Bowled">Bowled</option>
-                           <option value="Caught">Caught</option>
-                           <option value="LBW">LBW</option>
-                           <option value="Run Out">Run Out</option>
-                           <option value="Stumped">Stumped</option>
-                           <option value="Hit Wicket">Hit Wicket</option>
-                           <option value="Obstructing the Field">Obstructing the Field</option>
-                           <option value="Hit the Ball Twice">Hit the Ball Twice</option>
-                           <option value="Handled the Ball">Handled the Ball</option>
-                           <option value="Timed Out">Timed Out</option>
-                        </select>
-                        <button onclick="addWicket()">OUT</button>
-                        <button onclick="undoLast()">UNDO</button>
-                     </div>
-                     <h4>Extras</h4>
-                     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
-                        <select id="extraRuns">
-                           <option value="0">0</option>
-                           <option value="1">1</option>
-                           <option value="2">2</option>
-                           <option value="3">3</option>
-                           <option value="4">4</option>
-                           <option value="5">5</option>
-                           <option value="6">6</option>
-                        </select>
-                        <button onclick="scoreExtra('wide')">Wide</button>
-                        <button onclick="scoreExtra('noball')">No Ball</button>
-                        <button onclick="scoreExtra('bye')">Bye</button>
-                        <button onclick="scoreExtra('legbye')">Leg Bye</button>
-                     </div>
+                  <h4 style="margin-top:15px">Batters</h4>
+                  Striker  
+                  <select id="striker"></select>
+                  Non-Striker  
+                  <select id="nonStriker"></select>
+                  <h4>Bowler</h4>
+                  <select id="bowler"></select>
+               </div>
+               <div class="panel">
+                  <h3>Runs</h3>
+                  <div class="run-buttons">
+                     <button onclick="addRun(0)">0</button>
+                     <button onclick="addRun(1)">1</button>
+                     <button onclick="addRun(2)">2</button>
+                     <button onclick="addRun(3)">3</button>
+                     <button onclick="addRun(4)">4</button>
+                     <button onclick="addRun(6)">6</button>
+                     <button onclick="addWicket()">OUT</button>
+                     <button onclick="undoLast()">UNDO</button>
+                  </div>
+                  <h4 style="margin-top:12px">Dismissal</h4>
+                  <select id="dismissalType">
+                     <option value="Bowled">Bowled</option>
+                     <option value="Caught">Caught</option>
+                     <option value="LBW">LBW</option>
+                     <option value="Run Out">Run Out</option>
+                     <option value="Stumped">Stumped</option>
+                     <option value="Hit Wicket">Hit Wicket</option>
+                     <option value="Obstructing the Field">Obstructing the Field</option>
+                     <option value="Hit the Ball Twice">Hit the Ball Twice</option>
+                     <option value="Handled the Ball">Handled the Ball</option>
+                     <option value="Timed Out">Timed Out</option>
+                  </select>
+               </div>
+               <div class="panel">
+                  <h3>Extras</h3>
+                  <select id="extraRuns">
+                     <option value="0">0</option>
+                     <option value="1">1</option>
+                     <option value="2">2</option>
+                     <option value="3">3</option>
+                     <option value="4">4</option>
+                     <option value="5">5</option>
+                     <option value="6">6</option>
+                  </select>
+                  <div class="extra-buttons">
+                     <button onclick="scoreExtra('wide')">Wide</button>
+                     <button onclick="scoreExtra('noball')">No Ball</button>
+                     <button onclick="scoreExtra('bye')">Bye</button>
+                     <button onclick="scoreExtra('legbye')">Leg Bye</button>
                   </div>
                </div>
+            </div>  
             </div>
             <!-- ADVANCED TAB -->
             <div id="advancedLiveTab" style="display:none">
@@ -545,6 +575,9 @@
          loadSavedMatch();
          loadSponsorPresets();
          });
+         setInterval(()=>{
+         updateLiveDisplay();
+         },3000);
          
          async function saveConfig(){
           const config={
@@ -612,6 +645,7 @@
          let partnership100Shown = false;
          let graphicQueue = [];
          let graphicPlaying = false;
+         let graphicCooldown = {};
          let previousBowler="";
          let awaitingNewBatsman=false;
          let currentOverBalls = 0;
@@ -1486,10 +1520,16 @@
          
          /* =========== Queue Graphic ================== */
          function queueGraphic(data){
-          graphicQueue.push(data);
-          if(!graphicPlaying){
-           playNextGraphic();
-          }
+         const key = data.label + "_" + data.name;
+         const now = Date.now();
+         if(graphicCooldown[key] && (now - graphicCooldown[key]) < 5000){
+         return;
+         }
+         graphicCooldown[key] = now;
+         graphicQueue.push(data);
+         if(!graphicPlaying){
+         playNextGraphic();
+         }
          }
          
          /* ========== Play Next Graphic =========================== */
