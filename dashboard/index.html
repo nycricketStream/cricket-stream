@@ -176,6 +176,38 @@
                      margin-top:6px;
                      flex-wrap:wrap;
                      "></div>
+                     <div id="ballEditor" style="
+                     display:none;
+                     position:fixed;
+                     bottom:20px;
+                     left:50%;
+                     transform:translateX(-50%);
+                     background:#020617;
+                     border:1px solid #1f2937;
+                     border-radius:8px;
+                     padding:12px;
+                     z-index:9999;
+                     width:280px;
+                     ">
+                     <div style="margin-bottom:8px;font-weight:bold">Edit Ball</div>
+                     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+                        <button onclick="editBallRun(0)">0</button>
+                        <button onclick="editBallRun(1)">1</button>
+                        <button onclick="editBallRun(2)">2</button>
+                        <button onclick="editBallRun(3)">3</button>
+                        <button onclick="editBallRun(4)">4</button>
+                        <button onclick="editBallRun(6)">6</button>
+                        <button onclick="editBallWicket()">W</button>
+                        <button onclick="editBallExtra('wide')">Wd</button>
+                        <button onclick="editBallExtra('noball')">Nb</button>
+                        <button onclick="editBallExtra('bye')">B</button>
+                        <button onclick="editBallExtra('legbye')">Lb</button>
+                     </div>
+                     <button style="margin-top:8px;background:#b91c1c"
+                        onclick="deleteEditedBall()">Delete Ball</button>
+                     <button style="margin-top:6px;background:#374151"
+                        onclick="closeBallEditor()">Cancel</button>
+                  </div>
                   </div>
                   <div style="font-size:22px">
                      <strong id="liveScore">0/0</strong><br>
@@ -663,6 +695,7 @@
          let liveHistory = [];
          let bowlerStats = {};
          let batsmanStats = {};
+         let editingBallIndex = -1;
          let partnership50Shown = false;
          let partnership100Shown = false;
          let graphicQueue = [];
@@ -1477,7 +1510,7 @@
          el.style.borderRadius="4px";
          el.style.cursor="pointer";
          el.innerText=symbol;
-         el.onclick=()=>removeBall(ballIndex);
+         el.onclick=()=>openBallEditor(ballIndex);
          container.prepend(el);
          if(counted===legalBalls) break;
          }
@@ -1487,6 +1520,60 @@
          function removeBall(index){
          if(!confirm("Remove this ball?")) return;
          liveHistory.splice(index,1);
+         recalculateMatch();
+         updateLiveDisplay();
+         }
+
+         /* ============== Open Ball Editor ========= */
+         function openBallEditor(index){
+         editingBallIndex = index;
+         document.getElementById("ballEditor").style.display="block";
+         }
+
+         /* =========== Close Ball Editor ========= */
+         function closeBallEditor(){
+         editingBallIndex=-1;
+         document.getElementById("ballEditor").style.display="none";
+         }
+
+         /* ===== Delete Edit Ball ============= */
+         function deleteEditedBall(){
+         if(editingBallIndex<0) return;
+         liveHistory.splice(editingBallIndex,1);
+         closeBallEditor();
+         recalculateMatch();
+         updateLiveDisplay();
+         }
+
+         /* ========  Edit Ball Run ========= */
+         function editBallRun(r){
+         if(editingBallIndex<0) return;
+         const ball = liveHistory[editingBallIndex];
+         ball.type="run";
+         ball.runs=r;
+         closeBallEditor();
+         recalculateMatch();
+         updateLiveDisplay();
+         }
+
+         /* ======== Edit Ball Wicket  ======= */
+         function editBallWicket(){
+         if(editingBallIndex<0) return;
+         const ball = liveHistory[editingBallIndex];
+         ball.type="wicket";
+         closeBallEditor();
+         recalculateMatch();
+         updateLiveDisplay();
+         }
+
+         /* ========= Edit Ball Extra ======== */
+         function editBallExtra(type){
+         if(editingBallIndex<0) return;
+         const ball = liveHistory[editingBallIndex];
+         ball.type="extra";
+         ball.extra=type;
+         ball.runs=1;
+         closeBallEditor();
          recalculateMatch();
          updateLiveDisplay();
          }
@@ -1504,17 +1591,19 @@
          const bowler = ball.bowler;
          if(striker) ensureBatsman(striker);
          if(bowler) ensureBowler(bowler);
-         if(ball.type==="run"){
+         /* RUN */
+         if(ball.type === "run"){
          liveTotal += ball.runs;
          liveBalls++;
          batsmanStats[striker].runs += ball.runs;
          batsmanStats[striker].balls++;
-         if(ball.runs===4) batsmanStats[striker].fours++;
-         if(ball.runs===6) batsmanStats[striker].sixes++;
+         if(ball.runs === 4) batsmanStats[striker].fours++;
+         if(ball.runs === 6) batsmanStats[striker].sixes++;
          bowlerStats[bowler].runs += ball.runs;
          bowlerStats[bowler].balls++;
          }
-         if(ball.type==="wicket"){
+         /* WICKET */
+         if(ball.type === "wicket"){
          liveWickets++;
          liveBalls++;
          batsmanStats[striker].balls++;
@@ -1522,19 +1611,20 @@
          bowlerStats[bowler].balls++;
          bowlerStats[bowler].wickets++;
          }
-         if(ball.type==="extra"){
-         const r = ball.runs || 1;
+         /* EXTRAS */
+         if(ball.type === "extra"){
+         const r = ball.runs ?? 1;
          liveTotal += r;
          if(extrasStats[ball.extra] !== undefined){
          extrasStats[ball.extra] += r;
          }
-         if(ball.extra==="wide" || ball.extra==="noball"){
+         if(ball.extra === "wide" || ball.extra === "noball"){
          bowlerStats[bowler].runs += r;
          }
-         if(ball.extra==="bye" || ball.extra==="legbye"){
+         if(ball.extra === "bye" || ball.extra === "legbye"){
          liveBalls++;
-         batsmanStats[striker].balls++;
-         bowlerStats[bowler].balls++;
+         if(striker) batsmanStats[striker].balls++;
+         if(bowler) bowlerStats[bowler].balls++;
          }
          }
          });
