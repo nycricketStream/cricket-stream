@@ -1172,29 +1172,23 @@
          function validateBeforeBall(){
          const striker=document.getElementById('striker')?.value;
          const bowler=document.getElementById('bowler')?.value;
-         
          if(!striker){
          alert("Select Striker before scoring.");
          return false;
          }
-         
          if(!bowler){
          alert("Select Bowler before scoring.");
          return false;
          }
-         
          if(lockedOut){
          alert("Select new batsman before continuing.");
          return false;
          }
-         
-         const ballsThisOver = liveBalls % 6;
-         
-         if(ballsThisOver === 0 && liveBalls !== 0 && bowler === lastBowler){
+         /* OVER FINISHED CHECK */
+         if(liveBalls % 6 === 0 && liveBalls !== 0 && bowler === lastBowler){
          alert("Over complete. Select a new bowler.");
          return false;
          }
-         
          return true;
          }
          
@@ -1567,13 +1561,16 @@
          }
 
          /* ========= Edit Ball Extra ======== */
-         function editBallExtra(type){
-         if(editingBallIndex<0) return;
-         const ball = liveHistory[editingBallIndex];
-         ball.type="extra";
-         ball.extra=type;
-         ball.runs=1;
-         closeBallEditor();
+         function editBallExtra(index,type){
+         const runs = parseInt(prompt("Enter runs for this extra",1));
+         if(isNaN(runs) || runs < 0){
+         alert("Invalid runs");
+         return;
+         }
+         const ball = liveHistory[index];
+         ball.type = "extra";
+         ball.extra = type;
+         ball.runs = runs;
          recalculateMatch();
          updateLiveDisplay();
          }
