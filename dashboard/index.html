@@ -631,6 +631,27 @@
          updateLiveDisplay();
          },10000);
          loadSponsorPresets();
+         /* KEYBOARD SCORING */
+         window.addEventListener("keydown",e=>{
+         /* ignore if typing in input fields */
+         const tag = document.activeElement.tagName;
+         if(tag==="INPUT" || tag==="TEXTAREA" || tag==="SELECT"){
+         return;
+         }
+         /* only allow when Live Scoring tab is open */
+         const liveTab = document.getElementById("livescoring");
+         if(!liveTab.classList.contains("active")){
+         return;
+         }
+         if(e.key==="0") addRun(0);
+         if(e.key==="1") addRun(1);
+         if(e.key==="2") addRun(2);
+         if(e.key==="3") addRun(3);
+         if(e.key==="4") addRun(4);
+         if(e.key==="6") addRun(6);
+         if(e.key==="w" || e.key==="W") addWicket();
+         if(e.key==="z" || e.key==="Z") undoLast();
+         });
          });
          
          async function saveConfig(){
@@ -1500,7 +1521,11 @@
          const ballIndex=i;
          const el=document.createElement("div");
          el.style.padding="4px 8px";
-         el.style.background="#1f2937";
+         if(symbol==="W") el.style.background="#b91c1c";
+         else if(symbol==="4") el.style.background="#16a34a";
+         else if(symbol==="6") el.style.background="#7c3aed";
+         else if(symbol==="Wd" || symbol==="Nb") el.style.background="#ca8a04";
+         else el.style.background="#1f2937";
          el.style.borderRadius="4px";
          el.style.cursor="pointer";
          el.innerText=symbol;
@@ -1561,16 +1586,18 @@
          }
 
          /* ========= Edit Ball Extra ======== */
-         function editBallExtra(index,type){
+        function editBallExtra(type){
+         if(editingBallIndex < 0) return;
          const runs = parseInt(prompt("Enter runs for this extra",1));
          if(isNaN(runs) || runs < 0){
          alert("Invalid runs");
          return;
          }
-         const ball = liveHistory[index];
+         const ball = liveHistory[editingBallIndex];
          ball.type = "extra";
          ball.extra = type;
          ball.runs = runs;
+         closeBallEditor();
          recalculateMatch();
          updateLiveDisplay();
          }
