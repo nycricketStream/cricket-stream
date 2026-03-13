@@ -399,7 +399,7 @@
             <input id="rotation" value="8">        
             <button onclick="send('sponsor',{
                enabled:showSponsors.checked,
-               list:sponsorList.value.split('\n'),
+               list:sponsorList.value.split('\n').map(s=>s.trim()).filter(Boolean),
                interval:parseInt(rotation.value||8)
                })">
             Update Sponsors
@@ -631,6 +631,16 @@
          updateLiveDisplay();
          },10000);
          loadSponsorPresets();
+            
+         /* AUTO LOAD SPONSORS */
+         setTimeout(()=>{
+         send('sponsor',{
+         enabled:showSponsors.checked,
+         list:sponsorList.value.split('\n').map(s=>s.trim()).filter(Boolean),
+         interval:parseInt(rotation.value||8)
+         });
+         },1500);
+            
          /* KEYBOARD SCORING */
          window.addEventListener("keydown",e=>{
          /* ignore if typing in input fields */
