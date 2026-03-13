@@ -570,13 +570,30 @@
           document.getElementById('teamAPlayers').addEventListener('input',updateStrikerDropdown);
           document.getElementById('teamBPlayers').addEventListener('input',updateStrikerDropdown);
           document.getElementById('bowler').addEventListener('change', function(){
-          const bowler = this.value;
-          currentOverBalls = 0;
-         if(bowler&&bowler!==previousBowler){
-            setTimeout(()=>queueGraphic({team:(batting.value === teamA.value ? teamB.value : teamA.value),label:'NEW BOWLER',name:bowler,hand:'',image:''}),400);
-         }
-         previousBowler=bowler;
-          updateLiveDisplay();
+          const bowler = this.value;   
+            currentOverBalls = 0;
+         
+            if(bowler && bowler !== previousBowler && liveBalls % 6 === 0){
+            let stats = "0-0 (0.0)";
+            
+            if(bowlerStats[bowler]){
+            const b = bowlerStats[bowler];
+            const overs = Math.floor(b.balls/6) + "." + (b.balls % 6);
+            stats = b.wickets + "-" + b.runs + " (" + overs + ")";
+            }
+            
+            setTimeout(()=>queueGraphic({
+            team:(batting.value === teamA.value ? teamB.value : teamA.value),
+            label:'NEW BOWLER',
+            name:bowler,
+            hand:stats,
+            image:''
+            }),400);
+            }
+            
+            previousBowler = bowler;
+            
+            updateLiveDisplay();
          });
           document.getElementById('striker').addEventListener('change', function(){
          const striker = this.value;
