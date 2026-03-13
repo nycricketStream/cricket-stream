@@ -573,7 +573,7 @@
           const bowler = this.value;
           currentOverBalls = 0;
          if(bowler&&bowler!==previousBowler){
-            setTimeout(()=>queueGraphic({team:batting.value,label:'NEW BOWLER',name:bowler,hand:'',image:''}),400);
+            setTimeout(()=>queueGraphic({team:(batting.value === teamA.value ? teamB.value : teamA.value),label:'NEW BOWLER',name:bowler,hand:'',image:''}),400);
          }
          previousBowler=bowler;
           updateLiveDisplay();
