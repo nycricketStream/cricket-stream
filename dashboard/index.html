@@ -855,7 +855,14 @@
          let strikerBalls = 0;
          let nonStrikerRuns = 0;
          let nonStrikerBalls = 0;
-         
+         let outRuns = 0;
+         let outBalls = 0;
+
+         if(lastOutBatsman && batsmanStats[lastOutBatsman]){
+           outRuns = batsmanStats[lastOutBatsman].runs;
+           outBalls = batsmanStats[lastOutBatsman].balls;
+         }  
+            
          if(batsmanStats[strikerName]){
          strikerRuns = batsmanStats[strikerName].runs;
          strikerBalls = batsmanStats[strikerName].balls;
@@ -887,7 +894,7 @@
          bat2Score:nonStrikerRuns+" ("+nonStrikerBalls+")",
          bowlerName:bowlerName,
          bowlerStats:bowlerWickets+"-"+bowlerRuns+" ("+bowlerOvers+")",
-         dismissal: lockedOut ? (lastOutBatsman + " " + strikerRuns + " (" + strikerBalls + ") " + lastDismissal) : "",
+         dismissal: (lockedOut && lastOutBatsman) ? (lastOutBatsman + " " + outRuns + " (" + outBalls + ") " + lastDismissal) : "",
          thisOver:thisOver,
          runsPerOver:getRunsPerOver()
          });
@@ -2065,7 +2072,12 @@
          teamB:teamB.value,
          teamALogo:teamALogo.value,
          teamBLogo:teamBLogo.value,
-         batting:batting.value
+         teamAColor:"#2563eb",
+         teamBColor:"#dc2626",
+         batting:batting.value,
+         innings:innings.value,
+         teamAPlayers:teamAPlayers.value.split('\n'),
+         teamBPlayers:teamBPlayers.value.split('\n')
          });
          }
       </script>
