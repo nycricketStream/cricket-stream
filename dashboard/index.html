@@ -1791,20 +1791,29 @@
          }
          
          /* ============= Send End Of Over Graphic ============ */
-         function sendEndOfOverGraphic(){
+        function sendEndOfOverGraphic(){
          const bowlerName = document.getElementById('bowler')?.value || "";
          const overs = calculateOvers();
          const rr = calculateRR();
-         
+         const maxOvers = parseInt(document.getElementById("maxOvers")?.value || 20);
+         const overNumber = Math.floor(liveBalls/6);
+         let note = "";
+         if(overNumber === 6){
+         note = "POWERPLAY COMPLETE";
+         }
+         if(overNumber === maxOvers-1){
+         note = "LAST OVER COMING";
+         }
          send('overSummary',{
          team: batting.value,
          score: liveTotal + "/" + liveWickets,
          overs: overs,
          rr: rr,
-         bowler: bowlerName
+         bowler: bowlerName,
+         note: note
          });
          }
-         
+                  
          /* ========== Check Milestones=============== */
          function checkMilestones(batsman){
           const stats = batsmanStats[batsman];
