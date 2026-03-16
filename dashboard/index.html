@@ -1792,17 +1792,17 @@
          
          /* ============= Send End Of Over Graphic ============ */
          function sendEndOfOverGraphic(){
-          const bowlerName = document.getElementById('bowler')?.value || "";
-          const overs = calculateOvers();
-          const rr = calculateRR();
+         const bowlerName = document.getElementById('bowler')?.value || "";
+         const overs = calculateOvers();
+         const rr = calculateRR();
          
-          queueGraphic({
-           team: batting.value,
-           label: 'END OF OVER',
-           name: liveTotal + "/" + liveWickets + "  •  " + overs + " ov",
-           hand: "Run Rate " + rr + (bowlerName ? "  |  Bowler: " + bowlerName : ""),
-           image: ''
-          });        
+         send('overSummary',{
+         team: batting.value,
+         score: liveTotal + "/" + liveWickets,
+         overs: overs,
+         rr: rr,
+         bowler: bowlerName
+         });
          }
          
          /* ========== Check Milestones=============== */
