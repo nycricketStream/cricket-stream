@@ -118,21 +118,36 @@
             </select>
             Total Overs<input id="maxOvers" value="50">
             Target (2nd Innings Only)<input id="target" placeholder="e.g. 250">
-            <button onclick="
+           <button onclick="
                send('match',{
                teamA:teamA.value,
                teamB:teamB.value,
                teamALogo:teamALogo.value,
-               teamBLogo:teamBLogo.value,      
-               teamAColor:"#2563eb",
-               teamBColor:"#dc2626",       
+               teamBLogo:teamBLogo.value,
+               teamAColor:'#2563eb',
+               teamBColor:'#dc2626',
                batting:batting.value,
                innings:innings.value,
                teamAPlayers:teamAPlayers.value.split('\n'),
                teamBPlayers:teamBPlayers.value.split('\n')
                });
+               send('manualScore',{
+               score:'0/0',
+               overs:'0.0',
+               runRate:'0.00',
+               bat1:'',
+               bat1Score:'0 (0)',
+               bat2:'',
+               bat2Score:'0 (0)',
+               bowlerName:'',
+               bowlerStats:'',
+               thisOver:'',
+               runsPerOver:[]
+               });
                updateLiveDisplay();
-               ">Update Match</button>
+               ">
+            Update Match
+            </button>
          </div>
          <div id="lineups" class="tab">
             <h3>Team Lineups</h3>
