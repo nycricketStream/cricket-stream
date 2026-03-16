@@ -93,6 +93,7 @@
          <button class="tab-btn" onclick="showTab(event,'player')">Player Graphic</button>
          <button class="tab-btn" onclick="showTab(event,'sponsors')">Sponsors</button>
          <button class="tab-btn" onclick="showTab(event,'moments')">Moments</button>
+         <button class="tab-btn" onclick="showTab(event,'broadcast')">Broadcast Graphics</button>
          <button class="tab-btn" onclick="saveConfig()">💾 Save Config</button>
          <button class="tab-btn" onclick="loadConfig()">📂 Load Config</button>
          <button class="tab-btn" onclick="resetMatch()">🗑 Reset Match</button>
@@ -437,6 +438,14 @@
             <button onclick="send('moment',{type:'FOUR'})">FOUR</button>
             <button onclick="send('moment',{type:'SIX'})">SIX</button>
             <button onclick="send('moment',{type:'WICKET'})">WICKET</button>
+         </div>
+         <div id="broadcast" class="tab">
+            <h3>Broadcast Graphics</h3>
+            <button onclick="sendBreak('DRINKS BREAK')">Drinks Break</button>
+            <button onclick="sendBreak('STRATEGIC TIMEOUT')">Strategic Timeout</button>
+            <button onclick="sendBreak('INNINGS BREAK')">Innings Break</button>
+            <button onclick="sendBreak('MATCH RESULT')">Match Result</button>
+            <button onclick="hideBreak()" style="background:#991b1b">Hide Graphic</button>
          </div>
       </div>
       <!-- LOG PANEL UI -->
@@ -2096,6 +2105,19 @@
          teamAPlayers:teamAPlayers.value.split('\n'),
          teamBPlayers:teamBPlayers.value.split('\n')
          });
+         }
+
+         /* ================= BROADCAST GRAPHICS ================= */
+         function sendBreak(text){
+            send('break',{
+            text:text
+            });
+         }
+         
+         function hideBreak(){
+            send('break',{
+            hide:true
+            });
          }
       </script>
    </body>
