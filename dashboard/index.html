@@ -1039,7 +1039,6 @@
          partnership100Shown = false;
          checkHatTrick();
           setTimeout(()=>triggerMoment('WICKET'),300);
-          setTimeout(()=>sendLastWicketGraphic(),1200);
           liveBalls++;
           currentOverBalls++;
          
@@ -1771,23 +1770,6 @@
           setTimeout(()=>{
            playNextGraphic();
           },4000);
-         }
-         
-         /* ============ Send Last Wicket Graphic ============ */
-         function sendLastWicketGraphic(){
-          const striker = lastOutBatsman;
-         
-          if(!striker) return;
-         
-          const stats = batsmanStats[striker] || {runs:0,balls:0};
-         
-          queueGraphic({
-           team: batting.value,
-           label: 'LAST WICKET',
-           name: striker + " " + stats.runs + " (" + stats.balls + ")",
-           hand: liveTotal + "/" + liveWickets + " • " + calculateOvers() + " ov",
-           image: playerImages[striker] || ''
-          });
          }
          
          /* ============= Send End Of Over Graphic ============ */
