@@ -704,18 +704,18 @@
           }  
              
          if(striker){
-           lockedOut = false;         
-           // ALWAYS trigger if previous ball was wicket
-           if(lastOutBatsman){
+           lockedOut = false;
          
+           if(awaitingNewBatsman){ 
              setTimeout(()=>queueGraphic({
                team:batting.value,
                label:'NEW BATSMAN',
                name:striker,
                hand:'',
                image:playerImages[striker] || ''
-             }),400);         
-             lastOutBatsman = ""; // reset trigger
+             }),400);
+         
+             awaitingNewBatsman = false; // reset ONLY after trigger
            }
          }
           updateLiveDisplay();
@@ -1070,7 +1070,11 @@
          
          liveTotal += r;
          liveBalls++;
-         
+            
+         if(liveBalls % 6 === 1){
+           currentOverBowler = currentBowler;
+         }
+            
          if(striker){
           ensureBatsman(striker);
           // do not update stats if batsman already out
@@ -1134,6 +1138,11 @@
          });
          
          liveWickets++;
+            
+         if(liveBalls % 6 === 1){
+           currentOverBowler = currentBowler;
+         }
+            
          partnership50Shown = false;
          partnership100Shown = false;
          checkHatTrick();
@@ -1213,6 +1222,12 @@
          /* ========= Add Extra ============= */
          function addExtra(type){
           if(!validateBeforeBall()) return;
+
+         const ballsInOver = liveBalls % 6;
+         if(ballsInOver === 0 && liveBalls !== 0){
+           alert("Over completed. Select a new bowler.");
+           return;
+         }
          
           const striker = document.getElementById('striker')?.value;
           const currentBowler = document.getElementById('bowler')?.value;
@@ -1259,6 +1274,12 @@
          
          /* ============== Score Extra ================ */
          function scoreExtra(type){
+         const ballsInOver = liveBalls % 6;
+         if(ballsInOver === 0 && liveBalls !== 0){
+           alert("Over completed. Select a new bowler.");
+           return;
+         }
+            
          const runs = parseInt(document.getElementById("extraRuns").value);
          const striker = document.getElementById('striker')?.value;
          const currentBowler = document.getElementById('bowler')?.value;
