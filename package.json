@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "pusher": "^5.2.0",
     "@vercel/kv": "^1.0.0"
