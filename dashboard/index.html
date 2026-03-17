@@ -703,18 +703,20 @@
            return;
           }  
              
-          if(striker){
-            lockedOut = false;
-            if(awaitingNewBatsman){
-            setTimeout(()=>queueGraphic({
-            team:batting.value,
-            label:'NEW BATSMAN',
-            name:striker,
-            hand:'',
-            image:playerImages[striker] || ''
-            }),400);
-            awaitingNewBatsman=false;
-            }
+         if(striker){
+           lockedOut = false;         
+           // ALWAYS trigger if previous ball was wicket
+           if(lastOutBatsman){
+         
+             setTimeout(()=>queueGraphic({
+               team:batting.value,
+               label:'NEW BATSMAN',
+               name:striker,
+               hand:'',
+               image:playerImages[striker] || ''
+             }),400);         
+             lastOutBatsman = ""; // reset trigger
+           }
          }
           updateLiveDisplay();
          });
@@ -846,6 +848,7 @@
          let previousBowler="";
          let awaitingNewBatsman=false;
          let currentOverBalls = 0;
+         let currentOverBowler = "";
          let lockedOut = false;
          let lastSentScore = "";
          let extrasStats = {
@@ -1104,7 +1107,10 @@
           rotateStrike();
           setTimeout(()=>sendEndOfOverGraphic(),600);
          }
-          lastBowler = currentBowler;
+         lastBowler = currentBowler;
+         if(liveBalls % 6 === 1){
+           currentOverBowler = currentBowler;
+         }
           updateLiveDisplay();
          }
          
@@ -1163,6 +1169,9 @@
          awaitingNewBatsman=true;
          showNextBatter();  
          lastBowler = currentBowler;
+         if(liveBalls % 6 === 1){
+           currentOverBowler = currentBowler;
+         }
           updateLiveDisplay();
          }
          
@@ -1242,6 +1251,9 @@
             }
           }
          lastBowler = currentBowler;
+         if(liveBalls % 6 === 1){
+           currentOverBowler = currentBowler;
+         }
           updateLiveDisplay();
          }
          
@@ -1345,9 +1357,12 @@
          }
          /* OVER FINISHED CHECK */
          const ballsInOver = liveBalls % 6;
-         if(ballsInOver === 0 && liveBalls !== 0 && bowler === lastBowler){
-         alert("Over complete. Select a new bowler.");
-         return false;
+         // If over is complete, block EVERYTHING until bowler changes
+         if(ballsInOver === 0 && liveBalls !== 0){
+           if(bowler === currentOverBowler){
+             alert("Over complete. Select a new bowler.");
+             return false;
+           }
          }
          return true;
          }
