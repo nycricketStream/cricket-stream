@@ -183,6 +183,11 @@
             </select>
             Total Overs<input id="maxOvers" value="50">
             Target (2nd Innings Only)<input id="target" placeholder="e.g. 250">
+            <h4>Saved Matches</h4>
+            <select id="matchList"></select>
+            <button onclick="loadMatchFromCloud()">Load Match</button>
+            <button onclick="deleteMatch()">Delete Match</button>
+            <hr>
             <button onclick="
                send('match',{
                teamA:teamA.value,
@@ -213,6 +218,7 @@
                ">
             Update Match
             </button>
+            <button onclick="saveMatchToCloud()">💾 Save Match</button>
          </div>
          <div id="lineups" class="tab">
             <h3>Team Lineups</h3>
@@ -743,6 +749,7 @@
          });
             
          loadSavedMatch();
+         loadMatchList();
          setInterval(()=>{
          updateLiveDisplay();
          },10000);
@@ -2332,6 +2339,82 @@
             send('break',{
             hide:true
             });
+         }
+
+         async function saveMatchToCloud(){
+           const id = prompt("Enter match name (e.g. NYC vs Titans)");
+           if(!id) return;
+         
+           const data = {
+             teamA:teamA.value,
+             teamB:teamB.value,
+             teamALogo:teamALogo.value,
+             teamBLogo:teamBLogo.value,
+             teamAPlayers:teamAPlayers.value,
+             teamBPlayers:teamBPlayers.value,
+             batting:batting.value,
+             innings:innings.value,
+             target:target.value,
+             maxOvers:maxOvers.value
+           };
+         
+           await fetch('/api/matchSetup',{
+             method:'POST',
+             headers:{'Content-Type':'application/json'},
+             body:JSON.stringify({id,data})
+           });
+         
+           alert("Match saved");
+           loadMatchList();
+         }
+         
+         async function loadMatchList(){
+           const res = await fetch('/api/matchSetup',{method:'PUT'});
+           const list = await res.json();
+         
+           const sel = document.getElementById('matchList');
+           sel.innerHTML = "";
+         
+           list.forEach(id=>{
+             sel.add(new Option(id,id));
+           });
+         }
+         
+         async function loadMatchFromCloud(){
+           const id = document.getElementById('matchList').value;
+           if(!id) return;
+         
+           const res = await fetch('/api/matchSetup?id='+encodeURIComponent(id));
+           const data = await res.json();
+         
+           teamA.value = data.teamA || "";
+           teamB.value = data.teamB || "";
+           teamALogo.value = data.teamALogo || "";
+           teamBLogo.value = data.teamBLogo || "";
+           teamAPlayers.value = data.teamAPlayers || "";
+           teamBPlayers.value = data.teamBPlayers || "";
+           batting.value = data.batting || "";
+           innings.value = data.innings || "";
+           target.value = data.target || "";
+           maxOvers.value = data.maxOvers || "";
+         
+           updateBattingTeams();
+           alert("Match loaded");
+         }
+         
+         async function deleteMatch(){
+           const id = document.getElementById('matchList').value;
+           if(!id) return;
+         
+           if(!confirm("Delete this match?")) return;
+         
+           await fetch('/api/matchSetup',{
+             method:'DELETE',
+             headers:{'Content-Type':'application/json'},
+             body:JSON.stringify({id})
+           });
+         
+           loadMatchList();
          }
       </script>
    </body>
