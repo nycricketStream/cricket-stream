@@ -156,6 +156,9 @@
          <button class="tab-btn" onclick="showTab(event,'sponsors')">Sponsors</button>
          <button class="tab-btn" onclick="showTab(event,'moments')">Moments</button>
          <button class="tab-btn" onclick="showTab(event,'broadcast')">Broadcast Graphics</button>
+         <button class="tab-btn" onclick="saveMatchSetup()">💾 Save Setup</button>
+         <button class="tab-btn" onclick="loadMatchSetup()">📂 Load Setup</button>
+         <button class="tab-btn" onclick="deleteMatchSetup()">❌ Delete Setup</button>
          <button class="tab-btn" onclick="saveConfig()">💾 Save Config</button>
          <button class="tab-btn" onclick="loadConfig()">📂 Load Config</button>
          <button class="tab-btn" onclick="resetMatch()">🗑 Reset Match</button>
@@ -2220,6 +2223,60 @@
          maxOvers:maxOvers.value
          };
          localStorage.setItem("cricketMatchState", JSON.stringify(state));    
+         }
+
+         /* ================= Save, Load and Delete on Server ========== */
+         async function saveMatchSetup(){
+          const setup = {
+           teamA: teamA.value,
+           teamB: teamB.value,
+           teamALogo: teamALogo.value,
+           teamBLogo: teamBLogo.value,
+           teamAPlayers: teamAPlayers.value,
+           teamBPlayers: teamBPlayers.value,
+           batting: batting.value,
+           innings: innings.value,
+           target: target.value,
+           maxOvers: maxOvers.value
+          };
+         
+          await fetch('/api/matchSetup',{
+           method:'POST',
+           headers:{'Content-Type':'application/json'},
+           body:JSON.stringify(setup)
+          });
+         
+          alert("Saved to cloud ✅");
+         }
+         
+         async function loadMatchSetup(){
+          const r = await fetch('/api/matchSetup');
+          const s = await r.json();
+         
+          if(!s || !s.teamA){
+           alert("No saved setup");
+           return;
+          }
+         
+          teamA.value = s.teamA || "";
+          teamB.value = s.teamB || "";
+          teamALogo.value = s.teamALogo || "";
+          teamBLogo.value = s.teamBLogo || "";
+          teamAPlayers.value = s.teamAPlayers || "";
+          teamBPlayers.value = s.teamBPlayers || "";
+          batting.value = s.batting || "";
+          innings.value = s.innings || "";
+          target.value = s.target || "";
+          maxOvers.value = s.maxOvers || "";
+         
+          updateBattingTeams();
+         
+          alert("Loaded from cloud ✅");
+         }
+         
+         async function deleteMatchSetup(){
+          await fetch('/api/matchSetup',{ method:'DELETE' });
+          alert("Deleted from cloud");
          }
          
          /* ================= Load Saved Match ================ */
