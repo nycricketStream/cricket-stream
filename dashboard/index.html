@@ -823,6 +823,19 @@
          document.getElementById('nonStriker').value="";
          document.getElementById('bowler').value="";
          updateLiveDisplay();
+         send('manualScore',{
+          score:'0/0',
+          overs:'0.0',
+          runRate:'0.00',
+          bat1:'',
+          bat1Score:'0 (0)',
+          bat2:'',
+          bat2Score:'0 (0)',
+          bowlerName:'',
+          bowlerStats:'',
+          thisOver:'',
+          runsPerOver:[]
+         });
          alert("Match reset");
          }
          
@@ -850,6 +863,7 @@
          let currentOverBalls = 0;
          let currentOverBowler = "";
          let lockedOut = false;
+         let lastOverNumber = 0;
          let lastSentScore = "";
          let extrasStats = {
            wide: 0,
@@ -1004,6 +1018,12 @@
          bowlerOvers = Math.floor(b.balls/6) + "." + (b.balls % 6);
          }
          const thisOver=getThisOver();
+         const currentOverNumber = Math.floor(liveBalls / 6);
+         if(currentOverNumber !== lastOverNumber){
+           lastOverNumber = currentOverNumber;
+           currentOverBowler = ""; // reset for new over
+         }
+            
          send('manualScore',{
          score:liveTotal+"/"+liveWickets,
          overs:calculateOvers(),
@@ -1072,6 +1092,10 @@
          liveBalls++;
             
          if(liveBalls % 6 === 1){
+           currentOverBowler = currentBowler;
+         }
+
+         if(currentOverBowler === ""){
            currentOverBowler = currentBowler;
          }
             
@@ -1143,6 +1167,10 @@
            currentOverBowler = currentBowler;
          }
             
+         if(currentOverBowler === ""){
+           currentOverBowler = currentBowler;
+         }   
+            
          partnership50Shown = false;
          partnership100Shown = false;
          checkHatTrick();
@@ -1200,6 +1228,7 @@
          battingOrder = battingOrder.filter(p => p !== name);
          document.getElementById("striker").value=name;
          document.getElementById("nextBatterPanel").style.display="none";
+         awaitingNewBatsman = true;
          }
          
          /* ============ Manual Select Batter ========== */
@@ -1274,6 +1303,8 @@
          
          /* ============== Score Extra ================ */
          function scoreExtra(type){
+         if(!validateBeforeBall()) return;
+            
          const ballsInOver = liveBalls % 6;
          if(ballsInOver === 0 && liveBalls !== 0){
            alert("Over completed. Select a new bowler.");
@@ -1364,23 +1395,27 @@
          function validateBeforeBall(){
          const striker=document.getElementById('striker')?.value;
          const bowler=document.getElementById('bowler')?.value;
+            
          if(!striker){
          alert("Select Striker before scoring.");
          return false;
          }
+            
          if(!bowler){
          alert("Select Bowler before scoring.");
          return false;
          }
+            
          if(lockedOut){
          alert("Select new batsman before continuing.");
          return false;
          }
+            
          /* OVER FINISHED CHECK */
          const ballsInOver = liveBalls % 6;
          // If over is complete, block EVERYTHING until bowler changes
          if(ballsInOver === 0 && liveBalls !== 0){
-           if(bowler === currentOverBowler){
+            if(currentOverBowler && bowler === currentOverBowler){
              alert("Over complete. Select a new bowler.");
              return false;
            }
