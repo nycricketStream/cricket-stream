@@ -537,6 +537,12 @@
          let lastMoment = "";
          let lastMomentTime = 0;
          
+         const teamA = document.getElementById('teamA');
+         const teamB = document.getElementById('teamB');
+         const batting = document.getElementById('batting');
+         const teamAPlayers = document.getElementById('teamAPlayers');
+         const teamBPlayers = document.getElementById('teamBPlayers');
+         
          /* LOGGING SYSTEM */
          const logPanel=document.getElementById('logPanel');
          const logToggle=document.getElementById('logToggle');
@@ -660,7 +666,7 @@
           const bowler = this.value;   
             currentOverBalls = 0;
          
-            if(bowler && bowler !== previousBowler && liveBalls % 6 === 0){
+            if(bowler && bowler !== previousBowler){
             let stats = "0-0 (0.0)";
             
             if(bowlerStats[bowler]){
@@ -689,7 +695,6 @@
          this.value = "";
          return;
          }
-          battingOrder = battingOrder.filter(p => p !== striker);
           const nonStriker = document.getElementById('nonStriker').value;
          
            if(this.value && this.value === nonStriker){
@@ -842,6 +847,7 @@
          let awaitingNewBatsman=false;
          let currentOverBalls = 0;
          let lockedOut = false;
+         let lastSentScore = "";
          let extrasStats = {
            wide: 0,
            noball: 0,
@@ -936,6 +942,13 @@
          
          /* ======= Update Live Display =========== */
          function updateLiveDisplay(){
+         const currentState = liveTotal + "/" + liveWickets + "-" + liveBalls;
+         
+         if(currentState === lastSentScore){
+           return;
+         }
+         
+         lastSentScore = currentState;
           document.getElementById('liveScore').innerText = liveTotal + "/" + liveWickets;
           document.getElementById('liveOvers').innerText = calculateOvers();
           document.getElementById('liveRR').innerText = calculateRR();
@@ -998,7 +1011,9 @@
          bat2Score:nonStrikerRuns+" ("+nonStrikerBalls+")",
          bowlerName:bowlerName,
          bowlerStats:bowlerWickets+"-"+bowlerRuns+" ("+bowlerOvers+")",
-         dismissal: (lockedOut && lastOutBatsman) ? (lastOutBatsman + " " + outRuns + " (" + outBalls + ") " + lastDismissal) : "",
+         dismissal: lastOutBatsman ? (
+           lastOutBatsman + " " + outRuns + " (" + outBalls + ") " + lastDismissal
+         ) : "",
          thisOver:thisOver,
          runsPerOver:getRunsPerOver()
          });
@@ -1118,7 +1133,6 @@
          checkHatTrick();
           setTimeout(()=>triggerMoment('WICKET'),300);
           liveBalls++;
-          currentOverBalls++;
          
           if(striker){
             ensureBatsman(striker);
@@ -1165,6 +1179,7 @@
          /* ========= Confirm Next Batter ======== */
          function confirmNextBatter(){
          const name=document.getElementById("nextBatterName").innerText;
+         battingOrder = battingOrder.filter(p => p !== name);
          document.getElementById("striker").value=name;
          document.getElementById("nextBatterPanel").style.display="none";
          }
@@ -1279,9 +1294,10 @@
           }
          
           if(type === "wide" || type === "noball"){
-          if((runs - 1) % 2 === 1){
-            rotateStrike();
-          }
+            const runsOffBat = runs - 1;
+            if(runsOffBat % 2 === 1){
+             rotateStrike();
+            }
          }
          else{
           if(runs % 2 === 1){
@@ -1328,7 +1344,8 @@
          return false;
          }
          /* OVER FINISHED CHECK */
-         if(liveBalls % 6 === 0 && liveBalls !== 0 && bowler === lastBowler){
+         const ballsInOver = liveBalls % 6;
+         if(ballsInOver === 0 && liveBalls !== 0 && bowler === lastBowler){
          alert("Over complete. Select a new bowler.");
          return false;
          }
@@ -1812,7 +1829,7 @@
          function triggerMoment(type){
           const now = Date.now();
          
-          if(lastMoment === type && (now - lastMomentTime) < 5000){
+          if(lastMoment === type && (now - lastMomentTime) < 3000){
             return;
           }
          
