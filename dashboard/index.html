@@ -1,16 +1,35 @@
 <!DOCTYPE html>
 <html>
    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta charset="UTF-8">
       <title>Cricket Broadcast Dashboard by Manoj</title>
       <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
       <style>
-         body{margin:0;font-family:Segoe UI,Arial;background:#060b18;color:#e5e7eb;display:flex}
-         .sidebar{width:260px;background:linear-gradient(180deg,#081a3a,#030712);height:100vh;padding:18px 14px;border-right:1px solid rgba(59,130,246,.25)}
+         body{
+         margin:0;
+         font-family:Segoe UI,Arial;
+         background:#060b18;
+         color:#e5e7eb;
+         display:flex;
+         height:100vh;
+         overflow:hidden;
+         }
+         .sidebar{
+         width:260px;
+         background:linear-gradient(180deg,#081a3a,#030712);
+         padding:18px 14px;
+         border-right:1px solid rgba(59,130,246,.25);
+         overflow-y:auto;
+         }
          .sidebar h2{margin-top:0;color:#60a5fa}
          .tab-btn{width:100%;padding:12px;margin-bottom:12px;border:none;border-radius:10px;background:#0a1226;color:white;text-align:left;cursor:pointer}
          .tab-btn.active{background:#2563eb}
-         .main{flex:1;padding:14px 28px}
+         .main{
+         flex:1;
+         padding:16px;
+         overflow-y:auto;
+         }
          .tab{display:none;background:#0c1426;padding:26px;border-radius:16px}
          .tab.active{display:block}
          input,textarea,select{width:100%;padding:10px;margin-bottom:14px;border-radius:8px;border:1px solid #1f2937;background:#020617;color:#fff}
@@ -57,19 +76,17 @@
          border-radius:8px;
          padding:12px;
          }
-         
          .run-buttons{
          display:grid;
          grid-template-columns:repeat(3,1fr);
          gap:8px;
          }
-         
          .run-buttons button{
-         font-size:18px;
-         font-weight:600;
-         padding:14px;
+         font-size:20px;
+         font-weight:700;
+         padding:16px;
+         border-radius:10px;
          }
-         
          .extra-buttons{
          display:grid;
          grid-template-columns:repeat(2,1fr);
@@ -79,6 +96,51 @@
          display:flex;
          flex-direction:column;
          gap:10px;
+         }
+         @media (max-width: 1000px){
+         .sidebar{
+         width:180px;
+         }    
+         .live-grid{
+         grid-template-columns:1fr 1fr;
+         }        
+         }
+         @media (max-width: 700px){
+         body{
+         flex-direction:column;
+         }
+         .sidebar{
+         width:100%;
+         display:flex;
+         overflow-x:auto;
+         border-right:none;
+         border-bottom:1px solid rgba(59,130,246,.25);
+         }
+         .tab-btn{
+         flex:1;
+         white-space:nowrap;
+         font-size:12px;
+         }
+         .main{
+         padding:10px;
+         }
+         .live-grid{
+         grid-template-columns:1fr;
+         }
+         .run-buttons{
+         grid-template-columns:repeat(3,1fr);
+         }
+         .run-buttons button{
+         font-size:22px;
+         padding:18px;
+         }
+         .extra-buttons{
+         grid-template-columns:repeat(2,1fr);
+         }
+         }
+         .panel:first-child{
+         position:sticky;
+         top:10px;
          }
       </style>
    </head>
@@ -118,7 +180,7 @@
             </select>
             Total Overs<input id="maxOvers" value="50">
             Target (2nd Innings Only)<input id="target" placeholder="e.g. 250">
-           <button onclick="
+            <button onclick="
                send('match',{
                teamA:teamA.value,
                teamB:teamB.value,
@@ -183,124 +245,124 @@
             </div>
             <!-- BASIC TAB -->
             <div id="basicLiveTab">
-             <div class="live-grid">
-               <div class="panel">
-                  <h3>Scoreboard</h3>
-                  <div style="margin-top:12px">
-                  <strong>This Over</strong>
-                  <div id="overTimeline" style="
-                     display:flex;
-                     gap:6px;
-                     margin-top:6px;
-                     flex-wrap:wrap;
-                     "></div>
-                     <div id="ballEditor" style="
-                     display:none;
-                     position:fixed;
-                     bottom:20px;
-                     left:50%;
-                     transform:translateX(-50%);
-                     background:#020617;
-                     border:1px solid #1f2937;
-                     border-radius:8px;
-                     padding:12px;
-                     z-index:9999;
-                     width:280px;
-                     ">
-                     <div style="margin-bottom:8px;font-weight:bold">Edit Ball</div>
-                     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
-                        <button onclick="editBallRun(0)">0</button>
-                        <button onclick="editBallRun(1)">1</button>
-                        <button onclick="editBallRun(2)">2</button>
-                        <button onclick="editBallRun(3)">3</button>
-                        <button onclick="editBallRun(4)">4</button>
-                        <button onclick="editBallRun(6)">6</button>
-                        <button onclick="editBallWicket()">W</button>
-                        <button onclick="editBallExtra('wide')">Wd</button>
-                        <button onclick="editBallExtra('noball')">Nb</button>
-                        <button onclick="editBallExtra('bye')">B</button>
-                        <button onclick="editBallExtra('legbye')">Lb</button>
+               <div class="live-grid">
+                  <div class="panel">
+                     <h3>Scoreboard</h3>
+                     <div style="margin-top:12px">
+                        <strong>This Over</strong>
+                        <div id="overTimeline" style="
+                           display:flex;
+                           gap:6px;
+                           margin-top:6px;
+                           flex-wrap:wrap;
+                           "></div>
+                        <div id="ballEditor" style="
+                           display:none;
+                           position:fixed;
+                           bottom:20px;
+                           left:50%;
+                           transform:translateX(-50%);
+                           background:#020617;
+                           border:1px solid #1f2937;
+                           border-radius:8px;
+                           padding:12px;
+                           z-index:9999;
+                           width:280px;
+                           ">
+                           <div style="margin-bottom:8px;font-weight:bold">Edit Ball</div>
+                           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+                              <button onclick="editBallRun(0)">0</button>
+                              <button onclick="editBallRun(1)">1</button>
+                              <button onclick="editBallRun(2)">2</button>
+                              <button onclick="editBallRun(3)">3</button>
+                              <button onclick="editBallRun(4)">4</button>
+                              <button onclick="editBallRun(6)">6</button>
+                              <button onclick="editBallWicket()">W</button>
+                              <button onclick="editBallExtra('wide')">Wd</button>
+                              <button onclick="editBallExtra('noball')">Nb</button>
+                              <button onclick="editBallExtra('bye')">B</button>
+                              <button onclick="editBallExtra('legbye')">Lb</button>
+                           </div>
+                           <button style="margin-top:8px;background:#b91c1c"
+                              onclick="deleteEditedBall()">Delete Ball</button>
+                           <button style="margin-top:6px;background:#374151"
+                              onclick="closeBallEditor()">Cancel</button>
+                        </div>
                      </div>
-                     <button style="margin-top:8px;background:#b91c1c"
-                        onclick="deleteEditedBall()">Delete Ball</button>
-                     <button style="margin-top:6px;background:#374151"
-                        onclick="closeBallEditor()">Cancel</button>
+                     <div style="font-size:22px">
+                        <strong id="liveScore">0/0</strong><br>
+                        Overs: <span id="liveOvers">0.0</span><br>
+                        RR: <span id="liveRR">0.00</span><br>
+                        Extras: <span id="liveExtras">0</span><br>
+                        Req Runs: <span id="liveReqRuns">-</span><br>
+                        Req RR: <span id="liveReqRR">-</span>
+                     </div>
+                     <div id="nextBatterPanel" style="
+                        margin-top:12px;
+                        padding:8px;
+                        background:#111827;
+                        border:1px solid #1f2937;
+                        border-radius:6px;
+                        display:none;
+                        ">
+                        <strong>Next Batter</strong>
+                        <div id="nextBatterName" style="margin:6px 0;font-size:16px"></div>
+                        <button onclick="confirmNextBatter()">Enter Batter</button>
+                        <button onclick="manualSelectBatter()">Change Batter</button>
+                     </div>
+                     <h4 style="margin-top:15px">Batters</h4>
+                     Striker  
+                     <select id="striker"></select>
+                     Non-Striker  
+                     <select id="nonStriker"></select>
+                     <h4>Bowler</h4>
+                     <select id="bowler"></select>
                   </div>
+                  <div class="panel">
+                     <h3>Runs</h3>
+                     <div class="run-buttons">
+                        <button onclick="addRun(0)">0</button>
+                        <button onclick="addRun(1)">1</button>
+                        <button onclick="addRun(2)">2</button>
+                        <button onclick="addRun(3)">3</button>
+                        <button onclick="addRun(4)">4</button>
+                        <button onclick="addRun(6)">6</button>
+                        <button onclick="addWicket()">OUT</button>
+                        <button onclick="undoLast()">UNDO</button>
+                     </div>
+                     <h4 style="margin-top:12px">Dismissal</h4>
+                     <select id="dismissalType">
+                        <option value="Bowled">Bowled</option>
+                        <option value="Caught">Caught</option>
+                        <option value="LBW">LBW</option>
+                        <option value="Run Out">Run Out</option>
+                        <option value="Stumped">Stumped</option>
+                        <option value="Hit Wicket">Hit Wicket</option>
+                        <option value="Obstructing the Field">Obstructing the Field</option>
+                        <option value="Hit the Ball Twice">Hit the Ball Twice</option>
+                        <option value="Handled the Ball">Handled the Ball</option>
+                        <option value="Timed Out">Timed Out</option>
+                     </select>
                   </div>
-                  <div style="font-size:22px">
-                     <strong id="liveScore">0/0</strong><br>
-                     Overs: <span id="liveOvers">0.0</span><br>
-                     RR: <span id="liveRR">0.00</span><br>
-                     Extras: <span id="liveExtras">0</span><br>
-                     Req Runs: <span id="liveReqRuns">-</span><br>
-                     Req RR: <span id="liveReqRR">-</span>
-                  </div>
-                  <div id="nextBatterPanel" style="
-                     margin-top:12px;
-                     padding:8px;
-                     background:#111827;
-                     border:1px solid #1f2937;
-                     border-radius:6px;
-                     display:none;
-                     ">
-                     <strong>Next Batter</strong>
-                     <div id="nextBatterName" style="margin:6px 0;font-size:16px"></div>
-                     <button onclick="confirmNextBatter()">Enter Batter</button>
-                     <button onclick="manualSelectBatter()">Change Batter</button>
-                  </div>
-                  <h4 style="margin-top:15px">Batters</h4>
-                  Striker  
-                  <select id="striker"></select>
-                  Non-Striker  
-                  <select id="nonStriker"></select>
-                  <h4>Bowler</h4>
-                  <select id="bowler"></select>
-               </div>
-               <div class="panel">
-                  <h3>Runs</h3>
-                  <div class="run-buttons">
-                     <button onclick="addRun(0)">0</button>
-                     <button onclick="addRun(1)">1</button>
-                     <button onclick="addRun(2)">2</button>
-                     <button onclick="addRun(3)">3</button>
-                     <button onclick="addRun(4)">4</button>
-                     <button onclick="addRun(6)">6</button>
-                     <button onclick="addWicket()">OUT</button>
-                     <button onclick="undoLast()">UNDO</button>
-                  </div>
-                  <h4 style="margin-top:12px">Dismissal</h4>
-                  <select id="dismissalType">
-                     <option value="Bowled">Bowled</option>
-                     <option value="Caught">Caught</option>
-                     <option value="LBW">LBW</option>
-                     <option value="Run Out">Run Out</option>
-                     <option value="Stumped">Stumped</option>
-                     <option value="Hit Wicket">Hit Wicket</option>
-                     <option value="Obstructing the Field">Obstructing the Field</option>
-                     <option value="Hit the Ball Twice">Hit the Ball Twice</option>
-                     <option value="Handled the Ball">Handled the Ball</option>
-                     <option value="Timed Out">Timed Out</option>
-                  </select>
-               </div>
-               <div class="panel">
-                  <h3>Extras</h3>
-                  <select id="extraRuns">
-                     <option value="0">0</option>
-                     <option value="1">1</option>
-                     <option value="2">2</option>
-                     <option value="3">3</option>
-                     <option value="4">4</option>
-                     <option value="5">5</option>
-                     <option value="6">6</option>
-                  </select>
-                  <div class="extra-buttons">
-                     <button onclick="scoreExtra('wide')">Wide</button>
-                     <button onclick="scoreExtra('noball')">No Ball</button>
-                     <button onclick="scoreExtra('bye')">Bye</button>
-                     <button onclick="scoreExtra('legbye')">Leg Bye</button>
+                  <div class="panel">
+                     <h3>Extras</h3>
+                     <select id="extraRuns">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                     </select>
+                     <div class="extra-buttons">
+                        <button onclick="scoreExtra('wide')">Wide</button>
+                        <button onclick="scoreExtra('noball')">No Ball</button>
+                        <button onclick="scoreExtra('bye')">Bye</button>
+                        <button onclick="scoreExtra('legbye')">Leg Bye</button>
+                     </div>
                   </div>
                </div>
-            </div>  
             </div>
             <!-- ADVANCED TAB -->
             <div id="advancedLiveTab" style="display:none">
@@ -899,7 +961,7 @@
          let nonStrikerBalls = 0;
          let outRuns = 0;
          let outBalls = 0;
-
+         
          if(lastOutBatsman && batsmanStats[lastOutBatsman]){
            outRuns = batsmanStats[lastOutBatsman].runs;
            outBalls = batsmanStats[lastOutBatsman].balls;
@@ -1099,14 +1161,14 @@
          name.innerText=next;
          panel.style.display="block";
          }
-
+         
          /* ========= Confirm Next Batter ======== */
          function confirmNextBatter(){
          const name=document.getElementById("nextBatterName").innerText;
          document.getElementById("striker").value=name;
          document.getElementById("nextBatterPanel").style.display="none";
          }
-
+         
          /* ============ Manual Select Batter ========== */
          function manualSelectBatter(){
          document.getElementById("nextBatterPanel").style.display="none";
@@ -1230,7 +1292,7 @@
          }
          
          /* ============ Undo Last =================== */
-        function undoLast(){
+         function undoLast(){
          if(liveHistory.length === 0) return;
          liveHistory.pop();
          recalculateMatch();
@@ -1544,7 +1606,7 @@
          }         
          tracker.innerText=balls.join(" ") || "-";
          }
-
+         
          /* ======== Render Over Timeline =============== */
          function renderOverTimeline(){
          const container=document.getElementById("overTimeline");
@@ -1594,7 +1656,7 @@
          if(counted===legalBalls) break;
          }
          }
-
+         
          /* ===========Remove Ball ============== */
          function removeBall(index){
          if(!confirm("Remove this ball?")) return;
@@ -1602,19 +1664,19 @@
          recalculateMatch();
          updateLiveDisplay();
          }
-
+         
          /* ============== Open Ball Editor ========= */
          function openBallEditor(index){
          editingBallIndex = index;
          document.getElementById("ballEditor").style.display="block";
          }
-
+         
          /* =========== Close Ball Editor ========= */
          function closeBallEditor(){
          editingBallIndex=-1;
          document.getElementById("ballEditor").style.display="none";
          }
-
+         
          /* ===== Delete Edit Ball ============= */
          function deleteEditedBall(){
          if(editingBallIndex<0) return;
@@ -1623,7 +1685,7 @@
          recalculateMatch();
          updateLiveDisplay();
          }
-
+         
          /* ========  Edit Ball Run ========= */
          function editBallRun(r){
          if(editingBallIndex<0) return;
@@ -1634,7 +1696,7 @@
          recalculateMatch();
          updateLiveDisplay();
          }
-
+         
          /* ======== Edit Ball Wicket  ======= */
          function editBallWicket(){
          if(editingBallIndex<0) return;
@@ -1644,9 +1706,9 @@
          recalculateMatch();
          updateLiveDisplay();
          }
-
+         
          /* ========= Edit Ball Extra ======== */
-        function editBallExtra(type){
+         function editBallExtra(type){
          if(editingBallIndex < 0) return;
          const runs = parseInt(prompt("Enter runs for this extra",1));
          if(isNaN(runs) || runs < 0){
@@ -1661,7 +1723,7 @@
          recalculateMatch();
          updateLiveDisplay();
          }
-
+         
          /* =========== Recalculate Match =========== */
          function recalculateMatch(){
          liveTotal = 0;
@@ -1789,7 +1851,7 @@
          }
          
          /* ============= Send End Of Over Graphic ============ */
-        function sendEndOfOverGraphic(){
+         function sendEndOfOverGraphic(){
          const bowlerName = document.getElementById('bowler')?.value || "";
          const overs = calculateOvers();
          const rr = calculateRR();
@@ -2113,7 +2175,7 @@
          teamBPlayers:teamBPlayers.value.split('\n')
          });
          }
-
+         
          /* ================= BROADCAST GRAPHICS ================= */
          function sendBreak(text){
             send('break',{
