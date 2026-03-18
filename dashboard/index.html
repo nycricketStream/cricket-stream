@@ -577,11 +577,73 @@
          pusher.connection.bind('connecting',()=>log('PUSHER CONNECTING'));
          pusher.connection.bind('disconnected',()=>log('PUSHER DISCONNECTED'));
          
-         async function send(event,data){
+         async function send(event, data) {
+           if (event === "moment") {
+             return sendMomentSafe(data);
+           }
+         
+           if (event === "player") {
+             return sendPlayerSafe(data);
+           }
+         
+           if (event === "break") {
+             return sendBreakSafe(data);
+           }
+         
+           if (event === "replay") {
+             return sendReplaySafe(data);
+           }
+           // default
            await fetch('/api/broadcast',{
              method:'POST',
              headers:{'Content-Type':'application/json'},
              body:JSON.stringify({event:event,data})
+           });
+         }
+
+         let lastOverlayTime = 0;
+         
+         function canTriggerOverlay(delay = 800) {
+           const now = Date.now();
+           if (now - lastOverlayTime < delay) return false;
+           lastOverlayTime = now;
+           return true;
+         }
+
+         async function sendMomentSafe(data){
+           if (!canTriggerOverlay(1200)) return;
+         
+           await fetch('/api/broadcast',{
+             method:'POST',
+             headers:{'Content-Type':'application/json'},
+             body:JSON.stringify({event:"moment",data})
+           });
+         }
+
+         async function sendPlayerSafe(data){
+           if (!canTriggerOverlay(1500)) return;
+         
+           await fetch('/api/broadcast',{
+             method:'POST',
+             headers:{'Content-Type':'application/json'},
+             body:JSON.stringify({event:"player",data})
+           });
+         }
+
+         async function sendBreakSafe(data){
+           // break overrides everything → no delay
+           await fetch('/api/broadcast',{
+             method:'POST',
+             headers:{'Content-Type':'application/json'},
+             body:JSON.stringify({event:"break",data})
+           });
+         }
+
+         async function sendReplaySafe(data){
+           await fetch('/api/broadcast',{
+             method:'POST',
+             headers:{'Content-Type':'application/json'},
+             body:JSON.stringify({event:"replay",data})
            });
          }
          
@@ -852,6 +914,12 @@
           dismissal:''
          });
          lastSentScore = "";
+         // FORCE OVERLAY RESET
+         send('match',{ reset:true });
+         
+         // Clear overlays visually
+         send('break',{ hide:true });
+         send('replay',{});   
          alert("Match reset");
          }
 
@@ -1443,6 +1511,11 @@
          const striker=document.getElementById('striker')?.value;
          const bowler=document.getElementById('bowler')?.value;
             
+         if(document.getElementById("breakGraphicActive")){
+           alert("Game is in break mode");
+           return false;
+         } 
+            
          if(!striker){
          alert("Select Striker before scoring.");
          return false;
@@ -1945,7 +2018,7 @@
          function triggerMoment(type){
           const now = Date.now();
          
-          if(lastMoment === type && (now - lastMomentTime) < 3000){
+          if(lastMoment === type && (now - lastMomentTime) < 2500){
             return;
           }
          
@@ -1980,7 +2053,7 @@
           send('player', g);
           setTimeout(()=>{
            playNextGraphic();
-          },4000);
+          },5200);
          }
          
          /* ============= Send End Of Over Graphic ============ */
