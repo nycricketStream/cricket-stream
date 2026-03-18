@@ -534,7 +534,7 @@
             <button onclick="sendBreak('MATCH RESULT')">Match Result</button>
             <button onclick="hideBreak()" style="background:#991b1b">Hide Graphic</button>
             <hr>
-            <h3>Graphic Queue</h3>     
+            <h3>Graphic Queue</h3>
             <div style="
                background:#020617;
                border:1px solid #1f2937;
@@ -543,18 +543,17 @@
                min-height:140px;
                font-size:13px;
                ">
-               
-                 <div id="queueNow" style="
-                   margin-bottom:10px;
-                   color:#22c55e;
-                   font-weight:bold;
-                   border-bottom:1px solid #1f2937;
-                   padding-bottom:6px;
-                 ">
-                   NOW: None
-                 </div>
-                 <div id="queueList"></div>
+               <div id="queueNow" style="
+                  margin-bottom:10px;
+                  color:#22c55e;
+                  font-weight:bold;
+                  border-bottom:1px solid #1f2937;
+                  padding-bottom:6px;
+                  ">
+                  NOW: None
                </div>
+               <div id="queueList"></div>
+            </div>
          </div>
       </div>
       <!-- LOG PANEL UI -->
@@ -577,6 +576,23 @@
          /* LOGGING SYSTEM */
          const logPanel=document.getElementById('logPanel');
          const logToggle=document.getElementById('logToggle');
+
+         channel.bind('overlayState', data => {
+             if(!data) return;
+         
+             if(data.state === "LOCK"){
+                 overlayLocked = true;
+             }
+         
+             if(data.state === "UNLOCK"){
+                 overlayLocked = false;
+         
+                 // resume queue
+                 if(!graphicPlaying){
+                     playNextGraphic();
+                 }
+             }
+         });
          
          function log(msg){
           const time=new Date().toLocaleTimeString();
@@ -622,7 +638,7 @@
              body:JSON.stringify({event:event,data})
            });
          }
-
+         
          let lastOverlayTime = 0;
          
          function canTriggerOverlay(delay = 800) {
@@ -631,7 +647,7 @@
            lastOverlayTime = now;
            return true;
          }
-
+         
          async function sendMomentSafe(data){
            if (!canTriggerOverlay(1200)) return;
          
@@ -641,7 +657,7 @@
              body:JSON.stringify({event:"moment",data})
            });
          }
-
+         
          async function sendPlayerSafe(data){
            if (!canTriggerOverlay(1500)) return;
          
@@ -651,7 +667,7 @@
              body:JSON.stringify({event:"player",data})
            });
          }
-
+         
          async function sendBreakSafe(data){
            // break overrides everything → no delay
            await fetch('/api/broadcast',{
@@ -660,7 +676,7 @@
              body:JSON.stringify({event:"break",data})
            });
          }
-
+         
          async function sendReplaySafe(data){
            await fetch('/api/broadcast',{
              method:'POST',
@@ -945,14 +961,6 @@
          send('replay',{});   
          alert("Match reset");
          }
-
-         send('match',{
-           teamA: teamA.value,
-           teamB: teamB.value,
-           teamALogo: teamALogo.value,
-           teamBLogo: teamBLogo.value,
-           batting: batting.value
-         });
          
          /* ================= BASIC LIVE SCORING ENGINE ================= */
          let liveTotal = 0;
@@ -1003,6 +1011,8 @@
            "NEW BOWLER": 60,
            "DEFAULT": 50
          };
+         let overlayLocked = false;
+
          
          function calculateOvers(){
           return Math.floor(liveBalls/6) + "." + (liveBalls % 6);
@@ -1240,7 +1250,7 @@
          if(liveBalls % 6 === 1){
            currentOverBowler = currentBowler;
          }
-
+         
          if(currentOverBowler === ""){
            currentOverBowler = currentBowler;
          }
@@ -1397,9 +1407,9 @@
          /* ========= Add Extra ============= */
          function addExtra(type){
           if(!validateBeforeBall()) return;
-
+         
          const ballsInOver = liveBalls % 6;
-        if(liveBalls % 6 === 0 && liveBalls !== 0){
+         if(liveBalls % 6 === 0 && liveBalls !== 0){
            if(currentOverBowler && currentBowler === currentOverBowler){
              alert("Over completed. Select a new bowler.");
              return;
@@ -2068,40 +2078,61 @@
          
          /* =========== Queue Graphic ================== */
          function queueGraphic(data){
-         const key = data.label + "_" + data.name;
-         const now = Date.now();
-         if(graphicCooldown[key] && (now - graphicCooldown[key]) < 5000){
-         return;
-         }
-         graphicCooldown[key] = now;
-         // assign priority
-         data.priority = graphicPriority[data.label] || graphicPriority["DEFAULT"];
-         let inserted = false;
-
-         for(let i = 0; i < graphicQueue.length; i++){
+           const key = data.label + "_" + data.name;
+           const now = Date.now();
+         
+           if(graphicCooldown[key] && (now - graphicCooldown[key]) < 5000){
+             return;
+           }
+         
+           graphicCooldown[key] = now;
+         
+           // assign priority
+           data.priority = graphicPriority[data.label] || graphicPriority["DEFAULT"];
+         
+           // 🚨 HIGH PRIORITY → PLAY IMMEDIATELY (NO DUPLICATE INSERT)
+           if(data.priority >= 90){
+             currentGraphic = data;
+             renderQueueUI();
+         
+             send('player', data);
+         
+             setTimeout(()=>{
+               currentGraphic = null;
+               renderQueueUI();
+               playNextGraphic();
+             },5200);
+         
+             return;
+           }
+         
+           // ✅ NORMAL PRIORITY → INSERT SORTED
+           let inserted = false;
+         
+           for(let i = 0; i < graphicQueue.length; i++){
              if(data.priority > (graphicQueue[i].priority || 0)){
                graphicQueue.splice(i, 0, data);
                inserted = true;
                break;
              }
            }
-            if(!inserted){
+         
+           if(!inserted){
              graphicQueue.push(data);
            }
-            renderQueueUI();
-            if(data.priority >= 90){
-              graphicQueue.unshift(data);
-              playNextGraphic();
-              return;
-            }
-            
-            if(!graphicPlaying){
-              playNextGraphic();
-            }
-         }
          
+           renderQueueUI();
+         
+           if(!graphicPlaying){
+             playNextGraphic();
+           }
+         }
+                  
          /* ========== Play Next Graphic =========================== */
          function playNextGraphic(){
+          if(overlayLocked){
+             return;
+           }
           if(graphicQueue.length === 0){
            graphicPlaying = false;
            currentGraphic = null;
@@ -2121,7 +2152,7 @@
           playNextGraphic();
           },5200);
          }
-
+         
          function removeFromQueue(index){
            graphicQueue.splice(index,1);
            renderQueueUI();
@@ -2435,7 +2466,7 @@
          };
          localStorage.setItem("cricketMatchState", JSON.stringify(state));    
          }
-
+         
          /* ================= Save, Load and Delete on Server ========== */
          async function saveMatchSetup(){
           const setup = {
@@ -2544,7 +2575,7 @@
             hide:true
             });
          }
-
+         
          async function saveMatchToCloud(){
            const id = prompt("Enter match name (e.g. NYC vs Titans)");
            if(!id) return;
@@ -2620,7 +2651,7 @@
          
            loadMatchList();
          }
-
+         
          function renderQueueUI(){
            const list = document.getElementById("queueList");
            const now = document.getElementById("queueNow");
