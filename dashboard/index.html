@@ -989,6 +989,20 @@
            bye: 0,
            legbye: 0
          };
+         const graphicPriority = {
+           "REPLAY": 100,
+           "BREAK": 95,
+           "WICKET": 90,
+           "FALL OF WICKET": 88,
+           "CENTURY": 85,
+           "FIFTY": 80,
+           "HAT TRICK": 82,
+           "100 PARTNERSHIP": 75,
+           "50 PARTNERSHIP": 70,
+           "NEW BATSMAN": 60,
+           "NEW BOWLER": 60,
+           "DEFAULT": 50
+         };
          
          function calculateOvers(){
           return Math.floor(liveBalls/6) + "." + (liveBalls % 6);
@@ -2060,10 +2074,29 @@
          return;
          }
          graphicCooldown[key] = now;
-         graphicQueue.push(data);
-         renderQueueUI();
+         // assign priority
+         data.priority = graphicPriority[data.label] || graphicPriority["DEFAULT"];
+         let inserted = false;
+
+         for(let i = 0; i < graphicQueue.length; i++){
+             if(data.priority > (graphicQueue[i].priority || 0)){
+               graphicQueue.splice(i, 0, data);
+               inserted = true;
+               break;
+             }
+           }
+            if(!inserted){
+             graphicQueue.push(data);
+           }
+            renderQueueUI();
+            if(data.priority >= 90){
+              graphicQueue.unshift(data);
+              playNextGraphic();
+              return;
+            }
+            
             if(!graphicPlaying){
-            playNextGraphic();
+              playNextGraphic();
             }
          }
          
@@ -2611,7 +2644,15 @@
              row.style.justifyContent = "space-between";
              row.style.marginBottom = "6px";
              row.style.padding = "6px";
-             row.style.background = "#0b1220";
+             if(g.priority >= 90){
+              row.style.background = "#7f1d1d"; // red (WICKET)
+            }
+            else if(g.priority >= 80){
+              row.style.background = "#78350f"; // gold (milestones)
+            }
+            else{
+              row.style.background = "#0b1220";
+            }
              row.style.borderRadius = "4px";
          
              row.innerHTML = `
