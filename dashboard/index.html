@@ -533,6 +533,19 @@
             <button onclick="sendBreak('INNINGS BREAK')">Innings Break</button>
             <button onclick="sendBreak('MATCH RESULT')">Match Result</button>
             <button onclick="hideBreak()" style="background:#991b1b">Hide Graphic</button>
+            <hr>
+            <h3>Graphic Queue</h3>     
+            <div id="queueNow" style="margin-bottom:10px;color:#22c55e;font-weight:bold">
+            NOW: None
+            </div>
+            <div id="queueList" style="
+            background:#020617;
+            border:1px solid #1f2937;
+            border-radius:6px;
+            padding:10px;
+            min-height:120px;
+            font-size:13px;
+            "></div>
          </div>
       </div>
       <!-- LOG PANEL UI -->
@@ -847,6 +860,7 @@
          if(e.key==="w" || e.key==="W") addWicket();
          if(e.key==="z" || e.key==="Z") undoLast();
          });
+            renderQueueUI();
          });
          
          async function saveConfig(){
@@ -948,6 +962,7 @@
          let partnership100Shown = false;
          let graphicQueue = [];
          let graphicPlaying = false;
+         let currentGraphic = null;
          let graphicCooldown = {};
          let previousBowler="";
          let awaitingNewBatsman=false;
@@ -2037,23 +2052,62 @@
          }
          graphicCooldown[key] = now;
          graphicQueue.push(data);
-         if(!graphicPlaying){
-         playNextGraphic();
-         }
+         renderQueueUI();
+            if(!graphicPlaying){
+            playNextGraphic();
+            }
          }
          
          /* ========== Play Next Graphic =========================== */
          function playNextGraphic(){
           if(graphicQueue.length === 0){
            graphicPlaying = false;
+           currentGraphic = null;
+           renderQueueUI();
            return;
           }   
+            
           graphicPlaying = true;
           const g = graphicQueue.shift(); 
+          currentGraphic = g;
+          renderQueueUI();
+            
           send('player', g);
           setTimeout(()=>{
-           playNextGraphic();
+          currentGraphic = null;
+          renderQueueUI();
+          playNextGraphic();
           },5200);
+         }
+
+         function removeFromQueue(index){
+           graphicQueue.splice(index,1);
+           renderQueueUI();
+         }
+         
+         function moveUp(index){
+           if(index === 0) return;
+         
+           const temp = graphicQueue[index];
+           graphicQueue[index] = graphicQueue[index-1];
+           graphicQueue[index-1] = temp;
+         
+           renderQueueUI();
+         }
+         
+         function playNow(index){         
+           const g = graphicQueue.splice(index,1)[0];
+         
+           currentGraphic = g;
+           renderQueueUI();
+         
+           send('player', g);
+         
+           setTimeout(()=>{
+             currentGraphic = null;
+             renderQueueUI();
+             playNextGraphic();
+           },5200);
          }
          
          /* ============= Send End Of Over Graphic ============ */
@@ -2523,6 +2577,44 @@
            });
          
            loadMatchList();
+         }
+
+         function renderQueueUI(){
+           const list = document.getElementById("queueList");
+           const now = document.getElementById("queueNow");
+         
+           if(!list || !now) return;
+         
+           // NOW PLAYING
+           if(currentGraphic){
+             now.innerText = "NOW: " + currentGraphic.label + " - " + currentGraphic.name;
+           }else{
+             now.innerText = "NOW: None";
+           }
+         
+           // QUEUE LIST
+           list.innerHTML = "";
+         
+           graphicQueue.forEach((g, index) => {
+             const row = document.createElement("div");
+         
+             row.style.display = "flex";
+             row.style.justifyContent = "space-between";
+             row.style.marginBottom = "6px";
+             row.style.padding = "6px";
+             row.style.background = "#0b1220";
+             row.style.borderRadius = "4px";
+         
+             row.innerHTML = `
+               <span>${index+1}. ${g.label} - ${g.name}</span>
+               <div>
+                 <button onclick="playNow(${index})">▶</button>
+                 <button onclick="moveUp(${index})">⬆</button>
+                 <button onclick="removeFromQueue(${index})">❌</button>
+               </div>
+             `;       
+             list.appendChild(row);
+           });
          }
       </script>
    </body>
