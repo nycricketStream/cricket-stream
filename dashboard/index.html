@@ -2145,7 +2145,18 @@
           currentGraphic = g;
           renderQueueUI();
             
-          send('player', g);
+          if(g.label === "WICKET"){
+           send('moment', { type: 'WICKET' });
+         }
+         else if(g.label === "REPLAY"){
+           send('replay', {});
+         }
+         else if(g.label === "BREAK"){
+           send('break', { text: g.name || "BREAK" });
+         }
+         else{
+           send('player', g);
+         }
           setTimeout(()=>{
           currentGraphic = null;
           renderQueueUI();
