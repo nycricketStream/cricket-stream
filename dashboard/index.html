@@ -535,9 +535,28 @@
             <button onclick="hideBreak()" style="background:#991b1b">Hide Graphic</button>
             <hr>
             <h3>Graphic Queue</h3>     
-            <div id="queueNow" style="margin-bottom:10px;color:#22c55e;font-weight:bold">
-            NOW: None
-            </div>
+            <div style="
+               background:#020617;
+               border:1px solid #1f2937;
+               border-radius:6px;
+               padding:10px;
+               min-height:140px;
+               font-size:13px;
+               ">
+               
+                 <div id="queueNow" style="
+                   margin-bottom:10px;
+                   color:#22c55e;
+                   font-weight:bold;
+                   border-bottom:1px solid #1f2937;
+                   padding-bottom:6px;
+                 ">
+                   NOW: None
+                 </div>
+               
+                 <div id="queueList"></div>
+               
+               </div>
             <div id="queueList" style="
             background:#020617;
             border:1px solid #1f2937;
@@ -2606,7 +2625,7 @@
              row.style.borderRadius = "4px";
          
              row.innerHTML = `
-               <span>${index+1}. ${g.label} - ${g.name}</span>
+              <span><b>${g.label}</b> - ${g.name}</span>
                <div>
                  <button onclick="playNow(${index})">▶</button>
                  <button onclick="moveUp(${index})">⬆</button>
