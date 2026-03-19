@@ -1201,14 +1201,20 @@
          bat2Score:nonStrikerRuns+" ("+nonStrikerBalls+")",
          bowlerName:bowlerName,
          bowlerStats:bowlerWickets+"-"+bowlerRuns+" ("+bowlerOvers+")",
-         dismissal: suppressNextDismissal 
-           ? "" 
-           : (lastOutBatsman ? (
-               lastOutBatsman + " " + outRuns + " (" + outBalls + ") " + lastDismissal
-             ) : ""),
-         thisOver:thisOver,
-         runsPerOver:getRunsPerOver()
-         });
+         dismissal: (function(){
+           if(suppressNextDismissal) return "";
+         
+           // delay fall of wicket if last ball was wicket
+           const last = liveHistory[liveHistory.length - 1];
+         
+           if(last && last.type === "wicket" && liveBalls % 6 === 0){
+             return ""; // delay it
+           }
+         
+           return lastOutBatsman ? (
+             lastOutBatsman + " " + outRuns + " (" + outBalls + ") " + lastDismissal
+           ) : "";
+         })(),
          suppressNextDismissal = false;
           renderBowlerStats();
           renderBatsmanStats();
@@ -1303,7 +1309,7 @@
          
           if(liveBalls % 6 === 0){
           rotateStrike();
-          setTimeout(()=>sendEndOfOverGraphic(),600);
+          setTimeout(()=>sendEndOfOverGraphic(),1200);
          }
          lastBowler = currentBowler;
          if(liveBalls % 6 === 1){
@@ -1321,11 +1327,6 @@
           const currentBowler = document.getElementById('bowler')?.value;
           const dismissal = document.getElementById('dismissalType')?.value;
           lastDismissal = dismissal + " b " + currentBowler;
-
-          setTimeout(() => {
-           updateLiveDisplay();
-         }, 100);  
-            
          liveHistory.push({
          type:'wicket',
          bowler:currentBowler,
@@ -1349,6 +1350,7 @@
          partnership100Shown = false;
          checkHatTrick();
          triggerMoment('WICKET');
+         suppressNextDismissal = true;
           liveBalls++;
          
           if(striker){
@@ -1366,12 +1368,28 @@
           }
          
          if(liveBalls % 6 === 0){
-         const nonStriker = document.getElementById('nonStriker')?.value;
-         if(nonStriker){
-         document.getElementById('striker').value = nonStriker;
-         }
-         document.getElementById('nonStriker').value = "";
-         setTimeout(()=>sendEndOfOverGraphic(),600);
+           const nonStriker = document.getElementById('nonStriker')?.value;
+         
+           if(nonStriker){
+             document.getElementById('striker').value = nonStriker;
+           }
+         
+           document.getElementById('nonStriker').value = "";
+         
+           // 🎬 SEQUENCE: WICKET → FALL → OVER
+         
+           // 1️⃣ WICKET already triggered here:
+           // triggerMoment('WICKET');
+         
+           // 2️⃣ FALL OF WICKET already comes via updateLiveDisplay()
+           setTimeout(()=>{
+             suppressNextDismissal = false;
+             updateLiveDisplay();
+           }, 1200); // ⏱ adjust if needed (3–4 sec ideal)
+            // 3️⃣ END OF OVER after that
+           setTimeout(()=>{
+             sendEndOfOverGraphic();
+           }, 3500);
          }else{
                     // normal wicket (balls 1-5)
            document.getElementById('striker').value = "";
