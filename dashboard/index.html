@@ -937,6 +937,19 @@
          document.getElementById('bowler').value="";
          document.getElementById('striker').value="";
          document.getElementById('overTimeline').innerHTML = "";
+
+          // RESET INTERNAL STATE
+         lastOverlayTime = 0;
+         lastMoment = "";
+         lastMomentTime = 0;
+         lastSentScore = "";  
+        
+        // RESET QUEUE
+         graphicQueue = [];
+         graphicPlaying = false;
+         currentGraphic = null;
+         overlayLocked = false;
+         renderQueueUI();
             
          updateLiveDisplay();
             
@@ -954,12 +967,10 @@
           runsPerOver:[],
           dismissal:''
          });
-         lastSentScore = "";
          // FORCE OVERLAY RESET
          send('match',{ reset:true });
-         
-         // Clear overlays visually
          send('break',{ hide:true });  
+         send('moment',{ type:'CLEAR' });
          alert("Match reset");
          }
          
