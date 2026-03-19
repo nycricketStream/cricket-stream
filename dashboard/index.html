@@ -957,8 +957,7 @@
          send('match',{ reset:true });
          
          // Clear overlays visually
-         send('break',{ hide:true });
-         send('replay',{});   
+         send('break',{ hide:true });  
          alert("Match reset");
          }
          
@@ -1307,7 +1306,11 @@
           const currentBowler = document.getElementById('bowler')?.value;
           const dismissal = document.getElementById('dismissalType')?.value;
           lastDismissal = dismissal + " b " + currentBowler;
-         
+console.log("WICKET DEBUG:", lastOutBatsman, lastDismissal);
+          setTimeout(() => {
+           updateLiveDisplay();
+         }, 100);  
+            
          liveHistory.push({
          type:'wicket',
          bowler:currentBowler,
