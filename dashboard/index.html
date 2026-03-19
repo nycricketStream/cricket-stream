@@ -2092,6 +2092,9 @@ console.log("WICKET DEBUG:", lastOutBatsman, lastDismissal);
          
            // assign priority
            data.priority = graphicPriority[data.label] || graphicPriority["DEFAULT"];
+           if(data.label === "WICKET"){
+              data.priority = 100;
+            }
          
            // 🚨 HIGH PRIORITY → PLAY IMMEDIATELY (NO DUPLICATE INSERT)
            if(data.priority >= 90){
