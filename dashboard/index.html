@@ -575,7 +575,7 @@
          /* LOGGING SYSTEM */
          const logPanel=document.getElementById('logPanel');
          const logToggle=document.getElementById('logToggle');
-
+         
          channel.bind('overlayState', data => {
              if(!data) return;
          
@@ -647,7 +647,7 @@
            return true;
          }
          
-        async function sendMomentSafe(data){
+         async function sendMomentSafe(data){
            if(data.type !== "WICKET"){
              if (!canTriggerOverlay(1200)) return;
            }
@@ -931,19 +931,20 @@
          awaitingNewBatsman=false;
          currentOverBalls=0;
          lockedOut=false;
+         dismissalShown = false;
          document.getElementById('striker').value="";
          document.getElementById('nonStriker').value="";
          document.getElementById('bowler').value="";
          document.getElementById('striker').value="";
          document.getElementById('overTimeline').innerHTML = "";
-
+         
           // RESET INTERNAL STATE
          lastOverlayTime = 0;
          lastMoment = "";
          lastMomentTime = 0;
          lastSentScore = "";  
-        
-        // RESET QUEUE
+         
+         // RESET QUEUE
          graphicQueue = [];
          graphicPlaying = false;
          currentGraphic = null;
@@ -1024,6 +1025,7 @@
          };
          let overlayLocked = false;
          let suppressNextDismissal = false;
+         let dismissalShown = false;
          
          function calculateOvers(){
           return Math.floor(liveBalls/6) + "." + (liveBalls % 6);
@@ -1202,18 +1204,14 @@
            bowlerName:bowlerName,
            bowlerStats:bowlerWickets+"-"+bowlerRuns+" ("+bowlerOvers+")",
            dismissal: (function(){
-             if(suppressNextDismissal) return "";
-         
-             const last = liveHistory[liveHistory.length - 1];
-         
-             if(last && last.type === "wicket" && liveBalls % 6 === 0){
-               return "";
-             }
-         
-             return lastOutBatsman ? (
-               lastOutBatsman + " " + outRuns + " (" + outBalls + ") " + lastDismissal
-             ) : "";
-           })()
+              if(suppressNextDismissal) return "";
+              if(dismissalShown) return "";
+              if(!lastOutBatsman) return "";
+              const text = lastOutBatsman + " " + outRuns + " (" + outBalls + ") " + lastDismissal;
+              //  mark as shown so it doesn't repeat
+              dismissalShown = true;
+              return text;
+            })()
          });
             
          suppressNextDismissal = false;
@@ -1325,6 +1323,7 @@
          
           const striker = document.getElementById('striker')?.value;
           lastOutBatsman = striker;
+          dismissalShown = false;
           const currentBowler = document.getElementById('bowler')?.value;
           const dismissal = document.getElementById('dismissalType')?.value;
           lastDismissal = dismissal + " b " + currentBowler;
@@ -1514,7 +1513,7 @@
          const currentBowler = document.getElementById('bowler')?.value;
          
           liveHistory.push({type:'extra', extra:type, runs:runs, bowler:currentBowler, striker:striker});
-
+         
          if(type === "wide" || type === "noball"){
               if(runs < 1) runs = 1;
             }
@@ -1584,7 +1583,7 @@
            const last = liveHistory.pop();
          
            if(last.type === "wicket"){
-         
+              dismissalShown = false;
              // find previous wicket (if any)
              const prevWicket = [...liveHistory].reverse().find(b => b.type === "wicket");
          
