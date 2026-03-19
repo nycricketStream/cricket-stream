@@ -2103,7 +2103,11 @@
              currentGraphic = data;
              renderQueueUI();
          
-             send('player', data);
+             if(data.label === "WICKET"){
+                 send('moment', { type:'WICKET' });
+               }else{
+                 send('player', data);
+               }
          
              setTimeout(()=>{
                currentGraphic = null;
