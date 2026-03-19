@@ -1023,7 +1023,7 @@
            "DEFAULT": 50
          };
          let overlayLocked = false;
-
+         let suppressNextDismissal = false;
          
          function calculateOvers(){
           return Math.floor(liveBalls/6) + "." + (liveBalls % 6);
@@ -1201,12 +1201,15 @@
          bat2Score:nonStrikerRuns+" ("+nonStrikerBalls+")",
          bowlerName:bowlerName,
          bowlerStats:bowlerWickets+"-"+bowlerRuns+" ("+bowlerOvers+")",
-         dismissal: lastOutBatsman ? (
-           lastOutBatsman + " " + outRuns + " (" + outBalls + ") " + lastDismissal
-         ) : "",
+         dismissal: suppressNextDismissal 
+           ? "" 
+           : (lastOutBatsman ? (
+               lastOutBatsman + " " + outRuns + " (" + outBalls + ") " + lastDismissal
+             ) : ""),
          thisOver:thisOver,
          runsPerOver:getRunsPerOver()
          });
+         suppressNextDismissal = false;
           renderBowlerStats();
           renderBatsmanStats();
           renderExtrasBreakdown();
@@ -1574,6 +1577,7 @@
            }
          
            recalculateMatch();
+           suppressNextDismissal = true;
            send('manualScore',{ dismissal:'' });
            updateLiveDisplay();
          }
