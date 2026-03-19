@@ -648,8 +648,10 @@
            return true;
          }
          
-         async function sendMomentSafe(data){
-           if (!canTriggerOverlay(1200)) return;
+        async function sendMomentSafe(data){
+           if(data.type !== "WICKET"){
+             if (!canTriggerOverlay(1200)) return;
+           }
          
            await fetch('/api/broadcast',{
              method:'POST',
@@ -1306,7 +1308,7 @@
           const currentBowler = document.getElementById('bowler')?.value;
           const dismissal = document.getElementById('dismissalType')?.value;
           lastDismissal = dismissal + " b " + currentBowler;
-console.log("WICKET DEBUG:", lastOutBatsman, lastDismissal);
+
           setTimeout(() => {
            updateLiveDisplay();
          }, 100);  
@@ -1333,7 +1335,7 @@ console.log("WICKET DEBUG:", lastOutBatsman, lastDismissal);
          partnership50Shown = false;
          partnership100Shown = false;
          checkHatTrick();
-          setTimeout(()=>triggerMoment('WICKET'),300);
+         triggerMoment('WICKET');
           liveBalls++;
          
           if(striker){
