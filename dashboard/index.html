@@ -356,7 +356,6 @@
                   <div class="panel">
                      <h3>Extras</h3>
                      <select id="extraRuns">
-                        <option value="0">0</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
@@ -1491,13 +1490,17 @@
          const currentBowler = document.getElementById('bowler')?.value;
          
           liveHistory.push({type:'extra', extra:type, runs:runs, bowler:currentBowler, striker:striker});
-         
+
+         if(type === "wide" || type === "noball"){
+              if(runs < 1) runs = 1;
+            }
+            
           liveTotal += runs;
          
           if(extrasStats[type] !== undefined){
             extrasStats[type] += runs;
           }
-         
+            
          /* WIDE BOUNDARY GRAPHIC */
          if(type === "wide" && runs === 5){
           triggerMoment('FOUR');
@@ -1552,10 +1555,24 @@
          
          /* ============ Undo Last =================== */
          function undoLast(){
-         if(liveHistory.length === 0) return;
-         liveHistory.pop();
-         recalculateMatch();
-         updateLiveDisplay();
+           if(liveHistory.length === 0) return;
+         
+           const last = liveHistory.pop();
+         
+           // FIX: if undoing wicket → clear dismissal state
+           if(last.type === "wicket"){
+             lastOutBatsman = "";
+             lastDismissal = "";
+           }
+         
+           recalculateMatch();
+         
+           // force overlay to clear dismissal
+           send('manualScore',{
+             dismissal: ''
+           });
+         
+           updateLiveDisplay();
          }
          
          /* =========== Rotate Strike ================ */
