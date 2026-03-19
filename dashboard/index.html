@@ -1192,29 +1192,30 @@
          lastBowlerName = bowlerName;   
             
          send('manualScore',{
-         score:liveTotal+"/"+liveWickets,
-         overs:calculateOvers(),
-         runRate:calculateRR(),
-         bat1:strikerName ? strikerName+"*" : "",
-         bat1Score:strikerRuns+" ("+strikerBalls+")",
-         bat2:nonStrikerName,
-         bat2Score:nonStrikerRuns+" ("+nonStrikerBalls+")",
-         bowlerName:bowlerName,
-         bowlerStats:bowlerWickets+"-"+bowlerRuns+" ("+bowlerOvers+")",
-         dismissal: (function(){
-           if(suppressNextDismissal) return "";
+           score:liveTotal+"/"+liveWickets,
+           overs:calculateOvers(),
+           runRate:calculateRR(),
+           bat1:strikerName ? strikerName+"*" : "",
+           bat1Score:strikerRuns+" ("+strikerBalls+")",
+           bat2:nonStrikerName,
+           bat2Score:nonStrikerRuns+" ("+nonStrikerBalls+")",
+           bowlerName:bowlerName,
+           bowlerStats:bowlerWickets+"-"+bowlerRuns+" ("+bowlerOvers+")",
+           dismissal: (function(){
+             if(suppressNextDismissal) return "";
          
-           // delay fall of wicket if last ball was wicket
-           const last = liveHistory[liveHistory.length - 1];
+             const last = liveHistory[liveHistory.length - 1];
          
-           if(last && last.type === "wicket" && liveBalls % 6 === 0){
-             return ""; // delay it
-           }
+             if(last && last.type === "wicket" && liveBalls % 6 === 0){
+               return "";
+             }
          
-           return lastOutBatsman ? (
-             lastOutBatsman + " " + outRuns + " (" + outBalls + ") " + lastDismissal
-           ) : "";
-         })(),
+             return lastOutBatsman ? (
+               lastOutBatsman + " " + outRuns + " (" + outBalls + ") " + lastDismissal
+             ) : "";
+           })()
+         });
+            
          suppressNextDismissal = false;
           renderBowlerStats();
           renderBatsmanStats();
@@ -1446,6 +1447,7 @@
          
          const ballsInOver = liveBalls % 6;
          if(liveBalls % 6 === 0 && liveBalls !== 0){
+           const currentBowler = document.getElementById('bowler')?.value;
            if(currentOverBowler && currentBowler === currentOverBowler){
              alert("Over completed. Select a new bowler.");
              return;
@@ -1500,13 +1502,14 @@
          if(!validateBeforeBall()) return;
             
          if(liveBalls % 6 === 0 && liveBalls !== 0){
+           const currentBowler = document.getElementById('bowler')?.value;
            if(currentOverBowler && currentBowler === currentOverBowler){
              alert("Over completed. Select a new bowler.");
              return;
            }
          }
             
-         const runs = parseInt(document.getElementById("extraRuns").value);
+         let runs = parseInt(document.getElementById("extraRuns").value);
          const striker = document.getElementById('striker')?.value;
          const currentBowler = document.getElementById('bowler')?.value;
          
@@ -1639,9 +1642,10 @@
             
          /* OVER FINISHED CHECK */
           if(liveBalls % 6 === 0 && liveBalls !== 0){
+           const currentBowler = document.getElementById('bowler')?.value;
            if(currentOverBowler && currentBowler === currentOverBowler){
              alert("Over completed. Select a new bowler.");
-             return;
+             return false;
            }
          }
          return true;
