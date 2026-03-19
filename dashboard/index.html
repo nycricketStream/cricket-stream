@@ -1559,19 +1559,22 @@
          
            const last = liveHistory.pop();
          
-           // FIX: if undoing wicket → clear dismissal state
            if(last.type === "wicket"){
-             lastOutBatsman = "";
-             lastDismissal = "";
+         
+             // find previous wicket (if any)
+             const prevWicket = [...liveHistory].reverse().find(b => b.type === "wicket");
+         
+             if(prevWicket){
+               lastOutBatsman = prevWicket.striker;
+               lastDismissal = prevWicket.dismissal + " b " + prevWicket.bowler;
+             }else{
+               lastOutBatsman = "";
+               lastDismissal = "";
+             }
            }
          
            recalculateMatch();
-         
-           // force overlay to clear dismissal
-           send('manualScore',{
-             dismissal: ''
-           });
-         
+           send('manualScore',{ dismissal:'' });
            updateLiveDisplay();
          }
          
