@@ -1256,6 +1256,8 @@
           bat2Score: nonStrikerRuns + " (" + nonStrikerBalls + ")",
           bowlerName: bowlerName,
           bowlerStats: bowlerWickets + "-" + bowlerRuns + " (" + bowlerOvers + ")",
+          thisOver: thisOver,
+          runsPerOver: getRunsPerOver(),
           dismissal: (function() {
             if (suppressNextDismissal) return "";
             if (dismissalShown) return "";
