@@ -1181,20 +1181,16 @@
       }
       /* ======= Update Live Display =========== */
       function updateLiveDisplay() {
-        const currentState = liveTotal + "/" + liveWickets + "-" + liveBalls;
-        if (currentState === lastSentScore) {
-          // STILL allow update if player/bowler changed
-          const strikerName = document.getElementById('striker')?.value || "";
-          const nonStrikerName = document.getElementById('nonStriker')?.value || "";
-          const bowlerName = document.getElementById('bowler')?.value || "";
-          if (
-            strikerName === lastStriker &&
-            nonStrikerName === lastNonStriker &&
-            bowlerName === lastBowlerName
-          ) {
-            return;
-          }
-        }
+        const strikerName = document.getElementById('striker')?.value || "";
+        const nonStrikerName = document.getElementById('nonStriker')?.value || "";
+        const bowlerName = document.getElementById('bowler')?.value || "";
+        
+        const currentState =
+          liveTotal + "/" + liveWickets + "-" + liveBalls +
+          "|" + strikerName + "|" + nonStrikerName + "|" + bowlerName;
+        
+        if (currentState === lastSentScore) return;
+        
         lastSentScore = currentState;
         document.getElementById('liveScore').innerText = liveTotal + "/" + liveWickets;
         document.getElementById('liveOvers').innerText = calculateOvers();
@@ -1237,7 +1233,7 @@
           bowlerWickets = b.wickets;
           bowlerOvers = Math.floor(b.balls / 6) + "." + (b.balls % 6);
         }
-        const thisOver = liveBalls === 0 ? "" : getThisOver();
+        const thisOver = getThisOver() || "";
         const currentOverNumber = Math.floor(liveBalls / 6);
         if (currentOverNumber !== lastOverNumber) {
           lastOverNumber = currentOverNumber;
@@ -1348,15 +1344,18 @@
         if (r % 2 === 1) {
           rotateStrike();
         }
-        if (overJustCompleted) return;
-        overJustCompleted = true;
         if (liveBalls % 6 === 0) {
-          rotateStrike();
-          setTimeout(() => sendEndOfOverGraphic(), 1200);
+          if (!overJustCompleted) {
+            overJustCompleted = true;
+        
+            rotateStrike();
+        
+            setTimeout(() => {
+              sendEndOfOverGraphic();
+              overJustCompleted = false;
+            }, 1200);
+          }
         }
-        setTimeout(() => {
-          overJustCompleted = false;
-        }, 2000);
         lastBowler = currentBowler;
         if (liveBalls % 6 === 1) {
           currentOverBowler = currentBowler;
