@@ -247,6 +247,10 @@
         position: sticky;
         top: 10px;
       }
+
+      .bowler-warning {
+        border: 2px solid red !important;
+      }
     </style>
   </head>
 
@@ -877,6 +881,7 @@
         document.getElementById('teamAPlayers').addEventListener('input', updateStrikerDropdown);
         document.getElementById('teamBPlayers').addEventListener('input', updateStrikerDropdown);
         document.getElementById('bowler').addEventListener('change', function() {
+          this.classList.remove("bowler-warning");
           const bowler = this.value;
           currentOverBalls = 0;
           if (bowler && bowler !== previousBowler) {
@@ -1119,6 +1124,7 @@
       let suppressNextDismissal = false;
       let dismissalShown = false;
       let overJustCompleted = false;
+      let lastOverBowler = "";
 
       function calculateOvers() {
         return Math.floor(liveBalls / 6) + "." + (liveBalls % 6);
@@ -1346,11 +1352,21 @@
             overJustCompleted = true;
         
             rotateStrike();
-        
+            const bowlerSelect = document.getElementById('bowler');
+
+            // clear + highlight
+            bowlerSelect.value = "";
+            bowlerSelect.classList.add("bowler-warning");
+            
+            // optional (nice UX)
+            bowlerSelect.focus();
+            
             setTimeout(() => {
               sendEndOfOverGraphic();
               overJustCompleted = false;
             }, 1200);
+            
+            lastOverBowler = currentBowler;
           }
         }
         lastBowler = currentBowler;
@@ -1407,6 +1423,10 @@
             document.getElementById('striker').value = nonStriker;
           }
           document.getElementById('nonStriker').value = "";
+          const bowlerSelect = document.getElementById('bowler');
+          bowlerSelect.value = "";
+          bowlerSelect.classList.add("bowler-warning");
+          bowlerSelect.focus();
           // 🎬 SEQUENCE: WICKET → FALL → OVER
           // 1️⃣ WICKET already triggered here:
           // triggerMoment('WICKET');
@@ -1418,12 +1438,15 @@
           // 3️⃣ END OF OVER after that
           if (overJustCompleted) return;
           overJustCompleted = true;
+          
           setTimeout(() => {
             sendEndOfOverGraphic();
           }, 3500);
           setTimeout(() => {
             overJustCompleted = false;
           }, 2000);
+
+          document.getElementById('bowler').value = "";
         } else {
           // normal wicket (balls 1-5)
           document.getElementById('striker').value = "";
@@ -1642,8 +1665,9 @@
         /* OVER FINISHED CHECK */
         if (liveBalls % 6 === 0 && liveBalls !== 0) {
           const currentBowler = document.getElementById('bowler')?.value;
-          if (currentOverBowler && currentBowler === currentOverBowler) {
-            alert("Over completed. Select a new bowler.");
+        
+          if (!currentBowler || currentBowler === lastOverBowler) {
+            alert("Over completed. Please select a NEW bowler.");
             return false;
           }
         }
