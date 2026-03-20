@@ -1026,6 +1026,7 @@
          let overlayLocked = false;
          let suppressNextDismissal = false;
          let dismissalShown = false;
+         let overJustCompleted = false;
          
          function calculateOvers(){
           return Math.floor(liveBalls/6) + "." + (liveBalls % 6);
@@ -1305,11 +1306,19 @@
           if(r % 2 === 1){
             rotateStrike();
           }
-         
+            
+         if(overJustCompleted) return;
+            overJustCompleted = true;
+            
           if(liveBalls % 6 === 0){
           rotateStrike();
           setTimeout(()=>sendEndOfOverGraphic(),1200);
          }
+
+         setTimeout(()=>{
+           overJustCompleted = false;
+         }, 2000);   
+            
          lastBowler = currentBowler;
          if(liveBalls % 6 === 1){
            currentOverBowler = currentBowler;
@@ -1387,9 +1396,17 @@
              updateLiveDisplay();
            }, 1200); // ⏱ adjust if needed (3–4 sec ideal)
             // 3️⃣ END OF OVER after that
+
+            if(overJustCompleted) return;
+               overJustCompleted = true;
+            
            setTimeout(()=>{
              sendEndOfOverGraphic();
            }, 3500);
+            
+           setTimeout(()=>{
+              overJustCompleted = false;
+            }, 2000); 
          }else{
                     // normal wicket (balls 1-5)
            document.getElementById('striker').value = "";
@@ -2264,26 +2281,33 @@
          
          /* ============= Send End Of Over Graphic ============ */
          function sendEndOfOverGraphic(){
-         const bowlerName = document.getElementById('bowler')?.value || "";
-         const overs = calculateOvers();
-         const rr = calculateRR();
-         const maxOvers = parseInt(document.getElementById("maxOvers")?.value || 20);
-         const overNumber = Math.floor(liveBalls/6);
-         let note = "";
-         if(overNumber === 6){
-         note = "POWERPLAY COMPLETE";
-         }
-         if(overNumber === maxOvers-1){
-         note = "LAST OVER COMING";
-         }
-         send('overSummary',{
-         team: batting.value,
-         score: liveTotal + "/" + liveWickets,
-         overs: overs,
-         rr: rr,
-         bowler: bowlerName,
-         note: note
-         });
+           const bowlerName = document.getElementById('bowler')?.value || "";
+           const overs = calculateOvers();
+           const rr = calculateRR();
+           const maxOvers = parseInt(document.getElementById("maxOvers")?.value || 20);
+           const overNumber = Math.floor(liveBalls/6);
+         
+           let note = "";
+         
+           if(overNumber === 6){
+             note = "POWERPLAY COMPLETE";
+           }
+         
+           if(overNumber === maxOvers-1){
+             note = "LAST OVER COMING";
+           }
+         
+           send('overSummary',{
+             team: batting.value,
+             score: liveTotal + "/" + liveWickets,
+             overs: overs,
+             rr: rr,
+             bowler: bowlerName,
+             note: note,
+
+             thisOver: getThisOver(),
+             runsPerOver: getRunsPerOver()
+           });
          }
                   
          /* ========== Check Milestones=============== */
