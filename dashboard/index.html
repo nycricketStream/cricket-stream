@@ -903,6 +903,7 @@
             }), 400);
           }
           previousBowler = bowler;
+          lastOverBowler = "";
           updateLiveDisplay();
         });
         document.getElementById('striker').addEventListener('change', function() {
@@ -1126,7 +1127,6 @@
       let overlayLocked = false;
       let suppressNextDismissal = false;
       let dismissalShown = false;
-      let overJustCompleted = false;
       let lastOverBowler = "";
 
       function calculateOvers() {
@@ -1351,27 +1351,24 @@
           rotateStrike();
         }
         if (liveBalls % 6 === 0) {
-          if (!overJustCompleted) {
-            overJustCompleted = true;
+          rotateStrike();
         
-            rotateStrike();
-            const bowlerSelect = document.getElementById('bowler');
-
-            // clear + highlight
-            bowlerSelect.value = "";
-            bowlerSelect.classList.add("bowler-warning");
-            
-            // optional (nice UX)
-            bowlerSelect.focus();
-            setScoringEnabled(false);
-            
-            setTimeout(() => {
-              sendEndOfOverGraphic();
-              overJustCompleted = false;
-            }, 1200);
-            
-            lastOverBowler = currentBowler;
-          }
+          const bowlerSelect = document.getElementById('bowler');
+        
+          // lock previous bowler
+          lastOverBowler = currentBowler;
+        
+          // force new selection
+          bowlerSelect.value = "";
+          bowlerSelect.classList.add("bowler-warning");
+        
+          bowlerSelect.focus();
+        
+          // stop scoring until new bowler selected
+          setScoringEnabled(false);
+        
+          // send over summary once
+          sendEndOfOverGraphic();
         }
         lastBowler = currentBowler;
         if (liveBalls % 6 === 1) {
@@ -1422,38 +1419,21 @@
           bowlerStats[currentBowler].wickets++;
         }
         if (liveBalls % 6 === 0) {
-          const nonStriker = document.getElementById('nonStriker')?.value;
-          if (nonStriker) {
-            document.getElementById('striker').value = nonStriker;
-          }
-          document.getElementById('nonStriker').value = "";
+          rotateStrike();
+        
           const bowlerSelect = document.getElementById('bowler');
+        
+          lastOverBowler = currentBowler;
+        
           bowlerSelect.value = "";
           bowlerSelect.classList.add("bowler-warning");
+        
           bowlerSelect.focus();
+        
           setScoringEnabled(false);
-          // 🎬 SEQUENCE: WICKET → FALL → OVER
-          // 1️⃣ WICKET already triggered here:
-          // triggerMoment('WICKET');
-          // 2️⃣ FALL OF WICKET already comes via updateLiveDisplay()
-          setTimeout(() => {
-            suppressNextDismissal = false;
-            updateLiveDisplay();
-          }, 1200); // ⏱ adjust if needed (3–4 sec ideal)
-          // 3️⃣ END OF OVER after that
-          if (overJustCompleted) return;
-          overJustCompleted = true;
-          
-          setTimeout(() => {
-            sendEndOfOverGraphic();
-          }, 3500);
-          setTimeout(() => {
-            overJustCompleted = false;
-          }, 2000);
-
-          document.getElementById('bowler').value = "";
+        
+          sendEndOfOverGraphic();
         } else {
-          // normal wicket (balls 1-5)
           document.getElementById('striker').value = "";
         }
         lockedOut = true;
@@ -1659,22 +1639,18 @@
           alert("Select Striker before scoring.");
           return false;
         }
-        if (!bowler) {
-          alert("Select Bowler before scoring.");
-          return false;
-        }
         if (lockedOut) {
           alert("Select new batsman before continuing.");
           return false;
         }
+        if (!bowler) {
+          alert("Select Bowler before scoring.");
+          return false;
+        }
         /* OVER FINISHED CHECK */
-        if (liveBalls % 6 === 0 && liveBalls !== 0) {
-          const currentBowler = document.getElementById('bowler')?.value;
-        
-          if (!currentBowler || currentBowler === lastOverBowler) {
-            alert("Over completed. Please select a NEW bowler.");
-            return false;
-          }
+        if (liveBalls % 6 === 0  && liveBalls !== 0 && lastOverBowler && bowler === lastOverBowler) {
+          alert("Select a different bowler for the new over.");
+          return false;
         }
         return true;
       }
