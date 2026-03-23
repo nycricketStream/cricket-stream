@@ -262,7 +262,7 @@
       <button class="tab-btn" onclick="showTab(event,'branding')">League Branding</button>
       <button class="tab-btn" onclick="showTab(event,'scoreinfo')">Score Info</button>
       <button class="tab-btn" onclick="showTab(event,'livescoring')">Live Scoring</button>
-      <button class="tab-btn" onclick="showTab(event,'graphics')">Graphics</button>
+      <button class="tab-btn" onclick="showTab(event,'broadcast')">Graphics</button>
       <button class="tab-btn" onclick="showTab(event,'sponsors')">Sponsors</button>
       <button class="tab-btn" onclick="saveMatchSetup()">💾 Save Setup</button>
       <button class="tab-btn" onclick="loadMatchSetup()">📂 Load Setup</button>
@@ -1306,27 +1306,31 @@
         });
       }
       /* ========== Add Run ================*/
-      function addRun(r) {
+     function addRun(r) {
         if (!validateBeforeBall()) return;
+      
         const striker = document.getElementById('striker')?.value;
         const currentBowler = document.getElementById('bowler')?.value;
+      
         liveHistory.push({
           type: 'run',
           runs: r,
           bowler: currentBowler,
           striker: striker
         });
+      
         liveTotal += r;
         liveBalls++;
+      
         if (liveBalls % 6 === 1) {
           currentOverBowler = currentBowler;
         }
         if (currentOverBowler === "") {
           currentOverBowler = currentBowler;
         }
+      
         if (striker) {
           ensureBatsman(striker);
-          // do not update stats if batsman already out
           if (!batsmanStats[striker].out) {
             batsmanStats[striker].runs += r;
             batsmanStats[striker].balls++;
@@ -1335,45 +1339,46 @@
             checkMilestones(striker);
           }
         }
+      
         if (currentBowler) {
           ensureBowler(currentBowler);
           bowlerStats[currentBowler].runs += r;
           bowlerStats[currentBowler].balls++;
         }
-        /* AUTO MOMENTS */
+      
         if (r === 4) {
           setTimeout(() => triggerMoment('FOUR'), 200);
         }
         if (r === 6) {
           setTimeout(() => triggerMoment('SIX'), 200);
         }
+      
         if (r % 2 === 1) {
           rotateStrike();
         }
+      
         if (liveBalls % 6 === 0) {
           rotateStrike();
-        
+      
           const bowlerSelect = document.getElementById('bowler');
-        
-          // lock previous bowler
+      
           lastOverBowler = currentBowler;
-        
-          // force new selection
+      
           bowlerSelect.value = "";
           bowlerSelect.classList.add("bowler-warning");
-        
           bowlerSelect.focus();
-        
-          // stop scoring until new bowler selected
+      
           setScoringEnabled(false);
-        
-          // send over summary once
+      
           sendEndOfOverGraphic();
         }
+      
         lastBowler = currentBowler;
+      
         if (liveBalls % 6 === 1) {
           currentOverBowler = currentBowler;
         }
+      
         updateLiveDisplay();
       }
       /* =============== Add Wicket ========= */
