@@ -826,6 +826,16 @@
         const teamB = document.getElementById('teamB');
         const teamAPlayers = document.getElementById('teamAPlayers');
         const teamBPlayers = document.getElementById('teamBPlayers');
+        const teamALogo = document.getElementById('teamALogo');
+        const teamBLogo = document.getElementById('teamBLogo');
+        
+        const innings = document.getElementById('innings');
+        const target = document.getElementById('target');
+        const maxOvers = document.getElementById('maxOvers');
+        
+        const showSponsors = document.getElementById('showSponsors');
+        const sponsorList = document.getElementById('sponsorList');
+        const rotation = document.getElementById('rotation');
         const batting = document.getElementById('batting');
         const dropdown = document.getElementById('playerSelect');
         if (!dropdown) return;
@@ -883,6 +893,11 @@
         document.getElementById('teamAPlayers').addEventListener('input', updateStrikerDropdown);
         document.getElementById('teamBPlayers').addEventListener('input', updateStrikerDropdown);
         document.getElementById('bowler').addEventListener('change', function() {
+          if (this.value === lastOverBowler && legalBalls % 6 === 0) {
+            alert("Cannot bowl consecutive overs");
+            this.value = "";
+            return;
+          }
           this.classList.remove("bowler-warning");
           setScoringEnabled(true);
           const bowler = this.value;
@@ -952,9 +967,7 @@
         });
         loadSavedMatch();
         loadMatchList();
-        setInterval(() => {
-          updateLiveDisplay();
-        }, 10000);
+      
         loadSponsorPresets();
         /* AUTO LOAD SPONSORS */
         setTimeout(() => {
@@ -1035,7 +1048,6 @@
         document.getElementById('striker').value = "";
         document.getElementById('nonStriker').value = "";
         document.getElementById('bowler').value = "";
-        document.getElementById('striker').value = "";
         document.getElementById('overTimeline').innerHTML = "";
         // RESET INTERNAL STATE
         lastOverlayTime = 0;
@@ -1128,6 +1140,7 @@
       let suppressNextDismissal = false;
       let dismissalShown = false;
       let lastOverBowler = "";
+      let legalBalls = 0;
 
       function calculateOvers() {
         return Math.floor(liveBalls / 6) + "." + (liveBalls % 6);
@@ -1321,6 +1334,7 @@
       
         liveTotal += r;
         liveBalls++;
+        legalBalls++;
       
         if (liveBalls % 6 === 1) {
           currentOverBowler = currentBowler;
@@ -1357,7 +1371,7 @@
           rotateStrike();
         }
       
-        if (liveBalls % 6 === 0) {
+        if (legalBalls % 6 === 0) {
           rotateStrike();
       
           const bowlerSelect = document.getElementById('bowler');
@@ -1411,6 +1425,7 @@
         triggerMoment('WICKET');
         suppressNextDismissal = true;
         liveBalls++;
+        legalBalls++;
         if (striker) {
           ensureBatsman(striker);
           batsmanStats[striker].balls++;
@@ -1423,7 +1438,7 @@
           bowlerStats[currentBowler].balls++;
           bowlerStats[currentBowler].wickets++;
         }
-        if (liveBalls % 6 === 0) {
+        if (legalBalls % 6 === 0) {
           rotateStrike();
         
           const bowlerSelect = document.getElementById('bowler');
@@ -1577,6 +1592,8 @@
         }
         if (type === "bye" || type === "legbye") {
           liveBalls++;
+          legalBalls++;
+          
           if (striker) {
             ensureBatsman(striker);
             batsmanStats[striker].balls++;
@@ -1636,7 +1653,7 @@
       function validateBeforeBall() {
         const striker = document.getElementById('striker')?.value;
         const bowler = document.getElementById('bowler')?.value;
-        if (document.getElementById("breakGraphicActive")) {
+        if (overlayLocked) {
           alert("Game is in break mode");
           return false;
         }
@@ -1738,7 +1755,18 @@
         body.innerHTML = '';
         liveHistory.forEach((ball, i) => {
           if (ball.type === 'wicket') {
-            const over = Math.floor((i + 1) / 6) + "." + ((i + 1) % 6);
+            let balls = 0;
+            for (let j = 0; j <= i; j++) {
+              const b = liveHistory[j];
+            
+              if (b.type === "run" || b.type === "wicket") balls++;
+            
+              if (b.type === "extra" && (b.extra === "bye" || b.extra === "legbye")) {
+                balls++;
+              }
+            }
+
+         const over = Math.floor(balls / 6) + "." + (balls % 6);
             body.innerHTML += `
          <tr>
          <td>${ball.scoreAtWicket}/${ball.wicketNumber}</td>
