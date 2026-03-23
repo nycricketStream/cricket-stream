@@ -262,10 +262,8 @@
       <button class="tab-btn" onclick="showTab(event,'branding')">League Branding</button>
       <button class="tab-btn" onclick="showTab(event,'scoreinfo')">Score Info</button>
       <button class="tab-btn" onclick="showTab(event,'livescoring')">Live Scoring</button>
-      <button class="tab-btn" onclick="showTab(event,'player')">Player Graphic</button>
+      <button class="tab-btn" onclick="showTab(event,'graphics')">Graphics</button>
       <button class="tab-btn" onclick="showTab(event,'sponsors')">Sponsors</button>
-      <button class="tab-btn" onclick="showTab(event,'moments')">Moments</button>
-      <button class="tab-btn" onclick="showTab(event,'broadcast')">Broadcast Graphics</button>
       <button class="tab-btn" onclick="saveMatchSetup()">💾 Save Setup</button>
       <button class="tab-btn" onclick="loadMatchSetup()">📂 Load Setup</button>
       <button class="tab-btn" onclick="deleteMatchSetup()">❌ Delete Setup</button>
@@ -641,6 +639,10 @@
         <button onclick="sendBreak('MATCH RESULT')">Match Result</button>
         <button onclick="hideBreak()" style="background:#991b1b">Hide Graphic</button>
         <hr>
+        <h3>Full Scoreboard</h3>
+        <button onclick="sendFullScorecard()">📊 Show Scorecard</button>
+        <button onclick="hideFullScorecard()" style="background:#991b1b">Hide Scorecard</button>
+        <hr>
         <h3>Graphic Queue</h3>
         <div style="
                background:#020617;
@@ -882,6 +884,7 @@
         document.getElementById('teamBPlayers').addEventListener('input', updateStrikerDropdown);
         document.getElementById('bowler').addEventListener('change', function() {
           this.classList.remove("bowler-warning");
+          setScoringEnabled(true);
           const bowler = this.value;
           currentOverBalls = 0;
           if (bowler && bowler !== previousBowler) {
@@ -1360,6 +1363,7 @@
             
             // optional (nice UX)
             bowlerSelect.focus();
+            setScoringEnabled(false);
             
             setTimeout(() => {
               sendEndOfOverGraphic();
@@ -1427,6 +1431,7 @@
           bowlerSelect.value = "";
           bowlerSelect.classList.add("bowler-warning");
           bowlerSelect.focus();
+          setScoringEnabled(false);
           // 🎬 SEQUENCE: WICKET → FALL → OVER
           // 1️⃣ WICKET already triggered here:
           // triggerMoment('WICKET');
@@ -2552,6 +2557,7 @@
           hide: true
         });
       }
+      
       async function saveMatchToCloud() {
         const id = prompt("Enter match name (e.g. NYC vs Titans)");
         if (!id) return;
@@ -2580,6 +2586,30 @@
         alert("Match saved");
         loadMatchList();
       }
+
+      function sendFullScorecard() {
+        send('fullScorecard', {
+          teamA: teamA.value,
+          teamB: teamB.value,
+          battingTeam: batting.value,
+      
+          total: liveTotal + "/" + liveWickets,
+          overs: calculateOvers(),
+          runRate: calculateRR(),
+      
+          batsmen: batsmanStats,
+          bowlers: bowlerStats,
+          extras: extrasStats,
+      
+          thisOver: getThisOver(),
+          runsPerOver: getRunsPerOver()
+        });
+      }
+      
+      function hideFullScorecard() {
+        send('fullScorecard', { hide: true });
+      }
+      
       async function loadMatchList() {
         const res = await fetch('/api/matchSetup', {
           method: 'PUT'
@@ -2662,6 +2692,17 @@
           list.appendChild(row);
         });
       }
+
+      /* ========== Helper, Set Scoring to Enavle buttons =============== */
+     function setScoringEnabled(enabled) {
+      const buttons = document.querySelectorAll(
+        ".run-buttons button, .extra-buttons button"
+      );
+    
+      buttons.forEach(btn => {
+        btn.disabled = !enabled;
+      });
+    } 
     </script>
   </body>
 
