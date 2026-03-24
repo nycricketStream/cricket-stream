@@ -1141,6 +1141,7 @@
       let dismissalShown = false;
       let lastOverBowler = "";
       let legalBalls = 0;
+      let lastOverProcessed = -1;
 
       function calculateOvers() {
         return Math.floor(liveBalls / 6) + "." + (liveBalls % 6);
@@ -1371,7 +1372,10 @@
           rotateStrike();
         }
       
-        if (legalBalls % 6 === 0) {
+        const currentOver = Math.floor(legalBalls / 6);
+
+        if (legalBalls > 0 && legalBalls % 6 === 0 && currentOver !== lastOverProcessed) {
+          lastOverProcessed = currentOver;
           rotateStrike();
       
           const bowlerSelect = document.getElementById('bowler');
@@ -1438,7 +1442,11 @@
           bowlerStats[currentBowler].balls++;
           bowlerStats[currentBowler].wickets++;
         }
-        if (legalBalls % 6 === 0) {
+        
+        const currentOver = Math.floor(legalBalls / 6);
+
+        if (legalBalls > 0 && legalBalls % 6 === 0 && currentOver !== lastOverProcessed) {
+          lastOverProcessed = currentOver;
           rotateStrike();
         
           const bowlerSelect = document.getElementById('bowler');
@@ -1638,6 +1646,12 @@
         send('manualScore', {
           dismissal: ''
         });
+        const bowlerSelect = document.getElementById('bowler');
+
+        if (legalBalls % 6 !== 0) {
+          bowlerSelect.classList.remove("bowler-warning");
+          setScoringEnabled(true);
+        }
         updateLiveDisplay();
       }
       /* =========== Rotate Strike ================ */
@@ -2015,6 +2029,7 @@
       }
       /* =========== Recalculate Match =========== */
       function recalculateMatch() {
+        legalBalls = 0;
         liveTotal = 0;
         liveWickets = 0;
         liveBalls = 0;
@@ -2035,6 +2050,8 @@
           if (ball.type === "run") {
             liveTotal += ball.runs;
             liveBalls++;
+            legalBalls++;
+            
             batsmanStats[striker].runs += ball.runs;
             batsmanStats[striker].balls++;
             if (ball.runs === 4) batsmanStats[striker].fours++;
@@ -2046,6 +2063,7 @@
           if (ball.type === "wicket") {
             liveWickets++;
             liveBalls++;
+            legalBalls++;
             batsmanStats[striker].balls++;
             batsmanStats[striker].out = true;
             bowlerStats[bowler].balls++;
@@ -2063,6 +2081,7 @@
             }
             if (ball.extra === "bye" || ball.extra === "legbye") {
               liveBalls++;
+              legalBalls++;
               if (striker) batsmanStats[striker].balls++;
               if (bowler) bowlerStats[bowler].balls++;
             }
