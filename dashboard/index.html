@@ -1170,7 +1170,7 @@
       }
       /* ========== Get this Over ============ */
       function getThisOver() {
-          const currentOver = Math.floor(legalBalls / 6);
+          const currentOver = Math.floor((legalBalls - 1) / 6);
           let balls = [];
         
           for (let i = 0; i < liveHistory.length; i++) {
@@ -1923,12 +1923,12 @@
       
         container.innerHTML = "";
       
-        const currentOver = Math.floor(legalBalls / 6);
+        const currentOver = Math.floor((legalBalls - 1) / 6);
       
         for (let i = 0; i < liveHistory.length; i++) {
           const b = liveHistory[i];
       
-          const ballOver = Math.floor(getLegalBallIndex(i) / 6);
+          const ballOver = Math.floor((getLegalBallIndex(i) - 1) / 6);
           if (ballOver !== currentOver) continue;
       
           let symbol = "";
