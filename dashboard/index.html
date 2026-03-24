@@ -1170,33 +1170,42 @@
       }
       /* ========== Get this Over ============ */
       function getThisOver() {
-          const currentOver = legalBalls === 0 ? 0 : Math.floor((legalBalls - 1) / 6);
-          let balls = [];
-        
-          for (let i = 0; i < liveHistory.length; i++) {
-            const b = liveHistory[i];
-        
-            // ✅ Only current over balls
-            const ballOver = Math.floor(getLegalBallIndex(i) / 6);
-            if (ballOver !== currentOver) continue;
-        
-            let symbol = "";
-        
-            if (b.type === "run") symbol = b.runs;
-            else if (b.type === "wicket") symbol = "W";
-            else if (b.type === "extra") {
-              if (b.extra === "wide") symbol = "Wd";
-              if (b.extra === "noball") symbol = "Nb";
-              if (b.extra === "bye") symbol = "B";
-              if (b.extra === "legbye") symbol = "Lb";
+        let balls = [];
+        let legalCount = 0;
+      
+        for (let i = liveHistory.length - 1; i >= 0; i--) {
+          const b = liveHistory[i];
+          let symbol = "";
+      
+          if (b.type === "run") {
+            symbol = b.runs;
+            legalCount++;
+          } 
+          else if (b.type === "wicket") {
+            symbol = "W";
+            legalCount++;
+          } 
+          else if (b.type === "extra") {
+            if (b.extra === "wide") symbol = "Wd";
+            if (b.extra === "noball") symbol = "Nb";
+      
+            if (b.extra === "bye") {
+              symbol = "B";
+              legalCount++;
             }
-        
-            balls.push(symbol);
+      
+            if (b.extra === "legbye") {
+              symbol = "Lb";
+              legalCount++;
+            }
           }
-        
-          return balls.join(" ");
+      
+          balls.unshift(symbol);
+          if (legalCount === 6) break;
         }
-
+      
+        return balls.join(" ");
+      }
       /* ===========get Legal Ball ============== */
       function getLegalBallIndex(index) {
       let count = 0;
@@ -1909,7 +1918,7 @@
         panel.innerHTML = html;
       }
       /* =================== Render Current Over ============== */
-     function renderCurrentOver() {
+    function renderCurrentOver() {
         const tracker = document.getElementById('currentOverTracker');
         if (!tracker) return;
       
@@ -1923,30 +1932,42 @@
       
         container.innerHTML = "";
       
-        const currentOver = legalBalls === 0 ? 0 : Math.floor((legalBalls - 1) / 6);
+        let legalCount = 0;
       
-        for (let i = 0; i < liveHistory.length; i++) {
+        for (let i = liveHistory.length - 1; i >= 0; i--) {
           const b = liveHistory[i];
-      
-          const ballOver = Math.floor((getLegalBallIndex(i) - 1) / 6);
-          if (ballOver !== currentOver) continue;
-      
           let symbol = "";
       
-          if (b.type === "run") symbol = b.runs;
-          else if (b.type === "wicket") symbol = "W";
+          if (b.type === "run") {
+            symbol = b.runs;
+            legalCount++;
+          } 
+          else if (b.type === "wicket") {
+            symbol = "W";
+            legalCount++;
+          } 
           else if (b.type === "extra") {
             if (b.extra === "wide") symbol = "Wd";
             if (b.extra === "noball") symbol = "Nb";
-            if (b.extra === "bye") symbol = "B";
-            if (b.extra === "legbye") symbol = "Lb";
+      
+            if (b.extra === "bye") {
+              symbol = "B";
+              legalCount++;
+            }
+      
+            if (b.extra === "legbye") {
+              symbol = "Lb";
+              legalCount++;
+            }
           }
       
           const el = document.createElement("div");
           el.innerText = symbol;
           el.onclick = () => openBallEditor(i);
       
-          container.appendChild(el);
+          container.prepend(el);
+  
+          if (legalCount === 6) break;
         }
       }
       /* ===========Remove Ball ============== */
