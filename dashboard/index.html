@@ -1171,35 +1171,41 @@
       /* ========== Get this Over ============ */
       function getThisOver() {
         let balls = [];
-        let legalBalls = liveBalls % 6;
-        if (legalBalls === 0 && liveBalls > 0) {
-          legalBalls = 6;
-        }
-        let counted = 0;
+        let legalCount = 0;
+      
         for (let i = liveHistory.length - 1; i >= 0; i--) {
           const b = liveHistory[i];
           let symbol = "";
+      
           if (b.type === "run") {
             symbol = b.runs;
-            counted++;
-          } else if (b.type === "wicket") {
+            legalCount++;
+          } 
+          else if (b.type === "wicket") {
             symbol = "W";
-            counted++;
-          } else if (b.type === "extra") {
+            legalCount++;
+          } 
+          else if (b.type === "extra") {
             if (b.extra === "wide") symbol = "Wd";
             if (b.extra === "noball") symbol = "Nb";
+      
             if (b.extra === "bye") {
               symbol = "B";
-              counted++;
+              legalCount++;
             }
+      
             if (b.extra === "legbye") {
               symbol = "Lb";
-              counted++;
+              legalCount++;
             }
           }
+      
           balls.unshift(symbol);
-          if (counted === legalBalls) break;
+      
+          if (legalCount === 6) break;
+          if (legalCount === 0 && i === 0) break;
         }
+      
         return balls.join(" ");
       }
       /* ======= Update Live Display =========== */
@@ -1888,36 +1894,43 @@
       function renderCurrentOver() {
         const tracker = document.getElementById('currentOverTracker');
         if (!tracker) return;
+      
         let balls = [];
-        let legalBalls = liveBalls % 6;
-        if (legalBalls === 0 && liveBalls > 0) {
-          legalBalls = 6;
-        }
-        let counted = 0;
+        let legalCount = 0;
+      
         for (let i = liveHistory.length - 1; i >= 0; i--) {
           const b = liveHistory[i];
           let symbol = "";
+      
           if (b.type === "run") {
             symbol = b.runs;
-            counted++;
-          } else if (b.type === "wicket") {
+            legalCount++;
+          } 
+          else if (b.type === "wicket") {
             symbol = "W";
-            counted++;
-          } else if (b.type === "extra") {
+            legalCount++;
+          } 
+          else if (b.type === "extra") {
             if (b.extra === "wide") symbol = "Wd";
             if (b.extra === "noball") symbol = "Nb";
+      
             if (b.extra === "bye") {
               symbol = "B";
-              counted++;
+              legalCount++;
             }
+      
             if (b.extra === "legbye") {
               symbol = "Lb";
-              counted++;
+              legalCount++;
             }
           }
+      
           balls.unshift(symbol);
-          if (counted === legalBalls) break;
+      
+          // STOP at 6 legal balls
+          if (legalCount === 6) break;
         }
+      
         tracker.innerText = balls.join(" ") || "-";
       }
       /* ======== Render Over Timeline =============== */
@@ -1925,47 +1938,49 @@
         const container = document.getElementById("overTimeline");
         if (!container) return;
         container.innerHTML = "";
-        let legalBalls = liveBalls % 6;
+
         if (legalBalls === 0 && liveBalls > 0) {
           legalBalls = 6;
         }
-        let counted = 0;
+        let legalCount = 0;
+
         for (let i = liveHistory.length - 1; i >= 0; i--) {
           const b = liveHistory[i];
           let symbol = "";
+        
           if (b.type === "run") {
             symbol = b.runs;
-            counted++;
-          } else if (b.type === "wicket") {
+            legalCount++;
+          } 
+          else if (b.type === "wicket") {
             symbol = "W";
-            counted++;
-          } else if (b.type === "extra") {
+            legalCount++;
+          } 
+          else if (b.type === "extra") {
             if (b.extra === "wide") symbol = "Wd";
             if (b.extra === "noball") symbol = "Nb";
+        
             if (b.extra === "bye") {
               symbol = "B";
-              counted++;
+              legalCount++;
             }
+        
             if (b.extra === "legbye") {
               symbol = "Lb";
-              counted++;
+              legalCount++;
             }
           }
-          const ballIndex = i;
+        
           const el = document.createElement("div");
-          el.style.padding = "4px 8px";
-          if (symbol === "W") el.style.background = "#b91c1c";
-          else if (symbol === "4") el.style.background = "#16a34a";
-          else if (symbol === "6") el.style.background = "#7c3aed";
-          else if (symbol === "Wd" || symbol === "Nb") el.style.background = "#ca8a04";
-          else el.style.background = "#1f2937";
-          el.style.borderRadius = "4px";
-          el.style.cursor = "pointer";
           el.innerText = symbol;
-          el.onclick = () => openBallEditor(ballIndex);
+          el.onclick = () => openBallEditor(i);
+        
           container.prepend(el);
-          if (counted === legalBalls) break;
+        
+          if (legalCount === 6) break;
+          if (legalCount === 0 && i === 0) break;
         }
+       
       }
       /* ===========Remove Ball ============== */
       function removeBall(index) {
