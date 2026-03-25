@@ -1397,8 +1397,9 @@
           bowlerSelect.focus();
       
           setScoringEnabled(false);
-          currentOverId++;
+         
           sendEndOfOverGraphic();
+          currentOverId++;
         }
       
         lastBowler = currentBowler;
@@ -1438,6 +1439,15 @@
         partnership100Shown = false;
         checkHatTrick();
         triggerMoment('WICKET');
+        
+        queueGraphic({
+          team: batting.value,
+          label: 'FALL OF WICKET',
+          name: striker,
+          hand: liveTotal + "/" + (liveWickets) + " (" + calculateOvers() + ")",
+          image: playerImages[striker] || ''
+        });
+        
         suppressNextDismissal = true;
         liveBalls++;
         legalBalls++;
@@ -1457,22 +1467,31 @@
         const currentOver = Math.floor(legalBalls / 6);
 
         if (legalBalls > 0 && legalBalls % 6 === 0 && currentOver !== lastOverProcessed) {
-          lastOverProcessed = currentOver;
-          rotateStrike();
+            lastOverProcessed = currentOver;
         
-          const bowlerSelect = document.getElementById('bowler');
-        
-          lastOverBowler = currentBowler;
-        
-          bowlerSelect.value = "";
-          bowlerSelect.classList.add("bowler-warning");
-        
-          bowlerSelect.focus();
-        
-          setScoringEnabled(false);
-          currentOverId++;
-          sendEndOfOverGraphic();
-        } else {
+            const strikerSel = document.getElementById('striker');
+            if (strikerSel) strikerSel.value = "";
+          
+            lockedOut = true;
+            awaitingNewBatsman = true;
+            showNextBatter();
+          
+            rotateStrike();
+          
+            const bowlerSelect = document.getElementById('bowler');
+          
+            lastOverBowler = currentBowler;
+          
+            bowlerSelect.value = "";
+            bowlerSelect.classList.add("bowler-warning");
+            bowlerSelect.focus();
+          
+            setScoringEnabled(false);
+          
+            sendEndOfOverGraphic();
+          
+            currentOverId++;
+          } else {
           const strikerSel = document.getElementById('striker');
           if (strikerSel) {
             strikerSel.value = "";
