@@ -1340,7 +1340,7 @@
           runs: r,
           bowler: currentBowler,
           striker: striker,
-          overId; currentOverId
+          overId: currentOverId
         });
       
         liveTotal += r;
@@ -1535,7 +1535,8 @@
           type: 'extra',
           extra: type,
           bowler: currentBowler,
-          striker: striker
+          striker: striker,
+          overId: currentOverId
         });
         liveTotal++;
         if (extrasStats[type] !== undefined) {
@@ -2020,6 +2021,7 @@
           legbye: 0
         };
         liveHistory.forEach(ball => {
+          ball.overId = currentOverId;
           const striker = ball.striker;
           const bowler = ball.bowler;
           if (striker) ensureBatsman(striker);
