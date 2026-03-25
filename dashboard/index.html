@@ -1396,10 +1396,10 @@
           rotateStrike();
         }
       
-        const currentOver = Math.floor(legalBalls / 6);
+        const currentOver = Math.floor((legalBalls - 1) / 6);
 
-        if (legalBalls > 0 && legalBalls % 6 === 0 && currentOver !== lastOverProcessed) {
-          lastOverProcessed = currentOver;
+        if (legalBalls > 0 && legalBalls % 6 === 0 && currentOver >= lastOverProcessed) {
+          lastOverProcessed = currentOver + 1;
           rotateStrike();
       
           const bowlerSelect = document.getElementById('bowler');
@@ -1482,10 +1482,10 @@
           bowlerStats[currentBowler].wickets++;
         }
         
-        const currentOver = Math.floor(legalBalls / 6);
+        const currentOver = Math.floor((legalBalls - 1) / 6);
 
-        if (legalBalls > 0 && legalBalls % 6 === 0 && currentOver !== lastOverProcessed) {
-            lastOverProcessed = currentOver;
+        if (legalBalls > 0 && legalBalls % 6 === 0 && currentOver >= lastOverProcessed) {
+            lastOverProcessed = currentOver + 1;
         
             const strikerSel = document.getElementById('striker');
             if (strikerSel) strikerSel.value = "";
