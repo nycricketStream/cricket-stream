@@ -1331,6 +1331,10 @@
       /* ========== Add Run ================*/
      function addRun(r) {
         if (!validateBeforeBall()) return;
+       
+       if (legalBalls > 0 && legalBalls % 6 === 0) {
+          currentOverId++;
+        }
       
         const striker = document.getElementById('striker')?.value;
         const currentBowler = document.getElementById('bowler')?.value;
@@ -1399,7 +1403,6 @@
           setScoringEnabled(false);
          
           sendEndOfOverGraphic();
-          currentOverId++;
         }
       
         lastBowler = currentBowler;
@@ -1413,6 +1416,11 @@
       /* =============== Add Wicket ========= */
       function addWicket() {
         if (!validateBeforeBall()) return;
+        
+        if (legalBalls > 0 && legalBalls % 6 === 0) {
+          currentOverId++;
+        }
+        
         const striker = document.getElementById('striker')?.value;
         lastOutBatsman = striker;
         dismissalShown = false;
@@ -1489,8 +1497,6 @@
             setScoringEnabled(false);
           
             sendEndOfOverGraphic();
-          
-            currentOverId++;
           } else {
           const strikerSel = document.getElementById('striker');
           if (strikerSel) {
