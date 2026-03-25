@@ -1142,6 +1142,7 @@
       let lastOverBowler = "";
       let legalBalls = 0;
       let lastOverProcessed = -1;
+      let currentOverId = 0;
 
       function calculateOvers() {
         return Math.floor(liveBalls / 6) + "." + (liveBalls % 6);
@@ -1171,37 +1172,24 @@
       /* ========== Get this Over ============ */
       function getThisOver() {
         let balls = [];
-        let legalCount = 0;
       
-        for (let i = liveHistory.length - 1; i >= 0; i--) {
+        for (let i = 0; i < liveHistory.length; i++) {
           const b = liveHistory[i];
+      
+          if (b.overId !== currentOverId) continue;
+      
           let symbol = "";
       
-          if (b.type === "run") {
-            symbol = b.runs;
-            legalCount++;
-          } 
-          else if (b.type === "wicket") {
-            symbol = "W";
-            legalCount++;
-          } 
+          if (b.type === "run") symbol = b.runs;
+          else if (b.type === "wicket") symbol = "W";
           else if (b.type === "extra") {
             if (b.extra === "wide") symbol = "Wd";
             if (b.extra === "noball") symbol = "Nb";
-      
-            if (b.extra === "bye") {
-              symbol = "B";
-              legalCount++;
-            }
-      
-            if (b.extra === "legbye") {
-              symbol = "Lb";
-              legalCount++;
-            }
+            if (b.extra === "bye") symbol = "B";
+            if (b.extra === "legbye") symbol = "Lb";
           }
       
-          balls.unshift(symbol);
-          if (legalCount === 6) break;
+          balls.push(symbol);
         }
       
         return balls.join(" ");
@@ -1351,7 +1339,8 @@
           type: 'run',
           runs: r,
           bowler: currentBowler,
-          striker: striker
+          striker: striker,
+          overId; currentOverId
         });
       
         liveTotal += r;
@@ -1408,7 +1397,7 @@
           bowlerSelect.focus();
       
           setScoringEnabled(false);
-      
+          currentOverId++;
           sendEndOfOverGraphic();
         }
       
@@ -1435,7 +1424,8 @@
           striker: striker,
           dismissal: dismissal,
           scoreAtWicket: liveTotal,
-          wicketNumber: liveWickets + 1
+          wicketNumber: liveWickets + 1,
+          overId: currentOverId
         });
         liveWickets++;
         if (liveBalls % 6 === 1) {
@@ -1480,7 +1470,7 @@
           bowlerSelect.focus();
         
           setScoringEnabled(false);
-        
+          currentOverId++;
           sendEndOfOverGraphic();
         } else {
           const strikerSel = document.getElementById('striker');
@@ -1597,7 +1587,8 @@
           extra: type,
           runs: runs,
           bowler: currentBowler,
-          striker: striker
+          striker: striker,
+          overId: currentOverId
         });
         if (type === "wide" || type === "noball") {
           if (runs < 1) runs = 1;
@@ -1932,43 +1923,26 @@
       
         container.innerHTML = "";
       
-        let legalCount = 0;
+        liveHistory.forEach((b, i) => {
+          if (b.overId !== currentOverId) return;
       
-        for (let i = liveHistory.length - 1; i >= 0; i--) {
-          const b = liveHistory[i];
           let symbol = "";
       
-          if (b.type === "run") {
-            symbol = b.runs;
-            legalCount++;
-          } 
-          else if (b.type === "wicket") {
-            symbol = "W";
-            legalCount++;
-          } 
+          if (b.type === "run") symbol = b.runs;
+          else if (b.type === "wicket") symbol = "W";
           else if (b.type === "extra") {
             if (b.extra === "wide") symbol = "Wd";
             if (b.extra === "noball") symbol = "Nb";
-      
-            if (b.extra === "bye") {
-              symbol = "B";
-              legalCount++;
-            }
-      
-            if (b.extra === "legbye") {
-              symbol = "Lb";
-              legalCount++;
-            }
+            if (b.extra === "bye") symbol = "B";
+            if (b.extra === "legbye") symbol = "Lb";
           }
       
           const el = document.createElement("div");
           el.innerText = symbol;
           el.onclick = () => openBallEditor(i);
       
-          container.prepend(el);
-  
-          if (legalCount === 6) break;
-        }
+          container.appendChild(el);
+        });
       }
       /* ===========Remove Ball ============== */
       function removeBall(index) {
@@ -2032,6 +2006,7 @@
       }
       /* =========== Recalculate Match =========== */
       function recalculateMatch() {
+        currentOverId = 0;
         legalBalls = 0;
         liveTotal = 0;
         liveWickets = 0;
@@ -2055,6 +2030,9 @@
             liveBalls++;
             legalBalls++;
             
+             if (legalBalls > 0 && legalBalls % 6 === 0) {
+              currentOverId++;
+            }
             batsmanStats[striker].runs += ball.runs;
             batsmanStats[striker].balls++;
             if (ball.runs === 4) batsmanStats[striker].fours++;
@@ -2067,6 +2045,11 @@
             liveWickets++;
             liveBalls++;
             legalBalls++;
+            
+            if (legalBalls > 0 && legalBalls % 6 === 0) {
+              currentOverId++;
+            }
+            
             batsmanStats[striker].balls++;
             batsmanStats[striker].out = true;
             bowlerStats[bowler].balls++;
@@ -2085,6 +2068,11 @@
             if (ball.extra === "bye" || ball.extra === "legbye") {
               liveBalls++;
               legalBalls++;
+
+               if (legalBalls > 0 && legalBalls % 6 === 0) {
+                  currentOverId++;
+              }
+              
               if (striker) batsmanStats[striker].balls++;
               if (bowler) bowlerStats[bowler].balls++;
             }
