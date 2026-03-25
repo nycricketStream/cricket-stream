@@ -893,7 +893,7 @@
         document.getElementById('teamAPlayers').addEventListener('input', updateStrikerDropdown);
         document.getElementById('teamBPlayers').addEventListener('input', updateStrikerDropdown);
         document.getElementById('bowler').addEventListener('change', function() {
-          if (this.value === lastOverBowler && legalBalls % 6 === 0) {
+          if (legalBalls !== 0 && this.value === lastOverBowler && legalBalls % 6 === 0) {
             alert("Cannot bowl consecutive overs");
             this.value = "";
             return;
@@ -1041,6 +1041,9 @@
           legbye: 0
         };
         previousBowler = "";
+        lastOverBowler = "";    
+        currentOverId = 0;       
+        lastOverProcessed = -1;  
         awaitingNewBatsman = false;
         currentOverBalls = 0;
         lockedOut = false;
