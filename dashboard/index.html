@@ -1627,7 +1627,7 @@
           }
         }
 
-        if (isOverComplete() && lastOverProcessed !== currentOverId) {
+        if (isOverComplete() && lastOverProcessed !== currentOverId && (type === "bye" || type === "legbye")) {
           lastOverProcessed = currentOverId;  
           newOverStarted = true;
           rotateStrike();
