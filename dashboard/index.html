@@ -925,7 +925,7 @@
             }), 400);
           }
           previousBowler = bowler;
-          lastOverBowler = "";
+          newOverStarted = false;
           updateLiveDisplay();
         });
         document.getElementById('striker').addEventListener('change', function() {
@@ -1153,6 +1153,7 @@
       let legalBalls = 0;
       let lastOverProcessed = -1;
       let currentOverId = 0;
+      let newOverStarted = false;
 
       function calculateOvers() {
         return Math.floor(liveBalls / 6) + "." + (liveBalls % 6);
@@ -1347,7 +1348,6 @@
       const striker = document.getElementById('striker')?.value;
       const currentBowler = document.getElementById('bowler')?.value;
     
-      // 👉 1. PUSH BALL (USE CURRENT OVER ID)
       liveHistory.push({
         type: 'run',
         runs: r,
@@ -1400,7 +1400,7 @@
       if (isOverComplete() && lastOverProcessed !== currentOverId) {
     
         lastOverProcessed = currentOverId;
-    
+        newOverStarted = true;
         // rotate strike at end of over
         rotateStrike();
     
@@ -1712,7 +1712,7 @@
           return false;
         }
         /* OVER FINISHED CHECK */
-        if (legalBalls % 6 === 0 && legalBalls !== 0 && lastOverBowler && bowler === lastOverBowler) {
+        if (!newOverStarted && legalBalls % 6 === 0 && legalBalls !== 0 && lastOverBowler && bowler === lastOverBowler) {
           alert("Select a different bowler for the new over.");
           return false;
         }
