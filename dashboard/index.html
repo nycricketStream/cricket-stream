@@ -1560,13 +1560,7 @@
       /* ============== Score Extra ================ */
       function scoreExtra(type) {
         if (!validateBeforeBall()) return;
-        if (legalBalls % 6 === 0 && legalBalls !== 0) {
-          const currentBowler = document.getElementById('bowler')?.value;
-          if (currentOverBowler && currentBowler === currentOverBowler) {
-            alert("Over completed. Select a new bowler.");
-            return;
-          }
-        }
+        
         let runs = parseInt(document.getElementById("extraRuns").value);
         const striker = document.getElementById('striker')?.value;
         const currentBowler = document.getElementById('bowler')?.value;
