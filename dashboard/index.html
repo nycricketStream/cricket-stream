@@ -900,7 +900,7 @@
         document.getElementById('teamAPlayers').addEventListener('input', updateStrikerDropdown);
         document.getElementById('teamBPlayers').addEventListener('input', updateStrikerDropdown);
         document.getElementById('bowler').addEventListener('change', function() {
-          if (legalBalls !== 0 && this.value === lastOverBowler && legalBalls % 6 === 0) {
+          if (!newOverStarted && legalBalls !== 0 && this.value === lastOverBowler && legalBalls % 6 === 0) {
             alert("Cannot bowl consecutive overs");
             this.value = "";
             return;
@@ -1481,7 +1481,7 @@
           if (isOverComplete() && lastOverProcessed !== currentOverId) {
         
             lastOverProcessed = currentOverId;
-        
+            newOverStarted = true;
             lastOverBowler = currentBowler;
         
             const strikerSel = document.getElementById('striker');
@@ -1551,10 +1551,12 @@
         }
         return true;
       }
+      
       /* ========= Add Extra ============= */
       function addExtra(type) {
         scoreExtra(type);
       }
+      
       /* ============== Score Extra ================ */
       function scoreExtra(type) {
         if (!validateBeforeBall()) return;
@@ -1627,6 +1629,7 @@
 
         if (isOverComplete() && lastOverProcessed !== currentOverId) {
           lastOverProcessed = currentOverId;  
+          newOverStarted = true;
           rotateStrike();
           lastOverBowler = currentBowler;  
           const bowlerSelect = document.getElementById('bowler');
