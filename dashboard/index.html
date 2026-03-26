@@ -1633,9 +1633,9 @@
           setScoringEnabled(false);        
           sendEndOfOverGraphic();
         }   
-        if (isOverComplete()) {
+       if (isOverComplete() && (type === "bye" || type === "legbye")) {
           currentOverId++;
-        } 
+        }
         updateLiveDisplay();
       }
 
