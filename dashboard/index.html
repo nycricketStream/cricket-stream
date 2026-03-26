@@ -251,6 +251,11 @@
       .bowler-warning {
         border: 2px solid red !important;
       }
+
+      .bowler-row {
+        background: #7c2d12 !important;
+        font-weight: 600;
+      }
     </style>
   </head>
 
@@ -1329,15 +1334,17 @@
           const economy = stats.balls ?
             (stats.runs / (stats.balls / 6)).toFixed(2) :
             "0.00";
+          const currentBowler = document.getElementById('bowler')?.value;
+
           body.innerHTML += `
-               <tr>
-                 <td>${name}</td>
-                 <td>${overs}</td>
-                 <td>${stats.runs}</td>
-                 <td>${stats.wickets}</td>
-                 <td>${economy}</td>
-               </tr>
-             `;
+            <tr class="${name === currentBowler ? 'bowler-row' : ''}">
+              <td>${name}</td>
+              <td>${overs}</td>
+              <td>${stats.runs}</td>
+              <td>${stats.wickets}</td>
+              <td>${economy}</td>
+            </tr>
+          `;
         });
       }
       
