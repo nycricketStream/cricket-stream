@@ -276,7 +276,7 @@
 
   <body>
     <div class="sidebar">
-      <button id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+      <button id="sidebarToggle">☰</button>
       <h2>Broadcast</h2>
       <button class="tab-btn active" onclick="showTab(event,'match')">Match Setup</button>
       <button class="tab-btn" onclick="showTab(event,'lineups')">Lineups</button>
@@ -1049,6 +1049,14 @@
           if (e.key === "z" || e.key === "Z") undoLast();
         });
         renderQueueUI();
+        const toggleBtn = document.getElementById("sidebarToggle");
+        const sidebar = document.querySelector(".sidebar");
+        
+        if (toggleBtn && sidebar) {
+          toggleBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("collapsed");
+          });
+        }
       });
       async function saveConfig() {
         const config = {
