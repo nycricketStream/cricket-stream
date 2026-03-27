@@ -871,23 +871,24 @@
 
       function toggleSidebar() {
         const sidebar = document.querySelector(".sidebar");
-        sidebar.classList.toggle("collapsed");
-        manualSidebarToggle = true;
+        if (sidebar) sidebar.classList.toggle("collapsed");
       }
-
+      
       function showTab(evt, id) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+        const tab = document.getElementById(id);
+        if (tab) tab.classList.add('active');
+      
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         if (evt) evt.target.classList.add('active');
+      
         const sidebar = document.querySelector('.sidebar');
-        // Only auto-collapse if user hasn't manually toggled
-        if (!manualSidebarToggle) {
-          if (id === "livescoring") {
-            sidebar.classList.add("collapsed");
-          } else {
-            sidebar.classList.remove("collapsed");
-          }
+        if (!sidebar) return;
+      
+        if (id === "livescoring") {
+          sidebar.classList.add("collapsed");
+        } else {
+          sidebar.classList.remove("collapsed");
         }
       }
 
@@ -1166,13 +1167,10 @@
         send('moment', {
           type: 'CLEAR'
         });
-        resetSidebarAuto();
         showModal("Match reset");
       }
 
-      function resetSidebarAuto() {
-        manualSidebarToggle = false;
-      }
+      
       /* ================= BASIC LIVE SCORING ENGINE ================= */
       let liveTotal = 0;
       let liveWickets = 0;
@@ -1230,7 +1228,6 @@
       let lastOverProcessed = -1;
       let currentOverId = 0;
       let newOverStarted = false;
-      let manualSidebarToggle = false;
 
       function calculateOvers() {
         return Math.floor(liveBalls / 6) + "." + (liveBalls % 6);
