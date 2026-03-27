@@ -14,7 +14,7 @@
         color: #e5e7eb;
         display: flex;
         height: 100vh;
-        overflow: hidden;
+        overflow: auto;
       }
 
       .sidebar {
@@ -23,6 +23,7 @@
         padding: 18px 14px;
         border-right: 1px solid rgba(59, 130, 246, .25);
         overflow-y: auto;
+        transition: width 0.25s ease;
       }
 
       .sidebar h2 {
@@ -67,6 +68,7 @@
         flex: 1;
         padding: 16px;
         overflow-y: auto;
+        min-width: 0;
       }
 
       .tab {
@@ -216,7 +218,7 @@
         }
 
         .live-grid {
-          grid-template-columns: 1fr 1fr;
+          grid-template-columns: 1fr;
         }
       }
 
@@ -301,6 +303,7 @@
         padding: 10px 0;
         display: flex;
         justify-content: center;
+        align-items: center;
       }
 
       .sidebar.collapsed .tab-btn::before {
