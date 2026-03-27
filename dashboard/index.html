@@ -256,6 +256,20 @@
       background: linear-gradient(90deg, #7c2d12, #ea580c);
       color: #fff;
     }
+    .sidebar.collapsed {
+      width: 70px;
+      padding: 10px 6px;
+    }
+    
+    .sidebar.collapsed h2 {
+      display: none;
+    }
+    
+    .sidebar.collapsed .tab-btn {
+      font-size: 10px;
+      text-align: center;
+      padding: 8px 4px;
+    }
     </style>
   </head>
 
@@ -638,6 +652,12 @@
       </div>
       <div id="broadcast" class="tab">
         <h3>Broadcast Graphics</h3>
+        <h4 style="margin-top:10px">Scene Mode</h4>
+        <div style="display:flex; gap:8px; margin-bottom:12px">
+          <button onclick="send('sceneMode',{mode:'bright'})">☀️ Bright</button>
+          <button onclick="send('sceneMode',{mode:'normal'})">🌤 Normal</button>
+          <button onclick="send('sceneMode',{mode:'dark'})">🌙 Dark</button>
+        </div>
         <button onclick="sendBreak('DRINKS BREAK')">Drinks Break</button>
         <button onclick="sendBreak('STRATEGIC TIMEOUT')">Strategic Timeout</button>
         <button onclick="sendBreak('INNINGS BREAK')">Innings Break</button>
@@ -818,8 +838,17 @@
       function showTab(evt, id) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+      
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         if (evt) evt.target.classList.add('active');
+      
+        const sidebar = document.querySelector('.sidebar');
+      
+        if (id === "livescoring") {
+          sidebar.classList.add("collapsed");
+        } else {
+          sidebar.classList.remove("collapsed");
+        }
       }
 
       function updateBattingTeams() {
@@ -906,7 +935,7 @@
         document.getElementById('teamBPlayers').addEventListener('input', updateStrikerDropdown);
         document.getElementById('bowler').addEventListener('change', function() {
           if (!newOverStarted && legalBalls !== 0 && this.value === lastOverBowler && legalBalls % 6 === 0) {
-            alert("Cannot bowl consecutive overs");
+            showModal("Cannot bowl consecutive overs");
             this.value = "";
             return;
           }
@@ -941,7 +970,7 @@
           }
           const nonStriker = document.getElementById('nonStriker').value;
           if (this.value && this.value === nonStriker) {
-            alert("Striker and Non-Striker cannot be the same player.");
+            showModal("Striker and Non-Striker cannot be the same player.");
             this.value = "";
             return;
           }
@@ -968,7 +997,7 @@
             return;
           }
           if (this.value && this.value === striker) {
-            alert("Striker and Non-Striker cannot be the same player.");
+            showModal("Striker and Non-Striker cannot be the same player.");
             this.value = "";
             return;
           }
@@ -1026,7 +1055,7 @@
           },
           body: JSON.stringify(config)
         });
-        alert('Config saved');
+        showModal('Config saved');
       }
       async function loadConfig() {
         const r = await fetch('/api/config');
@@ -1035,7 +1064,7 @@
         tournament.value = c.tournament || '';
         sponsorList.value = c.sponsorList || '';
         rotation.value = c.rotation || 8;
-        alert('Config loaded');
+        showModal('Config loaded');
       }
 
       function resetMatch() {
@@ -1100,7 +1129,7 @@
         send('moment', {
           type: 'CLEAR'
         });
-        alert("Match reset");
+        showModal("Match reset");
       }
       /* ================= BASIC LIVE SCORING ENGINE ================= */
       let liveTotal = 0;
@@ -1553,7 +1582,7 @@
       function validateBatsman(name) {
         if (!name) return true;
         if (batsmanStats[name] && batsmanStats[name].out) {
-          alert(name + " is already out. Select another batsman.");
+          showModal(name + " is already out. Select another batsman.");
           return false;
         }
         return true;
@@ -1697,24 +1726,24 @@
         const striker = document.getElementById('striker')?.value;
         const bowler = document.getElementById('bowler')?.value;
         if (overlayLocked) {
-          alert("Game is in break mode");
+          showModal("Game is in break mode");
           return false;
         }
         if (!striker) {
-          alert("Select Striker before scoring.");
+          showModal("Select Striker before scoring.");
           return false;
         }
         if (lockedOut) {
-          alert("Select new batsman before continuing.");
+          showModal("Select new batsman before continuing.");
           return false;
         }
         if (!bowler) {
-          alert("Select Bowler before scoring.");
+          showModal("Select Bowler before scoring.");
           return false;
         }
         /* OVER FINISHED CHECK */
         if (!newOverStarted && legalBalls % 6 === 0 && legalBalls !== 0 && lastOverBowler && bowler === lastOverBowler) {
-          alert("Select a different bowler for the new over.");
+          showModal("Select a different bowler for the new over.");
           return false;
         }
         return true;
@@ -1998,7 +2027,7 @@
         if (editingBallIndex < 0) return;
         const runs = parseInt(prompt("Enter runs for this extra", 1));
         if (isNaN(runs) || runs < 0) {
-          alert("Invalid runs");
+          showModal("Invalid runs");
           return;
         }
         const ball = liveHistory[editingBallIndex];
@@ -2389,7 +2418,7 @@
         const checked = document.querySelectorAll(".team" + team + "XI:checked");
         if (checked.length > 11) {
           box.checked = false;
-          alert("Only 11 players allowed in Playing XI");
+          showModal("Only 11 players allowed in Playing XI");
         }
       }
       /* ============== Applying Playing X1 =========== */
@@ -2397,7 +2426,7 @@
         const teamAXI = [...document.querySelectorAll(".teamAXI:checked")].map(c => c.value);
         const teamBXI = [...document.querySelectorAll(".teamBXI:checked")].map(c => c.value);
         if (teamAXI.length !== 11 || teamBXI.length !== 11) {
-          alert("Both teams must have 11 players");
+          showModal("Both teams must have 11 players");
           return;
         }
         document.getElementById("teamAPlayers").value = teamAXI.join("\n");
@@ -2408,7 +2437,7 @@
           battingOrder = teamBXI.slice();
         }
         updateBattingTeams();
-        alert("Playing XI applied");
+        showModal("Playing XI applied");
       }
       /* ============== Save Sponsor Presets =========== */
       function saveSponsorPresets() {
@@ -2419,7 +2448,7 @@
           p4: document.getElementById("preset4").value
         };
         localStorage.setItem("sponsorPresets", JSON.stringify(presets));
-        alert("Sponsor presets saved");
+        showModal("Sponsor presets saved");
       }
       /* ========= Trigger Preset =====================*/
       function triggerPreset(num) {
@@ -2505,13 +2534,13 @@
           },
           body: JSON.stringify(setup)
         });
-        alert("Saved to cloud ✅");
+        showModal("Saved to cloud ✅");
       }
       async function loadMatchSetup() {
         const r = await fetch('/api/matchSetup');
         const s = await r.json();
         if (!s || !s.teamA) {
-          alert("No saved setup");
+          showModal("No saved setup");
           return;
         }
         teamA.value = s.teamA || "";
@@ -2525,13 +2554,13 @@
         target.value = s.target || "";
         maxOvers.value = s.maxOvers || "";
         updateBattingTeams();
-        alert("Loaded from cloud ✅");
+        showModal("Loaded from cloud ✅");
       }
       async function deleteMatchSetup() {
         await fetch('/api/matchSetup', {
           method: 'DELETE'
         });
-        alert("Deleted from cloud");
+        showModal("Deleted from cloud");
       }
       /* ================= Load Saved Match ================ */
       function loadSavedMatch() {
@@ -2609,7 +2638,7 @@
             data
           })
         });
-        alert("Match saved");
+        showModal("Match saved");
         loadMatchList();
       }
 
@@ -2663,7 +2692,7 @@
         target.value = data.target || "";
         maxOvers.value = data.maxOvers || "";
         updateBattingTeams();
-        alert("Match loaded");
+        showModal("Match loaded");
       }
       async function deleteMatch() {
         const id = document.getElementById('matchList').value;
@@ -2734,7 +2763,40 @@
       function isOverComplete() {
         return legalBalls > 0 && legalBalls % 6 === 0;
       }
-    </script>
-  </body>
 
+      function showModal(message) {
+        document.getElementById("modalText").innerText = message;
+        document.getElementById("customModal").style.display = "flex";
+      }
+      
+      function closeModal() {
+        document.getElementById("customModal").style.display = "none";
+      }
+    </script>
+
+    <div id="customModal" style="
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.6);
+      z-index:999999;
+      align-items:center;
+      justify-content:center;
+    ">
+      <div style="
+        background:#020617;
+        padding:20px;
+        border-radius:10px;
+        width:320px;
+        text-align:center;
+        border:1px solid #1f2937;
+      ">
+        <div id="modalText" style="margin-bottom:15px"></div>
+        <button onclick="closeModal()">OK</button>
+      </div>
+    </div>
+  </body>
 </html>
