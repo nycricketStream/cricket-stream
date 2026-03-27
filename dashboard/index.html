@@ -18,6 +18,7 @@
       }
 
       .sidebar {
+        <button id="sidebarToggle" onclick="toggleSidebar()">☰</button>
         width: 260px;
         background: linear-gradient(180deg, #081a3a, #030712);
         padding: 18px 14px;
@@ -28,6 +29,23 @@
       .sidebar h2 {
         margin-top: 0;
         color: #60a5fa
+      }
+       
+      #sidebarToggle {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 12px;
+        border: none;
+        border-radius: 8px;
+        background: #111827;
+        color: #60a5fa;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      
+      #sidebarToggle:hover {
+        background: #1f2937;
       }
 
       .tab-btn {
@@ -156,15 +174,16 @@
       /* ===== LIVE SCORING GRID ===== */
       .live-grid {
         display: grid;
-        grid-template-columns: 1.2fr 1fr 1fr;
-        gap: 14px;
+        grid-template-columns: 1.5fr 1fr 1fr;
+        gap: 16px;
       }
 
       .panel {
-        background: #020617;
-        border: 1px solid #1f2937;
-        border-radius: 8px;
-        padding: 12px;
+        background: linear-gradient(180deg, #020617, #020617);
+        border: 1px solid rgba(59,130,246,0.2);
+        border-radius: 12px;
+        padding: 14px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.4);
       }
 
       .run-buttons {
@@ -235,7 +254,19 @@
 
         .run-buttons button {
           font-size: 22px;
+          font-weight: 800;
           padding: 18px;
+          border-radius: 12px;
+          background: linear-gradient(180deg, #1d4ed8, #1e40af);
+          transition: all 0.15s ease;
+        }
+        
+        .run-buttons button:hover {
+          transform: scale(1.05);
+        }
+        
+        .run-buttons button:active {
+          transform: scale(0.95);
         }
 
         .extra-buttons {
@@ -266,9 +297,14 @@
     }
     
     .sidebar.collapsed .tab-btn {
-      font-size: 10px;
-      text-align: center;
-      padding: 8px 4px;
+      font-size: 0;
+      padding: 10px 0;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .sidebar.collapsed .tab-btn::before {
+      font-size: 16px;
     }
     </style>
   </head>
@@ -276,12 +312,12 @@
   <body>
     <div class="sidebar">
       <h2>Broadcast</h2>
-      <button class="tab-btn active" onclick="showTab(event,'match')">Match Setup</button>
+      <button class="tab-btn active" onclick="showTab(event,'match')">🏏 Match Setup</button>
       <button class="tab-btn" onclick="showTab(event,'lineups')">Lineups</button>
       <button class="tab-btn" onclick="showTab(event,'branding')">League Branding</button>
       <button class="tab-btn" onclick="showTab(event,'scoreinfo')">Score Info</button>
-      <button class="tab-btn" onclick="showTab(event,'livescoring')">Live Scoring</button>
-      <button class="tab-btn" onclick="showTab(event,'broadcast')">Graphics</button>
+      <button class="tab-btn" onclick="showTab(event,'livescoring')">📊 Live Scoring</button>
+      <button class="tab-btn" onclick="showTab(event,'broadcast')">🎥 Graphics</button>
       <button class="tab-btn" onclick="showTab(event,'sponsors')">Sponsors</button>
       <button class="tab-btn" onclick="saveMatchSetup()">💾 Save Setup</button>
       <button class="tab-btn" onclick="loadMatchSetup()">📂 Load Setup</button>
@@ -835,6 +871,12 @@
         });
       }
 
+      function toggleSidebar() {
+        const sidebar = document.querySelector(".sidebar");
+        sidebar.classList.toggle("collapsed");
+        manualSidebarToggle = true;
+      }
+      
       function showTab(evt, id) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById(id).classList.add('active');
@@ -844,10 +886,13 @@
       
         const sidebar = document.querySelector('.sidebar');
       
-        if (id === "livescoring") {
-          sidebar.classList.add("collapsed");
-        } else {
-          sidebar.classList.remove("collapsed");
+        // Only auto-collapse if user hasn't manually toggled
+        if (!manualSidebarToggle) {
+          if (id === "livescoring") {
+            sidebar.classList.add("collapsed");
+          } else {
+            sidebar.classList.remove("collapsed");
+          }
         }
       }
 
@@ -1129,6 +1174,7 @@
         send('moment', {
           type: 'CLEAR'
         });
+        resetSidebarAuto();
         showModal("Match reset");
       }
       /* ================= BASIC LIVE SCORING ENGINE ================= */
@@ -1973,6 +2019,21 @@
       
           const el = document.createElement("div");
           el.innerText = symbol;
+          
+          el.style.padding = "6px 10px";
+          el.style.borderRadius = "6px";
+          el.style.background = "#111827";
+          el.style.cursor = "pointer";
+          el.style.fontWeight = "bold";
+          
+          if (symbol === "W") 00{   n\
+                               
+            el.style.background = "#b91c1c";
+          } else if (symbol === "4") {
+            el.style.background = "#1d4ed8";
+          } else if (symbol === "6") {
+            el.style.background = "#7c3aed";
+          }
           el.onclick = () => openBallEditor(i);
       
           container.appendChild(el);
@@ -2771,6 +2832,10 @@
       
       function closeModal() {
         document.getElementById("customModal").style.display = "none";
+      }
+
+      function resetSidebarAuto() {
+        manualSidebarToggle = false;
       }
     </script>
 
