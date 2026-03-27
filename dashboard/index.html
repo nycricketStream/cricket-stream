@@ -14,7 +14,7 @@
         color: #e5e7eb;
         display: flex;
         height: 100vh;
-        overflow: hidden;
+        overflow: auto;
       }
 
       .sidebar {
@@ -23,6 +23,7 @@
         padding: 18px 14px;
         border-right: 1px solid rgba(59, 130, 246, .25);
         overflow-y: auto;
+        transition: width 0.25s ease;
       }
 
       .sidebar h2 {
@@ -275,6 +276,7 @@
 
   <body>
     <div class="sidebar">
+      <button id="sidebarToggle" onclick="toggleSidebar()">☰</button>
       <h2>Broadcast</h2>
       <button class="tab-btn active" onclick="showTab(event,'match')">Match Setup</button>
       <button class="tab-btn" onclick="showTab(event,'lineups')">Lineups</button>
@@ -849,6 +851,13 @@
         } else {
           sidebar.classList.remove("collapsed");
         }
+      }
+
+      function toggleSidebar() {
+        const sidebar = document.querySelector(".sidebar");
+        if (!sidebar) return;
+      
+        sidebar.classList.toggle("collapsed");
       }
 
       function updateBattingTeams() {
