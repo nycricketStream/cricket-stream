@@ -164,8 +164,9 @@
       .panel {
         background: #020617;
         border: 1px solid #1f2937;
-        border-radius: 8px;
-        padding: 12px;
+        border-radius: 12px;
+        padding: 14px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
       }
 
       .run-buttons {
@@ -271,26 +272,88 @@
       text-align: center;
       padding: 8px 4px;
     }
+
+    .menu-section {
+        margin-bottom: 18px;
+      }
+      
+      .menu-title {
+        font-size: 11px;
+        letter-spacing: 1px;
+        color: #64748b;
+        margin: 10px 6px;
+      }
+      
+      .tab-btn {
+        background: transparent;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+      }
+      
+      .tab-btn:hover {
+        background: #111827;
+        border-color: #1f2937;
+      }
+      
+      .tab-btn.active {
+        background: linear-gradient(90deg, #2563eb, #1d4ed8);
+        box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+      }
+
+      h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+      }
+      
+      h4 {
+        margin-bottom: 6px;
+        color: #93c5fd;
+      }
+
+      .run-buttons button {
+        background: linear-gradient(145deg, #1d4ed8, #1e40af);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      }
+      
+      .run-buttons button:hover {
+        transform: scale(1.05);
+      }
+      
+      .run-buttons button:active {
+        transform: scale(0.95);
+      }
     </style>
   </head>
 
   <body>
     <div class="sidebar">
-      <button id="sidebarToggle">☰</button>
+     <button id="sidebarToggle">☰</button>
       <h2>Broadcast</h2>
-      <button class="tab-btn active" onclick="showTab(event,'match')">Match Setup</button>
-      <button class="tab-btn" onclick="showTab(event,'lineups')">Lineups</button>
-      <button class="tab-btn" onclick="showTab(event,'branding')">League Branding</button>
-      <button class="tab-btn" onclick="showTab(event,'scoreinfo')">Score Info</button>
-      <button class="tab-btn" onclick="showTab(event,'livescoring')">Live Scoring</button>
-      <button class="tab-btn" onclick="showTab(event,'broadcast')">Graphics</button>
-      <button class="tab-btn" onclick="showTab(event,'sponsors')">Sponsors</button>
-      <button class="tab-btn" onclick="saveMatchSetup()">💾 Save Setup</button>
-      <button class="tab-btn" onclick="loadMatchSetup()">📂 Load Setup</button>
-      <button class="tab-btn" onclick="deleteMatchSetup()">❌ Delete Setup</button>
-      <button class="tab-btn" onclick="saveConfig()">💾 Save Config</button>
-      <button class="tab-btn" onclick="loadConfig()">📂 Load Config</button>
-      <button class="tab-btn" onclick="resetMatch()">🗑 Reset Match</button>
+      <div class="menu-section">
+        <div class="menu-title">SETUP</div>
+        <button class="tab-btn" onclick="showTab(event,'lineups')">Lineups</button>
+        <button class="tab-btn active" onclick="showTab(event,'match')">Match</button>
+        <button class="tab-btn" onclick="showTab(event,'branding')">Branding</button>
+      </div>
+      
+      <div class="menu-section">
+        <div class="menu-title">SCORING</div>
+        <button class="tab-btn" onclick="showTab(event,'livescoring')">Live</button>
+        <button class="tab-btn" onclick="showTab(event,'scoreinfo')">Manual</button>
+      </div>
+      
+      <div class="menu-section">
+        <div class="menu-title">GRAPHICS</div>
+        <button class="tab-btn" onclick="showTab(event,'broadcast')">Graphics</button>
+        <button class="tab-btn" onclick="showTab(event,'sponsors')">Sponsors</button>
+      </div>
+      
+      <div class="menu-section">
+        <div class="menu-title">SYSTEM</div>
+        <button class="tab-btn" onclick="saveMatchSetup()">Save</button>
+        <button class="tab-btn" onclick="loadMatchSetup()">Load</button>
+        <button class="tab-btn" onclick="resetMatch()">Reset</button>
+      </div>
     </div>
     <div class="main">
       <!-- MATCH SETUP -->
