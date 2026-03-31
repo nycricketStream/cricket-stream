@@ -172,6 +172,12 @@
         box-shadow: 0 6px 20px rgba(0,0,0,0.4);
       }
 
+      .sticky-runs {
+        position: sticky;
+        top: 10px;
+        z-index: 10;
+      }
+
       .run-buttons {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -249,8 +255,7 @@
       }
 
       .panel:first-child {
-        position: sticky;
-        top: 10px;
+        position: relative;
       }
 
       .bowler-warning {
@@ -532,7 +537,7 @@
               <h4>Bowler</h4>
               <select id="bowler"></select>
             </div>
-            <div class="panel">
+            <div class="panel sticky-runs">
               <h3>Runs</h3>
               <div class="run-buttons">
                 <button onclick="addRun(0)">0</button>
