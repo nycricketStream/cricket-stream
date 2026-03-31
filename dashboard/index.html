@@ -40,7 +40,10 @@
         background: #0a1226;
         color: white;
         text-align: left;
-        cursor: pointer
+        cursor: pointer,
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
 
       .tab-btn.active {
@@ -338,28 +341,28 @@
       <h2>Broadcast</h2>
       <div class="menu-section">
         <div class="menu-title">SETUP</div>
-        <button class="tab-btn" onclick="showTab(event,'lineups')">Lineups</button>
-        <button class="tab-btn active" onclick="showTab(event,'match')">Match</button>
-        <button class="tab-btn" onclick="showTab(event,'branding')">Branding</button>
+        <button class="tab-btn active" onclick="showTab(event,'match')">🏏 <span>Match</span></button>
+        <button class="tab-btn" onclick="showTab(event,'lineups')">👥 <span>Lineups</span></button>
+        <button class="tab-btn" onclick="showTab(event,'branding')">🎨 <span>Branding</span></button>
       </div>
       
       <div class="menu-section">
         <div class="menu-title">SCORING</div>
-        <button class="tab-btn" onclick="showTab(event,'livescoring')">Live</button>
-        <button class="tab-btn" onclick="showTab(event,'scoreinfo')">Manual</button>
+        <button class="tab-btn" onclick="showTab(event,'livescoring')">📊 <span>Live</span></button>
+        <button class="tab-btn" onclick="showTab(event,'scoreinfo')">🧮 <span>Manual</span></button>
       </div>
       
       <div class="menu-section">
         <div class="menu-title">GRAPHICS</div>
-        <button class="tab-btn" onclick="showTab(event,'broadcast')">Graphics</button>
-        <button class="tab-btn" onclick="showTab(event,'sponsors')">Sponsors</button>
+        <button class="tab-btn" onclick="showTab(event,'broadcast')">🎥 <span>Graphics</span></button>
+        <button class="tab-btn" onclick="showTab(event,'sponsors')">💼 <span>Sponsors</span></button>
       </div>
       
       <div class="menu-section">
         <div class="menu-title">SYSTEM</div>
-        <button class="tab-btn" onclick="saveMatchSetup()">Save</button>
-        <button class="tab-btn" onclick="loadMatchSetup()">Load</button>
-        <button class="tab-btn" onclick="resetMatch()">Reset</button>
+        <button class="tab-btn" onclick="saveMatchSetup()">💾 <span>Save</span></button>
+        <button class="tab-btn" onclick="loadMatchSetup()">📂 <span>Load</span></button>
+        <button class="tab-btn" onclick="resetMatch()">🗑 <span>Reset</span></button>
       </div>
     </div>
     <div class="main">
