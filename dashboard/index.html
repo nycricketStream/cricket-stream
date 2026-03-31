@@ -271,9 +271,8 @@
     }
     
     .sidebar.collapsed .tab-btn {
-      font-size: 0;
-      text-align: center;
-      padding: 8px 4px;
+      justify-content: center;
+      padding: 10px;
     }
 
     .sidebar.collapsed .menu-title {
@@ -303,6 +302,12 @@
       .tab-btn:hover {
         background: #111827;
         border-color: #1f2937;
+      }
+
+      .tab-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
       
       .tab-btn.active {
