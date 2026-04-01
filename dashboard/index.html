@@ -1330,10 +1330,10 @@
           if (b.type === "run") symbol = b.runs;
           else if (b.type === "wicket") symbol = "W";
           else if (b.type === "extra") {
-            if (b.extra === "wide") symbol = "Wd" + (b.runs > 1 ? "+" + b.runs : "");
-            if (b.extra === "noball") symbol = "Nb" + (b.runs > 1 ? "+" + b.runs : "");
-            if (b.extra === "bye") symbol = "B" + (b.runs > 1 ? "+" + b.runs : "");
-            if (b.extra === "legbye") symbol = "Lb" + (b.runs > 1 ? "+" + b.runs : "");
+            if (b.extra === "wide") symbol = b.runs > 1 ? b.runs + "Wd" : "Wd";
+            if (b.extra === "noball") symbol = b.runs > 1 ? b.runs + "Nb" : "Nb");
+            if (b.extra === "bye") symbol = b.runs > 1 ? b.runs + "B" : "B");
+            if (b.extra === "legbye") symbol = b.runs > 1 ?  b.runs + "Lb" : "Lb");
           }
       
           balls.push(symbol);
@@ -1814,6 +1814,19 @@
           if (currentBowler) {
             bowlerStats[currentBowler].balls++;
           }
+        }
+
+        if (type === "wide") {
+          if (runs % 2 === 1) rotateStrike();
+        }
+        
+        if (type === "noball") {
+          const runsOffBat = runs - 1;
+          if (runsOffBat % 2 === 1) rotateStrike();
+        }
+        
+        if (type === "bye" || type === "legbye") {
+          if (runs % 2 === 1) rotateStrike();
         }
       
         updateLiveDisplay();
