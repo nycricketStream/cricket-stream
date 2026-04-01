@@ -1330,10 +1330,10 @@
           if (b.type === "run") symbol = b.runs;
           else if (b.type === "wicket") symbol = "W";
           else if (b.type === "extra") {
-            if (b.extra === "wide") symbol = "Wd";
-            if (b.extra === "noball") symbol = "Nb";
-            if (b.extra === "bye") symbol = "B";
-            if (b.extra === "legbye") symbol = "Lb";
+            if (b.extra === "wide") symbol = "Wd" + (b.runs > 1 ? "+" + b.runs : "");
+            if (b.extra === "noball") symbol = "Nb" + (b.runs > 1 ? "+" + b.runs : "");
+            if (b.extra === "bye") symbol = "B" + (b.runs > 1 ? "+" + b.runs : "");
+            if (b.extra === "legbye") symbol = "Lb" + (b.runs > 1 ? "+" + b.runs : "");
           }
       
           balls.push(symbol);
@@ -1776,15 +1776,47 @@
       /* ============= Quick Score Extra ================= */
       function quickExtra(type) {
         const runs = parseInt(document.getElementById("extraRuns").value) || 1;
-        scoreExtra(type);
-        
-        if (runs > 1) {
-          const extra = runs - 1;
       
-          for (let i = 0; i < extra; i++) {
-            scoreExtra(type);
+        const striker = document.getElementById('striker')?.value;
+        const currentBowler = document.getElementById('bowler')?.value;
+      
+        // SINGLE entry
+        liveHistory.push({
+          type: 'extra',
+          extra: type,
+          runs: runs,
+          bowler: currentBowler,
+          striker: striker,
+          overId: currentOverId
+        });
+      
+        // Update total
+        liveTotal += runs;
+      
+        if (extrasStats[type] !== undefined) {
+          extrasStats[type] += runs;
+        }
+      
+        // Bowler runs (only for wide/noball)
+        if (currentBowler && (type === "wide" || type === "noball")) {
+          ensureBowler(currentBowler);
+          bowlerStats[currentBowler].runs += runs;
+        }
+      
+        if (type === "bye" || type === "legbye") {
+          liveBalls++;
+      
+          if (striker) {
+            ensureBatsman(striker);
+            batsmanStats[striker].balls++;
+          }
+      
+          if (currentBowler) {
+            bowlerStats[currentBowler].balls++;
           }
         }
+      
+        updateLiveDisplay();
       }
       
       /* ============ Undo Last =================== */
