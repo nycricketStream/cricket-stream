@@ -1027,7 +1027,7 @@
         document.getElementById('teamAPlayers').addEventListener('input', updateStrikerDropdown);
         document.getElementById('teamBPlayers').addEventListener('input', updateStrikerDropdown);
         document.getElementById('bowler').addEventListener('change', function() {
-          if (!newOverStarted && legalBalls !== 0 && this.value === lastOverBowler && legalBalls % 6 === 0) {
+          if (!newOverStarted && liveBalls  !== 0 && this.value === lastOverBowler && liveBalls  % 6 === 0) {
             showModal("Cannot bowl consecutive overs");
             this.value = "";
             return;
@@ -1285,7 +1285,6 @@
       let suppressNextDismissal = false;
       let dismissalShown = false;
       let lastOverBowler = "";
-      let legalBalls = 0;
       let lastOverProcessed = -1;
       let currentOverId = 0;
       let newOverStarted = false;
@@ -2200,7 +2199,7 @@
       /* =========== Recalculate Match =========== */
       function recalculateMatch() {
         currentOverId = 0;
-        legalBalls = 0;
+        
         liveTotal = 0;
         liveWickets = 0;
         liveBalls = 0;
