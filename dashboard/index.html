@@ -1494,7 +1494,7 @@
     
       liveTotal += r;
       liveBalls++;
-      legalBalls++;
+      ;
     
       if (liveBalls % 6 === 1) {
         currentOverBowler = currentBowler;
@@ -1585,7 +1585,7 @@
         
           liveWickets++;
           liveBalls++;
-          legalBalls++;
+          ;
         
           partnership50Shown = false;
           partnership100Shown = false;
@@ -1733,7 +1733,7 @@
         }
         if (type === "bye" || type === "legbye") {
           liveBalls++;
-          legalBalls++;
+          ;
           
           if (striker) {
             ensureBatsman(striker);
@@ -1805,7 +1805,7 @@
         });
         const bowlerSelect = document.getElementById('bowler');
 
-        if (legalBalls % 6 !== 0) {
+        if (liveBalls % 6 !== 0) {
           bowlerSelect.classList.remove("bowler-warning");
           setScoringEnabled(true);
         }
@@ -1842,7 +1842,7 @@
           return false;
         }
         /* OVER FINISHED CHECK */
-        if (!newOverStarted && legalBalls % 6 === 0 && legalBalls !== 0 && lastOverBowler && bowler === lastOverBowler) {
+        if (!newOverStarted && liveBalls % 6 === 0 && liveBalls !== 0 && lastOverBowler && bowler === lastOverBowler) {
           showModal("Select a different bowler for the new over.");
           return false;
         }
@@ -2163,7 +2163,7 @@
           if (ball.type === "run") {
             liveTotal += ball.runs;
             liveBalls++;
-            legalBalls++;
+            ;
             
              if (isOverComplete()) {
               currentOverId++;
@@ -2179,7 +2179,7 @@
           if (ball.type === "wicket") {
             liveWickets++;
             liveBalls++;
-            legalBalls++;
+            ;
             
             if (isOverComplete()) {
               currentOverId++;
@@ -2202,7 +2202,7 @@
             }
             if (ball.extra === "bye" || ball.extra === "legbye") {
               liveBalls++;
-              legalBalls++;
+              ;
 
                if (isOverComplete()) {
                   currentOverId++;
@@ -2861,7 +2861,7 @@
 
       /* =========== Is Over Completed ============== */
       function isOverComplete() {
-        return legalBalls > 0 && legalBalls % 6 === 0;
+        return liveBalls > 0 && liveBalls % 6 === 0;
       }
 
       function showModal(message) {
