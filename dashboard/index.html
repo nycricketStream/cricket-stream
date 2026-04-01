@@ -564,21 +564,22 @@
               </select>
             </div>
             <div class="panel">
-              <h3>Extras</h3>
+              <h3>Extras</h3>            
               <select id="extraRuns">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
+                <option value="1">+1</option>
+                <option value="2">+2</option>
+                <option value="3">+3</option>
+                <option value="4">+4</option>
+                <option value="5">+5</option>
+                <option value="6">+6</option>
               </select>
+            
               <div class="extra-buttons">
-                <button onclick="scoreExtra('wide')">Wide</button>
-                <button onclick="scoreExtra('noball')">No Ball</button>
-                <button onclick="scoreExtra('bye')">Bye</button>
-                <button onclick="scoreExtra('legbye')">Leg Bye</button>
-              </div>
+                <button onclick="quickExtra('wide')">Wd</button>
+                <button onclick="quickExtra('noball')">Nb</button>
+                <button onclick="quickExtra('bye')">B</button>
+                <button onclick="quickExtra('legbye')">Lb</button>
+              </div>          
             </div>
           </div>
         </div>
@@ -1772,6 +1773,19 @@
         updateLiveDisplay();
       }
 
+      /* ============= Quick Score Extra ================= */
+      function quickExtra(type) {
+        const runs = parseInt(document.getElementById("extraRuns").value) || 1;
+        scoreExtra(type);
+        
+        if (runs > 1) {
+          const extra = runs - 1;
+      
+          for (let i = 0; i < extra; i++) {
+            scoreExtra(type);
+          }
+        }
+      }
       
       /* ============ Undo Last =================== */
       function undoLast() {
