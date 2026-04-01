@@ -1329,11 +1329,13 @@
           if (b.type === "run") symbol = b.runs;
           else if (b.type === "wicket") symbol = "W";
           else if (b.type === "extra") {
-            if (b.extra === "wide") symbol = b.runs > 1 ? b.runs + "Wd" : "Wd";
-            if (b.extra === "noball") symbol = b.runs > 1 ? b.runs + "Nb" : "Nb";
-            if (b.extra === "bye") symbol = b.runs > 1 ? b.runs + "B" : "B";
-            if (b.extra === "legbye") symbol = b.runs > 1 ?  b.runs + "Lb" : "Lb";
-          }
+          const r = Number(b.runs) || 1;
+        
+          if (b.extra === "wide") symbol = r + "Wd";
+          else if (b.extra === "noball") symbol = r + "Nb";
+          else if (b.extra === "bye") symbol = r + "B";
+          else if (b.extra === "legbye") symbol = r + "Lb";
+        }
       
           balls.push(symbol);
         }
@@ -1774,7 +1776,7 @@
 
       /* ============= Quick Score Extra ================= */
       function quickExtra(type) {
-        const runs = parseInt(document.getElementById("extraRuns").value) || 1;
+        const runs = Number(document.getElementById("extraRuns").value) || 1;
       
         const striker = document.getElementById('striker')?.value;
         const currentBowler = document.getElementById('bowler')?.value;
