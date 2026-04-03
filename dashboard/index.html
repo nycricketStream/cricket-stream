@@ -360,6 +360,7 @@
         <div class="menu-title">SCORING</div>
         <button class="tab-btn" onclick="showTab(event,'livescoring')">📊 <span>Live</span></button>
         <button class="tab-btn" onclick="showTab(event,'scoreinfo')">🧮 <span>Manual</span></button>
+        <button onclick="liveHistory = []; updateLiveDisplay();">DEBUG RESET</button>
       </div>
       
       <div class="menu-section">
@@ -1690,90 +1691,6 @@
         return true;
       }
       
-      /* ========= Add Extra ============= */
-      function addExtra(type) {
-        scoreExtra(type);
-      }
-      
-      /* ============== Score Extra ================ */
-      function scoreExtra(type) {
-        if (!validateBeforeBall()) return;
-        
-        let runs = parseInt(document.getElementById("extraRuns").value);
-        const striker = document.getElementById('striker')?.value;
-        const currentBowler = document.getElementById('bowler')?.value;
-        liveHistory.push({
-          type: 'extra',
-          extra: type,
-          runs: runs,
-          bowler: currentBowler,
-          striker: striker,
-          overId: currentOverId
-        });
-        if (type === "wide" || type === "noball") {
-          if (runs < 1) runs = 1;
-        }
-        liveTotal += runs;
-        if (extrasStats[type] !== undefined) {
-          extrasStats[type] += runs;
-        }
-        /* WIDE BOUNDARY GRAPHIC */
-        if (type === "wide" && runs === 5) {
-          triggerMoment('FOUR');
-        }
-        if (type === "noball" && runs === 5) {
-          triggerMoment('FOUR');
-        }
-        if (type === "noball" && runs === 7) {
-          triggerMoment('SIX');
-        }
-        if (currentBowler) {
-          ensureBowler(currentBowler);
-          if (type === "wide" || type === "noball") {
-            bowlerStats[currentBowler].runs += runs;
-          }
-        }
-        if (type === "bye" || type === "legbye") {
-          liveBalls++;
-          ;
-          
-          if (striker) {
-            ensureBatsman(striker);
-            batsmanStats[striker].balls++;
-          }
-          if (currentBowler) {
-            bowlerStats[currentBowler].balls++;
-          }
-          if (liveBalls % 6 === 1) {
-            currentOverBowler = currentBowler;
-          }
-        }
-        if (type === "wide" || type === "noball") {
-          const runsOffBat = runs - 1;
-          if (runsOffBat % 2 === 1) {
-            rotateStrike();
-          }
-        } else {
-          if (runs % 2 === 1) {
-            rotateStrike();
-          }
-        }
-
-        if (isOverComplete() && lastOverProcessed !== currentOverId && (type === "bye" || type === "legbye")) {
-          lastOverProcessed = currentOverId;  
-          newOverStarted = true;
-          rotateStrike();
-          lastOverBowler = currentBowler;  
-          const bowlerSelect = document.getElementById('bowler');
-          bowlerSelect.value = "";
-          bowlerSelect.classList.add("bowler-warning");
-          bowlerSelect.focus();  
-          setScoringEnabled(false);        
-          sendEndOfOverGraphic();
-        }  
-        updateLiveDisplay();
-      }
-
       /* ============= Quick Score Extra ================= */
       function quickExtra(type) {
         const el = document.getElementById("extraRuns");
