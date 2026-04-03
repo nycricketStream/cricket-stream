@@ -1776,12 +1776,21 @@
 
       /* ============= Quick Score Extra ================= */
       function quickExtra(type) {
-        const runs = Number(document.getElementById("extraRuns").value) || 1;
+        const el = document.getElementById("extraRuns");
+      
+        let runs = 1;
+      
+        if (el) {
+          runs = Number(el.value);
+          if (isNaN(runs) || runs < 1) runs = 1;
+        }
+      
+        console.log("EXTRA CLICKED:", type, runs); // DEBUG
       
         const striker = document.getElementById('striker')?.value;
         const currentBowler = document.getElementById('bowler')?.value;
       
-        // SINGLE entry
+        // ✅ SINGLE ENTRY PER BALL
         liveHistory.push({
           type: 'extra',
           extra: type,
@@ -1791,14 +1800,12 @@
           overId: currentOverId
         });
       
-        // Update total
         liveTotal += runs;
       
         if (extrasStats[type] !== undefined) {
           extrasStats[type] += runs;
         }
       
-        // Bowler runs (only for wide/noball)
         if (currentBowler && (type === "wide" || type === "noball")) {
           ensureBowler(currentBowler);
           bowlerStats[currentBowler].runs += runs;
@@ -1815,19 +1822,13 @@
           if (currentBowler) {
             bowlerStats[currentBowler].balls++;
           }
-        }
-
-        if (type === "wide") {
+      
           if (runs % 2 === 1) rotateStrike();
         }
-        
+      
         if (type === "noball") {
           const runsOffBat = runs - 1;
           if (runsOffBat % 2 === 1) rotateStrike();
-        }
-        
-        if (type === "bye" || type === "legbye") {
-          if (runs % 2 === 1) rotateStrike();
         }
       
         updateLiveDisplay();
