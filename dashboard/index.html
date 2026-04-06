@@ -447,10 +447,16 @@
         <button onclick="applyPlayingXI()">Apply Playing XI</button>
       </div>
       <div id="branding" class="tab">
-        <h3>League Branding</h3>
-        League<input id="league">
-        Tournament<input id="tournament">
-        <button onclick="send('branding',{league:league.value,tournament:tournament.value})">Update Branding</button>
+        <h3>Broadcast Branding</h3>      
+        <label>Logo URL</label>
+        <input id="brandingLogo" placeholder="https://example.com/logo.png">     
+        <label>Logo Size</label>
+        <select id="brandingSize">
+          <option value="30">Small</option>
+          <option value="40" selected>Medium</option>
+          <option value="60">Large</option>
+        </select>   
+        <button onclick="updateBranding()">Update Branding</button>
       </div>
       <div id="scoreinfo" class="tab">
         <h3>Manual Score Info (Backup)</h3>
@@ -2847,6 +2853,16 @@
       function showModal(message) {
         document.getElementById("modalText").innerText = message;
         document.getElementById("customModal").style.display = "flex";
+      }
+
+      function updateBranding() {
+        const logo = document.getElementById("brandingLogo").value;
+        const size = document.getElementById("brandingSize").value;
+      
+        send('branding', {
+          logo: logo,
+          size: size
+        });
       }
       
       function closeModal() {
