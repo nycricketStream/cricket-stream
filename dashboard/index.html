@@ -2043,10 +2043,12 @@
           if (b.type === "run") symbol = b.runs;
           else if (b.type === "wicket") symbol = "W";
           else if (b.type === "extra") {
-            if (b.extra === "wide") symbol = "Wd";
-            if (b.extra === "noball") symbol = "Nb";
-            if (b.extra === "bye") symbol = "B";
-            if (b.extra === "legbye") symbol = "Lb";
+            const r = Number(b.runs) || 1;
+          
+            if (b.extra === "wide") symbol = r + "Wd";
+            else if (b.extra === "noball") symbol = r + "Nb";
+            else if (b.extra === "bye") symbol = r + "B";
+            else if (b.extra === "legbye") symbol = r + "Lb";
           }
       
           const el = document.createElement("div");
