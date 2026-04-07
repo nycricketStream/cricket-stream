@@ -2713,6 +2713,12 @@
           innings: innings.value,
           target: target.value,
           maxOvers: maxOvers.value
+          sponsorPresets: {
+            p1: document.getElementById("preset1").value,
+            p2: document.getElementById("preset2").value,
+            p3: document.getElementById("preset3").value,
+            p4: document.getElementById("preset4").value
+          }
         };
         await fetch('/api/matchSetup', {
           method: 'POST',
@@ -2767,6 +2773,12 @@
         if (!id) return;
         const res = await fetch('/api/matchSetup?id=' + encodeURIComponent(id));
         const data = await res.json();
+        if (data.sponsorPresets) {
+          document.getElementById("preset1").value = data.sponsorPresets.p1 || "";
+          document.getElementById("preset2").value = data.sponsorPresets.p2 || "";
+          document.getElementById("preset3").value = data.sponsorPresets.p3 || "";
+          document.getElementById("preset4").value = data.sponsorPresets.p4 || "";
+        }
         teamA.value = data.teamA || "";
         teamB.value = data.teamB || "";
         teamALogo.value = data.teamALogo || "";
@@ -2778,8 +2790,10 @@
         target.value = data.target || "";
         maxOvers.value = data.maxOvers || "";
         updateBattingTeams();
+        renderQueueUI();
         showModal("Match loaded");
       }
+      
       async function deleteMatch() {
         const id = document.getElementById('matchList').value;
         if (!id) return;
