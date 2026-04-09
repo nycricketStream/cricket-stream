@@ -1753,6 +1753,13 @@
           const runsOffBat = runs - 1;
           if (runsOffBat % 2 === 1) rotateStrike();
         }
+
+        if (type === "wide") {
+        const runsRun = runs - 1; // subtract the automatic wide    
+        if (runsRun % 2 === 1) {
+          rotateStrike();
+        }
+      }
       
         updateLiveDisplay();
       }
