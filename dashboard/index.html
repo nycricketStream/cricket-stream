@@ -2712,12 +2712,12 @@
           batting: batting.value,
           innings: innings.value,
           target: target.value,
-          maxOvers: maxOvers.value
+          maxOvers: maxOvers.value,
           sponsorPresets: {
-            p1: document.getElementById("preset1").value,
-            p2: document.getElementById("preset2").value,
-            p3: document.getElementById("preset3").value,
-            p4: document.getElementById("preset4").value
+            p1: document.getElementById("preset1")?.value || "",
+            p2: document.getElementById("preset2")?.value || "",
+            p3: document.getElementById("preset3")?.value || "",
+            p4: document.getElementById("preset4")?.value || ""
           }
         };
         await fetch('/api/matchSetup', {
@@ -2768,6 +2768,7 @@
           sel.add(new Option(id, id));
         });
       }
+      
       async function loadMatchFromCloud() {
         const id = document.getElementById('matchList').value;
         if (!id) return;
