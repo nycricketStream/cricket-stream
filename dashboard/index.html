@@ -571,21 +571,12 @@
               </select>
             </div>
             <div class="panel">
-              <h3>Extras</h3>            
-              <select id="extraRuns">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-              </select>
-            
+              <h3>Extras</h3>                      
               <div class="extra-buttons">
-                <button onclick="quickExtra('wide')">Wd</button>
-                <button onclick="quickExtra('noball')">Nb</button>
-                <button onclick="quickExtra('bye')">B</button>
-                <button onclick="quickExtra('legbye')">Lb</button>
+                <button onclick="openExtraModal('wide')">Wd</button>
+                <button onclick="openExtraModal('noball')">Nb</button>
+                <button onclick="openExtraModal('bye')">B</button>
+                <button onclick="openExtraModal('legbye')">Lb</button>
               </div>          
             </div>
           </div>
@@ -1295,6 +1286,7 @@
       let lastOverProcessed = -1;
       let currentOverId = 0;
       let newOverStarted = false;
+      let selectedExtraType = "";
 
       function calculateOvers() {
         return Math.floor(liveBalls / 6) + "." + (liveBalls % 6);
@@ -2886,12 +2878,143 @@
           size: size
         });
       }
+
+      function smartExtra(type, totalRuns, runsTaken) {
+        const striker = document.getElementById('striker')?.value;
+        const currentBowler = document.getElementById('bowler')?.value;
+      
+        liveHistory.push({
+          type: 'extra',
+          extra: type,
+          runs: totalRuns,
+          bowler: currentBowler,
+          striker: striker,
+          overId: currentOverId
+        });
+      
+        liveTotal += totalRuns;
+      
+        if (extrasStats[type] !== undefined) {
+          extrasStats[type] += totalRuns;
+        }
+      
+        // ===== BALL COUNT =====
+        if (type === "bye" || type === "legbye") {
+          liveBalls++;
+      
+          if (striker) {
+            ensureBatsman(striker);
+            batsmanStats[striker].balls++;
+          }
+      
+          if (currentBowler) {
+            bowlerStats[currentBowler].balls++;
+          }
+        }
+      
+        // ===== STRIKE ROTATION =====
+      
+        // wides
+        if (type === "wide") {
+          if (runsTaken % 2 === 1) rotateStrike();
+        }
+      
+        // no ball
+        if (type === "noball") {
+          if (runsTaken % 2 === 1) rotateStrike();
+        }
+      
+        // byes / leg byes
+        if (type === "bye" || type === "legbye") {
+          if (runsTaken % 2 === 1) rotateStrike();
+        }
+      
+        updateLiveDisplay();
+      }
+
+      function openExtraModal(type) {
+          selectedExtraType = type;
+        
+          const titleMap = {
+            wide: "Wide",
+            noball: "No Ball",
+            bye: "Bye",
+            legbye: "Leg Bye"
+          };
+        
+          document.getElementById("extraTitle").innerText = titleMap[type];
+        
+          const container = document.getElementById("extraRunButtons");
+          container.innerHTML = "";
+        
+          // generate buttons 0–4
+          for (let i = 0; i <= 4; i++) {
+            const btn = document.createElement("button");
+            btn.innerText = i;
+            btn.onclick = () => selectExtraRuns(i);
+            container.appendChild(btn);
+          }
+        
+          document.getElementById("extraModal").style.display = "flex";
+        }
+        
+        function closeExtraModal() {
+          document.getElementById("extraModal").style.display = "none";
+        }
+        
+        function selectExtraRuns(runsTaken) {
+          closeExtraModal();
+        
+          let totalRuns = 0;
+        
+          if (selectedExtraType === "wide") {
+            totalRuns = 1 + runsTaken;
+          } else if (selectedExtraType === "noball") {
+            totalRuns = 1 + runsTaken;
+          } else {
+            totalRuns = runsTaken;
+          }
+        
+          smartExtra(selectedExtraType, totalRuns, runsTaken);
+        }
       
       function closeModal() {
         document.getElementById("customModal").style.display = "none";
       }
+      
     </script>
 
+        <div id="extraModal" style="
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.7);
+      z-index:99999;
+      justify-content:center;
+      align-items:center;
+    ">
+      <div style="
+        background:#020617;
+        padding:20px;
+        border-radius:12px;
+        width:300px;
+        text-align:center;
+        border:1px solid #1f2937;
+      ">
+        <h3 id="extraTitle">Extra</h3>
+        <div style="margin:10px 0;">Runs taken:</div>
+        <div id="extraRunButtons" style="
+          display:grid;
+          grid-template-columns:repeat(4,1fr);
+          gap:8px;
+        "></div>    
+        <button style="margin-top:12px;background:#374151" onclick="closeExtraModal()">Cancel</button>
+      </div>
+    </div>
+    
     <div id="customModal" style="
       display:none;
       position:fixed;
