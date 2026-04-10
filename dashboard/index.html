@@ -497,7 +497,7 @@
                         <button onclick="addRun(3)">3</button>
                         <button onclick="addRun(4)">4</button>
                         <button onclick="addRun(6)">6</button>
-                        <button onclick="addWicket()">OUT</button>
+                        <button onclick="openWicketModal()">OUT</button>
                         <button onclick="undoLast()">UNDO</button>
                      </div>
                      <h4 style="margin-top:12px">Dismissal</h4>
@@ -2891,6 +2891,61 @@
             // ✅ 7. UPDATE UI
             updateLiveDisplay();
           }
+
+         function smartWicket(type, fielder) {
+           if (!validateBeforeBall()) return;
+         
+           const striker = document.getElementById('striker')?.value;
+           const currentBowler = document.getElementById('bowler')?.value;
+         
+           ensureBowler(currentBowler);
+           ensureBatsman(striker);
+         
+           let dismissalText = type;
+         
+           if (type === "Caught") {
+             dismissalText = `Caught ${fielder} b ${currentBowler}`;
+           } else if (type === "Run Out") {
+             dismissalText = `Run Out (${fielder})`;
+           } else if (type === "Stumped") {
+             dismissalText = `Stumped ${fielder} b ${currentBowler}`;
+           } else {
+             dismissalText = `${type} b ${currentBowler}`;
+           }
+         
+           lastOutBatsman = striker;
+           lastDismissal = dismissalText;
+           dismissalShown = false;
+         
+           liveHistory.push({
+             type: 'wicket',
+             bowler: currentBowler,
+             striker: striker,
+             dismissal: dismissalText,
+             scoreAtWicket: liveTotal,
+             wicketNumber: liveWickets + 1,
+             overId: currentOverId
+           });
+         
+           liveWickets++;
+           liveBalls++;
+         
+           batsmanStats[striker].balls++;
+           batsmanStats[striker].out = true;
+           batsmanStats[striker].dismissal = dismissalText;
+         
+           bowlerStats[currentBowler].balls++;
+         
+           if (type !== "Run Out") {
+             bowlerStats[currentBowler].wickets++;
+           }
+         
+           triggerMoment('WICKET');
+         
+           showNextBatter();
+         
+           updateLiveDisplay();
+         }
          
          function openExtraModal(type) {
              selectedExtraType = type;
@@ -2921,7 +2976,34 @@
            function closeExtraModal() {
              document.getElementById("extraModal").style.display = "none";
            }
-           
+
+          function openWicketModal() {
+              document.getElementById("wicketModal").style.display = "flex";    
+              const typeSelect = document.getElementById("wicketType");
+              const fielderSection = document.getElementById("fielderSection");
+            
+              typeSelect.onchange = () => {
+                const type = typeSelect.value;
+            
+                if (type === "Caught" || type === "Run Out" || type === "Stumped") {
+                  fielderSection.style.display = "block";
+                } else {
+                  fielderSection.style.display = "none";
+                }
+              };
+            }
+            
+            function closeWicketModal() {
+              document.getElementById("wicketModal").style.display = "none";
+            }
+            
+            function confirmWicket() {
+              const type = document.getElementById("wicketType").value;
+              const fielder = document.getElementById("fielderName").value;   
+              closeWicketModal();        
+              smartWicket(type, fielder);
+            }
+         
            function selectExtraRuns(runsTaken) {
              closeExtraModal();
            
@@ -2943,6 +3025,44 @@
          }
          
       </script>
+
+      <div id="wicketModal" style="
+        display:none;
+        position:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        background:rgba(0,0,0,0.7);
+        z-index:99999;
+        justify-content:center;
+        align-items:center;
+      ">
+        <div style="
+          background:#020617;
+          padding:20px;
+          border-radius:12px;
+          width:320px;
+          border:1px solid #1f2937;
+        ">
+          <h3>Wicket</h3>  
+          <label>Dismissal Type</label>
+          <select id="wicketType">
+            <option value="Bowled">Bowled</option>
+            <option value="Caught">Caught</option>
+            <option value="LBW">LBW</option>
+            <option value="Run Out">Run Out</option>
+            <option value="Stumped">Stumped</option>
+          </select>     
+          <div id="fielderSection" style="display:none;">
+            <label>Fielder</label>
+            <input id="fielderName" placeholder="Fielder name">
+          </div>   
+          <button onclick="confirmWicket()">Confirm</button>
+          <button onclick="closeWicketModal()" style="background:#374151">Cancel</button>
+        </div>
+      </div>
+      
       <div id="extraModal" style="
          display:none;
          position:fixed;
