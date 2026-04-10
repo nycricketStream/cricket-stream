@@ -500,19 +500,6 @@
                         <button onclick="openWicketModal()">OUT</button>
                         <button onclick="undoLast()">UNDO</button>
                      </div>
-                     <h4 style="margin-top:12px">Dismissal</h4>
-                     <select id="dismissalType">
-                        <option value="Bowled">Bowled</option>
-                        <option value="Caught">Caught</option>
-                        <option value="LBW">LBW</option>
-                        <option value="Run Out">Run Out</option>
-                        <option value="Stumped">Stumped</option>
-                        <option value="Hit Wicket">Hit Wicket</option>
-                        <option value="Obstructing the Field">Obstructing the Field</option>
-                        <option value="Hit the Ball Twice">Hit the Ball Twice</option>
-                        <option value="Handled the Ball">Handled the Ball</option>
-                        <option value="Timed Out">Timed Out</option>
-                     </select>
                   </div>
                   <div class="panel">
                      <h3>Extras</h3>
@@ -693,7 +680,7 @@
             <button onclick="hideBreak()" style="background:#991b1b">Hide Graphic</button>
             <hr>
             <h3>Full Scoreboard</h3>
-            <button onclick="sendFullScorecard()">📊 Show Scorecard</button>
+            <button onclick="showScorecard()">Show Scorecard</button>
             <button onclick="hideFullScorecard()" style="background:#991b1b">Hide Scorecard</button>
             <hr>
             <h3>Graphic Queue</h3>
@@ -1508,97 +1495,7 @@
          
          /* =============== Add Wicket ========= */
          function addWicket() {
-             if (!validateBeforeBall()) return;
-           
-             const striker = document.getElementById('striker')?.value;
-             const currentBowler = document.getElementById('bowler')?.value;
-             const dismissal = document.getElementById('dismissalType')?.value;
-           
-             lastOutBatsman = striker;
-             lastDismissal = dismissal + " b " + currentBowler;
-             dismissalShown = false;
-           
-             liveHistory.push({
-               type: 'wicket',
-               bowler: currentBowler,
-               striker: striker,
-               dismissal: dismissal,
-               scoreAtWicket: liveTotal,
-               wicketNumber: liveWickets + 1,
-               overId: currentOverId
-             });
-           
-             liveWickets++;
-             liveBalls++;
-             ;
-           
-             partnership50Shown = false;
-             partnership100Shown = false;
-           
-             if (striker) {
-               ensureBatsman(striker);
-               batsmanStats[striker].balls++;
-               batsmanStats[striker].out = true;
-               batsmanStats[striker].dismissal = dismissal;
-               batsmanStats[striker].bowler = currentBowler;
-             }
-           
-             if (currentBowler) {
-               ensureBowler(currentBowler);
-               bowlerStats[currentBowler].balls++;
-               bowlerStats[currentBowler].wickets++;
-             }
-           
-             triggerMoment('WICKET');
-           
-             send('fallWicket', {
-               player: striker,
-               score: liveTotal + "/" + liveWickets,
-               overs: calculateOvers()
-             });
-           
-             suppressNextDismissal = true;
-           
-             if (isOverComplete() && lastOverProcessed !== currentOverId) {
-           
-               lastOverProcessed = currentOverId;
-               newOverStarted = true;
-               lastOverBowler = currentBowler;
-           
-               const strikerSel = document.getElementById('striker');
-               if (strikerSel) strikerSel.value = "";
-           
-               lockedOut = true;
-               awaitingNewBatsman = true;
-               showNextBatter();
-         
-               rotateStrike();
-           
-               const bowlerSelect = document.getElementById('bowler');
-               bowlerSelect.value = "";
-               bowlerSelect.classList.add("bowler-warning");
-               bowlerSelect.focus();
-           
-               setScoringEnabled(false);
-           
-               sendEndOfOverGraphic();
-           
-             } else {        
-               const strikerSel = document.getElementById('striker');
-               if (strikerSel) strikerSel.value = "";
-           
-               lockedOut = true;
-               awaitingNewBatsman = true;
-               showNextBatter();
-             }
-           
-             if (isOverComplete()) {
-               currentOverId++;
-             }
-           
-             lastBowler = currentBowler;
-           
-             updateLiveDisplay();
+            // removed - using smartWicket()
            }
          
          /* ============== Show Next Batter ======== */
@@ -2676,6 +2573,36 @@
            });
            showModal("Match saved");
            loadMatchList();
+         }
+
+         function showScorecard() {
+           const batting = Object.entries(batsmanStats).map(([name, stats]) => ({
+             name,
+             runs: stats.runs || 0,
+             balls: stats.balls || 0,
+             fours: stats.fours || 0,
+             sixes: stats.sixes || 0,
+             out: stats.out || false,
+             dismissal: stats.dismissal || ""
+           }));
+         
+           const bowling = Object.entries(bowlerStats).map(([name, stats]) => ({
+             name,
+             overs: Math.floor(stats.balls / 6) + "." + (stats.balls % 6),
+             runs: stats.runs || 0,
+             wickets: stats.wickets || 0
+           }));
+         
+           send('scorecard', {
+             teamA: teamA.value,
+             teamB: teamB.value,
+             batting,
+             bowling,
+             total: liveTotal,
+             wickets: liveWickets,
+             overs: Math.floor(liveBalls / 6) + "." + (liveBalls % 6),
+             extras: extrasStats
+           });
          }
          
          function sendFullScorecard() {
