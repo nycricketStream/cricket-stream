@@ -2901,17 +2901,23 @@
            ensureBowler(currentBowler);
            ensureBatsman(striker);
          
-           let dismissalText = type;
-         
-           if (type === "Caught") {
-             dismissalText = `Caught ${fielder} b ${currentBowler}`;
-           } else if (type === "Run Out") {
-             dismissalText = `Run Out (${fielder})`;
-           } else if (type === "Stumped") {
-             dismissalText = `Stumped ${fielder} b ${currentBowler}`;
-           } else {
-             dismissalText = `${type} b ${currentBowler}`;
-           }
+           let dismissalText = "";
+
+            if (type === "Caught") {
+              dismissalText = `Caught ${fielder} b ${currentBowler}`;
+            }
+            else if (type === "Run Out") {
+              dismissalText = `Run Out (${fielder})`;
+            }
+            else if (type === "Stumped") {
+              dismissalText = `Stumped ${fielder} b ${currentBowler}`;
+            }
+            else if (type === "Bowled" || type === "LBW" || type === "Hit Wicket") {
+              dismissalText = `${type} b ${currentBowler}`;
+            }
+            else {
+              dismissalText = type;
+            }
          
            lastOutBatsman = striker;
            lastDismissal = dismissalText;
@@ -2936,9 +2942,15 @@
          
            bowlerStats[currentBowler].balls++;
          
-           if (type !== "Run Out") {
-             bowlerStats[currentBowler].wickets++;
-           }
+           if (
+              type === "Bowled" ||
+              type === "Caught" ||
+              type === "LBW" ||
+              type === "Stumped" ||
+              type === "Hit Wicket"
+            ) {
+              bowlerStats[currentBowler].wickets++;
+            }
          
            triggerMoment('WICKET');
          
@@ -2977,12 +2989,40 @@
              document.getElementById("extraModal").style.display = "none";
            }
 
-          function openWicketModal() {
-              document.getElementById("wicketModal").style.display = "flex";    
+         function openWicketModal() {
+              document.getElementById("wicketModal").style.display = "flex";
+            
               const typeSelect = document.getElementById("wicketType");
               const fielderSection = document.getElementById("fielderSection");
+              const fielderSelect = document.getElementById("fielderSelect");
             
-              typeSelect.onchange = () => {
+              // ✅ Populate fielders from bowling team
+              const battingTeam = document.getElementById("batting")?.value;
+              const teamA = document.getElementById("teamA")?.value;
+              const teamB = document.getElementById("teamB")?.value;
+            
+              let fieldingPlayers = [];
+            
+              if (battingTeam === teamA) {
+                fieldingPlayers = document.getElementById("teamBPlayers").value.split("\n");
+              } else {
+                fieldingPlayers = document.getElementById("teamAPlayers").value.split("\n");
+              }
+            
+              fielderSelect.innerHTML = "";
+            
+              fieldingPlayers
+                .map(p => p.trim())
+                .filter(Boolean)
+                .forEach(p => {
+                  const opt = document.createElement("option");
+                  opt.value = p;
+                  opt.text = p;
+                  fielderSelect.appendChild(opt);
+                });
+            
+              // ✅ Show/hide fielder dropdown
+              function updateFielderVisibility() {
                 const type = typeSelect.value;
             
                 if (type === "Caught" || type === "Run Out" || type === "Stumped") {
@@ -2990,7 +3030,11 @@
                 } else {
                   fielderSection.style.display = "none";
                 }
-              };
+              }
+            
+              typeSelect.onchange = updateFielderVisibility;
+            
+              updateFielderVisibility(); // run once on open
             }
             
             function closeWicketModal() {
@@ -2999,8 +3043,10 @@
             
             function confirmWicket() {
               const type = document.getElementById("wicketType").value;
-              const fielder = document.getElementById("fielderName").value;   
-              closeWicketModal();        
+              const fielder = document.getElementById("fielderSelect").value;
+            
+              closeWicketModal();
+            
               smartWicket(type, fielder);
             }
          
@@ -3047,17 +3093,23 @@
         ">
           <h3>Wicket</h3>  
           <label>Dismissal Type</label>
-          <select id="wicketType">
-            <option value="Bowled">Bowled</option>
-            <option value="Caught">Caught</option>
-            <option value="LBW">LBW</option>
-            <option value="Run Out">Run Out</option>
-            <option value="Stumped">Stumped</option>
-          </select>     
-          <div id="fielderSection" style="display:none;">
-            <label>Fielder</label>
-            <input id="fielderName" placeholder="Fielder name">
-          </div>   
+         <select id="wicketType">
+           <option value="Bowled">Bowled</option>
+           <option value="Caught">Caught</option>
+           <option value="LBW">LBW</option>
+           <option value="Run Out">Run Out</option>
+           <option value="Stumped">Stumped</option>
+           <option value="Hit Wicket">Hit Wicket</option>
+           <option value="Obstructing the Field">Obstructing the Field</option>
+           <option value="Hit the Ball Twice">Hit the Ball Twice</option>
+           <option value="Handled the Ball">Handled the Ball</option>
+           <option value="Timed Out">Timed Out</option>
+         </select>
+         
+         <div id="fielderSection" style="display:none;">
+           <label>Fielder</label>
+           <select id="fielderSelect"></select>
+         </div>
           <button onclick="confirmWicket()">Confirm</button>
           <button onclick="closeWicketModal()" style="background:#374151">Cancel</button>
         </div>
