@@ -2954,8 +2954,39 @@
          
            triggerMoment('WICKET');
          
-           showNextBatter();
-         
+           // ✅ LOCK SCORING UNTIL NEW BATSMAN
+            lockedOut = true;
+            awaitingNewBatsman = true;
+            
+            // clear striker
+            const strikerSel = document.getElementById('striker');
+            if (strikerSel) strikerSel.value = "";
+            
+            // show UI
+            showNextBatter();
+
+            if (isOverComplete() && lastOverProcessed !== currentOverId) {
+              lastOverProcessed = currentOverId;
+              newOverStarted = true;
+            
+              // rotate strike at end of over
+              rotateStrike();
+            
+              lastOverBowler = currentBowler;
+            
+              const bowlerSelect = document.getElementById('bowler');
+              bowlerSelect.value = "";
+              bowlerSelect.classList.add("bowler-warning");
+              bowlerSelect.focus();
+            
+              setScoringEnabled(false);
+            
+              sendEndOfOverGraphic();
+            }
+
+            if (isOverComplete()) {
+              currentOverId++;
+            }         
            updateLiveDisplay();
          }
          
