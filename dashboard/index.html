@@ -1371,6 +1371,38 @@
                return text;
              })()
            });
+
+           send('fullScorecard', {
+              team: batting.value,
+              overs: calculateOvers(),
+              score: liveTotal + "/" + liveWickets,
+            
+              playingXI: (
+                batting.value === teamA.value
+                  ? teamAPlayers.value.split('\n')
+                  : teamBPlayers.value.split('\n')
+              ).map(p => p.trim()).filter(Boolean),
+            
+              batsmen: Object.fromEntries(
+                Object.entries(batsmanStats).map(([name, s]) => [
+                  name,
+                  {
+                    name: name,
+                    runs: s.runs,
+                    balls: s.balls,
+                    out: s.out,
+                    dismissal: s.dismissal || ""
+                  }
+                ])
+              ),
+            
+              extras: (
+                extrasStats.wide +
+                extrasStats.noball +
+                extrasStats.bye +
+                extrasStats.legbye
+              )
+            }); 
            suppressNextDismissal = false;
            renderBowlerStats();
            renderBatsmanStats();
