@@ -1378,10 +1378,14 @@
               score: liveTotal + "/" + liveWickets,
             
               playingXI: (
-                batting.value === teamA.value
-                  ? teamAPlayers.value.split('\n')
-                  : teamBPlayers.value.split('\n')
-              ).map(p => p.trim()).filter(Boolean),
+                 (batting.value === teamA.value
+                   ? teamAPlayers.value
+                   : teamBPlayers.value
+                 )
+                 .split('\n')
+                 .map(p => p.trim())
+                 .filter(p => p.length > 0)
+               ),
             
               batsmen: Object.fromEntries(
                 Object.entries(batsmanStats).map(([name, s]) => [
