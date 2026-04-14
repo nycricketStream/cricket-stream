@@ -1371,42 +1371,6 @@
                return text;
              })()
            });
-
-           send('fullScorecard', {
-              team: batting.value,
-              overs: calculateOvers(),
-              score: liveTotal + "/" + liveWickets,
-            
-              playingXI: (
-                 (batting.value === teamA.value
-                   ? teamAPlayers.value
-                   : teamBPlayers.value
-                 )
-                 .split('\n')
-                 .map(p => p.trim())
-                 .filter(p => p.length > 0)
-               ),
-            
-              batsmen: Object.fromEntries(
-                Object.entries(batsmanStats).map(([name, s]) => [
-                  name,
-                  {
-                    name: name,
-                    runs: s.runs,
-                    balls: s.balls,
-                    out: s.out,
-                    dismissal: s.dismissal || ""
-                  }
-                ])
-              ),
-            
-              extras: (
-                extrasStats.wide +
-                extrasStats.noball +
-                extrasStats.bye +
-                extrasStats.legbye
-              )
-            }); 
            suppressNextDismissal = false;
            renderBowlerStats();
            renderBatsmanStats();
@@ -2612,51 +2576,46 @@
          }
 
          function showScorecard() {
-           const batting = Object.entries(batsmanStats).map(([name, stats]) => ({
-             name,
-             runs: stats.runs || 0,
-             balls: stats.balls || 0,
-             fours: stats.fours || 0,
-             sixes: stats.sixes || 0,
-             out: stats.out || false,
-             dismissal: stats.dismissal || ""
-           }));
-         
-           const bowling = Object.entries(bowlerStats).map(([name, stats]) => ({
-             name,
-             overs: Math.floor(stats.balls / 6) + "." + (stats.balls % 6),
-             runs: stats.runs || 0,
-             wickets: stats.wickets || 0
-           }));
-         
-           send('scorecard', {
-             teamA: teamA.value,
-             teamB: teamB.value,
-             batting,
-             bowling,
-             total: liveTotal,
-             wickets: liveWickets,
-             overs: Math.floor(liveBalls / 6) + "." + (liveBalls % 6),
-             extras: extrasStats
-           });
+           sendFullScoreCard();
          }
          
          function sendFullScorecard() {
+            const playingXI = (
+             (batting.value === teamA.value
+               ? teamAPlayers.value
+               : teamBPlayers.value
+             )
+             .split('\n')
+             .map(p => p.trim())
+             .filter(p => p.length > 0)
+           );
+         
            send('fullScorecard', {
-             teamA: teamA.value,
-             teamB: teamB.value,
-             battingTeam: batting.value,
-         
-             total: liveTotal + "/" + liveWickets,
+             team: batting.value,
              overs: calculateOvers(),
-             runRate: calculateRR(),
+             score: liveTotal + "/" + liveWickets,
          
-             batsmen: batsmanStats,
-             bowlers: bowlerStats,
-             extras: extrasStats,
+             playingXI: playingXI,
          
-             thisOver: getThisOver(),
-             runsPerOver: getRunsPerOver()
+             batsmen: Object.fromEntries(
+               Object.entries(batsmanStats).map(([name, s]) => [
+                 name,
+                 {
+                   name: name,
+                   runs: s.runs,
+                   balls: s.balls,
+                   out: s.out,
+                   dismissal: s.dismissal || ""
+                 }
+               ])
+             ),
+         
+             extras: (
+               extrasStats.wide +
+               extrasStats.noball +
+               extrasStats.bye +
+               extrasStats.legbye
+             )
            });
          }
          
