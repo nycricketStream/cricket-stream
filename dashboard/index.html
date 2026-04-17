@@ -2590,33 +2590,39 @@
              .filter(p => p.length > 0)
            );
          
-           send('fullScorecard', {
-             team: batting.value,
-             overs: calculateOvers(),
-             score: liveTotal + "/" + liveWickets,
-         
-             playingXI: playingXI,
-         
+          send('fullScorecard', {
+              team: batting.value,
+              overs: calculateOvers(),
+              score: liveTotal + "/" + liveWickets,
+            
+              // ✅ ADD THESE 2 LINES
+              striker: document.getElementById('striker')?.value || "",
+              nonStriker: document.getElementById('nonStriker')?.value || "",
+            
+              playingXI: (
+                batting.value === teamA.value
+                  ? teamAPlayers.value.split('\n')
+                  : teamBPlayers.value.split('\n')
+              ).map(p => p.trim()).filter(Boolean),
+            
              batsmen: Object.fromEntries(
-               Object.entries(batsmanStats).map(([name, s]) => [
-                 name,
-                 {
-                   name: name,
-                   runs: s.runs,
-                   balls: s.balls,
-                   out: s.out,
-                   dismissal: s.dismissal || ""
-                 }
-               ])
-             ),
-         
-             extras: (
-               extrasStats.wide +
-               extrasStats.noball +
-               extrasStats.bye +
-               extrasStats.legbye
-             )
-           });
+                 Object.entries(batsmanStats).map(([name, s]) => [
+                   name,
+                   {
+                     name: name,
+                     runs: s.runs,
+                     balls: s.balls,
+                     out: s.out,
+                     dismissal: s.dismissal || ""
+                   }
+                 ])
+               ),
+              extras:
+                extrasStats.wide +
+                extrasStats.noball +
+                extrasStats.bye +
+                extrasStats.legbye
+            });
          }
          
          function hideFullScorecard() {
