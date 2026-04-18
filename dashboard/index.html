@@ -2589,6 +2589,12 @@
              .map(p => p.trim())
              .filter(p => p.length > 0)
            );
+
+         let lastWicket = "";
+            if (lastOutBatsman && batsmanStats[lastOutBatsman]) {
+                const p = batsmanStats[lastOutBatsman];
+                lastWicketText = `${lastOutBatsman} ${p.runs} (${p.balls})`;
+          }
          
           send('fullScorecard', {
               team: batting.value,
@@ -2617,6 +2623,7 @@
                    }
                  ])
                ),
+             lastWicket: lastWicketText,
               extras:
                 extrasStats.wide +
                 extrasStats.noball +
