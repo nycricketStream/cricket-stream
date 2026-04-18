@@ -2590,13 +2590,13 @@
              .filter(p => p.length > 0)
            );
 
-         let lastWicketText = "";
+           let lastWicketText = "";
 
-         Object.values(batsmanStats).forEach(p => {
-             if (p.out && p.dismissal) {
-                 lastWicketText = `${p.name} ${p.runs} (${p.balls})`;
-             }
-         });
+            Object.entries(batsmanStats).forEach(([name, p]) => {
+                if (p.out && p.dismissal) {
+                    lastWicketText = `${name} ${p.runs} (${p.balls})`;
+                }
+            });
          
           send('fullScorecard', {
               team: batting.value,
