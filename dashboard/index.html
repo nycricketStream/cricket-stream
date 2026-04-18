@@ -2591,10 +2591,12 @@
            );
 
          let lastWicketText = "";
-            if (lastOutBatsman && batsmanStats[lastOutBatsman]) {
-                const p = batsmanStats[lastOutBatsman];
-                lastWicketText = `${lastOutBatsman} ${p.runs} (${p.balls})`;
-          }
+
+         Object.values(batsmanStats).forEach(p => {
+             if (p.out && p.dismissal) {
+                 lastWicketText = `${p.name} ${p.runs} (${p.balls})`;
+             }
+         });
          
           send('fullScorecard', {
               team: batting.value,
