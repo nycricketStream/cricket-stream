@@ -1105,6 +1105,7 @@
            liveHistory = [];
            bowlerStats = {};
            batsmanStats = {};
+            battingOrderCounter = 1;
            extrasStats = {
              wide: 0,
              noball: 0,
@@ -1173,6 +1174,7 @@
          let liveHistory = [];
          let bowlerStats = {};
          let batsmanStats = {};
+         let battingOrderCounter = 1;
          let editingBallIndex = -1;
          let partnership50Shown = false;
          let partnership100Shown = false;
@@ -1695,7 +1697,8 @@
                dismissal: "",
                bowler: "",
                fiftyShown: false,
-               hundredShown: false
+               hundredShown: false,
+               order: battingOrderCounter++
              };
            }
          }
@@ -2621,7 +2624,8 @@
                      runs: s.runs,
                      balls: s.balls,
                      out: s.out,
-                     dismissal: s.dismissal || ""
+                     dismissal: s.dismissal || "",
+                     order: s.order || 999
                    }
                  ])
                ),
