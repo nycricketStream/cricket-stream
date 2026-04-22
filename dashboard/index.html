@@ -2614,6 +2614,17 @@
               ballsRemaining > 0 && runsNeeded > 0
                 ? (runsNeeded / ballsRemaining) * 6
                 : 0;
+
+            const bowlersArray = Object.keys(bowlerStats).map(name => {
+                const b = bowlerStats[name];
+            
+                return {
+                    name: name,
+                    overs: Math.floor(b.balls / 6) + "." + (b.balls % 6),
+                    runs: b.runs,
+                    wickets: b.wickets
+                };
+            });
          
           send('fullScorecard', {
               team: batting.value,
@@ -2631,7 +2642,8 @@
               ).map(p => p.trim()).filter(Boolean),
                target: targetValue,
                requiredRunRate: requiredRR,
-            
+             bowlingTeam: batting.value === teamA.value ? teamB.value : teamA.value,
+             bowlers: bowlersArray,
              batsmen: Object.fromEntries(
                  Object.entries(batsmanStats).map(([name, s]) => [
                    name,
