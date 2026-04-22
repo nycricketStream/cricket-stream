@@ -2600,6 +2600,20 @@
                     lastWicketText = `${name} ${p.runs} (${p.balls})`;
                 }
             });
+
+            const targetValue = parseInt(document.getElementById('target')?.value || 0);
+            const maxOversValue = parseInt(document.getElementById('maxOvers')?.value || 20);
+            
+            const ballsBowled = liveBalls;
+            const ballsTotal = maxOversValue * 6;
+            const ballsRemaining = ballsTotal - ballsBowled;
+            
+            const runsNeeded = targetValue - liveTotal;
+            
+            const requiredRR =
+              ballsRemaining > 0 && runsNeeded > 0
+                ? (runsNeeded / ballsRemaining) * 6
+                : 0;
          
           send('fullScorecard', {
               team: batting.value,
@@ -2615,6 +2629,8 @@
                   ? teamAPlayers.value.split('\n')
                   : teamBPlayers.value.split('\n')
               ).map(p => p.trim()).filter(Boolean),
+               target: targetValue,
+               requiredRunRate: requiredRR,
             
              batsmen: Object.fromEntries(
                  Object.entries(batsmanStats).map(([name, s]) => [
