@@ -716,6 +716,7 @@
          const channel = pusher.subscribe('broadcast');
          let lastMoment = "";
          let lastMomentTime = 0;
+         let lastDismissalSent = "";
          const teamA = document.getElementById('teamA');
          const teamB = document.getElementById('teamB');
          const batting = document.getElementById('batting');
@@ -1364,14 +1365,13 @@
              thisOver: thisOver,
              runsPerOver: getRunsPerOver(),
              dismissal: (function() {
-               if (suppressNextDismissal) return "";
-               if (dismissalShown) return "";
-               if (!lastOutBatsman) return "";
-               const text = lastOutBatsman + " " + outRuns + " (" + outBalls + ") " + lastDismissal;
-               //  mark as shown so it doesn't repeat
-               dismissalShown = true;
-               return text;
-             })()
+                 if (!lastOutBatsman) return "";
+                 const text =
+                   lastOutBatsman + " " + outRuns + " (" + outBalls + ") " + lastDismissal;
+                 if (text === lastDismissalSent) return "";
+                 lastDismissalSent = text;
+                 return text;
+               })()
            });
            suppressNextDismissal = false;
            renderBowlerStats();
@@ -1468,7 +1468,7 @@
          }
          
          if (isOverComplete() && lastOverProcessed !== currentOverId) {
-         
+           lastDismissalSent = "";
            lastOverProcessed = currentOverId;
            newOverStarted = true;
            // rotate strike at end of over
