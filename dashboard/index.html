@@ -962,53 +962,46 @@
            document.getElementById('teamAPlayers').addEventListener('input', updateStrikerDropdown);
            document.getElementById('teamBPlayers').addEventListener('input', updateStrikerDropdown);
            document.getElementById('bowler').addEventListener('change', function() {
-             if (!newOverStarted && liveBalls  !== 0 && this.value === lastOverBowler && liveBalls  % 6 === 0) {
-               showModal("Cannot bowl consecutive overs");
-               this.value = "";
-               return;
-             }
+
+              const bowler = this.value;
             
-              if (bowler === previousBowler) {
-                 showModal("Cannot bowl consecutive overs");
-                 return;
+              if (!newOverStarted && liveBalls !== 0 && bowler === lastOverBowler && liveBalls % 6 === 0) {
+                showModal("Cannot bowl consecutive overs");
+                this.value = "";
+                return;
               }
-             this.classList.remove("bowler-warning");
-             setScoringEnabled(true);
-             const bowler = this.value;
-             currentOverBalls = 0;
-           const isReturning = bowlersUsed.has(bowler);
-              
-               let stats = "0-0 (0.0)";
-               if (bowlerStats[bowler]) {
-                   const b = bowlerStats[bowler];
-                   const overs = Math.floor(b.balls / 6) + "." + (b.balls % 6);
-                   stats = b.wickets + "-" + b.runs + " (" + overs + ")";
-               }
-               
-               // ✅ ALWAYS send bowler info
-               setTimeout(() => queueGraphic({
-                   team: (batting.value === teamA.value ? teamB.value : teamA.value),
-                   label: isReturning ? 'BOWLER' : 'NEW BOWLER',
-                   name: bowler,
-                   hand: stats,
-                   image: '',
-                   isReturning: isReturning   // ✅ NEW FLAG
-               }), 400);
-               
-               // ✅ track bowler usage
-               bowlersUsed.add(bowler);
-               setTimeout(() => queueGraphic({
-                 team: (batting.value === teamA.value ? teamB.value : teamA.value),
-                 label: 'NEW BOWLER',
-                 name: bowler,
-                 hand: stats,
-                 image: ''
-               }), 400);
-             }
-             previousBowler = bowler;
-             newOverStarted = false;
-             updateLiveDisplay();
-           });
+            
+              this.classList.remove("bowler-warning");
+              setScoringEnabled(true);
+            
+              currentOverBalls = 0;
+            
+              const isReturning = bowlersUsed.has(bowler);
+            
+              let stats = "0-0 (0.0)";
+              if (bowlerStats[bowler]) {
+                const b = bowlerStats[bowler];
+                const overs = Math.floor(b.balls / 6) + "." + (b.balls % 6);
+                stats = b.wickets + "-" + b.runs + " (" + overs + ")";
+              }
+            
+              // ✅ SEND ONLY ONCE
+              setTimeout(() => queueGraphic({
+                team: (batting.value === teamA.value ? teamB.value : teamA.value),
+                label: isReturning ? 'BOWLER' : 'NEW BOWLER',
+                name: bowler,
+                hand: stats,
+                image: '',
+                isReturning: isReturning
+              }), 400);
+            
+              bowlersUsed.add(bowler);
+            
+              previousBowler = bowler;
+              newOverStarted = false;
+            
+              updateLiveDisplay();
+            });
            document.getElementById('striker').addEventListener('change', function() {
               const striker = this.value;
             
