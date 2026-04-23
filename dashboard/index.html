@@ -1014,21 +1014,39 @@
              updateLiveDisplay();
            });
            document.getElementById('nonStriker').addEventListener('change', function() {
-             const striker = document.getElementById('striker').value;
-             if (!validateBatsman(this.value)) {
-               this.value = "";
-               return;
-             }
-             if (this.value && this.value === striker) {
-               showModal("Striker and Non-Striker cannot be the same player.");
-               this.value = "";
-               return;
-             }
-             if (this.value) {
-               lockedOut = false;
-             }
-             updateLiveDisplay();
-           });
+              const player = this.value;
+              const striker = document.getElementById('striker').value;
+            
+              if (!validateBatsman(player)) {
+                this.value = "";
+                return;
+              }
+            
+              if (player && player === striker) {
+                showModal("Striker and Non-Striker cannot be the same player.");
+                this.value = "";
+                return;
+              }
+            
+              if (!player) return;
+            
+              // ✅ THIS IS THE FIX — TRIGGER NEW BATSMAN
+              if (awaitingNewBatsman || lockedOut) {
+            
+                setTimeout(() => queueGraphic({
+                  team: batting.value,
+                  label: 'NEW BATSMAN',
+                  name: player,
+                  hand: '',
+                  image: playerImages[player] || ''
+                }), 400);
+            
+                awaitingNewBatsman = false;
+                lockedOut = false;
+              }
+            
+              updateLiveDisplay();
+            });
            loadSavedMatch();
            loadMatchList();
          
