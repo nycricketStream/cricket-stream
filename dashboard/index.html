@@ -2960,10 +2960,18 @@
             }         
            updateLiveDisplay();
            const strikerEl = document.getElementById('striker');
-            // clear striker dropdown
-            strikerEl.value = "";            
-            // force change event to fire
-            strikerEl.dispatchEvent(new Event('change'));
+            const nonStrikerEl = document.getElementById('nonStriker');
+            
+            // determine who got out
+            const outPlayer = lastOutBatsman;
+            
+            // clear ONLY the player who got out
+            if (strikerEl.value === outPlayer) {
+                strikerEl.value = "";
+                strikerEl.dispatchEvent(new Event('change'));
+            } else if (nonStrikerEl.value === outPlayer) {
+                nonStrikerEl.value = "";
+            }
          }
          
          function openExtraModal(type) {
