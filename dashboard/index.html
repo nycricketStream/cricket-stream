@@ -1468,9 +1468,13 @@
          }
          
          if (isOverComplete() && lastOverProcessed !== currentOverId) {
-           lastDismissalSent = "";
+           lastDismissalSent = "";            
            lastOverProcessed = currentOverId;
            newOverStarted = true;
+            
+            if (awaitingNewBatsman) {
+                lockedOut = true;
+            }
            // rotate strike at end of over
            rotateStrike();
          
@@ -2891,6 +2895,8 @@
            lastOutBatsman = striker;
            lastDismissal = dismissalText;
            dismissalShown = false;
+           awaitingNewBatsman = true;
+           lockedOut = true;
          
            liveHistory.push({
              type: 'wicket',
@@ -2922,10 +2928,6 @@
             }
          
            triggerMoment('WICKET');
-         
-           // ✅ LOCK SCORING UNTIL NEW BATSMAN
-            lockedOut = true;
-            awaitingNewBatsman = true;
             
             // clear striker
             const strikerSel = document.getElementById('striker');
@@ -2957,6 +2959,11 @@
               currentOverId++;
             }         
            updateLiveDisplay();
+           const strikerEl = document.getElementById('striker');
+            // clear striker dropdown
+            strikerEl.value = "";            
+            // force change event to fire
+            strikerEl.dispatchEvent(new Event('change'));
          }
          
          function openExtraModal(type) {
