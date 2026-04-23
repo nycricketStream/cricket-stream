@@ -717,6 +717,7 @@
          let lastMoment = "";
          let lastMomentTime = 0;
          let lastDismissalSent = "";
+         let lastBatsmanTriggered = "";
          const teamA = document.getElementById('teamA');
          const teamB = document.getElementById('teamB');
          const batting = document.getElementById('batting');
@@ -991,23 +992,27 @@
                this.value = "";
                return;
              }
+            
              const nonStriker = document.getElementById('nonStriker').value;
+              
+              if (!awaitingNewBatsman && !lockedOut) return;
              if (this.value && this.value === nonStriker) {
                showModal("Striker and Non-Striker cannot be the same player.");
                this.value = "";
                return;
              }
              if (striker) {
-               lockedOut = false;
-               if (awaitingNewBatsman || lockedOut) {
+                 if (!awaitingNewBatsman && !lockedOut) return;            
+                 if (striker === lastBatsmanTriggered) return;
+                 lastBatsmanTriggered = striker;               
                  setTimeout(() => queueGraphic({
                    team: batting.value,
                    label: 'NEW BATSMAN',
                    name: striker,
                    hand: '',
                    image: playerImages[striker] || ''
-                 }), 400);
-                 awaitingNewBatsman = false; // reset ONLY after trigger
+                 }), 400);               
+                 awaitingNewBatsman = false;
                  lockedOut = false;
                }
              }
@@ -1021,7 +1026,12 @@
                 this.value = "";
                 return;
               }
-            
+
+              if (!awaitingNewBatsman && !lockedOut) return;
+
+               if (player === lastBatsmanTriggered) return;
+               lastBatsmanTriggered = player;
+
               if (player && player === striker) {
                 showModal("Striker and Non-Striker cannot be the same player.");
                 this.value = "";
@@ -1486,7 +1496,9 @@
          }
          
          if (isOverComplete() && lastOverProcessed !== currentOverId) {
-           lastDismissalSent = "";            
+           lastDismissalSent = "";     
+            lastBatsmanTriggered = "";
+            
            lastOverProcessed = currentOverId;
            newOverStarted = true;
             
