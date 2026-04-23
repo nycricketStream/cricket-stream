@@ -709,6 +709,9 @@
       <div id="logPanel"></div>
       <button id="logToggle">LOG</button>
       <script>
+         window.onerror = function(msg, url, line) {
+           console.error("JS ERROR:", msg, "at line", line);
+         };
          const PUSHER_KEY = window.PUSHER_KEY || '';
          const pusher = new Pusher("12fcceaea77e52cf3626", {
            cluster: 'us2'
@@ -987,38 +990,49 @@
              updateLiveDisplay();
            });
            document.getElementById('striker').addEventListener('change', function() {
-             const striker = this.value;
-             if (!validateBatsman(striker)) {
-               this.value = "";
-               return;
-             }
+              const striker = this.value;
             
-             const nonStriker = document.getElementById('nonStriker').value;
-              
-              if (!awaitingNewBatsman && !lockedOut) return;
-             if (this.value && this.value === nonStriker) {
-               showModal("Striker and Non-Striker cannot be the same player.");
-               this.value = "";
-               return;
-             }
-             if (striker) {
-                 if (!awaitingNewBatsman && !lockedOut) return;            
-                 if (striker === lastBatsmanTriggered) return;
-                 lastBatsmanTriggered = striker;               
-                 setTimeout(() => queueGraphic({
-                   team: batting.value,
-                   label: 'NEW BATSMAN',
-                   name: striker,
-                   hand: '',
-                   image: playerImages[striker] || ''
-                 }), 400);               
-                 awaitingNewBatsman = false;
-                 lockedOut = false;
-               }
-             }
-             updateLiveDisplay();
-           });
-           document.getElementById('nonStriker').addEventListener('change', function() {
+              if (!validateBatsman(striker)) {
+                this.value = "";
+                return;
+              }
+            
+              const nonStriker = document.getElementById('nonStriker').value;
+            
+              if (striker && striker === nonStriker) {
+                showModal("Striker and Non-Striker cannot be the same player.");
+                this.value = "";
+                return;
+              }
+            
+              // ONLY trigger when needed
+              if (!awaitingNewBatsman && !lockedOut) {
+                updateLiveDisplay();
+                return;
+              }
+            
+              // prevent duplicates
+              if (striker === lastBatsmanTriggered) {
+                updateLiveDisplay();
+                return;
+              }
+            
+              lastBatsmanTriggered = striker;
+            
+              setTimeout(() => queueGraphic({
+                team: batting.value,
+                label: 'NEW BATSMAN',
+                name: striker,
+                hand: '',
+                image: playerImages[striker] || ''
+              }), 400);
+            
+              awaitingNewBatsman = false;
+              lockedOut = false;
+            
+              updateLiveDisplay();
+            });
+          document.getElementById('nonStriker').addEventListener('change', function() {
               const player = this.value;
               const striker = document.getElementById('striker').value;
             
@@ -1026,34 +1040,35 @@
                 this.value = "";
                 return;
               }
-
-              if (!awaitingNewBatsman && !lockedOut) return;
-
-               if (player === lastBatsmanTriggered) return;
-               lastBatsmanTriggered = player;
-
+            
               if (player && player === striker) {
                 showModal("Striker and Non-Striker cannot be the same player.");
                 this.value = "";
                 return;
               }
             
-              if (!player) return;
-            
-              // ✅ THIS IS THE FIX — TRIGGER NEW BATSMAN
-              if (awaitingNewBatsman || lockedOut) {
-            
-                setTimeout(() => queueGraphic({
-                  team: batting.value,
-                  label: 'NEW BATSMAN',
-                  name: player,
-                  hand: '',
-                  image: playerImages[player] || ''
-                }), 400);
-            
-                awaitingNewBatsman = false;
-                lockedOut = false;
+              if (!awaitingNewBatsman && !lockedOut) {
+                updateLiveDisplay();
+                return;
               }
+            
+              if (player === lastBatsmanTriggered) {
+                updateLiveDisplay();
+                return;
+              }
+            
+              lastBatsmanTriggered = player;
+            
+              setTimeout(() => queueGraphic({
+                team: batting.value,
+                label: 'NEW BATSMAN',
+                name: player,
+                hand: '',
+                image: playerImages[player] || ''
+              }), 400);
+            
+              awaitingNewBatsman = false;
+              lockedOut = false;
             
               updateLiveDisplay();
             });
