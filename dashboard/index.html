@@ -754,7 +754,6 @@
         });
         const channel = pusher.subscribe('broadcast');
         let lastMoment = "";
-        let lastMomentTime = 0;
         let lastDismissalSent = "";
         let lastBatsmanTriggered = "";
         let lastHatTrickKey = "";
@@ -831,8 +830,6 @@
             }
         }
 
-
-        let lastOverlayTime = 0;
         function canTriggerOverlay(delay = 800) {
             const now = Date.now();
             if (now - appState.lastOverlayTime < delay) return false;
@@ -1004,8 +1001,11 @@
                     return;
                 }
 
-                // ONLY trigger when needed
-                if (!awaitingNewBatsman && !lockedOut) {
+               // allow trigger if last ball was wicket
+                const lastBall = liveHistory[liveHistory.length - 1];
+                const isAfterWicket = lastBall && lastBall.type === "wicket";
+                
+                if (!awaitingNewBatsman && !lockedOut && !isAfterWicket) {
                     updateLiveDisplay();
                     return;
                 }
@@ -1046,7 +1046,10 @@
                     return;
                 }
 
-                if (!awaitingNewBatsman && !lockedOut) {
+                const lastBall = liveHistory[liveHistory.length - 1];
+                const isAfterWicket = lastBall && lastBall.type === "wicket";
+                
+                if (!awaitingNewBatsman && !lockedOut && !isAfterWicket) {
                     updateLiveDisplay();
                     return;
                 }
@@ -1172,9 +1175,8 @@
             document.getElementById('bowler').value = "";
             document.getElementById('overTimeline').innerHTML = "";
             // RESET INTERNAL STATE
-            lastOverlayTime = 0;
+            appState.lastOverlayTime = 0;
             lastMoment = "";
-            lastMomentTime = 0;
             lastSentScore = "";
             graphicPlaying = false;
             overlayLocked = false;
@@ -2119,11 +2121,10 @@
         /* ========== Trigger Moment ============= */
         function triggerMoment(type) {
             const now = Date.now();
-            if (lastMoment === type && (now - lastMomentTime) < 2500) {
+            if (!canTriggerOverlay(800)) return; {
                 return;
             }
             lastMoment = type;
-            lastMomentTime = now;
             sendEvent('moment', {
                 type: type
             });
@@ -2844,6 +2845,9 @@
                 overId: currentOverId
             });
 
+            awaitingNewBatsman = true;
+            lockedOut = false;
+            lastBatsmanTriggered = "";
             partnership50Shown = false;
             partnership100Shown = false;
             lastPartnershipKey = "";
