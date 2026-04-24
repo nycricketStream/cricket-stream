@@ -2838,6 +2838,15 @@
                 overId: currentOverId
             });
 
+            // HATTRICK DETECTION
+            const last3 = liveHistory.slice(-3);        
+            if (last3.length === 3 && last3.every(b => b.type === 'wicket')) {
+                console.log("HATTRICK DETECTED");         
+                setTimeout(() => {
+                    triggerMoment('HATTRICK');
+                }, 500);
+            }
+
             awaitingNewBatsman = true;
             lockedOut = false;
             lastBatsmanTriggered = "";
