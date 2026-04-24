@@ -346,7 +346,7 @@
             <button onclick="deleteMatch()">Delete Match</button>
             <hr>
             <button onclick="
-               send('match',{
+               sendEvent('match',{
                teamA:teamA.value,
                teamB:teamB.value,
                teamALogo:teamALogo.value,
@@ -358,7 +358,7 @@
                teamAPlayers:teamAPlayers.value.split('\n'),
                teamBPlayers:teamBPlayers.value.split('\n')
                });
-               send('manualScore',{
+               sendEvent('manualScore',{
                score:'0/0',
                overs:'0.0',
                runRate:'0.00',
@@ -406,7 +406,7 @@
             <h3>Manual Score Info (Backup)</h3>
             Manual Score<input id="manualScore" placeholder="145/6">
             Overs<input id="manualOvers" placeholder="18.2">
-            <button id="manualUpdateBtn" onclick="send('manualScore',{score:manualScore.value,overs:manualOvers.value})">Update Manual Score</button>
+            <button id="manualUpdateBtn" onclick="sendEvent('manualScore',{score:manualScore.value,overs:manualOvers.value})">Update Manual Score</button>
          </div>
          <!-- LIVE SCORING -->
          <div id="livescoring" class="tab">
@@ -491,12 +491,12 @@
                   <div class="panel sticky-runs">
                      <h3>Runs</h3>
                      <div class="run-buttons">
-                        <button onclick="addRun(0)">0</button>
-                        <button onclick="addRun(1)">1</button>
-                        <button onclick="addRun(2)">2</button>
-                        <button onclick="addRun(3)">3</button>
-                        <button onclick="addRun(4)">4</button>
-                        <button onclick="addRun(6)">6</button>
+                        <button onclick="0">0</button>
+                        <button onclick="1">1</button>
+                        <button onclick="2">2</button>
+                        <button onclick="3">3</button>
+                        <button data-run="4">4</button>
+                        <button onclick="6">6</button>
                         <button onclick="openWicketModal()">OUT</button>
                         <button onclick="undoLast()">UNDO</button>
                      </div>
@@ -615,7 +615,13 @@
                <option value="Left-Hand">Left-Hand</option>
             </select>
             Player Image URL<input id="playerImg">
-            <button onclick="queueGraphic({team:batting.value,label:'NEW BATSMAN',name:playerSelect.value,hand:handed.value,image:playerImg.value})">Show Player</button>
+            <button onclick="sendEvent('player',{
+              team: batting.value,
+              label: 'NEW BATSMAN',
+              name: playerSelect.value,
+              hand: handed.value,
+              image: playerImg.value
+            })">
          </div>
          <div id="sponsors" class="tab">
             <h3>Sponsors</h3>
@@ -625,7 +631,7 @@
             <textarea id="sponsorList" placeholder="One sponsor image URL per line"></textarea>
             Rotation Seconds
             <input id="rotation" value="8">
-            <button onclick="send('sponsor',{
+            <button onclick="sendEvent('sponsor',{
                enabled:showSponsors.checked,
                list:sponsorList.value.split('\n').map(s=>s.trim()).filter(Boolean),
                interval:parseInt(rotation.value||8)
@@ -638,8 +644,8 @@
             <input id="fullscreenSponsorImg">
             Ad Duration (seconds)
             <input id="fullscreenTime" value="8">
-            <button onclick="send('fullscreenSponsor',{image:fullscreenSponsorImg.value,duration:parseInt(fullscreenTime.value||8)*1000})">Show Fullscreen Ad</button>
-            <button onclick="send('fullscreenSponsor',{hide:true})">Hide Fullscreen Ad</button>
+            <button onclick="sendEvent('fullscreenSponsor',{image:fullscreenSponsorImg.value,duration:parseInt(fullscreenTime.value||8)*1000})">Show Fullscreen Ad</button>
+            <button onclick="sendEvent('fullscreenSponsor',{hide:true})">Hide Fullscreen Ad</button>
             <h3>Sponsor Presets</h3>
             Preset 1 Image
             <input id="preset1">
@@ -660,18 +666,18 @@
          </div>
          <div id="moments" class="tab">
             <h3>Moments</h3>
-            <button onclick="send('moment',{type:'FOUR'})">FOUR</button>
-            <button onclick="send('moment',{type:'SIX'})">SIX</button>
-            <button onclick="send('moment',{type:'WICKET'})">WICKET</button>
-            <button onclick="send('replay',{})">REPLAY</button>
+            <button onclick="sendEvent('moment',{type:'FOUR'})">FOUR</button>
+            <button onclick="sendEvent('moment',{type:'SIX'})">SIX</button>
+            <button onclick="sendEvent('moment',{type:'WICKET'})">WICKET</button>
+            <button onclick="sendEvent('replay',{})">REPLAY</button>
          </div>
          <div id="broadcast" class="tab">
             <h3>Broadcast Graphics</h3>
             <h4 style="margin-top:10px">Scene Mode</h4>
             <div style="display:flex; gap:8px; margin-bottom:12px">
-               <button onclick="send('sceneMode',{mode:'bright'})">☀️ Bright</button>
-               <button onclick="send('sceneMode',{mode:'normal'})">🌤 Normal</button>
-               <button onclick="send('sceneMode',{mode:'dark'})">🌙 Dark</button>
+               <button onclick="sendEvent('sceneMode',{mode:'bright'})">☀️ Bright</button>
+               <button onclick="sendEvent('sceneMode',{mode:'normal'})">🌤 Normal</button>
+               <button onclick="sendEvent('sceneMode',{mode:'dark'})">🌙 Dark</button>
             </div>
             <button onclick="sendBreak('DRINKS BREAK')">Drinks Break</button>
             <button onclick="sendBreak('STRATEGIC TIMEOUT')">Strategic Timeout</button>
@@ -682,27 +688,6 @@
             <h3>Full Scoreboard</h3>
             <button onclick="showScorecard()">Show Scorecard</button>
             <button onclick="hideFullScorecard()" style="background:#991b1b">Hide Scorecard</button>
-            <hr>
-            <h3>Graphic Queue</h3>
-            <div style="
-               background:#020617;
-               border:1px solid #1f2937;
-               border-radius:6px;
-               padding:10px;
-               min-height:140px;
-               font-size:13px;
-               ">
-               <div id="queueNow" style="
-                  margin-bottom:10px;
-                  color:#22c55e;
-                  font-weight:bold;
-                  border-bottom:1px solid #1f2937;
-                  padding-bottom:6px;
-                  ">
-                  NOW: None
-               </div>
-               <div id="queueList"></div>
-            </div>
          </div>
       </div>
       <!-- LOG PANEL UI -->
@@ -721,6 +706,8 @@
          let lastMomentTime = 0;
          let lastDismissalSent = "";
          let lastBatsmanTriggered = "";
+         let lastHatTrickKey = "";
+         let lastPartnershipKey = "";
          let bowlersUsed = new Set();
          const teamA = document.getElementById('teamA');
          const teamB = document.getElementById('teamB');
@@ -730,6 +717,17 @@
          /* LOGGING SYSTEM */
          const logPanel = document.getElementById('logPanel');
          const logToggle = document.getElementById('logToggle');
+
+         const appState = {
+           score: "0/0",
+           overs: "0.0",
+           runRate: "0.00",
+           striker: "",
+           nonStriker: "",
+           bowler: "",
+           lastOverlayTime: 0
+         };
+         
          channel.bind('overlayState', data => {
            if (!data) return;
            if (data.state === "LOCK") {
@@ -737,10 +735,6 @@
            }
            if (data.state === "UNLOCK") {
              overlayLocked = false;
-             // resume queue
-             if (!graphicPlaying) {
-               playNextGraphic();
-             }
            }
          });
          
@@ -762,37 +756,36 @@
          pusher.connection.bind('connected', () => log('PUSHER CONNECTED'));
          pusher.connection.bind('connecting', () => log('PUSHER CONNECTING'));
          pusher.connection.bind('disconnected', () => log('PUSHER DISCONNECTED'));
-         async function send(event, data) {
-           if (event === "moment") {
-             return sendMomentSafe(data);
-           }
-           if (event === "player") {
-             return sendPlayerSafe(data);
-           }
-           if (event === "break") {
-             return sendBreakSafe(data);
-           }
-           if (event === "replay") {
-             return sendReplaySafe(data);
-           }
-           // default
-           await fetch('/api/broadcast', {
-             method: 'POST',
-             headers: {
-               'Content-Type': 'application/json'
-             },
-             body: JSON.stringify({
-               event: event,
-               data
-             })
-           });
-         }
-         let lastOverlayTime = 0;
+       
+        async function sendEvent(event, data) {
+           // AUTO delay rules (you don’t decide anything)
+           let delay = 0;
          
-         function canTriggerOverlay(delay = 800) {
+           if (event === "player") delay = 1500;
+           if (event === "moment" && data?.type === "WICKET") delay = 1200;
+         
+           if (delay && !canTriggerOverlay(delay)) return;
+         
+           try {
+             const res = await fetch('/api/broadcast', {
+               method: 'POST',
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({ event, data })
+             });
+         
+             if (!res.ok) throw new Error("Broadcast failed");
+         
+           } catch (err) {
+             log("ERROR: " + err.message);
+           }
+         }
+
+         
+         let lastOverlayTime = 0;
+        function canTriggerOverlay(delay = 800) {
            const now = Date.now();
-           if (now - lastOverlayTime < delay) return false;
-           lastOverlayTime = now;
+           if (now - appState.lastOverlayTime < delay) return false;
+           appState.lastOverlayTime = now;
            return true;
          }
          
@@ -962,9 +955,7 @@
            document.getElementById('teamAPlayers').addEventListener('input', updateStrikerDropdown);
            document.getElementById('teamBPlayers').addEventListener('input', updateStrikerDropdown);
            document.getElementById('bowler').addEventListener('change', function() {
-
-              const bowler = this.value;
-            
+              const bowler = this.value;        
               if (!newOverStarted && liveBalls !== 0 && bowler === lastOverBowler && liveBalls % 6 === 0) {
                 showModal("Cannot bowl consecutive overs");
                 this.value = "";
@@ -986,14 +977,14 @@
               }
             
               // ✅ SEND ONLY ONCE
-              setTimeout(() => queueGraphic({
-                team: (batting.value === teamA.value ? teamB.value : teamA.value),
-                label: isReturning ? 'BOWLER' : 'NEW BOWLER',
-                name: bowler,
-                hand: stats,
-                image: '',
-                isReturning: isReturning
-              }), 400);
+             sendEvent('player', {
+                 team: (batting.value === teamA.value ? teamB.value : teamA.value),
+                 label: 'NEW BOWLER',
+                 name: bowler,
+                 hand: stats,
+                 image: '',
+                 isReturning: isReturning
+               });
             
               bowlersUsed.add(bowler);
             
@@ -1032,13 +1023,13 @@
             
               lastBatsmanTriggered = striker;
             
-              setTimeout(() => queueGraphic({
+              sendEvent('player', {
                 team: batting.value,
                 label: 'NEW BATSMAN',
                 name: striker,
                 hand: '',
                 image: playerImages[striker] || ''
-              }), 400);
+              });
             
               awaitingNewBatsman = false;
               lockedOut = false;
@@ -1072,13 +1063,13 @@
             
               lastBatsmanTriggered = player;
             
-              setTimeout(() => queueGraphic({
+              sendEvent('player', {
                 team: batting.value,
                 label: 'NEW BATSMAN',
                 name: player,
                 hand: '',
                 image: playerImages[player] || ''
-              }), 400);
+              });
             
               awaitingNewBatsman = false;
               lockedOut = false;
@@ -1091,7 +1082,7 @@
            loadSponsorPresets();
            /* AUTO LOAD SPONSORS */
            setTimeout(() => {
-             send('sponsor', {
+             sendEvent('sponsor', {
                enabled: showSponsors.checked,
                list: sponsorList.value.split('\n').map(s => s.trim()).filter(Boolean),
                interval: parseInt(rotation.value || 8)
@@ -1118,7 +1109,6 @@
              if (e.key === "w" || e.key === "W") addWicket();
              if (e.key === "z" || e.key === "Z") undoLast();
            });
-           renderQueueUI();
            updateBattingTeams();
            updatePlayerDropdown();
            updateStrikerDropdown();
@@ -1178,6 +1168,7 @@
            currentOverId = 0;       
            lastOverProcessed = -1;  
            awaitingNewBatsman = false;
+           lastHatTrickKey = "";
            currentOverBalls = 0;
            lockedOut = false;
            dismissalShown = false;
@@ -1190,14 +1181,10 @@
            lastMoment = "";
            lastMomentTime = 0;
            lastSentScore = "";
-           // RESET QUEUE
-           graphicQueue = [];
            graphicPlaying = false;
-           currentGraphic = null;
            overlayLocked = false;
-           renderQueueUI();
            updateLiveDisplay();
-           send('manualScore', {
+           sendEvent('manualScore', {
              score: '0/0',
              overs: '0.0',
              runRate: '0.00',
@@ -1212,13 +1199,13 @@
              dismissal: ''
            });
            // FORCE OVERLAY RESET
-           send('match', {
+           sendEvent('match', {
              reset: true
            });
-           send('break', {
+           sendEvent('break', {
              hide: true
            });
-           send('moment', {
+           sendEvent('moment', {
              type: 'CLEAR'
            });
            showModal("Match reset");
@@ -1239,9 +1226,7 @@
          let editingBallIndex = -1;
          let partnership50Shown = false;
          let partnership100Shown = false;
-         let graphicQueue = [];
          let graphicPlaying = false;
-         let currentGraphic = null;
          let graphicCooldown = {};
          let previousBowler = "";
          let awaitingNewBatsman = false;
@@ -1412,7 +1397,7 @@
            lastStriker = strikerName;
            lastNonStriker = nonStrikerName;
            lastBowlerName = bowlerName;
-           send('manualScore', {
+           sendEvent('manualScore', {
              score: liveTotal + "/" + liveWickets,
              overs: calculateOvers(),
              runRate: calculateRR(),
@@ -1660,8 +1645,7 @@
            if (runsRun % 2 === 1) {
              rotateStrike();
            }
-         }
-         
+         }      
            updateLiveDisplay();
          }
          
@@ -1692,7 +1676,7 @@
              if (panel) panel.style.display = "none";
            }
            suppressNextDismissal = true;
-           send('manualScore', {
+           sendEvent('manualScore', {
              dismissal: ''
            });
            const bowlerSelect = document.getElementById('bowler');
@@ -2147,117 +2131,11 @@
            }
            lastMoment = type;
            lastMomentTime = now;
-           send('moment', {
+           sendEvent('moment', {
              type: type
            });
          }
-         /* =========== Queue Graphic ================== */
-         function queueGraphic(data) {
-           const key = data.label + "_" + data.name;
-           const now = Date.now();
-           if (graphicCooldown[key] && (now - graphicCooldown[key]) < 5000) {
-             return;
-           }
-           graphicCooldown[key] = now;
-           // assign priority
-           data.priority = graphicPriority[data.label] || graphicPriority["DEFAULT"];
-           if (data.label === "WICKET") {
-             data.priority = 100;
-           }
-           // 🚨 HIGH PRIORITY → PLAY IMMEDIATELY (NO DUPLICATE INSERT)
-           if (data.priority >= 90) {
-             currentGraphic = data;
-             renderQueueUI();
-             if (data.label === "WICKET") {
-               send('moment', {
-                 type: 'WICKET'
-               });
-             } else {
-               send('player', data);
-             }
-             setTimeout(() => {
-               currentGraphic = null;
-               renderQueueUI();
-               playNextGraphic();
-             }, 5200);
-             return;
-           }
-           // ✅ NORMAL PRIORITY → INSERT SORTED
-           let inserted = false;
-           for (let i = 0; i < graphicQueue.length; i++) {
-             if (data.priority > (graphicQueue[i].priority || 0)) {
-               graphicQueue.splice(i, 0, data);
-               inserted = true;
-               break;
-             }
-           }
-           if (!inserted) {
-             graphicQueue.push(data);
-           }
-           renderQueueUI();
-           if (!graphicPlaying) {
-             playNextGraphic();
-           }
-         }
-         /* ========== Play Next Graphic =========================== */
-         function playNextGraphic() {
-           if (overlayLocked) {
-             return;
-           }
-           if (graphicQueue.length === 0) {
-             graphicPlaying = false;
-             currentGraphic = null;
-             renderQueueUI();
-             return;
-           }
-           graphicPlaying = true;
-           const g = graphicQueue.shift();
-           currentGraphic = g;
-           renderQueueUI();
-           if (g.label === "WICKET") {
-             send('moment', {
-               type: 'WICKET'
-             });
-           } else if (g.label === "REPLAY") {
-             send('replay', {});
-           } else if (g.label === "BREAK") {
-             send('break', {
-               text: g.name || "BREAK"
-             });
-           } else {
-             send('player', g);
-           }
-           setTimeout(() => {
-             currentGraphic = null;
-             renderQueueUI();
-             playNextGraphic();
-           }, 5200);
-         }
          
-         function removeFromQueue(index) {
-           graphicQueue.splice(index, 1);
-           renderQueueUI();
-         }
-         
-         function moveUp(index) {
-           if (index === 0) return;
-           const temp = graphicQueue[index];
-           graphicQueue[index] = graphicQueue[index - 1];
-           graphicQueue[index - 1] = temp;
-           renderQueueUI();
-         }
-         
-         function playNow(index) {
-           const g = graphicQueue.splice(index, 1)[0];
-           currentGraphic = g;
-           renderQueueUI();
-           send('player', g);
-           setTimeout(() => {
-             currentGraphic = null;
-             renderQueueUI();
-             playNextGraphic();
-           }, 5200);
-         }
          /* ============= Send End Of Over Graphic ============ */
          function sendEndOfOverGraphic() {
            const bowlerName = document.getElementById('bowler')?.value || "";
@@ -2272,7 +2150,7 @@
            if (overNumber === maxOvers - 1) {
              note = "LAST OVER COMING";
            }
-           send('overSummary', {
+           sendEvent('overSummary', {
              team: batting.value,
              score: liveTotal + "/" + liveWickets,
              overs: overs,
@@ -2284,110 +2162,152 @@
            });
          }
          /* ========== Check Milestones=============== */
-         function checkMilestones(batsman) {
-           const stats = batsmanStats[batsman];
-           if (!stats) return;
-           if (stats.runs >= 100 && !stats.hundredShown) {
-             stats.hundredShown = true;
-             queueGraphic({
-               team: batting.value,
-               label: 'CENTURY',
-               name: batsman + " " + stats.runs + " (" + stats.balls + ")",
-               hand: '',
-               image: ''
-             });
-           } else if (stats.runs >= 50 && !stats.fiftyShown) {
-             stats.fiftyShown = true;
-             queueGraphic({
-               team: batting.value,
-               label: 'FIFTY',
-               name: batsman + " " + stats.runs + " (" + stats.balls + ")",
-               hand: '',
-               image: ''
-             });
-           }
-         }
+        function checkMilestones(batsman) {
+              const stats = batsmanStats[batsman];
+              if (!stats) return;
+            
+              // 🟣 CENTURY
+              if (stats.runs >= 100 && !stats.hundredShown) {
+                stats.hundredShown = true;
+            
+                sendEvent('player', {
+                  team: batting.value,
+                  label: 'CENTURY',
+                  name: batsman + " " + stats.runs + " (" + stats.balls + ")",
+                  hand: '',
+                  image: ''
+                });
+            
+                return; // prevent double trigger same ball
+              }
+            
+              // 🔵 FIFTY
+              if (stats.runs >= 50 && !stats.fiftyShown) {
+                stats.fiftyShown = true;
+            
+                sendEvent('player', {
+                  team: batting.value,
+                  label: 'FIFTY',
+                  name: batsman + " " + stats.runs + " (" + stats.balls + ")",
+                  hand: '',
+                  image: ''
+                });
+              }
+            }
          /* ========= Check HatTrick ============== */
          function checkHatTrick() {
-           let wickets = [];
-           let bowler = "";
-           for (let i = liveHistory.length - 1; i >= 0; i--) {
-             const ball = liveHistory[i];
-             if (ball.type === "extra") {
-               continue;
-             }
-             if (!bowler) {
-               bowler = ball.bowler;
-             }
-             if (ball.bowler !== bowler) {
-               break;
-             }
-             if (ball.type === "wicket") {
-               wickets.push(ball);
-             } else {
-               break;
-             }
-             if (wickets.length === 3) {
-               break;
-             }
-           }
-           if (wickets.length === 3) {
-             queueGraphic({
-               team: batting.value,
-               label: 'HAT TRICK',
-               name: bowler,
-               hand: '3 wickets in 3 balls',
-               image: ''
-             });
-           }
-         }
+              let wickets = [];
+              let bowler = "";
+            
+              for (let i = liveHistory.length - 1; i >= 0; i--) {
+                const ball = liveHistory[i];
+            
+                if (ball.type === "extra") continue;
+            
+                if (!bowler) {
+                  bowler = ball.bowler;
+                }
+            
+                if (ball.bowler !== bowler) break;
+            
+                if (ball.type === "wicket") {
+                  wickets.push(ball);
+                } else {
+                  break;
+                }
+            
+                if (wickets.length === 3) break;
+              }
+            
+              if (wickets.length === 3) {
+            
+                // ✅ UNIQUE KEY (prevents duplicate firing)
+                const key = bowler + "_" + liveHistory.length;
+            
+                if (key === lastHatTrickKey) return;
+                lastHatTrickKey = key;
+            
+                sendEvent('player', {
+                  team: batting.value,
+                  label: 'HAT TRICK',
+                  name: bowler,
+                  hand: '3 wickets in 3 balls',
+                  image: ''
+                });
+              }
+            }
          /* ============== Check Partnership Milestones ================= */
          function checkPartnershipMilestones() {
-           let runs = 0;
-           let balls = 0;
-           let lastWicketIndex = -1;
-           for (let i = 0; i < liveHistory.length; i++) {
-             if (liveHistory[i].type === "wicket") {
-               lastWicketIndex = i;
-             }
-           }
-           for (let i = lastWicketIndex + 1; i < liveHistory.length; i++) {
-             const ball = liveHistory[i];
-             if (ball.type === "run") {
-               runs += ball.runs;
-               balls++;
-             } else if (ball.type === "extra") {
-               const r = ball.runs || 1;
-               runs += r;
-               if (ball.extra === "bye" || ball.extra === "legbye") {
-                 balls++;
-               }
-             } else if (ball.type === "wicket") {
-               balls++;
-             }
-           }
-           const striker = document.getElementById('striker')?.value || "";
-           const nonStriker = document.getElementById('nonStriker')?.value || "";
-           if (runs >= 100 && !partnership100Shown) {
-             partnership100Shown = true;
-             queueGraphic({
-               team: batting.value,
-               label: '100 PARTNERSHIP',
-               name: striker + " / " + nonStriker,
-               hand: runs + " runs (" + balls + " balls)",
-               image: ''
-             });
-           } else if (runs >= 50 && !partnership50Shown) {
-             partnership50Shown = true;
-             queueGraphic({
-               team: batting.value,
-               label: '50 PARTNERSHIP',
-               name: striker + " / " + nonStriker,
-               hand: runs + " runs (" + balls + " balls)",
-               image: ''
-             });
-           }
-         }
+              let runs = 0;
+              let balls = 0;
+              let lastWicketIndex = -1;
+            
+              // find last wicket
+              for (let i = 0; i < liveHistory.length; i++) {
+                if (liveHistory[i].type === "wicket") {
+                  lastWicketIndex = i;
+                }
+              }
+            
+              // calculate partnership
+              for (let i = lastWicketIndex + 1; i < liveHistory.length; i++) {
+                const ball = liveHistory[i];
+            
+                if (ball.type === "run") {
+                  runs += ball.runs;
+                  balls++;
+                } else if (ball.type === "extra") {
+                  const r = ball.runs || 1;
+                  runs += r;
+            
+                  if (ball.extra === "bye" || ball.extra === "legbye") {
+                    balls++;
+                  }
+                } else if (ball.type === "wicket") {
+                  balls++;
+                }
+              }
+            
+              const striker = document.getElementById('striker')?.value || "";
+              const nonStriker = document.getElementById('nonStriker')?.value || "";
+            
+              // ✅ unique key prevents repeat firing
+              const key = striker + "_" + nonStriker + "_" + runs;
+            
+              if (key === lastPartnershipKey) return;
+            
+              // 🟣 100 partnership
+              if (runs >= 100 && !partnership100Shown) {
+            
+                partnership100Shown = true;
+                lastPartnershipKey = key;
+            
+                sendEvent('player', {
+                  team: batting.value,
+                  label: '100 PARTNERSHIP',
+                  name: striker + " / " + nonStriker,
+                  hand: runs + " runs (" + balls + " balls)",
+                  image: ''
+                });
+            
+                return; // 🚨 prevent 50 firing too
+              }
+            
+              // 🔵 50 partnership
+              if (runs >= 50 && !partnership50Shown) {
+            
+                partnership50Shown = true;
+                lastPartnershipKey = key;
+            
+                sendEvent('player', {
+                  team: batting.value,
+                  label: '50 PARTNERSHIP',
+                  name: striker + " / " + nonStriker,
+                  hand: runs + " runs (" + balls + " balls)",
+                  image: ''
+                });
+              }
+            }
          /* ========== Generate X1 ================== */
          function generateXI(team) {
            const squad = document.getElementById(team === "A" ? "teamASquad" : "teamBSquad").value.split("\n").map(p => p.trim()).filter(Boolean);
@@ -2453,7 +2373,7 @@
            const url = presets["p" + num];
            if (!url) return;
            const time = parseInt(document.getElementById("fullscreenTime").value || 8) * 1000;
-           send('fullscreenSponsor', {
+           sendEvent('fullscreenSponsor', {
              image: url,
              duration: time
            });
@@ -2583,7 +2503,7 @@
            maxOvers.value = state.maxOvers;
            updateBattingTeams();
            updateLiveDisplay();
-           send('match', {
+           sendEvent('match', {
              teamA: teamA.value,
              teamB: teamB.value,
              teamALogo: teamALogo.value,
@@ -2598,13 +2518,13 @@
          }
          /* ================= BROADCAST GRAPHICS ================= */
          function sendBreak(text) {
-           send('break', {
+           sendEvent('break', {
              text: text
            });
          }
          
          function hideBreak() {
-           send('break', {
+           sendEvent('break', {
              hide: true
            });
          }
@@ -2692,7 +2612,7 @@
                 };
             });
          
-          send('fullScorecard', {
+          sendEvent('fullScorecard', {
               team: batting.value,
               overs: calculateOvers(),
               score: liveTotal + "/" + liveWickets,
@@ -2733,7 +2653,7 @@
          }
          
          function hideFullScorecard() {
-           send('fullScorecard', { hide: true });
+           sendEvent('fullScorecard', { hide: true });
          }
          
          async function loadMatchList() {
@@ -2770,7 +2690,6 @@
            target.value = data.target || "";
            maxOvers.value = data.maxOvers || "";
            updateBattingTeams();
-           renderQueueUI();
            showModal("Match loaded");
          }
          
@@ -2788,44 +2707,6 @@
              })
            });
            loadMatchList();
-         }
-         
-         function renderQueueUI() {
-           const list = document.getElementById("queueList");
-           const now = document.getElementById("queueNow");
-           if (!list || !now) return;
-           // NOW PLAYING
-           if (currentGraphic) {
-             now.innerText = "NOW: " + currentGraphic.label + " - " + currentGraphic.name;
-           } else {
-             now.innerText = "NOW: None";
-           }
-           // QUEUE LIST
-           list.innerHTML = "";
-           graphicQueue.forEach((g, index) => {
-             const row = document.createElement("div");
-             row.style.display = "flex";
-             row.style.justifyContent = "space-between";
-             row.style.marginBottom = "6px";
-             row.style.padding = "6px";
-             if (g.priority >= 90) {
-               row.style.background = "#7f1d1d"; // red (WICKET)
-             } else if (g.priority >= 80) {
-               row.style.background = "#78350f"; // gold (milestones)
-             } else {
-               row.style.background = "#0b1220";
-             }
-             row.style.borderRadius = "4px";
-             row.innerHTML = `
-                 <span><b>${g.label}</b> - ${g.name}</span>
-                  <div>
-                    <button onclick="playNow(${index})">▶</button>
-                    <button onclick="moveUp(${index})">⬆</button>
-                    <button onclick="removeFromQueue(${index})">❌</button>
-                  </div>
-                `;
-             list.appendChild(row);
-           });
          }
          
          /* ========== Helper, Set Scoring to Enavle buttons =============== */
@@ -2853,7 +2734,7 @@
            const logo = document.getElementById("brandingLogo").value;
            const size = document.getElementById("brandingSize").value;
          
-           send('branding', {
+           sendEvent('branding', {
              logo: logo,
              size: size
            });
@@ -2969,7 +2850,11 @@
              wicketNumber: liveWickets + 1,
              overId: currentOverId
            });
-         
+
+            partnership50Shown = false;
+            partnership100Shown = false;
+            lastPartnershipKey = "";
+            lastHatTrickKey = "";
            liveWickets++;
            liveBalls++;
          
@@ -2989,12 +2874,7 @@
               bowlerStats[currentBowler].wickets++;
             }
          
-           triggerMoment('WICKET');
-            
-            // clear striker
-            const strikerSel = document.getElementById('striker');
-            if (strikerSel) strikerSel.value = "";
-            
+           triggerMoment('WICKET');            
             // show UI
             showNextBatter();
 
@@ -3146,6 +3026,12 @@
          function closeModal() {
            document.getElementById("customModal").style.display = "none";
          }
+
+         document.querySelectorAll('[data-run]').forEach(btn => {
+           btn.addEventListener('click', () => {
+             addRun(parseInt(btn.dataset.run));
+           });
+         });
          
       </script>
 
