@@ -757,6 +757,10 @@
         let lastHatTrickKey = "";
         let lastPartnershipKey = "";
         let bowlersUsed = new Set();
+        let playingXI = {
+            A: [],
+            B: []
+        };
         const teamA = document.getElementById('teamA');
         const teamB = document.getElementById('teamB');
         const batting = document.getElementById('batting');
@@ -890,9 +894,21 @@
             dropdown.innerHTML = '';
             let players = [];
             if (batting.value === teamA.value) {
-                players = teamAPlayers.value.split('\n');
+               players = teamAPlayers.value.split('\n').map(p => {
+                    const [name, img] = p.split('|');       
+                    if (img) {
+                        playerImages[name.trim()] = img.trim();
+                    }              
+                    return name.trim();
+                });
             } else if (batting.value === teamB.value) {
-                players = teamBPlayers.value.split('\n');
+               players = teamBPlayers.value.split('\n').map(p => {
+                    const [name, img] = p.split('|');
+                    if (img) {
+                        playerImages[name.trim()] = img.trim();
+                    }
+                    return name.trim();
+                });
             }
             players.map(p => p.trim()).filter(Boolean).forEach(p => dropdown.add(new Option(p, p)));
         }
