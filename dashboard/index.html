@@ -2838,15 +2838,6 @@
                 overId: currentOverId
             });
 
-            // HATTRICK DETECTION
-            const last3 = liveHistory.slice(-3);        
-            if (last3.length === 3 && last3.every(b => b.type === 'wicket')) {
-                console.log("HATTRICK DETECTED");         
-                setTimeout(() => {
-                    triggerMoment('HATTRICK');
-                }, 500);
-            }
-
             awaitingNewBatsman = true;
             lockedOut = false;
             lastBatsmanTriggered = "";
@@ -2872,7 +2863,18 @@
             ) {
                 bowlerStats[currentBowler].wickets++;
             }
-
+            const last3 = liveHistory.slice(-3);
+            
+            const isHattrick =
+                last3.length === 3 &&
+                last3.every(b => b.type === 'wicket');
+            
+            if (isHattrick) {
+                triggerMoment('HATTRICK'); // replaces wicket
+            } else {
+                triggerMoment('WICKET');
+            }
+            
             triggerMoment('WICKET');
             // show UI
             showNextBatter();
