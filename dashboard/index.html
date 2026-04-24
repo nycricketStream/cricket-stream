@@ -371,6 +371,23 @@
         </div>
     </div>
     <div class="main">
+        <div id="teamManager" class="tab">
+            <h2>Team Manager</h2>
+            <label>Team Name</label>
+            <input id="tmName">        
+            <label>Team Logo URL</label>
+            <input id="tmLogo">       
+            <label>Players (Name|ImageURL)</label>
+            <textarea id="tmPlayers" rows="10"></textarea>        
+            <br><br>     
+            <button onclick="saveTeamManager()">💾 Save Team</button>
+            <button onclick="clearTeamManager()">🧹 Clear</button>        
+            <hr>        
+            <h3>Saved Teams</h3>       
+            <select id="tmSavedTeams"></select>        
+            <button onclick="loadTeamManager()">Load</button>
+            <button onclick="deleteTeamManager()">Delete</button>        
+        </div>
         <!-- MATCH SETUP -->
         <div id="match" class="tab active">
             <h3>Match Setup</h3>
