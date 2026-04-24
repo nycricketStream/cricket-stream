@@ -356,7 +356,6 @@
             <div class="menu-title">SCORING</div>
             <button class="tab-btn" onclick="showTab(event,'livescoring')">📊 <span>Live</span></button>
             <button class="tab-btn" onclick="showTab(event,'scoreinfo')">🧮 <span>Manual</span></button>
-            <button onclick="liveHistory = []; updateLiveDisplay();">DEBUG RESET</button>
         </div>
         <div class="menu-section">
             <div class="menu-title">GRAPHICS</div>
@@ -538,8 +537,9 @@
                         <h4>Bowler</h4>
                         <select id="bowler"></select>
                     </div>
-                    <div class="panel sticky-runs">
-                        <h3>Runs</h3>
+                     <div class="panel sticky-runs">
+                        <h3>Runs & Extras</h3>
+                        <h4>Runs</h4>
                         <div class="run-buttons">
                             <button data-run="0">0</button>
                             <button data-run="1">1</button>
@@ -549,10 +549,8 @@
                             <button data-run="6">6</button>
                             <button onclick="openWicketModal()">OUT</button>
                             <button onclick="undoLast()">UNDO</button>
-                        </div>
-                    </div>
-                    <div class="panel">
-                        <h3>Extras</h3>
+                        </div>                  
+                        <h4 style="margin-top:12px">Extras</h4>
                         <div class="extra-buttons">
                             <button onclick="openExtraModal('wide')">Wd</button>
                             <button onclick="openExtraModal('noball')">Nb</button>
