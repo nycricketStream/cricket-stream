@@ -2311,25 +2311,32 @@
         }
         /* ========== Generate X1 ================== */
         function generateXI(team) {
-            const squad = document.getElementById(team === "A" ? "teamASquad" : "teamBSquad").value.split("\n").map(p => p.trim()).filter(Boolean);
-            const container = document.getElementById(team === "A" ? "teamAXI" : "teamBXI");
-            container.innerHTML = "";
-            squad.forEach(line => {
-                const parts = line.split("|");
-                const name = parts[0].trim();
-                const img = parts[1] ? parts[1].trim() : "";
-                if (img) {
-                    playerImages[name] = img;
-                }
-                const id = "xi_" + team + "_" + name.replace(/\s+/g, "_");
-                container.innerHTML += `
-                    <label style="display:block;margin:4px 0">
-                    <input type="checkbox" class="team${team}XI" value="${name}" onchange="limitXI(this,'${team}')">
-                    ${name}
-                    </label>
-                    `;
-            });
+            let input = "";
+            if (team === 'A') {
+                input = document.getElementById('teamASquad').value;
+            } else {
+                input = document.getElementById('teamBSquad').value;
+            }
+            const players = input.split('\n').map(p => {
+                const [name, img] = p.split('|');
+                const cleanName = name.trim();
+                if (img && cleanName) {
+                    playerImages[cleanName] = img.trim();
+                } 
+                return cleanName;
+            }).filter(Boolean);
+        
+            // ⚠️ DO NOT CHANGE THIS PART (your XI logic)
+            const xi = players.slice(0, 11);    
+            if (team === 'A') {
+                playingXI.A = xi;
+                document.getElementById('teamAXI').innerHTML = xi.join('<br>');
+            } else {
+                playingXI.B = xi;
+                document.getElementById('teamBXI').innerHTML = xi.join('<br>');
+            }
         }
+        
         /* ============== Limit X1 ================= */
         function limitXI(box, team) {
             const checked = document.querySelectorAll(".team" + team + "XI:checked");
