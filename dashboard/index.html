@@ -947,7 +947,7 @@
             document.getElementById('teamBPlayers').addEventListener('input', updateStrikerDropdown);
             document.getElementById('bowler').addEventListener('change', function () {
                 const bowler = this.value;
-                if (!newOverStarted && liveBalls !== 0 && bowler === lastOverBowler && liveBalls % 6 === 0) {
+                if (liveBalls % 6 === 0 && liveBalls !== 0 && bowler === lastOverBowler) {
                     showModal("Cannot bowl consecutive overs");
                     this.value = "";
                     return;
@@ -980,7 +980,6 @@
                 bowlersUsed.add(bowler);
 
                 previousBowler = bowler;
-                newOverStarted = false;
 
                 updateLiveDisplay();
             });
@@ -1260,7 +1259,6 @@
         let lastOverBowler = "";
         let lastOverProcessed = -1;
         let currentOverId = 0;
-        let newOverStarted = false;
         let selectedExtraType = "";
 
         function calculateOvers() {
@@ -1513,7 +1511,6 @@
                 lastBatsmanTriggered = "";
 
                 lastOverProcessed = currentOverId;
-                newOverStarted = true;
 
                 if (awaitingNewBatsman) {
                     lockedOut = true;
@@ -1713,8 +1710,9 @@
                 showModal("Select Bowler before scoring.");
                 return false;
             }
-            /* OVER FINISHED CHECK */
-            if (!newOverStarted && liveBalls % 6 === 0 && liveBalls !== 0 && lastOverBowler && bowler === lastOverBowler) {
+            
+           // BLOCK SAME BOWLER FOR NEW OVER
+            if (liveBalls % 6 === 0 && liveBalls !== 0 && lastOverBowler && bowler === lastOverBowler) {
                 showModal("Select a different bowler for the new over.");
                 return false;
             }
@@ -2875,7 +2873,6 @@
 
             if (isOverComplete() && lastOverProcessed !== currentOverId) {
                 lastOverProcessed = currentOverId;
-                newOverStarted = true;
 
                 // rotate strike at end of over
                 rotateStrike();
