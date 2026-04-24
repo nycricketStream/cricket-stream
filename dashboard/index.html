@@ -1498,10 +1498,10 @@
             }
 
             if (r === 4) {
-                setTimeout(() => triggerMoment('FOUR'), 150);
+                setTimeout(() => triggerMoment('FOUR'), 400);
             }
             if (r === 6) {
-                setTimeout(() => triggerMoment('SIX'), 150);
+                setTimeout(() => triggerMoment('SIX'), 400);
             }
 
             if (r % 2 === 1) {
@@ -2120,14 +2120,7 @@
         }
         /* ========== Trigger Moment ============= */
         function triggerMoment(type) {
-            const now = Date.now();
-            if (!canTriggerOverlay(800)) return; {
-                return;
-            }
-            lastMoment = type;
-            sendEvent('moment', {
-                type: type
-            });
+             sendEvent('moment', { type });
         }
 
         /* ============= Send End Of Over Graphic ============ */
