@@ -719,7 +719,7 @@
             <h3>Moments</h3>
             <button onclick="sendEvent('moment',{type:'FOUR'})">FOUR</button>
             <button onclick="sendEvent('moment',{type:'SIX'})">SIX</button>
-            <button onclick="sendEvent('moment',{type:'WICKET'})">WICKET</button>
+            <button onclick="triggerMoment('WICKET')">WICKET</button>
             <button onclick="sendEvent('replay',{})">REPLAY</button>
         </div>
         <div id="broadcast" class="tab">
@@ -838,66 +838,6 @@
             if (now - appState.lastOverlayTime < delay) return false;
             appState.lastOverlayTime = now;
             return true;
-        }
-
-        async function sendMomentSafe(data) {
-            if (data.type === "FOUR" || data.type === "SIX") {
-                // no throttle
-            } else if (data.type !== "WICKET") {
-                if (!canTriggerOverlay(1200)) return;
-            }
-
-            await fetch('/api/broadcast', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    event: "moment",
-                    data
-                })
-            });
-        }
-
-        async function sendPlayerSafe(data) {
-            if (!canTriggerOverlay(1500)) return;
-            await fetch('/api/broadcast', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    event: "player",
-                    data
-                })
-            });
-        }
-
-        async function sendBreakSafe(data) {
-            // break overrides everything → no delay
-            await fetch('/api/broadcast', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    event: "break",
-                    data
-                })
-            });
-        }
-
-        async function sendReplaySafe(data) {
-            await fetch('/api/broadcast', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    event: "replay",
-                    data
-                })
-            });
         }
 
         function showTab(evt, id) {
