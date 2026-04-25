@@ -995,16 +995,36 @@
                 batPlayers = teamBPlayers.value.split('\n');
                 bowlPlayers = teamAPlayers.value.split('\n');
             }
-            batPlayers.map(p => p.trim()).filter(Boolean).forEach(p => {
-                // do not allow selecting batsman already out
-                if (batsmanStats[p] && batsmanStats[p].out) {
-                    return;
+            batPlayers.forEach(p => {
+                if (!p.trim()) return;
+            
+                const [name, img] = p.split('|');
+            
+                const cleanName = name.trim();
+                const cleanImg = img ? img.trim() : "";
+            
+                if (cleanImg) {
+                    playerImages[cleanName] = cleanImg;
                 }
-                strikerSel.add(new Option(p, p));
-                nonStrikerSel.add(new Option(p, p));
+            
+                if (batsmanStats[cleanName] && batsmanStats[cleanName].out) return;
+            
+                strikerSel.add(new Option(cleanName, cleanName));
+                nonStrikerSel.add(new Option(cleanName, cleanName));
             });
-            bowlPlayers.map(p => p.trim()).filter(Boolean).forEach(p => {
-                bowlerSel.add(new Option(p, p));
+            bowlPlayers.forEach(p => {
+                if (!p.trim()) return;
+            
+                const [name, img] = p.split('|');
+            
+                const cleanName = name.trim();
+                const cleanImg = img ? img.trim() : "";
+            
+                if (cleanImg) {
+                    playerImages[cleanName] = cleanImg;
+                }
+            
+                bowlerSel.add(new Option(cleanName, cleanName));
             });
         }
         window.addEventListener('DOMContentLoaded', () => {
@@ -1044,7 +1064,7 @@
                     label: 'NEW BOWLER',
                     name: bowler,
                     hand: stats,
-                    image: '',
+                    image: playerImages[bowler] || '',
                     isReturning: isReturning
                 });
 
@@ -2603,8 +2623,17 @@
                 showModal("Both teams must have 11 players");
                 return;
             }
-            document.getElementById("teamAPlayers").value = teamAXI.join("\n");
-            document.getElementById("teamBPlayers").value = teamBXI.join("\n");
+             
+           teamAPlayers.value = teamAXI.map(name => {
+                const img = playerImages[name] || "";
+                return `${name}|${img}`;
+            }).join("\n");
+            
+            teamBPlayers.value = teamBXI.map(name => {
+                const img = playerImages[name] || "";
+                return `${name}|${img}`;
+            }).join("\n");
+             
             if (batting.value === teamA.value) {
                 battingOrder = teamAXI.slice();
             } else {
