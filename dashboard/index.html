@@ -445,18 +445,14 @@
             <button onclick="saveMatchToCloud()">💾 Save Match</button>
         </div>
         <div id="lineups" class="tab">
-            <h3>Team Lineups</h3>
+            <h3>Select Teams</h3>
             <h4>Team A Squad</h4>
-            <textarea id="teamASquad" placeholder="One player per line"></textarea>
-            <button onclick="generateXI('A')">Generate Playing XI</button>
-            <div id="teamAXI"></div>
-            <hr style="margin:20px 0;border-color:#1f2937">
-            <h4>Team B Squad</h4>
-            <textarea id="teamBSquad" placeholder="One player per line"></textarea>
-            <button onclick="generateXI('B')">Generate Playing XI</button>
-            <div id="teamBXI"></div>
-            <button onclick="applyPlayingXI()">Apply Playing XI</button>
-        </div>
+            <select id="lineupTeamA"></select>
+            <button onclick="loadTeamToLineup('A')">Load A</button>
+            
+            <select id="lineupTeamB"></select>
+            <button onclick="loadTeamToLineup('B')">Load B</button>
+                    </div>
         <div id="branding" class="tab">
             <h3>Broadcast Branding</h3>
             <label>Logo URL</label>
@@ -779,6 +775,7 @@
             A: [],
             B: []
         };
+        let tmTeams = [];
         const teamA = document.getElementById('teamA');
         const teamB = document.getElementById('teamB');
         const batting = document.getElementById('batting');
@@ -1108,6 +1105,8 @@
             });
             loadSavedMatch();
             loadMatchList();
+            loadTeamManagerList();
+            loadTeamsToLineup();
 
             loadSponsorPresets();
             /* AUTO LOAD SPONSORS */
@@ -1920,6 +1919,119 @@
             }
             return runsPerOver;
         }
+
+        /* ====== Save team ==== */
+        async function saveTeamManager() {
+            const name = document.getElementById('tmName').value.trim();
+            const logo = document.getElementById('tmLogo').value.trim();
+            const raw = document.getElementById('tmPlayers').value;
+        
+            if (!name) {
+                showModal("Enter team name");
+                return;
+            }
+        
+            const players = raw.split('\n').map(p => {
+                const [n, img] = p.split('|');
+                return {
+                    name: n?.trim(),
+                    image: img?.trim() || ""
+                };
+            }).filter(p => p.name);
+        
+            await fetch('/api/teams', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, logo, players })
+            });
+        
+            showModal("Team saved");
+            loadTeamManagerList();
+        }
+
+        /* =========Load Team To Lineup ===========*/
+        async function loadTeamToLineup(side) {
+            const selectId = side === 'A' ? 'lineupTeamA' : 'lineupTeamB';
+            const name = document.getElementById(selectId).value;
+        
+            const res = await fetch('/api/teams');
+            const teams = await res.json();
+        
+            const team = teams.find(t => t.name === name);
+            if (!team) return;
+        
+            if (side === 'A') {
+                document.getElementById('teamASquad').value =
+                    team.players.map(p => `${p.name}|${p.image}`).join('\n');
+            } else {
+                document.getElementById('teamBSquad').value =
+                    team.players.map(p => `${p.name}|${p.image}`).join('\n');
+            }
+        }
+
+        /* ========= Load Teams To Lineup ============= */
+        async function loadTeamsToLineup() {
+            const res = await fetch('/api/teams');
+            const teams = await res.json();
+        
+            const ddA = document.getElementById('lineupTeamA');
+            const ddB = document.getElementById('lineupTeamB');
+        
+            ddA.innerHTML = '';
+            ddB.innerHTML = '';
+        
+            teams.forEach(t => {
+                ddA.add(new Option(t.name, t.name));
+                ddB.add(new Option(t.name, t.name));
+            });
+        }
+
+        /* ============== Load Team Manager List ============= */
+        async function loadTeamManagerList() {
+            const res = await fetch('/api/teams');
+            tmTeams = await res.json();
+        
+            const dd = document.getElementById('tmSavedTeams');
+            dd.innerHTML = '';
+        
+            tmTeams.forEach(t => {
+                dd.add(new Option(t.name, t.name));
+            });
+        }
+
+        /* ============ Load Team Manager ================*/
+        function loadTeamManager() {
+            const name = document.getElementById('tmSavedTeams').value;
+            const team = tmTeams.find(t => t.name === name);
+        
+            if (!team) return;
+        
+            document.getElementById('tmName').value = team.name;
+            document.getElementById('tmLogo').value = team.logo;
+        
+            document.getElementById('tmPlayers').value =
+                team.players.map(p => `${p.name}|${p.image}`).join('\n');
+        }
+
+        /* ============= Clear Form =================== */
+        function clearTeamManager() {
+            document.getElementById('tmName').value = "";
+            document.getElementById('tmLogo').value = "";
+            document.getElementById('tmPlayers').value = "";
+        }
+
+        /* ================== Delete Team Manager ================= */
+        async function deleteTeamManager() {
+            const name = document.getElementById('tmSavedTeams').value;     
+            await fetch('/api/teams', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });       
+            showModal("Deleted");
+            loadTeamManagerList();
+        }
+        
         /* ============= Render Current Batters ============ */
         function renderCurrentBatters() {
             const panel = document.getElementById("currentBattersPanel");
