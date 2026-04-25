@@ -340,6 +340,45 @@
             .run-buttons button:active {
                 transform: scale(0.95);
             }
+        .xi-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 10px;
+                margin-top: 10px;
+            }
+            
+            .player-card {
+                background: #111;
+                border: 2px solid #333;
+                border-radius: 12px;
+                padding: 8px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            
+            .player-card:hover {
+                border-color: #666;
+            }
+            
+            .player-card.selected {
+                border-color: #22c55e;
+                background: #052e16;
+            }
+            
+            .player-card img {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin-bottom: 6px;
+                background: #222;
+            }
+            
+            .player-card-name {
+                font-size: 12px;
+                line-height: 1.2;
+            }
     </style>
 </head>
 <body>
@@ -2454,35 +2493,64 @@
             const outputId = team === 'A' ? 'teamAXI' : 'teamBXI';
             const input = document.getElementById(inputId).value;
         
-            let html = "";
-        
-            input.split('\n').forEach(p => {     
+           let html = `<div class="xi-grid">`;
+
+            input.split('\n').forEach(p => {
+            
                 if (!p.trim()) return;
-      
-                const [name, img] = p.split('|');    
+            
+                const [name, img] = p.split('|');
+            
                 const cleanName = name.trim();
                 const cleanImg = img ? img.trim() : "";
-        
+            
                 if (cleanImg) {
                     playerImages[cleanName] = cleanImg;
                 }
-        
+            
                 html += `
-                    <label style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                    <div class="player-card"
+                         onclick="togglePlayerCard(this)">
+                         
                         <input type="checkbox"
                                class="${team === 'A' ? 'teamAXI' : 'teamBXI'}"
                                value="${cleanName}"
-                               data-img="${cleanImg}">
-                
+                               data-img="${cleanImg}"
+                               style="display:none">
+            
                         <img src="${cleanImg || ''}"
-                             style="width:28px;height:28px;border-radius:50%;object-fit:cover;background:#222;"
                              onerror="this.style.display='none'">
-                
-                        <span>${cleanName}</span>
-                    </label>
+            
+                        <div class="player-card-name">${cleanName}</div>
+                    </div>
                 `;
-            });     
-            document.getElementById(outputId).innerHTML = html;
+            });
+            
+            html += `</div>`;
+        }
+
+        /* =========== Toggle Player Card ============== */
+        function togglePlayerCard(card) {
+            const checkbox = card.querySelector("input[type='checkbox']");
+        
+            // 🔥 STEP 4 LOGIC — LIMIT TO 11
+            const teamClass = checkbox.classList.contains("teamAXI") ? "teamAXI" : "teamBXI";
+            const selected = document.querySelectorAll(`.${teamClass}:checked`);
+        
+            // If trying to SELECT (not unselect) and already 11 → block
+            if (!checkbox.checked && selected.length >= 11) {
+                showModal("Only 11 players allowed");
+                return;
+            }
+        
+            // Toggle state
+            checkbox.checked = !checkbox.checked;
+        
+            if (checkbox.checked) {
+                card.classList.add("selected");
+            } else {
+                card.classList.remove("selected");
+            }
         }
         
         /* ============== Limit X1 ================= */
