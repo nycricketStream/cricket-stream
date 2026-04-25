@@ -1064,7 +1064,7 @@
                     label: 'NEW BOWLER',
                     name: bowler,
                     hand: stats,
-                    image: playerImages[bowler] || '',
+                    image: playerImages[bowler] || getPlayerImage(bowler),
                     isReturning: isReturning
                 });
 
@@ -1117,7 +1117,7 @@
                     label: 'NEW BATSMAN',
                     name: striker,
                     hand: '',
-                    image: playerImages[striker] || ''
+                    image: playerImages[striker] || getPlayerImage(striker)
                 });
 
                 awaitingNewBatsman = false;
@@ -1635,6 +1635,27 @@
             lastBowler = currentBowler;
 
             updateLiveDisplay();
+        }
+
+        /* =============Get Player Images ============ */
+        function getPlayerImage(name) {
+            const allPlayers = [
+                ...teamAPlayers.value.split('\n'),
+                ...teamBPlayers.value.split('\n')
+            ];
+        
+            for (let p of allPlayers) {
+                const [n, img] = p.split('|');
+                if (n && n.trim() === name) {
+                    const cleanImg = img ? img.trim() : "";
+                    if (cleanImg) {
+                        playerImages[name] = cleanImg; // cache it
+                        return cleanImg;
+                    }
+                }
+            }
+        
+            return "";
         }
 
         /* =============== Add Wicket ========= */
