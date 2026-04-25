@@ -2565,7 +2565,26 @@
             }
         }
         /* ============== Applying Playing X1 =========== */
-        function applyPlayingXI() {
+         async function applyPlayingXI() {
+            const teamAName = document.getElementById('lineupTeamA').value;
+            const teamBName = document.getElementById('lineupTeamB').value;
+
+             const res = await fetch('/api/teams');
+             const teams = await res.json();
+            
+             const teamAData = teams.find(t => t.name === teamAName);
+             const teamBData = teams.find(t => t.name === teamBName);
+
+             if (teamAData) {
+                document.getElementById('teamA').value = teamAData.name;
+                document.getElementById('teamALogo').value = teamAData.logo || "";
+            }
+            
+            if (teamBData) {
+                document.getElementById('teamB').value = teamBData.name;
+                document.getElementById('teamBLogo').value = teamBData.logo || "";
+            }
+            
             const teamAXI = [...document.querySelectorAll(".teamAXI:checked")].map(c => {
                 const name = c.value;
                 const img = c.dataset.img;
