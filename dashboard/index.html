@@ -1991,7 +1991,9 @@
             });
         
             showModal("Team saved");
-            clearTeamManager();
+            setTimeout(() => {
+                clearTeamManager();
+            }, 300);
         }
 
         /* =========Load Team To Lineup ===========*/
