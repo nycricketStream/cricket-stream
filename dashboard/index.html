@@ -2489,6 +2489,7 @@
             console.log("generateXI fired", team);
            const inputId = team === 'A' ? 'teamASquad' : 'teamBSquad';
             const outputId = team === 'A' ? 'teamAXI' : 'teamBXI';
+            console.log(inputId, document.getElementById(inputId));
             const input = document.getElementById(inputId).value;
         
            let html = `<div class="xi-grid">`;
@@ -2525,6 +2526,8 @@
             });
             
             html += `</div>`;
+            // 🔥 THIS LINE IS MISSING
+            document.getElementById(outputId).innerHTML = html;
         }
 
         /* =========== Toggle Player Card ============== */
