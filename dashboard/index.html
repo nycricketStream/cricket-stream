@@ -1644,9 +1644,10 @@ console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
         }
 
         /* =============Get Player Images ============ */
-         const allPlayers = [
-        ...teamAPlayers.value.split('\n'),
-        ...teamBPlayers.value.split('\n')
+        function getPlayerImage(name) {
+            const allPlayers = [
+                ...teamAPlayers.value.split('\n'),
+                ...teamBPlayers.value.split('\n')
             ];
         
             for (let p of allPlayers) {
@@ -1658,14 +1659,13 @@ console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
                 const cleanImg = parts[1]?.trim() || "";
         
                 if (cleanName === name) {
-                    playerImages[name] = cleanImg; // store even if empty
+                    playerImages[name] = cleanImg;
                     return cleanImg;
                 }
             }
         
             return "";
         }
-
         /* =============== Add Wicket ========= */
         function addWicket() {
             // removed - using smartWicket()
