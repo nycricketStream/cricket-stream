@@ -2486,6 +2486,7 @@
         }
         /* ========== Generate X1 ================== */
         function generateXI(team) {
+            console.log("generateXI fired", team);
            const inputId = team === 'A' ? 'teamASquad' : 'teamBSquad';
             const outputId = team === 'A' ? 'teamAXI' : 'teamBXI';
             const input = document.getElementById(inputId).value;
