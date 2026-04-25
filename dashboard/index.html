@@ -445,14 +445,23 @@
             <button onclick="saveMatchToCloud()">💾 Save Match</button>
         </div>
         <div id="lineups" class="tab">
-            <h3>Select Teams</h3>
-            <h4>Team A Squad</h4>
+            <h3>Select Teams</h3>    
+            <h4>Team A</h4>
             <select id="lineupTeamA"></select>
-            <button onclick="loadTeamToLineup('A')">Load A</button>
-            
+            <button onclick="loadTeamToLineup('A')">Load A</button>        
+            <textarea id="teamASquad" rows="10" placeholder="Team A players (name|image)"></textarea>        
+            <button onclick="generateXI('A')">Generate XI</button>        
+            <div id="teamAXI"></div>      
+            <hr>       
+            <h4>Team B</h4>
             <select id="lineupTeamB"></select>
-            <button onclick="loadTeamToLineup('B')">Load B</button>
-                    </div>
+            <button onclick="loadTeamToLineup('B')">Load B</button>        
+            <textarea id="teamBSquad" rows="10" placeholder="Team B players (name|image)"></textarea>       
+            <button onclick="generateXI('B')">Generate XI</button>       
+            <div id="teamBXI"></div>       
+            <hr>
+            <button onclick="applyPlayingXI()">✅ Apply Playing XI</button>
+        </div>
         <div id="branding" class="tab">
             <h3>Broadcast Branding</h3>
             <label>Logo URL</label>
@@ -2441,30 +2450,34 @@
         }
         /* ========== Generate X1 ================== */
         function generateXI(team) {
-            let input = "";
-            if (team === 'A') {
-                input = document.getElementById('teamASquad').value;
-            } else {
-                input = document.getElementById('teamBSquad').value;
-            }
-            const players = input.split('\n').map(p => {
-                const [name, img] = p.split('|');
-                const cleanName = name.trim();
-                if (img && cleanName) {
-                    playerImages[cleanName] = img.trim();
-                } 
-                return cleanName;
-            }).filter(Boolean);
+           const inputId = team === 'A' ? 'teamASquad' : 'teamBSquad';
+            const outputId = team === 'A' ? 'teamAXI' : 'teamBXI';
+            const input = document.getElementById(inputId).value;
         
-            // ⚠️ DO NOT CHANGE THIS PART (your XI logic)
-            const xi = players.slice(0, 11);    
-            if (team === 'A') {
-                playingXI.A = xi;
-                document.getElementById('teamAXI').innerHTML = xi.join('<br>');
-            } else {
-                playingXI.B = xi;
-                document.getElementById('teamBXI').innerHTML = xi.join('<br>');
-            }
+            let html = "";
+        
+            input.split('\n').forEach(p => {     
+                if (!p.trim()) return;
+      
+                const [name, img] = p.split('|');    
+                const cleanName = name.trim();
+                const cleanImg = img ? img.trim() : "";
+        
+                if (cleanImg) {
+                    playerImages[cleanName] = cleanImg;
+                }
+        
+                html += `
+                    <label>
+                        <input type="checkbox"
+                               class="${team === 'A' ? 'teamAXI' : 'teamBXI'}"
+                               value="${cleanName}"
+                               data-img="${cleanImg}">
+                        ${cleanName}
+                    </label><br>
+                `;
+            });     
+            document.getElementById(outputId).innerHTML = html;
         }
         
         /* ============== Limit X1 ================= */
@@ -2477,8 +2490,20 @@
         }
         /* ============== Applying Playing X1 =========== */
         function applyPlayingXI() {
-            const teamAXI = [...document.querySelectorAll(".teamAXI:checked")].map(c => c.value);
-            const teamBXI = [...document.querySelectorAll(".teamBXI:checked")].map(c => c.value);
+            const teamAXI = [...document.querySelectorAll(".teamAXI:checked")].map(c => {
+                const name = c.value;
+                const img = c.dataset.img;
+                if (img) playerImages[name] = img;
+                return name;
+            });
+
+            const teamBXI = [...document.querySelectorAll(".teamBXI:checked")].map(c => {
+                const name = c.value;
+                const img = c.dataset.img;
+                if (img) playerImages[name] = img;
+                return name;
+            });
+            
             if (teamAXI.length !== 11 || teamBXI.length !== 11) {
                 showModal("Both teams must have 11 players");
                 return;
