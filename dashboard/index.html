@@ -489,7 +489,7 @@
             <select id="lineupTeamA"></select>
             <button onclick="loadTeamToLineup('A')">Load A</button>        
             <textarea id="teamASquad" rows="10" placeholder="Team A players (name|image)"></textarea>        
-            <button onclick="generateXI('A')">Generate XI</button>        
+            <button onclick="console.log('CLICK'); generateXI('A')">Generate XI</button>    
             <div id="teamAXI"></div>      
             <hr>       
             <h4>Team B</h4>
@@ -805,9 +805,6 @@
     <div id="logPanel"></div>
     <button id="logToggle">LOG</button>
     <script>
-        window.onerror = function (msg, url, line) {
-            console.error("JS ERROR:", msg, "at line", line);
-        };
         const PUSHER_KEY = window.PUSHER_KEY || '';
         const pusher = new Pusher("12fcceaea77e52cf3626", {
             cluster: 'us2'
@@ -2019,7 +2016,7 @@
 
         /* ========= Load Teams To Lineup ============= */
         async function loadTeamsToLineup() {
-            const res = await fetch('/api/teams');
+             const res = await fetch('/api/teams');
             const teams = await res.json();
         
             const ddA = document.getElementById('lineupTeamA');
