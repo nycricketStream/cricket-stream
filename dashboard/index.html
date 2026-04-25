@@ -2468,13 +2468,18 @@
                 }
         
                 html += `
-                    <label>
+                    <label style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
                         <input type="checkbox"
                                class="${team === 'A' ? 'teamAXI' : 'teamBXI'}"
                                value="${cleanName}"
                                data-img="${cleanImg}">
-                        ${cleanName}
-                    </label><br>
+                
+                        <img src="${cleanImg || ''}"
+                             style="width:28px;height:28px;border-radius:50%;object-fit:cover;background:#222;"
+                             onerror="this.style.display='none'">
+                
+                        <span>${cleanName}</span>
+                    </label>
                 `;
             });     
             document.getElementById(outputId).innerHTML = html;
