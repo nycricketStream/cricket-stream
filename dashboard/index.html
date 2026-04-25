@@ -1059,15 +1059,19 @@
                 }
 
                 // ✅ SEND ONLY ONCE
+                const img = getPlayerImage(bowler) || playerImages[bowler] || "";
+
                 sendEvent('player', {
                     team: (batting.value === teamA.value ? teamB.value : teamA.value),
                     label: 'NEW BOWLER',
                     name: bowler,
                     hand: stats,
-                    image: playerImages[bowler] || getPlayerImage(bowler),
+                    image: img,
                     isReturning: isReturning
                 });
-
+console.log("BOWLER:", bowler);
+console.log("IMAGE FROM MAP:", playerImages[bowler]);
+console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
                 bowlersUsed.add(bowler);
 
                 previousBowler = bowler;
@@ -1112,12 +1116,14 @@
 
                 lastBatsmanTriggered = striker;
 
+                const img = getPlayerImage(striker) || playerImages[striker] || "";
+
                 sendEvent('player', {
                     team: batting.value,
                     label: 'NEW BATSMAN',
                     name: striker,
                     hand: '',
-                    image: playerImages[striker] || getPlayerImage(striker)
+                    image: img
                 });
 
                 awaitingNewBatsman = false;
@@ -1638,20 +1644,22 @@
         }
 
         /* =============Get Player Images ============ */
-        function getPlayerImage(name) {
-            const allPlayers = [
-                ...teamAPlayers.value.split('\n'),
-                ...teamBPlayers.value.split('\n')
+         const allPlayers = [
+        ...teamAPlayers.value.split('\n'),
+        ...teamBPlayers.value.split('\n')
             ];
         
             for (let p of allPlayers) {
-                const [n, img] = p.split('|');
-                if (n && n.trim() === name) {
-                    const cleanImg = img ? img.trim() : "";
-                    if (cleanImg) {
-                        playerImages[name] = cleanImg; // cache it
-                        return cleanImg;
-                    }
+                if (!p.trim()) continue;
+        
+                const parts = p.split('|');
+        
+                const cleanName = parts[0]?.trim();
+                const cleanImg = parts[1]?.trim() || "";
+        
+                if (cleanName === name) {
+                    playerImages[name] = cleanImg; // store even if empty
+                    return cleanImg;
                 }
             }
         
