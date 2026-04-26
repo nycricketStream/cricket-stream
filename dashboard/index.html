@@ -387,7 +387,7 @@
         <h2>MKTV Broadcast</h2>
         <div class="menu-section">
             <div class="menu-title">SETUP</div>
-            <button class="tab-btn" onclick="showTab(event, 'teamManager')">👥 <span>Team</span></button>
+            <button class="tab-btn" onclick="showTab(event, 'teamManager')">🧑‍🤝‍🧑👥 <span>Team</span></button>
             <button class="tab-btn" onclick="showTab(event,'lineups')">📋 <span>Lineups</span></button>
             <button class="tab-btn active" onclick="showTab(event,'match')">🏏 <span>Match</span></button>
             <button class="tab-btn" onclick="showTab(event,'branding')">🖥️ <span>Branding</span></button>
@@ -2395,14 +2395,15 @@ console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
 
             // 🟣 CENTURY
             if (stats.runs >= 100 && !stats.hundredShown) {
-                stats.hundredShown = true;
-
+                stats.hundredShown = true;           
+                const img = getPlayerImage(batsman) || playerImages[batsman] || "";
+                
                 sendEvent('player', {
                     team: batting.value,
                     label: 'CENTURY',
                     name: batsman + " " + stats.runs + " (" + stats.balls + ")",
                     hand: '',
-                    image: ''
+                    image: img
                 });
 
                 return; // prevent double trigger same ball
@@ -2412,12 +2413,13 @@ console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
             if (stats.runs >= 50 && !stats.fiftyShown) {
                 stats.fiftyShown = true;
 
+                const img = getPlayerImage(batsman) || playerImages[batsman] || "";
                 sendEvent('player', {
                     team: batting.value,
                     label: 'FIFTY',
                     name: batsman + " " + stats.runs + " (" + stats.balls + ")",
                     hand: '',
-                    image: ''
+                    image: img
                 });
             }
         }
@@ -2453,13 +2455,14 @@ console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
 
                 if (key === lastHatTrickKey) return;
                 lastHatTrickKey = key;
-
+                
+                const img = getPlayerImage(bowler) || playerImages[bowler] || "";
                 sendEvent('player', {
                     team: batting.value,
                     label: 'HAT TRICK',
                     name: bowler,
                     hand: '3 wickets in 3 balls',
-                    image: ''
+                    image: img
                 });
             }
         }
@@ -2468,72 +2471,78 @@ console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
             let runs = 0;
             let balls = 0;
             let lastWicketIndex = -1;
-
-            // find last wicket
+        
+            // 🔍 Find last wicket
             for (let i = 0; i < liveHistory.length; i++) {
                 if (liveHistory[i].type === "wicket") {
                     lastWicketIndex = i;
                 }
             }
-
-            // calculate partnership
+        
+            // 🧮 Calculate partnership runs + balls
             for (let i = lastWicketIndex + 1; i < liveHistory.length; i++) {
                 const ball = liveHistory[i];
-
+        
                 if (ball.type === "run") {
-                    runs += ball.runs;
+                    runs += ball.runs || 0;
                     balls++;
-                } else if (ball.type === "extra") {
+                } 
+                else if (ball.type === "extra") {
                     const r = ball.runs || 1;
                     runs += r;
-
+        
+                    // Only count legal deliveries
                     if (ball.extra === "bye" || ball.extra === "legbye") {
                         balls++;
                     }
-                } else if (ball.type === "wicket") {
+                } 
+                else if (ball.type === "wicket") {
                     balls++;
                 }
             }
-
+        
+            // 🧑‍🤝‍🧑 Current batters
             const striker = document.getElementById('striker')?.value || "";
             const nonStriker = document.getElementById('nonStriker')?.value || "";
-
-            // ✅ unique key prevents repeat firing
-            const key = striker + "_" + nonStriker + "_" + runs;
-
+        
+            if (!striker || !nonStriker) return;
+        
+            // 🔑 Unique key prevents duplicate firing
+            const key = `${striker}_${nonStriker}_${runs}`;
             if (key === lastPartnershipKey) return;
-
-            // 🟣 100 partnership
+        
+            // 🖼️ Get images (guaranteed fallback)
+            const bat1Img = getPlayerImage(striker) || playerImages[striker] || "/assets/default-player.png";
+            const bat2Img = getPlayerImage(nonStriker) || playerImages[nonStriker] || "/assets/default-player.png";
+        
+            // 🎯 Determine milestone
+            let milestone = null;
+        
             if (runs >= 100 && !partnership100Shown) {
-
+                milestone = 100;
                 partnership100Shown = true;
-                lastPartnershipKey = key;
-
-                sendEvent('player', {
-                    team: batting.value,
-                    label: '100 PARTNERSHIP',
-                    name: striker + " / " + nonStriker,
-                    hand: runs + " runs (" + balls + " balls)",
-                    image: ''
-                });
-
-                return; // 🚨 prevent 50 firing too
-            }
-
-            // 🔵 50 partnership
-            if (runs >= 50 && !partnership50Shown) {
-
+            } 
+            else if (runs >= 50 && !partnership50Shown) {
+                milestone = 50;
                 partnership50Shown = true;
-                lastPartnershipKey = key;
-
-                sendEvent('player', {
-                    team: batting.value,
-                    label: '50 PARTNERSHIP',
-                    name: striker + " / " + nonStriker,
-                    hand: runs + " runs (" + balls + " balls)",
-                    image: ''
-                });
             }
+        
+            if (!milestone) return;
+        
+            // ✅ Update key AFTER confirming milestone
+            lastPartnershipKey = key;
+        
+            // 📡 SEND CLEAN EVENT
+            sendEvent('partnership', {
+                team: batting.value,
+                runs: runs,
+                balls: balls,
+                bat1: striker,
+                bat1Img: bat1Img,
+                bat2: nonStriker,
+                bat2Img: bat2Img,
+                milestone: milestone
+            });
         }
         /* ========== Generate X1 ================== */
         function generateXI(team) {
