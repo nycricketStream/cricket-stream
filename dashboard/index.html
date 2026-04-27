@@ -2532,16 +2532,18 @@ console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
                 partnership100Shown = true;
                 lastPartnershipKey = pairKey;
         
-                sendEvent('partnership', {
-                    team: batting.value,
-                    runs: runs,
-                    balls: balls,
-                    bat1: striker,
-                    bat1Img: bat1Img,
-                    bat2: nonStriker,
-                    bat2Img: bat2Img,
-                    milestone: 100
-                });
+                setTimeout(() => {
+                    sendEvent('partnership', {
+                        team: batting.value,
+                        runs: runs,
+                        balls: balls,
+                        bat1: striker,
+                        bat1Img: bat1Img,
+                        bat2: nonStriker,
+                        bat2Img: bat2Img,
+                        milestone: 100
+                    });
+                }, 700);
         
                 return; // 🚨 stop 50 firing
             }
@@ -2552,16 +2554,18 @@ console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
                 partnership50Shown = true;
                 lastPartnershipKey = pairKey;
         
-                sendEvent('partnership', {
-                    team: batting.value,
-                    runs: runs,
-                    balls: balls,
-                    bat1: striker,
-                    bat1Img: bat1Img,
-                    bat2: nonStriker,
-                    bat2Img: bat2Img,
-                    milestone: 50
-                });
+                setTimeout(() => {
+                    sendEvent('partnership', {
+                        team: batting.value,
+                        runs: runs,
+                        balls: balls,
+                        bat1: striker,
+                        bat1Img: bat1Img,
+                        bat2: nonStriker,
+                        bat2Img: bat2Img,
+                        milestone: 50
+                    });
+                }, 700);
             }
         }
         /* ========== Generate X1 ================== */
