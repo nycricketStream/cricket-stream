@@ -2479,7 +2479,7 @@ console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
                 }
             }
         
-            // 🧮 Calculate partnership runs + balls
+            // 🧮 Calculate partnership
             for (let i = lastWicketIndex + 1; i < liveHistory.length; i++) {
                 const ball = liveHistory[i];
         
@@ -2491,7 +2491,6 @@ console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
                     const r = ball.runs || 1;
                     runs += r;
         
-                    // Only count legal deliveries
                     if (ball.extra === "bye" || ball.extra === "legbye") {
                         balls++;
                     }
@@ -2501,48 +2500,69 @@ console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
                 }
             }
         
-            // 🧑‍🤝‍🧑 Current batters
+            // 🧑 Current batters
             const striker = document.getElementById('striker')?.value || "";
             const nonStriker = document.getElementById('nonStriker')?.value || "";
         
-            if (!striker || !nonStriker) return;
+            // 🚫 Prevent invalid state
+            if (!striker || !nonStriker || striker === nonStriker) return;
         
-            // 🔑 Unique key prevents duplicate firing
-            const key = `${striker}_${nonStriker}_${runs}`;
-            if (key === lastPartnershipKey) return;
+            // 🔑 Use ONLY batter pair as key
+            const pairKey = `${striker}_${nonStriker}`;
         
-            // 🖼️ Get images (guaranteed fallback)
+            // 🧪 Debug (remove later if you want)
+            console.log("PARTNERSHIP CHECK:", {
+                runs,
+                balls,
+                striker,
+                nonStriker,
+                pairKey,
+                lastPartnershipKey,
+                p50: partnership50Shown,
+                p100: partnership100Shown
+            });
+        
+            // 🖼️ Get images (safe fallback)
             const bat1Img = getPlayerImage(striker) || playerImages[striker] || "/assets/default-player.png";
             const bat2Img = getPlayerImage(nonStriker) || playerImages[nonStriker] || "/assets/default-player.png";
         
-            // 🎯 Determine milestone
-            let milestone = null;
-        
+            // 🎯 100 partnership
             if (runs >= 100 && !partnership100Shown) {
-                milestone = 100;
+        
                 partnership100Shown = true;
-            } 
-            else if (runs >= 50 && !partnership50Shown) {
-                milestone = 50;
-                partnership50Shown = true;
+                lastPartnershipKey = pairKey;
+        
+                sendEvent('partnership', {
+                    team: batting.value,
+                    runs: runs,
+                    balls: balls,
+                    bat1: striker,
+                    bat1Img: bat1Img,
+                    bat2: nonStriker,
+                    bat2Img: bat2Img,
+                    milestone: 100
+                });
+        
+                return; // 🚨 stop 50 firing
             }
         
-            if (!milestone) return;
+            // 🎯 50 partnership
+            if (runs >= 50 && !partnership50Shown) {
         
-            // ✅ Update key AFTER confirming milestone
-            lastPartnershipKey = key;
+                partnership50Shown = true;
+                lastPartnershipKey = pairKey;
         
-            // 📡 SEND CLEAN EVENT
-            sendEvent('partnership', {
-                team: batting.value,
-                runs: runs,
-                balls: balls,
-                bat1: striker,
-                bat1Img: bat1Img,
-                bat2: nonStriker,
-                bat2Img: bat2Img,
-                milestone: milestone
-            });
+                sendEvent('partnership', {
+                    team: batting.value,
+                    runs: runs,
+                    balls: balls,
+                    bat1: striker,
+                    bat1Img: bat1Img,
+                    bat2: nonStriker,
+                    bat2Img: bat2Img,
+                    milestone: 50
+                });
+            }
         }
         /* ========== Generate X1 ================== */
         function generateXI(team) {
