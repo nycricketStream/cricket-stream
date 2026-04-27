@@ -416,7 +416,7 @@
             <input id="tmName">        
             <label>Team Logo URL</label>
             <input id="tmLogo">       
-            <label>Players (Name|ImageURL)</label>
+            <label id="tmPlayersLabel">Players (Name|ImageURL)</label>
             <textarea id="tmPlayers" rows="10"></textarea>        
             <br><br>     
             <button onclick="saveTeamManager()">💾 Save Team</button>
@@ -1069,9 +1069,9 @@
                     image: img,
                     isReturning: isReturning
                 });
-console.log("BOWLER:", bowler);
-console.log("IMAGE FROM MAP:", playerImages[bowler]);
-console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
+                console.log("BOWLER:", bowler);
+                console.log("IMAGE FROM MAP:", playerImages[bowler]);
+                console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
                 bowlersUsed.add(bowler);
 
                 previousBowler = bowler;
@@ -2107,6 +2107,21 @@ console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
         
             document.getElementById('tmPlayers').value =
                 team.players.map(p => `${p.name}|${p.image}`).join('\n');
+
+            // ✅ COUNT PLAYERS
+            const playersText = document.getElementById('tmPlayers').value;
+            
+            const count = playersText
+                .split('\n')
+                .map(p => p.trim())
+                .filter(p => p !== "")
+                .length;
+            
+            // ✅ UPDATE LABEL
+            const label = document.getElementById('tmPlayersLabel');
+            if (label) {
+                label.textContent = `Players (Name|ImageURL) (${count})`;
+            }
         }
 
         /* ============= Clear Form =================== */
