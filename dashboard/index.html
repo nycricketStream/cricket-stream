@@ -2989,7 +2989,7 @@
                     batting.value === teamA.value
                         ? teamAPlayers.value.split('\n')
                         : teamBPlayers.value.split('\n')
-                ).map(p => p.trim()).filter(Boolean),
+                ).map(p => (p || '').split('|')[0].trim()).filter(Boolean),
                 target: targetValue,
                 requiredRunRate: requiredRR,
                 bowlingTeam: batting.value === teamA.value ? teamB.value : teamA.value,
