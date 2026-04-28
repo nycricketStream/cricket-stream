@@ -2988,6 +2988,23 @@
                     wickets: b.wickets
                 };
             });
+            
+            const strikerName = document.getElementById('striker')?.value || "";
+            const nonStrikerName = document.getElementById('nonStriker')?.value || "";
+
+            let batsmenData = Object.fromEntries(
+                    Object.entries(batsmanStats).map(([name, s]) => [
+                        name,
+                        {
+                            name: name,
+                            runs: s.runs,
+                            balls: s.balls,
+                            out: s.out,
+                            dismissal: s.dismissal || "",
+                            order: s.order || 999
+                        }
+                    ])
+                )
 
              // ✅ ENSURE STRIKER EXISTS
             if (strikerName && !batsmenData[strikerName]) {
@@ -3019,8 +3036,8 @@
                 score: liveTotal + "/" + liveWickets,
 
                 // ✅ ADD THESE 2 LINES
-                striker: document.getElementById('striker')?.value || "",
-                nonStriker: document.getElementById('nonStriker')?.value || "",
+                striker: strikerName,
+                nonStriker: nonStrikerName,
 
                 playingXI: (
                     batting.value === teamA.value
@@ -3031,19 +3048,7 @@
                 requiredRunRate: requiredRR,
                 bowlingTeam: batting.value === teamA.value ? teamB.value : teamA.value,
                 bowlers: bowlersArray,
-                batsmen: Object.fromEntries(
-                    Object.entries(batsmanStats).map(([name, s]) => [
-                        name,
-                        {
-                            name: name,
-                            runs: s.runs,
-                            balls: s.balls,
-                            out: s.out,
-                            dismissal: s.dismissal || "",
-                            order: s.order || 999
-                        }
-                    ])
-                ),
+                batsmen: batsmenData,
                 lastWicket: lastWicketText,
                 extras:
                     extrasStats.wide +
