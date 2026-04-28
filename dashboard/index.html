@@ -2710,21 +2710,61 @@
             showModal("Playing XI applied");
         }
         /* ============== Save Sponsor Presets =========== */
+
+        let savingSponsors = false;
+        let lastSavedSponsorsHash = "";
+        
+        // Simple hash to detect changes
+        function generateSponsorsHash(data) {
+            return JSON.stringify(data);
+        }
+        
         async function saveSponsorPresets() {
+            if (savingSponsors) {
+                console.log("⏳ Save already in progress...");
+                return;
+            }
+        
+            // Build data
             const presets = {};
-            
             for (let i = 1; i <= 10; i++) {
                 presets[`preset${i}`] = document.getElementById(`preset${i}`)?.value || "";
             }
         
-            const duration = document.getElementById("adDuration")?.value || 8;
+            const duration = parseInt(document.getElementById("adDuration")?.value || 8);
         
-            await fetch('/api/sponsors', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ presets, duration })
-            });
-           showModal("Sponsor presets saved");
+            const payload = { presets, duration };
+        
+            // 🚀 Prevent unnecessary writes
+            const currentHash = generateSponsorsHash(payload);
+            if (currentHash === lastSavedSponsorsHash) {
+                console.log("✅ No changes detected, skipping save");
+                return;
+            }
+        
+            savingSponsors = true;
+        
+            try {
+                const res = await fetch('/api/sponsors', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+        
+                if (!res.ok) throw new Error("Save failed");
+        
+                lastSavedSponsorsHash = currentHash;
+                showModal("Sponsor presets saved");
+                console.log("✅ Sponsors saved successfully");
+        
+            } catch (err) {
+                console.error("❌ Failed to save sponsors:", err);
+            } finally {
+                // small delay to prevent rapid spam clicks
+                setTimeout(() => {
+                    savingSponsors = false;
+                }, 800);
+            }
         }
         
         /* ========= Trigger Preset =====================*/
@@ -2748,22 +2788,31 @@
         async function loadSponsorPresets() {
             try {
                 const res = await fetch('/api/sponsors');
+        
+                if (!res.ok) throw new Error("Load failed");
+        
                 const data = await res.json();
         
                 if (!data) return;
         
+                // Populate inputs
                 for (let i = 1; i <= 10; i++) {
-                    if (data.presets?.[`preset${i}`]) {
-                        document.getElementById(`preset${i}`).value = data.presets[`preset${i}`];
-                    }
+                    const val = data.presets?.[`preset${i}`] || "";
+                    const el = document.getElementById(`preset${i}`);
+                    if (el) el.value = val;
                 }
         
                 if (data.duration) {
                     document.getElementById("adDuration").value = data.duration;
                 }
         
-            } catch (e) {
-                console.warn("No sponsor presets found");
+                // Store hash so first save doesn't trigger unnecessary write
+                lastSavedSponsorsHash = JSON.stringify(data);
+        
+                console.log("✅ Sponsors loaded");
+        
+            } catch (err) {
+                console.warn("⚠️ Could not load sponsors:", err);
             }
         }
         /* ========= Show Live Sub Tab ============= */
