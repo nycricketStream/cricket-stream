@@ -935,9 +935,6 @@
             const target = document.getElementById('target');
             const maxOvers = document.getElementById('maxOvers');
 
-            const showSponsors = document.getElementById('showSponsors');
-            const sponsorList = document.getElementById('sponsorList');
-            const rotation = document.getElementById('rotation');
             const batting = document.getElementById('batting');
             const dropdown = document.getElementById('playerSelect');
             if (!dropdown) return;
@@ -1180,14 +1177,7 @@
             loadTeamsToLineup();
 
             loadSponsorPresets();
-            /* AUTO LOAD SPONSORS */
-            setTimeout(() => {
-                sendEvent('sponsor', {
-                    enabled: showSponsors.checked,
-                    list: sponsorList.value.split('\n').map(s => s.trim()).filter(Boolean),
-                    interval: parseInt(rotation.value || 8)
-                });
-            }, 1500);
+            
             /* KEYBOARD SCORING */
             window.addEventListener("keydown", e => {
                 /* ignore if typing in input fields */
