@@ -441,8 +441,8 @@
             Batting Team<select id="batting"></select>
             Innings
             <select id="innings">
-                <option>1st Innings</option>
-                <option>2nd Innings</option>
+                <option value="1">1st Innings</option>
+                <option value="2">2nd Innings</option>
             </select>
             Total Overs<input id="maxOvers" value="50">
             Target (2nd Innings Only)<input id="target" placeholder="e.g. 250">
@@ -830,6 +830,9 @@
         const logPanel = document.getElementById('logPanel');
         const logToggle = document.getElementById('logToggle');
 
+        let firstInningsTotal = 0;
+        let targetManuallyEdited = false;
+
         const appState = {
             score: "0/0",
             overs: "0.0",
@@ -1032,10 +1035,20 @@
             document.getElementById('teamB').addEventListener('input', updateBattingTeams);
             document.getElementById('teamAPlayers').addEventListener('input', updatePlayerDropdown);
             document.getElementById('teamBPlayers').addEventListener('input', updatePlayerDropdown);
-            document.getElementById('batting').addEventListener('change', updatePlayerDropdown);
+            document.getElementById('batting').addEventListener('change', () => {
+                resetInnings();
+                updatePlayerDropdown();
+                updateStrikerDropdown();
+            });
+            document.getElementById('target').addEventListener('input', () => {
+                targetManuallyEdited = true;
+            });
             document.getElementById('batting').addEventListener('change', updateStrikerDropdown);
             document.getElementById('teamAPlayers').addEventListener('input', updateStrikerDropdown);
             document.getElementById('teamBPlayers').addEventListener('input', updateStrikerDropdown);
+            document.getElementById('innings').addEventListener('change', () => {
+                resetInnings();
+            });
             document.getElementById('bowler').addEventListener('change', function () {
                 const bowler = this.value;
                 if (liveBalls % 6 === 0 && liveBalls !== 0 && bowler === lastOverBowler) {
@@ -2976,6 +2989,30 @@
                 };
             });
 
+             // ✅ ENSURE STRIKER EXISTS
+            if (strikerName && !batsmenData[strikerName]) {
+                batsmenData[strikerName] = {
+                    name: strikerName,
+                    runs: 0,
+                    balls: 0,
+                    out: false,
+                    dismissal: "",
+                    order: playingXI.indexOf(strikerName) + 1 || 999
+                };
+            }
+        
+            // ✅ ENSURE NON-STRIKER EXISTS
+            if (nonStrikerName && !batsmenData[nonStrikerName]) {
+                batsmenData[nonStrikerName] = {
+                    name: nonStrikerName,
+                    runs: 0,
+                    balls: 0,
+                    out: false,
+                    dismissal: "",
+                    order: playingXI.indexOf(nonStrikerName) + 1 || 999
+                };
+            }
+
             sendEvent('fullScorecard', {
                 team: batting.value,
                 overs: calculateOvers(),
@@ -3291,6 +3328,78 @@
             } else if (nonStrikerEl.value === outPlayer) {
                 nonStrikerEl.value = "";
             }
+        }
+
+        function resetInnings() {
+
+            const innings = document.getElementById('innings')?.value;
+
+            // If we are leaving 1st innings, save score
+            if (innings === "1") {
+                firstInningsTotal = liveTotal;
+            }
+            // CORE SCORE RESET
+            liveTotal = 0;
+            liveWickets = 0;
+            liveBalls = 0;
+            liveHistory = [];
+        
+            // PLAYER + BOWLER RESET
+            batsmanStats = {};
+            bowlerStats = {};
+            bowlersUsed.clear();
+        
+            // PARTNERSHIP + ORDER
+            battingOrderCounter = 1;
+            lastPartnershipKey = "";
+            partnership50Shown = false;
+            partnership100Shown = false;
+        
+            // EXTRAS
+            extrasStats = {
+                wide: 0,
+                noball: 0,
+                bye: 0,
+                legbye: 0
+            };
+        
+            // FLOW CONTROL
+            previousBowler = "";
+            lastOverBowler = "";
+            currentOverId = 0;
+            lastOverProcessed = -1;
+            awaitingNewBatsman = false;
+            lockedOut = false;
+            dismissalShown = false;
+        
+            // UI RESET
+            document.getElementById('striker').value = "";
+            document.getElementById('nonStriker').value = "";
+            document.getElementById('bowler').value = "";
+        
+            document.getElementById('overTimeline').innerHTML = "";
+        
+            // IMPORTANT: clear last sent state
+            lastSentScore = "";
+            lastDismissalSent = "";
+            lastBatsmanTriggered = "";
+        
+            updateStrikerDropdown();
+            updateLiveDisplay();
+            const targetInput = document.getElementById('target');
+
+            // If entering 2nd innings and user has NOT edited target
+            if (innings === "2" && !targetManuallyEdited) {
+                if (targetInput) {
+                    targetInput.value = firstInningsTotal + 1;
+                }
+            }
+            
+            // Reset manual override when going back to 1st innings
+            if (innings === "1") {
+                targetManuallyEdited = false;
+            }
+            console.log("✅ INNINGS RESET COMPLETE");
         }
 
         function openExtraModal(type) {
