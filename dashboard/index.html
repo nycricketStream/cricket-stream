@@ -2710,16 +2710,23 @@
             showModal("Playing XI applied");
         }
         /* ============== Save Sponsor Presets =========== */
-        function saveSponsorPresets() {
-            const presets = {
-                p1: document.getElementById("preset1").value,
-                p2: document.getElementById("preset2").value,
-                p3: document.getElementById("preset3").value,
-                p4: document.getElementById("preset4").value
-            };
-            localStorage.setItem("sponsorPresets", JSON.stringify(presets));
-            showModal("Sponsor presets saved");
+        async function saveSponsorPresets() {
+            const presets = {};
+            
+            for (let i = 1; i <= 10; i++) {
+                presets[`preset${i}`] = document.getElementById(`preset${i}`)?.value || "";
+            }
+        
+            const duration = document.getElementById("adDuration")?.value || 8;
+        
+            await fetch('/api/sponsors', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ presets, duration })
+            });
+           showModal("Sponsor presets saved");
         }
+        
         /* ========= Trigger Preset =====================*/
        function triggerPreset(index) {
             const duration = parseInt(document.getElementById('adDuration')?.value || 8)      
@@ -2738,13 +2745,26 @@
             });
         }
         /* ================ Load Sponsor Presets ============ */
-        function loadSponsorPresets() {
-            const presets = JSON.parse(localStorage.getItem("sponsorPresets"));
-            if (!presets) return;
-            document.getElementById("preset1").value = presets.p1 || "";
-            document.getElementById("preset2").value = presets.p2 || "";
-            document.getElementById("preset3").value = presets.p3 || "";
-            document.getElementById("preset4").value = presets.p4 || "";
+        async function loadSponsorPresets() {
+            try {
+                const res = await fetch('/api/sponsors');
+                const data = await res.json();
+        
+                if (!data) return;
+        
+                for (let i = 1; i <= 10; i++) {
+                    if (data.presets?.[`preset${i}`]) {
+                        document.getElementById(`preset${i}`).value = data.presets[`preset${i}`];
+                    }
+                }
+        
+                if (data.duration) {
+                    document.getElementById("adDuration").value = data.duration;
+                }
+        
+            } catch (e) {
+                console.warn("No sponsor presets found");
+            }
         }
         /* ========= Show Live Sub Tab ============= */
         function showLiveSubTab(tab) {
