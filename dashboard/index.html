@@ -734,46 +734,32 @@
             })">
         </div>
         <div id="sponsors" class="tab">
-            <h3>Sponsors</h3>
-            <label>
-                <input type="checkbox" id="showSponsors" checked> Show Sponsor Bar
-            </label>
-            <textarea id="sponsorList" placeholder="One sponsor image URL per line"></textarea>
-            Rotation Seconds
-            <input id="rotation" value="8">
-            <button onclick="sendEvent('sponsor',{
-                    enabled:showSponsors.checked,
-                    list:sponsorList.value.split('\n').map(s=>
-                s.trim()).filter(Boolean),
-                interval:parseInt(rotation.value||8)
-                })">
-                Update Sponsors
-            </button>
-            <hr style="margin:20px 0;border-color:#1f2937">
-            <h3>Fullscreen Sponsor</h3>
-            Sponsor Image URL
-            <input id="fullscreenSponsorImg">
-            Ad Duration (seconds)
-            <input id="fullscreenTime" value="8">
-            <button onclick="sendEvent('fullscreenSponsor',{image:fullscreenSponsorImg.value,duration:parseInt(fullscreenTime.value||8)*1000})">Show Fullscreen Ad</button>
-            <button onclick="sendEvent('fullscreenSponsor',{hide:true})">Hide Fullscreen Ad</button>
             <h3>Sponsor Presets</h3>
-            Preset 1 Image
-            <input id="preset1">
-            Preset 2 Image
-            <input id="preset2">
-            Preset 3 Image
-            <input id="preset3">
-            Preset 4 Image
-            <input id="preset4">
+            <label>Ad Duration (seconds)</label>
+            <input id="adDuration" value="8">
+           <input id="preset1" placeholder="Sponsor 1 Image URL">
+            <input id="preset2" placeholder="Sponsor 2 Image URL">
+            <input id="preset3" placeholder="Sponsor 3 Image URL">
+            <input id="preset4" placeholder="Sponsor 4 Image URL">
+            <input id="preset5" placeholder="Sponsor 5 Image URL">
+            <input id="preset6" placeholder="Sponsor 6 Image URL">
+            <input id="preset7" placeholder="Sponsor 7 Image URL">
+            <input id="preset8" placeholder="Sponsor 8 Image URL">
+            <input id="preset9" placeholder="Sponsor 9 Image URL">
+            <input id="preset10" placeholder="Sponsor 10 Image URL">
             <button onclick="saveSponsorPresets()">Save Presets</button>
             <hr style="margin:15px 0;border-color:#1f2937">
             <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
-                <button onclick="triggerPreset(1)">Sponsor 1</button>
-                <button onclick="triggerPreset(2)">Sponsor 2</button>
-                <button onclick="triggerPreset(3)">Sponsor 3</button>
-                <button onclick="triggerPreset(4)">Sponsor 4</button>
-            </div>
+            <button onclick="triggerPreset(1)">Sponsor 1</button>
+            <button onclick="triggerPreset(2)">Sponsor 2</button>
+            <button onclick="triggerPreset(3)">Sponsor 3</button>
+            <button onclick="triggerPreset(4)">Sponsor 4</button>
+            <button onclick="triggerPreset(5)">Sponsor 5</button>
+            <button onclick="triggerPreset(6)">Sponsor 6</button>
+            <button onclick="triggerPreset(7)">Sponsor 7</button>
+            <button onclick="triggerPreset(8)">Sponsor 8</button>
+            <button onclick="triggerPreset(9)">Sponsor 9</button>
+            <button onclick="triggerPreset(10)">Sponsor 10</button>
         </div>
         <div id="moments" class="tab">
             <h3>Moments</h3>
@@ -2744,15 +2730,20 @@
             showModal("Sponsor presets saved");
         }
         /* ========= Trigger Preset =====================*/
-        function triggerPreset(num) {
-            const presets = JSON.parse(localStorage.getItem("sponsorPresets"));
-            if (!presets) return;
-            const url = presets["p" + num];
-            if (!url) return;
-            const time = parseInt(document.getElementById("fullscreenTime").value || 8) * 1000;
+       function triggerPreset(index) {
+            const duration = parseInt(document.getElementById('adDuration')?.value || 8)      
+            const input = document.getElementById(`preset${index}`);
+            if (!input) return;
+        
+            const url = input.value.trim();
+            if (!url) {
+                console.warn("No preset image for", index);
+                return;
+            }
+        
             sendEvent('fullscreenSponsor', {
                 image: url,
-                duration: time
+                duration: duration * 1000
             });
         }
         /* ================ Load Sponsor Presets ============ */
