@@ -777,7 +777,7 @@
                 <button onclick="sendEvent('sceneMode',{mode:'normal'})">🌤 Normal</button>
                 <button onclick="sendEvent('sceneMode',{mode:'dark'})">🌙 Dark</button>
             </div>
-            <button onclick="sendEvent('LIVE STREAM')">Intro Start</button>
+            <button onclick="sendBreak('LIVE STREAM')">Intro Start</button>
             <button onclick="sendBreak('DRINKS BREAK')">Drinks Break</button>
             <button onclick="sendBreak('STRATEGIC TIMEOUT')">Strategic Timeout</button>
             <button onclick="sendBreak('INNINGS BREAK')">Innings Break</button>
@@ -874,7 +874,7 @@
                 const res = await fetch('/api/broadcast', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ event, data })
+                    body: JSON.stringify({ event, data: data || {} })
                 });
 
                 if (!res.ok) throw new Error("Broadcast failed");
@@ -1102,7 +1102,7 @@
                 const lastBall = liveHistory[liveHistory.length - 1];
                 const isAfterWicket = lastBall && lastBall.type === "wicket";
                 
-                if (!awaitingNewBatsman && !lockedOut && !isAfterWicket) {
+                if (!isAfterWicket && !awaitingNewBatsman) {
                     updateLiveDisplay();
                     return;
                 }
@@ -1148,7 +1148,7 @@
                 const lastBall = liveHistory[liveHistory.length - 1];
                 const isAfterWicket = lastBall && lastBall.type === "wicket";
                 
-                if (!awaitingNewBatsman && !lockedOut && !isAfterWicket) {
+                if (!isAfterWicket && !awaitingNewBatsman) {
                     updateLiveDisplay();
                     return;
                 }
@@ -1201,9 +1201,7 @@
                 if (e.key === "w" || e.key === "W") addWicket();
                 if (e.key === "z" || e.key === "Z") undoLast();
             });
-            updateBattingTeams();
-            updatePlayerDropdown();
-            updateStrikerDropdown();
+            
             const toggleBtn = document.getElementById("sidebarToggle");
             const sidebar = document.querySelector(".sidebar");
 
@@ -2914,6 +2912,8 @@
         }
         /* ================= Load Saved Match ================ */
         function loadSavedMatch() {
+            awaitingNewBatsman = false;
+            lockedOut = false;
             isRestoring = true;
             const saved = localStorage.getItem("cricketMatchState");
             if (!saved) return;
