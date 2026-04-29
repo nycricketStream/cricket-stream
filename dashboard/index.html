@@ -819,6 +819,7 @@
 
         let firstInningsTotal = 0;
         let targetManuallyEdited = false;
+        let isRestoring = false;
 
         const appState = {
             score: "0/0",
@@ -2835,6 +2836,7 @@
         }
         /* ============= Auto Save Match =============== */
         function autoSaveMatch() {
+            if (isRestoring) return;
             const state = {
                 liveTotal,
                 liveWickets,
@@ -2854,6 +2856,9 @@
                 innings: innings.value,
                 target: target.value,
                 maxOvers: maxOvers.value
+                striker: document.getElementById('striker')?.value || "",
+                nonStriker: document.getElementById('nonStriker')?.value || "",
+                bowler: document.getElementById('bowler')?.value || ""
             };
             localStorage.setItem("cricketMatchState", JSON.stringify(state));
         }
@@ -2908,41 +2913,86 @@
         }
         /* ================= Load Saved Match ================ */
         function loadSavedMatch() {
+            isRestoring = true;
             const saved = localStorage.getItem("cricketMatchState");
             if (!saved) return;
+        
             const state = JSON.parse(saved);
-            liveTotal = state.liveTotal;
-            liveWickets = state.liveWickets;
-            liveBalls = state.liveBalls;
-            liveHistory = state.liveHistory;
-            bowlerStats = state.bowlerStats;
-            batsmanStats = state.batsmanStats;
-            extrasStats = state.extrasStats;
-            currentOverBalls = state.currentOverBalls;
-            teamA.value = state.teamA;
-            teamB.value = state.teamB;
+        
+            // CORE
+            liveTotal = state.liveTotal || 0;
+            liveWickets = state.liveWickets || 0;
+            liveBalls = state.liveBalls || 0;
+            liveHistory = state.liveHistory || [];
+            currentOverId = Math.floor(liveBalls / 6);
+            if (liveHistory.length > 0) {
+                const lastBall = liveHistory[liveHistory.length - 1];
+                currentOverId = lastBall.overId ?? currentOverId;
+            }
+        
+            // STATS
+            bowlerStats = state.bowlerStats || {};
+            batsmanStats = state.batsmanStats || {};
+            extrasStats = state.extrasStats || { wide:0,noball:0,bye:0,legbye:0 };
+        
+            currentOverBalls = state.currentOverBalls || [];
+        
+            // TEAMS
+            teamA.value = state.teamA || "";
+            teamB.value = state.teamB || "";
+        
             teamALogo.value = state.teamALogo || "";
             teamBLogo.value = state.teamBLogo || "";
-            teamAPlayers.value = state.teamAPlayers;
-            teamBPlayers.value = state.teamBPlayers;
-            batting.value = state.batting;
-            innings.value = state.innings;
-            target.value = state.target;
-            maxOvers.value = state.maxOvers;
+        
+            teamAPlayers.value = state.teamAPlayers || "";
+            teamBPlayers.value = state.teamBPlayers || "";
+        
+            // MATCH SETTINGS
+            batting.value = state.batting || "";
+            innings.value = state.innings || "";
+            target.value = state.target || "";
+            maxOvers.value = state.maxOvers || "";
+        
+            // 🔥 CRITICAL FIX
+            updatePlayerDropdown();
+            updateStrikerDropdown();
+
+            document.getElementById('striker').value = state.striker || "";
+            document.getElementById('nonStriker').value = state.nonStriker || "";
+            document.getElementById('bowler').value = state.bowler || "";
+                    
+            // Update UI AFTER dropdown rebuild
             updateBattingTeams();
             updateLiveDisplay();
-            sendEvent('match', {
-                teamA: teamA.value,
-                teamB: teamB.value,
-                teamALogo: teamALogo.value,
-                teamBLogo: teamBLogo.value,
-                teamAColor: "#2563eb",
-                teamBColor: "#dc2626",
-                batting: batting.value,
-                innings: innings.value,
-                teamAPlayers: teamAPlayers.value.split('\n'),
-                teamBPlayers: teamBPlayers.value.split('\n')
-            });
+            editingBallIndex = -1;
+            const editor = document.getElementById("ballEditor");
+            if (editor) editor.style.display = "none";
+            renderOverTimeline();
+            renderCurrentOver();
+            renderPartnership();
+            renderFallOfWickets();
+            renderCurrentBatters();
+            renderLastWicket();
+            renderExtrasBreakdown();
+        
+            // 🔥 SEND OVERLAY AFTER EVERYTHING IS READY
+            setTimeout(() => {
+                sendEvent('match', {
+                    teamA: teamA.value,
+                    teamB: teamB.value,
+                    teamALogo: teamALogo.value,
+                    teamBLogo: teamBLogo.value,
+                    teamAColor: "#2563eb",
+                    teamBColor: "#dc2626",
+                    batting: batting.value,
+                    innings: innings.value,
+                    teamAPlayers: teamAPlayers.value.split('\n'),
+                    teamBPlayers: teamBPlayers.value.split('\n')
+                });
+            }, 300);
+            isRestoring = false;
+            console.log("✅ Full match restored correctly");
+
         }
         /* ================= BROADCAST GRAPHICS ================= */
         function sendBreak(text) {
