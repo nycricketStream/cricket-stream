@@ -3602,14 +3602,14 @@
 
         /********** Show Team X1 ***********/
         function showTeamXIs() {
-              const teamAXI = teamAPlayers.value
+                const teamAXI = teamAPlayers.value
                 .split('\n')
-                .map(p => p.trim())
+                .map(p => (p || '').split('|')[0].trim()) // ✅ remove image
                 .filter(Boolean);
         
             const teamBXI = teamBPlayers.value
                 .split('\n')
-                .map(p => p.trim())
+                .map(p => (p || '').split('|')[0].trim()) // ✅ remove image
                 .filter(Boolean);
         
             sendEvent('teamXI', {
