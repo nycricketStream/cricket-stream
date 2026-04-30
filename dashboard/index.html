@@ -761,6 +761,7 @@
                 <button onclick="sendEvent('sceneMode',{mode:'dark'})">🌙 Dark</button>
             </div>
             <button onclick="sendBreak('LIVE STREAM')">Intro Start</button>
+            <button onclick="showTeamXIs()">Show Team Lists</button>
             <button onclick="sendBreak('DRINKS BREAK')">Drinks Break</button>
             <button onclick="sendBreak('STRATEGIC TIMEOUT')">Strategic Timeout</button>
             <button onclick="sendBreak('INNINGS BREAK')">Innings Break</button>
@@ -3597,6 +3598,40 @@
             }
 
             smartExtra(selectedExtraType, totalRuns, runsTaken);
+        }
+
+        /********** Show Team X1 ***********/
+        function showTeamXIs() {
+            const teamAXI = teamAPlayers.value
+                .split('\n')
+                .map(p => {
+                    const [name, img] = (p || '').split('|');
+                    return {
+                        name: (name || '').trim(),
+                        image: (img || '').trim()
+                    };
+                })
+                .filter(p => p.name);
+        
+            const teamBXI = teamBPlayers.value
+                .split('\n')
+                .map(p => {
+                    const [name, img] = (p || '').split('|');
+                    return {
+                        name: (name || '').trim(),
+                        image: (img || '').trim()
+                    };
+                })
+                .filter(p => p.name);
+        
+            sendEvent('teamXI', {
+                teamA: teamA.value,
+                teamB: teamB.value,
+                teamALogo: teamALogo.value,
+                teamBLogo: teamBLogo.value,
+                teamAXI,
+                teamBXI
+            });
         }
 
         function closeModal() {
