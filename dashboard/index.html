@@ -716,23 +716,6 @@
             </div>
         </div>
         <!-- LIVE SCORING END -->
-        <div id="player" class="tab">
-            <h3>Player Lower Third</h3>
-            Player<select id="playerSelect"></select>
-            Handedness
-            <select id="handed">
-                <option value="Right-Hand">Right-Hand</option>
-                <option value="Left-Hand">Left-Hand</option>
-            </select>
-            Player Image URL<input id="playerImg">
-            <button onclick="sendEvent('player',{
-              team: batting.value,
-              label: 'NEW BATSMAN',
-              name: playerSelect.value,
-              hand: handed.value,
-              image: playerImg.value
-            })">
-        </div>
         <div id="sponsors" class="tab">
             <h3>Sponsor Presets</h3>
             <label>Ad Duration (seconds)</label>
