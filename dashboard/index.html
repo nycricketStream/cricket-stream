@@ -3602,27 +3602,15 @@
 
         /********** Show Team X1 ***********/
         function showTeamXIs() {
-            const teamAXI = teamAPlayers.value
+              const teamAXI = teamAPlayers.value
                 .split('\n')
-                .map(p => {
-                    const [name, img] = (p || '').split('|');
-                    return {
-                        name: (name || '').trim(),
-                        image: (img || '').trim()
-                    };
-                })
-                .filter(p => p.name);
+                .map(p => p.trim())
+                .filter(Boolean);
         
             const teamBXI = teamBPlayers.value
                 .split('\n')
-                .map(p => {
-                    const [name, img] = (p || '').split('|');
-                    return {
-                        name: (name || '').trim(),
-                        image: (img || '').trim()
-                    };
-                })
-                .filter(p => p.name);
+                .map(p => p.trim())
+                .filter(Boolean);
         
             sendEvent('teamXI', {
                 teamA: teamA.value,
