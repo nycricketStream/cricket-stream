@@ -544,7 +544,7 @@
             box-shadow: 0 8px 30px rgba(0,0,0,.6);
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255,255,255,0.05);
-            z-index: 9500;
+            z-index: 100;
         }
 
             #scoreboard.show {
@@ -3314,6 +3314,10 @@
                 topSponsorBar.classList.remove('show');
                 return;
             }
+
+            const scoreboard = document.getElementById("scoreboard");
+            // HIDE scoreboard
+            scoreboard.classList.remove("show");
 
             sponsorList = (data.list || []).filter(x => x && x.trim() !== "");
 
