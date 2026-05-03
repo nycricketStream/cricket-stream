@@ -1454,11 +1454,16 @@
             let bowlerRuns = 0;
             let bowlerWickets = 0;
             let bowlerOvers = "0.0";
+            let bowlerMaidens = 0;
+            
             if (bowlerStats[bowlerName]) {
                 const b = bowlerStats[bowlerName];
+            
                 bowlerRuns = b.runs;
                 bowlerWickets = b.wickets;
                 bowlerOvers = Math.floor(b.balls / 6) + "." + (b.balls % 6);
+            
+                bowlerMaidens = calculateMaidens(bowlerName); // ✅ ADD THIS
             }
             const thisOver = getThisOver() || "";
             const currentOverNumber = Math.floor(liveBalls / 6);
@@ -1478,7 +1483,7 @@
                 bat2: nonStrikerName,
                 bat2Score: nonStrikerRuns + " (" + nonStrikerBalls + ")",
                 bowlerName: bowlerName,
-                bowlerStats: bowlerWickets + "-" + bowlerRuns + " (" + bowlerOvers + ")",
+                bowlerStats: `${bowlerOvers}-${bowlerMaidens}-${bowlerRuns}-${bowlerWickets}`,
                 thisOver: thisOver,
                 runsPerOver: getRunsPerOver(),
                 dismissal: (function () {
@@ -1822,14 +1827,44 @@
 
         /* ======== Ensure Bowler ========== */
         function ensureBowler(name) {
-            if (!bowlerStats[name]) {
+           if (!bowlerStats[name]) {
                 bowlerStats[name] = {
                     balls: 0,
                     runs: 0,
-                    wickets: 0
+                    wickets: 0,
+                    maidens: 0   // ✅ ADD THIS
                 };
             }
         }
+
+        function calculateMaidens(bowlerName) {
+            let overs = {};
+        
+            liveHistory.forEach(ball => {
+                if (ball.bowler !== bowlerName) return;
+        
+                const over = ball.overId;
+        
+                if (!overs[over]) {
+                    overs[over] = 0;
+                }
+        
+                // runs from bat
+                if (ball.type === "run") {
+                    overs[over] += ball.runs;
+                }
+        
+                // extras that count against bowler
+                if (ball.type === "extra") {
+                    if (ball.extra === "wide" || ball.extra === "noball") {
+                        overs[over] += ball.runs || 1;
+                    }
+                }
+            });
+
+    // count maiden overs
+    return Object.values(overs).filter(runs => runs === 0).length;
+}
         /* ============ Ensure Batsman =========== */
         function ensureBatsman(name) {
             if (!batsmanStats[name]) {
