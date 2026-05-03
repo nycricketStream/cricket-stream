@@ -1474,6 +1474,17 @@
             lastStriker = strikerName;
             lastNonStriker = nonStrikerName;
             lastBowlerName = bowlerName;
+            const bowling = Object.keys(bowlerStats).map(name => {
+                const b = bowlerStats[name];
+            
+                return {
+                    name: name,
+                    overs: Math.floor(b.balls / 6) + "." + (b.balls % 6),
+                    maidens: calculateMaidens(name), // ✅ ADD THIS
+                    runs: b.runs,
+                    wickets: b.wickets
+                };
+            });
             sendEvent('manualScore', {
                 score: liveTotal + "/" + liveWickets,
                 overs: calculateOvers(),
@@ -1494,6 +1505,10 @@
                     lastDismissalSent = text;
                     return text;
                 })()
+            });
+
+            sendEvent('scorecard', {
+                bowling: bowling
             });
             suppressNextDismissal = false;
             renderBowlerStats();
