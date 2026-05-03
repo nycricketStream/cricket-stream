@@ -1790,12 +1790,12 @@
             .playerRow.active {
                 background: linear-gradient(to right, rgba(255,255,255,0.12), transparent);
             }
+
         #teamXIOverlay .playerRow {
             display: flex;
             align-items: center;
             height: 38px; /* tighter */
             border-top: 1px solid #222;
-
             opacity: 0;
             transform: translateX(-15px);
             animation: slidePlayer 0.3s ease forwards;
@@ -1982,6 +1982,7 @@
                 width: 48%;
                 max-width: 760px;
             }
+
                 #teamXIContent .tv-card:only-child {
                     width: 700px;
                 }
@@ -2028,7 +2029,7 @@
                 height: 80px;
                 object-fit: contain;
             }
-        
+
 
         /* LEFT "XI" TAG */
         #teamXIOverlay .espn-banner {
@@ -2083,28 +2084,28 @@
             animation: fadeRow 0.4s ease forwards;
         }
 
-                #teamXIOverlay .tv-table tbody tr:nth-child(even) {
-                    background: #0a0a0a;
-                }
+        #teamXIOverlay .tv-table tbody tr:nth-child(even) {
+            background: #0a0a0a;
+        }
 
-            /* NUMBER */
-            #teamXIOverlay .tv-table td:first-child {
-                width: 50px;
-                text-align: center;
-                color: #6b7280;
-                font-size: 14px;
-                font-weight: 800;
-            }
+        /* NUMBER */
+        #teamXIOverlay .tv-table td:first-child {
+            width: 50px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 800;
+        }
 
-            /* ===== FIX TEAM XI TEXT COLOR (FINAL) ===== */
+        /* ===== FIX TEAM XI TEXT COLOR (FINAL) ===== */
 
-            #teamXIOverlay .tv-table td {
-                color: #ffffff !important;
-            }
+        #teamXIOverlay .tv-table td {
+            color: #ffffff !important;
+        }
 
-            #teamXIOverlay .tv-table th {
-                color: #9ca3af !important;
-            }
+        #teamXIOverlay .tv-table th {
+            color: #9ca3af !important;
+        }
 
         @keyframes fadeRow {
             to {
@@ -2151,7 +2152,6 @@
             transform: translateX(0) !important;
             opacity: 1 !important;
         }
-
     </style>
 </head>
 
@@ -2654,6 +2654,9 @@
         channel.bind('scorecard', data => {
             if (!data) return;
 
+            if (!data.batting) data.batting = [];
+            if (!data.bowling) data.bowling = [];
+
             const container = document.getElementById("scorecardContainer");
             container.style.display = "block";
             if (scoreboardBar) scoreboardBar.classList.remove("show");
@@ -2665,12 +2668,12 @@
 
             data.batting.forEach(p => {
                 battingHTML += `
-                                                                                              <tr>
-                                                                                                <td>${p.name}</td>
-                                                                                                <td>${p.runs} (${p.balls})</td>
-                                                                                                <td>${p.out ? p.dismissal : "not out"}</td>
-                                                                                              </tr>
-                                                                                            `;
+                                                                                                  <tr>
+                                                                                                    <td>${p.name}</td>
+                                                                                                    <td>${p.runs} (${p.balls})</td>
+                                                                                                    <td>${p.out ? p.dismissal : "not out"}</td>
+                                                                                                  </tr>
+                                                                                                `;
             });
 
             battingHTML += "</table>";
@@ -2680,22 +2683,22 @@
 
             data.bowling.forEach(b => {
                 bowlingHTML += `
-                                                                                              <tr>
-                                                                                                <td>${b.name}</td>
-                                                                                                <td>${b.overs}</td>
-                                                                                                <td>${b.runs}/${b.wickets}</td>
-                                                                                              </tr>
-                                                                                            `;
+                                                                                                  <tr>
+                                                                                                    <td>${b.name}</td>
+                                                                                                    <td>${b.overs}</td>
+                                                                                                    <td>${b.runs}/${b.wickets}</td>
+                                                                                                  </tr>
+                                                                                                `;
             });
 
             bowlingHTML += "</table>";
 
             container.innerHTML = `
-                                                                                    <h2>${data.teamA} vs ${data.teamB}</h2>
-                                                                                    ${battingHTML}
-                                                                                    ${bowlingHTML}
-                                                                                    <div>Total: ${data.total}/${data.wickets} (${data.overs})</div>
-                                                                                  `;
+                                                                                        <h2>${data.teamA} vs ${data.teamB}</h2>
+                                                                                        ${battingHTML}
+                                                                                        ${bowlingHTML}
+                                                                                        <div>Total: ${data.total}/${data.wickets} (${data.overs})</div>
+                                                                                      `;
         });
 
         channel.bind('fullScorecard', data => {
@@ -2763,18 +2766,18 @@
                 const isStriker = striker === name;
 
                 rows += `
-                                                                            <tr class="${isNotOut ? 'not-out-row' : ''} ${isStriker ? 'striker-row' : ''}">
-                                                                                <td class="player">
-                                                                        ${name}
-                                                                        ${isStriker ? '<span class="strike-star">★</span>' : ''}
-                                                                                </td>
-                                                                                <td class="dismissal">
-                                                                                    ${isNotOut ? "not out" : (s.dismissal || "")}
-                                                                                </td>
-                                                                                <td class="runs">${s.runs}</td>
-                                                                                <td class="balls">${s.balls}</td>
-                                                                            </tr>
-                                                                        `;
+                                                                                <tr class="${isNotOut ? 'not-out-row' : ''} ${isStriker ? 'striker-row' : ''}">
+                                                                                    <td class="player">
+                                                                            ${name}
+                                                                            ${isStriker ? '<span class="strike-star">★</span>' : ''}
+                                                                                    </td>
+                                                                                    <td class="dismissal">
+                                                                                        ${isNotOut ? "not out" : (s.dismissal || "")}
+                                                                                    </td>
+                                                                                    <td class="runs">${s.runs}</td>
+                                                                                    <td class="balls">${s.balls}</td>
+                                                                                </tr>
+                                                                            `;
             });
 
             // Then show remaining as "Yet to Bat"
@@ -2785,13 +2788,13 @@
                 })
                 .forEach(name => {
                     rows += `
-                                                                            <tr>
-                                                                                <td class="player">${name}</td>
-                                                                                <td class="dismissal">Yet to Bat</td>
-                                                                                <td class="runs">—</td>
-                                                                                <td class="balls">—</td>
-                                                                            </tr>
-                                                                        `;
+                                                                                <tr>
+                                                                                    <td class="player">${name}</td>
+                                                                                    <td class="dismissal">Yet to Bat</td>
+                                                                                    <td class="runs">—</td>
+                                                                                    <td class="balls">—</td>
+                                                                                </tr>
+                                                                            `;
                 });
 
             let showLastWicketBar = false;
@@ -2804,60 +2807,60 @@
 
             (data.bowlers || []).forEach(b => {
                 bowlingHTML += `
-                                                                        <tr>
-                                                                            <td>${b.name}</td>
-                                                                            <td>${b.overs}</td>
-                                                                            <td>${b.runs}</td>
-                                                                            <td>${b.wickets}</td>
-                                                                        </tr>
-                                                                    `;
+                                                                            <tr>
+                                                                                <td>${b.name}</td>
+                                                                                <td>${b.overs}</td>
+                                                                                <td>${b.runs}</td>
+                                                                                <td>${b.wickets}</td>
+                                                                            </tr>
+                                                                        `;
             });
 
             container.innerHTML = `
-                                                                                <div class="tv-card">
-                                                                                    <div class="tv-header">
-                                                                                       <div class="espn-banner">MKTV</div>
-                                                                                        <div class="header-team">
-                                                                                            <span>${(data.team || "").toUpperCase()}</span>
-                                                                                        </div>
-                                                                                        <div class="header-overs">
-                                                                                            ${data.overs} OVERS
-                                                                                        </div>
-                                                                                    </div>
-
-                                                                                    <table class="tv-table">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th class="col-player">PLAYER</th>
-                                                                                                <th class="col-dismissal"></th>
-                                                                                                <th class="col-runs">RUNS</th>
-                                                                                                <th class="col-balls">BALLS</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                            ${rows}
-                                                                                        </tbody>
-                                                                                    </table>
-
-                                                                                    <div class="tv-footer">
-                                                                                        <div>OVERS ${data.overs}</div>
-                                                                                        <div class="tv-total">TOTAL ${data.score || "0/0"}</div>
-                                                                                    </div>
-
-                                                                                    ${showLastWicketBar ? `
-                                                                                        <div class="tv-lastwicket">
-                                                                                            <div class="lw-left">
-                                                                                                LAST WICKET: ${data.lastWicket}
+                                                                                    <div class="tv-card">
+                                                                                        <div class="tv-header">
+                                                                                           <div class="espn-banner">MKTV</div>
+                                                                                            <div class="header-team">
+                                                                                                <span>${(data.team || "").toUpperCase()}</span>
                                                                                             </div>
-
-                                                                                            <div class="lw-right">
-                                                                                                ${data.target > 0 ? `TARGET ${data.target}` : ""}
-                                                                                                ${data.requiredRunRate > 0 ? `REQ RR ${Number(data.requiredRunRate).toFixed(1)}` : ""}
+                                                                                            <div class="header-overs">
+                                                                                                ${data.overs} OVERS
                                                                                             </div>
                                                                                         </div>
-                                                                                        ` : ""}
-                                                                                </div>
-                                                                                `;
+
+                                                                                        <table class="tv-table">
+                                                                                            <thead>
+                                                                                                <tr>
+                                                                                                    <th class="col-player">PLAYER</th>
+                                                                                                    <th class="col-dismissal"></th>
+                                                                                                    <th class="col-runs">RUNS</th>
+                                                                                                    <th class="col-balls">BALLS</th>
+                                                                                                </tr>
+                                                                                            </thead>
+                                                                                            <tbody>
+                                                                                                ${rows}
+                                                                                            </tbody>
+                                                                                        </table>
+
+                                                                                        <div class="tv-footer">
+                                                                                            <div>OVERS ${data.overs}</div>
+                                                                                            <div class="tv-total">TOTAL ${data.score || "0/0"}</div>
+                                                                                        </div>
+
+                                                                                        ${showLastWicketBar ? `
+                                                                                            <div class="tv-lastwicket">
+                                                                                                <div class="lw-left">
+                                                                                                    LAST WICKET: ${data.lastWicket}
+                                                                                                </div>
+
+                                                                                                <div class="lw-right">
+                                                                                                    ${data.target > 0 ? `TARGET ${data.target}` : ""}
+                                                                                                    ${data.requiredRunRate > 0 ? `REQ RR ${Number(data.requiredRunRate).toFixed(1)}` : ""}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            ` : ""}
+                                                                                    </div>
+                                                                                    `;
 
             setTimeout(() => {
                 document.querySelector('.tv-card')?.classList.add('show');
@@ -3202,9 +3205,9 @@
             const teamBXI = data.teamBXI || [];
 
             content.innerHTML = `
-                ${ renderTeamXI(data.teamA, teamAXI, '#e11d48', data.teamALogo, 'left') }
-                ${ renderTeamXI(data.teamB, teamBXI, '#2563eb', data.teamBLogo, 'right') }
-            `;
+                    ${renderTeamXI(data.teamA, teamAXI, '#e11d48', data.teamALogo, 'left')}
+                    ${renderTeamXI(data.teamB, teamBXI, '#2563eb', data.teamBLogo, 'right')}
+                `;
 
             // 🔥 THIS IS THE FIX
             setTimeout(() => {
@@ -3511,35 +3514,35 @@
         function renderTeamXI(teamName, players, color, logo, side) {
 
             return `
-                  <div class="teamBlock ${side}">
+                      <div class="teamBlock ${side}">
 
-                    <!-- LOGO ABOVE -->
-                    <div class="teamLogoTop">
-                        <img src="${logo}" />
-                    </div>
-
-                    <!-- CARD -->
-                    <div class="tv-card">
-
-                        <!-- CLEAN HEADER -->
-                        <div class="teamHeader" style="background:${color}">
-                            ${teamName}
+                        <!-- LOGO ABOVE -->
+                        <div class="teamLogoTop">
+                            <img src="${logo}" />
                         </div>
 
-                        <table class="tv-table">
-                            <tbody>
-                                ${players.map((p, i) => `
-                                    <tr style="animation-delay:${i * 0.05}s">
-                                        <td>${i + 1}</td>
-                                        <td class="player">${p}</td>
-                                    </tr>
-                                `).join("")}
-                            </tbody>
-                        </table>
+                        <!-- CARD -->
+                        <div class="tv-card">
 
+                            <!-- CLEAN HEADER -->
+                            <div class="teamHeader" style="background:${color}">
+                                ${teamName}
+                            </div>
+
+                            <table class="tv-table">
+                                <tbody>
+                                    ${players.map((p, i) => `
+                                        <tr style="animation-delay:${i * 0.05}s">
+                                            <td>${i + 1}</td>
+                                            <td class="player">${p}</td>
+                                        </tr>
+                                    `).join("")}
+                                </tbody>
+                            </table>
+
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
         }
 
         function formatPlayer(name) {
@@ -3562,39 +3565,41 @@
 
             (data.bowlers || []).forEach(b => {
                 rows += `
-                                                                        <tr>
-                                                                            <td class="player">${b.name}</td>
-                                                                            <td class="runs">${b.overs}</td>
-                                                                            <td class="runs">${b.runs}</td>
-                                                                            <td class="runs">${b.wickets}</td>
-                                                                        </tr>
-                                                                    `;
+                                                                            <tr>
+                                                                                <td class="player">${b.name}</td>
+                                                                                <td class="runs">${b.overs}</td>
+                                                                                <td class="runs">${b.maidens ?? 0}</td>
+                                                                                <td class="runs">${b.runs}</td>
+                                                                                <td class="runs">${b.wickets}</td>
+                                                                            </tr>
+                                                                        `;
             });
 
             // ===== INJECT HTML (THIS WAS MISSING) =====
             el.innerHTML = `
-                                                                    <div class="tv-card">
-                                                                        <div class="tv-header">
-                                                                            <div class="espn-banner">MKTV</div>
-                                                                            <div class="header-team bowling-team">${(data.bowlingTeam || "").toUpperCase()}</div>
-                                                                            <div class="header-overs">${data.overs} OVERS</div>
-                                                                        </div>
+                                                                        <div class="tv-card">
+                                                                            <div class="tv-header">
+                                                                                <div class="espn-banner">MKTV</div>
+                                                                                <div class="header-team bowling-team">${(data.bowlingTeam || "").toUpperCase()}</div>
+                                                                                <div class="header-overs">${data.overs} OVERS</div>
+                                                                            </div>
 
-                                                                        <table class="tv-table">
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th class="col-player">BOWLER</th>
-                                                                                    <th class="col-runs">O</th>
-                                                                                    <th class="col-runs">R</th>
-                                                                                    <th class="col-runs">W</th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                ${rows}
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </div>
-                                                                `;
+                                                                            <table class="tv-table">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th class="col-player">BOWLER</th>
+                                                                                        <th class="col-runs">O</th>
+                                                                                        <th class="col-runs">M</th>
+                                                                                        <th class="col-runs">R</th>
+                                                                                        <th class="col-runs">W</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    ${rows}
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    `;
 
             // ===== SHOW =====
             el.style.display = "none"; // reset
@@ -3720,24 +3725,24 @@
 
             if (container) {
                 container.innerHTML = `
-                                                <div style="display:flex;align-items:center;gap:16px">
+                                                    <div style="display:flex;align-items:center;gap:16px">
 
-                                                    <div style="text-align:center">
-                                                        <img src="${data.bat1Img || ''}"
-                                                             style="width:50px;height:50px;border-radius:50%;object-fit:cover">
-                                                        <div>${data.bat1 || ''}</div>
+                                                        <div style="text-align:center">
+                                                            <img src="${data.bat1Img || ''}"
+                                                                 style="width:50px;height:50px;border-radius:50%;object-fit:cover">
+                                                            <div>${data.bat1 || ''}</div>
+                                                        </div>
+
+                                                        <div style="font-weight:700">+</div>
+
+                                                        <div style="text-align:center">
+                                                            <img src="${data.bat2Img || ''}"
+                                                                 style="width:50px;height:50px;border-radius:50%;object-fit:cover">
+                                                            <div>${data.bat2 || ''}</div>
+                                                        </div>
+
                                                     </div>
-
-                                                    <div style="font-weight:700">+</div>
-
-                                                    <div style="text-align:center">
-                                                        <img src="${data.bat2Img || ''}"
-                                                             style="width:50px;height:50px;border-radius:50%;object-fit:cover">
-                                                        <div>${data.bat2 || ''}</div>
-                                                    </div>
-
-                                                </div>
-                                            `;
+                                                `;
             }
 
             // SHOW GRAPHIC
@@ -3769,11 +3774,11 @@
                 if (!el) return;
 
                 el.style.background = `
-                                                linear-gradient(90deg,
-                                                    rgba(2,6,23,${opacity}),
-                                                    rgba(15,23,42,${opacity})
-                                                )
-                                            `;
+                                                    linear-gradient(90deg,
+                                                        rgba(2,6,23,${opacity}),
+                                                        rgba(15,23,42,${opacity})
+                                                    )
+                                                `;
             });
         }
 
