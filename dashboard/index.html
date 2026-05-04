@@ -847,6 +847,7 @@
         });
 
         async function saveMatchToFirebase() {
+         console.log("🔥 Saving to Firebase..."); // ADD THIS
           const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js");
         
           const matchRef = doc(db, "matches", "liveMatch");
