@@ -512,6 +512,7 @@
                 <option value="60">Large</option>
             </select>
             <button onclick="updateBranding()">Update Branding</button>
+            <button onclick="testFirebase()">Test Firebase</button>
         </div>
         <div id="scoreinfo" class="tab">
             <h3>Manual Score Info (Backup)</h3>
@@ -795,6 +796,8 @@
         
           // Initialize Firebase
           const app = initializeApp(firebaseConfig);
+          const db = getFirestore(app);
+          window.db = db; // make global
         </script>
     <script>
         const PUSHER_KEY = window.PUSHER_KEY || '';
@@ -3680,6 +3683,16 @@
             });
         }
 
+        async function testFirebase() {
+          const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+        
+          await setDoc(doc(db, "matches", "test"), {
+            hello: "world",
+            time: Date.now()
+          });
+        
+          alert("Firebase working");
+        }
         function closeModal() {
             document.getElementById("customModal").style.display = "none";
         }
