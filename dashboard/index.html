@@ -777,14 +777,10 @@
     <!-- LOG PANEL UI -->
     <div id="logPanel"></div>
     <button id="logToggle">LOG</button>
-    <script>
-                // Import the functions you need from the SDKs you need
+    <script type="module">
           import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
           import { getFirestore } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
-          // TODO: Add SDKs for Firebase products that you want to use
-          // https://firebase.google.com/docs/web/setup#available-libraries
         
-          // Your web app's Firebase configuration
           const firebaseConfig = {
             apiKey: "AIzaSyDa8a0LNUqXQGm-Th_o6pJ-qkHoCDDYZS0",
             authDomain: "cricket-dash-overlay.firebaseapp.com",
@@ -794,11 +790,13 @@
             appId: "1:348491225458:web:d4fe9b2009b3b30f7d65eb"
           };
         
-          // Initialize Firebase
           const app = initializeApp(firebaseConfig);
           const db = getFirestore(app);
-          window.db = db; // make global
         
+          // 👇 THIS is the key line
+          window.db = db;
+    </script>
+    <script>       
         const PUSHER_KEY = window.PUSHER_KEY || '';
         const pusher = new Pusher("12fcceaea77e52cf3626", {
             cluster: 'us2'
@@ -3684,7 +3682,7 @@
 
         async function testFirebase() {
           const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js");
-        
+
           await setDoc(doc(db, "matches", "test"), {
             hello: "world",
             time: Date.now()
