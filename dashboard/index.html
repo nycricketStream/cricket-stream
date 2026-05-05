@@ -889,6 +889,62 @@
         
           await setDoc(matchRef, data);
         }
+
+        async function loadMatchFromFirebase() {
+          const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js");
+        
+          const matchRef = doc(db, "matches", "liveMatch");
+          const snap = await getDoc(matchRef);
+        
+          if (!snap.exists()) {
+            console.log("No saved match");
+            return;
+          }
+        
+          const data = snap.data();
+        
+          console.log("🔥 Loaded from Firebase", data);
+        
+          // Restore score
+          const [runs, wkts] = (data.score || "0/0").split('/');
+          liveTotal = Number(runs);
+          liveWickets = Number(wkts);
+        
+          liveBalls = oversToBalls(data.overs || "0.0");
+        
+          // Restore batsmen
+          batsmanStats = {};
+          (data.batting || []).forEach(p => {
+            batsmanStats[p.name] = p;
+          });
+        
+          // Restore bowlers
+          bowlerStats = {};
+          (data.bowling || []).forEach(b => {
+            bowlerStats[b.name] = {
+              balls: oversToBalls(b.overs),
+              runs: b.runs,
+              wickets: b.wickets
+            };
+          });
+        
+          liveHistory = data.history || [];
+        
+          // ⚠️ VERY IMPORTANT (UI restore delay)
+          setTimeout(() => {
+            document.getElementById('striker').value = data.current?.striker || "";
+            document.getElementById('nonStriker').value = data.current?.nonStriker || "";
+            document.getElementById('bowler').value = data.current?.bowler || "";
+        
+            updateLiveDisplay(); // 👈 re-render everything
+          }, 300);
+        }
+
+        function oversToBalls(overs) {
+          const [o, b] = overs.split('.');
+          return (parseInt(o) * 6) + parseInt(b);
+        }
+        
         function log(msg) {
             const time = new Date().toLocaleTimeString();
             logPanel.innerHTML += `[${time}] ${msg}<br>`;
@@ -1226,6 +1282,7 @@
             loadTeamsToLineup();
 
             loadSponsorPresets();
+            loadMatchFromFirebase();
             
             /* KEYBOARD SCORING */
             window.addEventListener("keydown", e => {
