@@ -1074,6 +1074,36 @@
             updateStrikerDropdown();
         }
 
+        function syncCurrentBattersFromStats() {
+          const strikerEl = document.getElementById('striker');
+          const nonStrikerEl = document.getElementById('nonStriker');
+        
+          if (!strikerEl || !nonStrikerEl) return;
+        
+          // Get all NOT OUT batsmen
+          const activeBatters = Object.keys(batsmanStats)
+            .filter(name => !batsmanStats[name].out);
+        
+          if (activeBatters.length < 2) return;
+        
+          // Sort by last activity (balls faced)
+          activeBatters.sort((a, b) => {
+            return (batsmanStats[a].balls || 0) - (batsmanStats[b].balls || 0);
+          });
+        
+          const striker = activeBatters[0];
+          const nonStriker = activeBatters[1];
+        
+          // Apply ONLY if dropdown contains them
+          if ([...strikerEl.options].some(o => o.value === striker)) {
+            strikerEl.value = striker;
+          }
+        
+          if ([...nonStrikerEl.options].some(o => o.value === nonStriker)) {
+            nonStrikerEl.value = nonStriker;
+          }
+        }
+
         function updatePlayerDropdown() {
             const teamA = document.getElementById('teamA');
             const teamB = document.getElementById('teamB');
@@ -1674,6 +1704,7 @@
             checkPartnershipMilestones();
             renderCurrentBatters();
             renderLastWicket();
+            syncCurrentBattersFromStats();
             autoSaveMatch();
             saveMatchToFirebase();
         }
