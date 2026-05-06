@@ -930,14 +930,39 @@
         
           liveHistory = data.history || [];
         
-          // ⚠️ VERY IMPORTANT (UI restore delay)
-          setTimeout(() => {
-            document.getElementById('striker').value = data.current?.striker || "";
-            document.getElementById('nonStriker').value = data.current?.nonStriker || "";
-            document.getElementById('bowler').value = data.current?.bowler || "";
+         setTimeout(() => {
+              // rebuild dropdowns first
+              updateBattingTeams();
+              updatePlayerDropdown();
+              updateStrikerDropdown();
+            
+              // THEN restore values safely
+              restoreSelections(data);
+            
+              updateLiveDisplay();
+            }, 500);
+        }
+
+        function restoreSelections(data) {
+          const strikerEl = document.getElementById('striker');
+          const nonStrikerEl = document.getElementById('nonStriker');
+          const bowlerEl = document.getElementById('bowler');
         
-            updateLiveDisplay(); // 👈 re-render everything
-          }, 300);
+          const striker = data.current?.striker || "";
+          const nonStriker = data.current?.nonStriker || "";
+          const bowler = data.current?.bowler || "";
+        
+          if ([...strikerEl.options].some(o => o.value === striker)) {
+            strikerEl.value = striker;
+          }
+        
+          if ([...nonStrikerEl.options].some(o => o.value === nonStriker)) {
+            nonStrikerEl.value = nonStriker;
+          }
+        
+          if ([...bowlerEl.options].some(o => o.value === bowler)) {
+            bowlerEl.value = bowler;
+          }
         }
 
         function oversToBalls(overs) {
