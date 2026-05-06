@@ -612,6 +612,9 @@
                             <button data-run="6">6</button>
                             <button onclick="openWicketModal()">OUT</button>
                             <button onclick="undoLast()">UNDO</button>
+                            <button onclick="enableMidOverChange()" style="background:#b91c1c">
+                              ⚠️ Injury Bowler Change
+                            </button>
                         </div>                  
                         <h4 style="margin-top:12px">Extras</h4>
                         <div class="extra-buttons">
@@ -825,6 +828,7 @@
         let firstInningsTotal = 0;
         let targetManuallyEdited = false;
         let isRestoring = false;
+        let allowMidOverChange = false;
 
         const appState = {
             score: "0/0",
@@ -1074,35 +1078,11 @@
             updateStrikerDropdown();
         }
 
-        function syncCurrentBattersFromStats() {
-          const strikerEl = document.getElementById('striker');
-          const nonStrikerEl = document.getElementById('nonStriker');
-        
-          if (!strikerEl || !nonStrikerEl) return;
-        
-          // Get all NOT OUT batsmen
-          const activeBatters = Object.keys(batsmanStats)
-            .filter(name => !batsmanStats[name].out);
-        
-          if (activeBatters.length < 2) return;
-        
-          // Sort by last activity (balls faced)
-          activeBatters.sort((a, b) => {
-            return (batsmanStats[a].balls || 0) - (batsmanStats[b].balls || 0);
-          });
-        
-          const striker = activeBatters[0];
-          const nonStriker = activeBatters[1];
-        
-          // Apply ONLY if dropdown contains them
-          if ([...strikerEl.options].some(o => o.value === striker)) {
-            strikerEl.value = striker;
-          }
-        
-          if ([...nonStrikerEl.options].some(o => o.value === nonStriker)) {
-            nonStrikerEl.value = nonStriker;
-          }
+        function enableMidOverChange() {
+          allowMidOverChange = true;
+          showModal("Select new bowler to complete the over");
         }
+
 
         function updatePlayerDropdown() {
             const teamA = document.getElementById('teamA');
@@ -1215,12 +1195,20 @@
                 resetInnings();
             });
             document.getElementById('bowler').addEventListener('change', function () {
-                if (currentOverBalls > 0 && currentOverBalls < 6) {
+                const bowler = this.value;
+
+                // 🚫 block mid-over UNLESS injury override is active
+                if (!allowMidOverChange && currentOverBalls > 0 && currentOverBalls < 6) {
                     showModal("Cannot change bowler mid-over");
                     this.value = currentOverBowler;
                     return;
                 }
-                const bowler = this.value;
+                
+                // ✅ allow change if injury override is ON
+                currentOverBowler = bowler;
+                
+                // reset override AFTER use
+                allowMidOverChange = false;
                 
                 if (liveBalls % 6 === 0 && liveBalls !== 0 && bowler === lastOverBowler) {
                     showModal("Cannot bowl consecutive overs");
@@ -1230,8 +1218,6 @@
 
                 this.classList.remove("bowler-warning");
                 setScoringEnabled(true);
-
-                currentOverBalls = 0;
 
                 const isReturning = bowlersUsed.has(bowler);
 
@@ -1757,7 +1743,7 @@
             liveBalls++;
             currentOverBalls++;
 
-            if (liveBalls % 6 === 1) {
+            if (currentOverBalls === 1) {
                 currentOverBowler = currentBowler;
             }
             if (currentOverBowler === "") {
@@ -1818,9 +1804,10 @@
                 sendEndOfOverGraphic();
             }
 
-            if (isOverComplete()) {
+           if (isOverComplete()) {
                 currentOverId++;
                 currentOverBalls = 0;
+                currentOverBowler = "";
             }
 
             lastBowler = currentBowler;
