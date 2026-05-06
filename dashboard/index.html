@@ -1215,7 +1215,13 @@
                 resetInnings();
             });
             document.getElementById('bowler').addEventListener('change', function () {
+                if (currentOverBalls > 0 && currentOverBalls < 6) {
+                    showModal("Cannot change bowler mid-over");
+                    this.value = currentOverBowler;
+                    return;
+                }
                 const bowler = this.value;
+                
                 if (liveBalls % 6 === 0 && liveBalls !== 0 && bowler === lastOverBowler) {
                     showModal("Cannot bowl consecutive overs");
                     this.value = "";
@@ -1704,7 +1710,6 @@
             checkPartnershipMilestones();
             renderCurrentBatters();
             renderLastWicket();
-            syncCurrentBattersFromStats();
             autoSaveMatch();
             saveMatchToFirebase();
         }
@@ -1750,7 +1755,7 @@
 
             liveTotal += r;
             liveBalls++;
-            ;
+            currentOverBalls++;
 
             if (liveBalls % 6 === 1) {
                 currentOverBowler = currentBowler;
@@ -1815,6 +1820,7 @@
 
             if (isOverComplete()) {
                 currentOverId++;
+                currentOverBalls = 0;
             }
 
             lastBowler = currentBowler;
