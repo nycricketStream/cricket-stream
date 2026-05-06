@@ -860,6 +860,11 @@
             score: liveTotal + "/" + liveWickets,
             overs: calculateOvers(),
             runRate: calculateRR(),
+            teamA: document.getElementById('teamA')?.value || "",
+            teamB: document.getElementById('teamB')?.value || "",
+            teamAPlayers: document.getElementById('teamAPlayers')?.value.split('\n') || [],
+            teamBPlayers: document.getElementById('teamBPlayers')?.value.split('\n') || [],
+            battingTeam: document.getElementById('batting')?.value || "",
         
             batting: Object.keys(batsmanStats).map(name => ({
               name,
@@ -928,19 +933,25 @@
             };
           });
         
-          liveHistory = data.history || [];
+        liveHistory = data.history || [];
+        // ✅ Restore match setup FIRST
+        document.getElementById('teamA').value = data.teamA || "";
+        document.getElementById('teamB').value = data.teamB || "";
         
-         setTimeout(() => {
-              // rebuild dropdowns first
+        document.getElementById('teamAPlayers').value = (data.teamAPlayers || []).join('\n');
+        document.getElementById('teamBPlayers').value = (data.teamBPlayers || []).join('\n');
+        
+        document.getElementById('batting').value = data.battingTeam || "";
+        setTimeout(() => {
               updateBattingTeams();
               updatePlayerDropdown();
               updateStrikerDropdown();
             
-              // THEN restore values safely
-              restoreSelections(data);
-            
-              updateLiveDisplay();
-            }, 500);
+              setTimeout(() => {
+                restoreSelections(data);
+                updateLiveDisplay();
+              }, 100);
+            }, 200);
         }
 
         function restoreSelections(data) {
