@@ -965,6 +965,19 @@
           currentOverBalls = liveBalls % 6;
           currentOverBowler = "";
           lastOverNumber = Math.floor(liveBalls / 6);
+
+          const isEndOfOver = (liveBalls > 0 && liveBalls % 6 === 0);
+
+        if (isEndOfOver) {
+          const bowlerSelect = document.getElementById('bowler');
+        
+          bowlerSelect.value = "";
+          bowlerSelect.classList.add("bowler-warning");
+        
+          setScoringEnabled(false); // 🚫 block scoring
+        
+          currentOverBowler = "";
+        }
         
           // Restore batsmen
           batsmanStats = {};
