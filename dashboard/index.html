@@ -898,6 +898,10 @@
         
           const matchRef = doc(db, "matches", "liveMatch");
             const currentPlayers = getCurrentFromHistory();
+            if (currentPlayers.striker === currentPlayers.nonStriker) {
+              console.warn("Invalid state: striker and non-striker are the same");
+              return;
+            }
           const striker = document.getElementById('striker')?.value || "";
           const nonStriker = document.getElementById('nonStriker')?.value || "";
           const bowler = document.getElementById('bowler')?.value || "";
@@ -933,6 +937,9 @@
               nonStriker: currentPlayers.nonStriker,
               bowler: currentPlayers.bowler
             },
+            currentOverId: currentOverId,
+            currentOverBalls: currentOverBalls,
+            lastOverNumber: lastOverNumber,
         
             history: liveHistory,
             updatedAt: Date.now()
@@ -965,6 +972,19 @@
           currentOverBalls = liveBalls % 6;
           currentOverBowler = "";
           lastOverNumber = Math.floor(liveBalls / 6);
+
+          if (data.currentOverId !== undefined) {
+              currentOverId = data.currentOverId;
+            }
+            
+            if (data.currentOverBalls !== undefined) {
+              currentOverBalls = data.currentOverBalls;
+            }
+            
+            if (data.lastOverNumber !== undefined) {
+              lastOverNumber = data.lastOverNumber;
+            }
+            
           if (liveBalls > 0 && liveBalls % 6 === 0) {
               currentOverId = Math.floor(liveBalls / 6); // already correct
             } else {
@@ -1801,6 +1821,10 @@
 
             const striker = document.getElementById('striker')?.value;
             const currentBowler = document.getElementById('bowler')?.value;
+            if (!currentBowler) {
+              showModal("Select a bowler first");
+              return;
+            }
 
             liveHistory.push({
                 type: 'run',
