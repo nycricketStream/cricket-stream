@@ -1195,7 +1195,7 @@
                 resetInnings();
             });
             document.getElementById('bowler').addEventListener('change', function () {
-                const bowler = this.value;
+                  const bowler = this.value;
 
                 // 🚫 block mid-over UNLESS injury override is active
                 if (!allowMidOverChange && currentOverBalls > 0 && currentOverBalls < 6) {
@@ -1203,34 +1203,36 @@
                     this.value = currentOverBowler;
                     return;
                 }
-                
-                // ✅ allow change if injury override is ON
-                currentOverBowler = bowler;
-                
+            
+                // ✅ ONLY set over owner if it's a NEW over
+                if (currentOverBalls === 0) {
+                    currentOverBowler = bowler;
+                }
+            
                 // reset override AFTER use
                 allowMidOverChange = false;
-                
+            
+                // 🚫 prevent same bowler consecutive overs
                 if (liveBalls % 6 === 0 && liveBalls !== 0 && bowler === lastOverBowler) {
                     showModal("Cannot bowl consecutive overs");
                     this.value = "";
                     return;
                 }
-
+            
                 this.classList.remove("bowler-warning");
                 setScoringEnabled(true);
-
+            
                 const isReturning = bowlersUsed.has(bowler);
-
+            
                 let stats = "0-0 (0.0)";
                 if (bowlerStats[bowler]) {
                     const b = bowlerStats[bowler];
                     const overs = Math.floor(b.balls / 6) + "." + (b.balls % 6);
                     stats = b.wickets + "-" + b.runs + " (" + overs + ")";
                 }
-
-                // ✅ SEND ONLY ONCE
+            
                 const img = getPlayerImage(bowler) || playerImages[bowler] || "";
-
+            
                 sendEvent('player', {
                     team: (batting.value === teamA.value ? teamB.value : teamA.value),
                     label: 'NEW BOWLER',
@@ -1239,13 +1241,10 @@
                     image: img,
                     isReturning: isReturning
                 });
-                console.log("BOWLER:", bowler);
-                console.log("IMAGE FROM MAP:", playerImages[bowler]);
-                console.log("IMAGE FROM FUNCTION:", getPlayerImage(bowler));
+            
                 bowlersUsed.add(bowler);
-
                 previousBowler = bowler;
-
+            
                 updateLiveDisplay();
             });
             document.querySelectorAll('[data-run]').forEach(btn => {
@@ -1743,10 +1742,7 @@
             liveBalls++;
             currentOverBalls++;
 
-            if (currentOverBalls === 1) {
-                currentOverBowler = currentBowler;
-            }
-            if (currentOverBowler === "") {
+           if (currentOverBalls === 1) {
                 currentOverBowler = currentBowler;
             }
 
