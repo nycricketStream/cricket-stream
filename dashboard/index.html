@@ -829,6 +829,7 @@
         let targetManuallyEdited = false;
         let isRestoring = false;
         let allowMidOverChange = false;
+        let isLoadingFromFirebase = false;
 
         const appState = {
             score: "0/0",
@@ -851,6 +852,10 @@
         });
 
         async function saveMatchToFirebase() {
+        if (isLoadingFromFirebase) {
+          console.log("⛔ Skipping save during load");
+          return;
+        }
          console.log("🔥 Saving to Firebase..."); // ADD THIS
           const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js");
         
@@ -901,7 +906,7 @@
 
         async function loadMatchFromFirebase() {
           const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js");
-        
+          isLoadingFromFirebase = true;
           const matchRef = doc(db, "matches", "liveMatch");
           const snap = await getDoc(matchRef);
         
@@ -953,6 +958,10 @@
               restoreSelections(data);
               updateLiveDisplay();
             }, 500);
+
+            setTimeout(() => {
+              isLoadingFromFirebase = false;
+            }, 400);
         }
 
        function restoreSelections(data) {
