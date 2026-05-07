@@ -965,6 +965,11 @@
           currentOverBalls = liveBalls % 6;
           currentOverBowler = "";
           lastOverNumber = Math.floor(liveBalls / 6);
+          if (liveBalls > 0 && liveBalls % 6 === 0) {
+              currentOverId = Math.floor(liveBalls / 6); // already correct
+            } else {
+              currentOverId = Math.floor(liveBalls / 6);
+            }
 
           const isEndOfOver = (liveBalls > 0 && liveBalls % 6 === 0);
 
