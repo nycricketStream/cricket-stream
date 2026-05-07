@@ -964,6 +964,7 @@
           liveBalls = oversToBalls(data.overs || "0.0");
           currentOverBalls = liveBalls % 6;
           currentOverBowler = "";
+          lastOverNumber = Math.floor(liveBalls / 6);
         
           // Restore batsmen
           batsmanStats = {};
@@ -1246,7 +1247,12 @@
                   const bowler = this.value;
 
                 // 🚫 block mid-over UNLESS injury override is active
-                if (!allowMidOverChange && currentOverBalls > 0 && currentOverBalls < 6) {
+                if (
+                      !allowMidOverChange &&
+                      currentOverBalls > 0 &&
+                      currentOverBalls < 6 &&
+                      currentOverBowler !== ""   // ✅ KEY FIX
+                    ){
                     showModal("Cannot change bowler mid-over");
                     this.value = currentOverBowler;
                     return;
