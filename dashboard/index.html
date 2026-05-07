@@ -962,6 +962,8 @@
           liveWickets = Number(wkts);
         
           liveBalls = oversToBalls(data.overs || "0.0");
+          currentOverBalls = liveBalls % 6;
+          currentOverBowler = "";
         
           // Restore batsmen
           batsmanStats = {};
