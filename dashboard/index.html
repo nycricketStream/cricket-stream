@@ -851,6 +851,43 @@
             }
         });
 
+        function getCurrentFromHistory() {
+          if (!liveHistory || liveHistory.length === 0) {
+            return {
+              striker: "",
+              nonStriker: "",
+              bowler: ""
+            };
+          }
+        
+          const lastBall = liveHistory[liveHistory.length - 1];
+        
+          // ✅ current bowler = last ball bowler
+          const bowler = lastBall.bowler || "";
+        
+          // ✅ get all NOT OUT batsmen
+          const active = Object.keys(batsmanStats).filter(
+            name => !batsmanStats[name].out
+          );
+        
+          // fallback to UI if something weird
+          if (active.length < 2) {
+            return {
+              striker: document.getElementById('striker')?.value || "",
+              nonStriker: document.getElementById('nonStriker')?.value || "",
+              bowler
+            };
+          }
+        
+          // striker = last ball striker
+          const striker = lastBall.striker;
+        
+          // non-striker = other active batsman
+          const nonStriker = active.find(p => p !== striker) || "";
+        
+          return { striker, nonStriker, bowler };
+        }
+
         async function saveMatchToFirebase() {
         if (isLoadingFromFirebase) {
           console.log("⛔ Skipping save during load");
@@ -891,11 +928,13 @@
               };
             }),
         
+           const currentPlayers = getCurrentFromHistory();
+
             current: {
-              striker,
-              nonStriker,
-              bowler
-            },
+              striker: currentPlayers.striker,
+              nonStriker: currentPlayers.nonStriker,
+              bowler: currentPlayers.bowler
+            }
         
             history: liveHistory,
             updatedAt: Date.now()
