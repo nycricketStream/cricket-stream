@@ -11,31 +11,31 @@
     <style>
         @font-face {
             font-family: 'Jura';
-            src: url('/assets/fonts/Juralight-LmrZ.ttf') format('truetype');
+            src: url('assets/fonts/Juralight-LmrZ.ttf') format('truetype');
             font-weight: 300;
         }
 
         @font-face {
             font-family: 'Jura';
-            src: url('/assets/fonts/Jurabook-dvpK.ttf') format('truetype');
+            src: url('assets/fonts/Jurabook-dvpK.ttf') format('truetype');
             font-weight: 400;
         }
 
         @font-face {
             font-family: 'Jura';
-            src: url('/assets/fonts/Juramedium-Xdgd.ttf') format('truetype');
+            src: url('assets/fonts/Juramedium-Xdgd.ttf') format('truetype');
             font-weight: 500;
         }
 
         @font-face {
             font-family: 'Jura';
-            src: url('/assets/fonts/Jurademibold-Povr.ttf') format('truetype');
+            src: url('assets/fonts/Jurademibold-Povr.ttf') format('truetype');
             font-weight: 700;
         }
 
         @font-face {
             font-family: 'Eurostile';
-            src: url('/assets/fonts/Eurostile-Medium Medium.ttf') format('truetype');
+            src: url('assets/fonts/Eurostile-Medium Medium.ttf') format('truetype');
             font-weight: 500;
         }
 
@@ -53,7 +53,7 @@
             height: 1080px;
             background: transparent;
             overflow: hidden;
-            font-family: 'Oswald', 'Roboto', 'Jura', 'Eurostile', Arial, sans-serif;
+            font-family: 'Eurostile', 'Roboto', Arial, sans-serif;
         }
 
         /* CONNECTION DOT */
@@ -81,7 +81,7 @@
 
             #lowerThird,
             #lowerThird * {
-                font-family: 'Eurostile','Jura', sans-serif !important;
+                font-family: 'Oswald', 'Eurostile', sans-serif !important;
             }
 
         /* ===== LOWER THIRD - ESPN SYSTEM ===== */
@@ -262,6 +262,7 @@
             right: 60px;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 14px;
             padding: 10px 18px 10px 12px;
             width: fit-content;
@@ -297,6 +298,8 @@
             display: flex;
             flex-direction: column;
             gap: 2px;
+            align-items: center;
+            text-align: center;
         }
 
         #bowlerTeam {
@@ -304,6 +307,7 @@
             font-weight: 700;
             color: #7dd3fc;
             letter-spacing: 1.2px;
+            margin-top: 6px;
         }
 
         #bowlerLabel {
@@ -335,6 +339,7 @@
             object-fit: cover;
             flex-shrink: 0;
             display: none;
+            margin: 0 auto;
             border: 2px solid rgba(255,255,255,0.25);
             box-shadow: 0 0 0 2px #38bdf8, 0 0 10px rgba(56,189,248,0.7);
             transform: scale(.85);
@@ -382,6 +387,7 @@
             letter-spacing: .1em;
             display: none;
             z-index: 2;
+            font-family: 'Oswald', sans-serif;
         }
 
         /* Animations */
@@ -928,6 +934,7 @@
             font-weight: 700;
             letter-spacing: 6px;
             color: white;
+            font-family: 'Oswald', sans-serif;
         }
 
         @keyframes breakFade {
@@ -1076,6 +1083,7 @@
             font-weight: 700;
             letter-spacing: 8px;
             color: white;
+            font-family: 'Oswald', sans-serif;
         }
 
         #replaySub {
@@ -1143,7 +1151,7 @@
 
             .tv-card,
             .tv-card * {
-                font-family: 'Eurostile', 'Jura', Arial, sans-serif !important;
+                font-family: 'Eurostile', Arial, sans-serif !important;
             }
 
                 .tv-card.show {
@@ -1239,7 +1247,7 @@
 
             .tv-table th,
             .tv-table td {
-                font-family: 'Eurostile','Jura', sans-serif !important;
+                font-family: 'Eurostile', sans-serif !important;
                 padding: 6px 10px;
                 line-height: 1.2;
             }
@@ -1294,7 +1302,7 @@
         }
 
         .runs, .balls {
-            font-family: 'Eurostile','Jura', sans-serif !important;
+            font-family: 'Eurostile', sans-serif !important;
             font-weight: 900;
         }
 
@@ -1306,7 +1314,7 @@
 
         /* ROWS */
         .tv-table td {
-            font-family: 'Eurostile','Jura', Arial, sans-serif !important;
+            font-family: 'Eurostile', Arial, sans-serif !important;
             letter-spacing: 0.3px;
             color: #000000;
         }
@@ -1601,7 +1609,7 @@
             display: flex;
             align-items: center;
             background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
-            font-family: 'Eurostile','Jura', sans-serif;
+            font-family: 'Eurostile', sans-serif;
             font-size: 28px;
             font-weight: 900;
             letter-spacing: 1.2px;
@@ -1624,7 +1632,7 @@
         .header-overs {
             margin-left: auto;
             padding-right: 16px;
-            font-family: 'Eurostile','Jura', sans-serif;
+            font-family: 'Eurostile', sans-serif;
             font-size: 15px;
             font-weight: 900;
             letter-spacing: 1px;
@@ -1640,7 +1648,7 @@
             background: linear-gradient( to bottom, #d3132a 0%, #a60f1f 45%, #7f0000 100% );
             clip-path: polygon( 0% 0%, 100% 0%, 86% 100%, 0% 100% );
             color: #ffffff;
-            font-family: 'Eurostile','Jura', sans-serif;
+            font-family: 'Eurostile', sans-serif;
             font-weight: 900;
             font-size: 20px;
             letter-spacing: 1.5px;
@@ -1765,52 +1773,6 @@
             }
         }
 
-
-        /* ===== BACKGROUND TEXTURE ESPN TEAM X1 ===== */
-        #teamXIOverlay {
-            background: rgba(0,0,0,0.6);
-        }
-
-        /* ===== PANEL GLOW EDGE ===== */
-        .teamPanel {
-            position: relative;
-            overflow: hidden;
-        }
-
-        #teamXIOverlay .teamPanel {
-            background: #000;
-        }
-
-        /* ===== PLAYER ROW ENHANCEMENT ===== */
-        .playerRow {
-            position: relative;
-        }
-
-            /* ===== HIGHLIGHT ROW (OPTIONAL) ===== */
-            .playerRow.active {
-                background: linear-gradient(to right, rgba(255,255,255,0.12), transparent);
-            }
-
-        #teamXIOverlay .playerRow {
-            display: flex;
-            align-items: center;
-            height: 38px; /* tighter */
-            border-top: 1px solid #222;
-            opacity: 0;
-            transform: translateX(-15px);
-            animation: slidePlayer 0.3s ease forwards;
-        }
-
-        /* ===== TEXT IMPROVEMENT ===== */
-        .playerName {
-            text-shadow: 0 0 4px rgba(255,255,255,0.15);
-        }
-
-        /* ===== LOGO CLEANUP ===== */
-        .teamHeaderTop img {
-            filter: drop-shadow(0 0 6px rgba(0,0,0,0.6));
-        }
-
         /* ===== ESPN STYLE ===== */
 
         .teamBlock {
@@ -1837,101 +1799,6 @@
                 opacity: 0;
             }
 
-        /* Panel */
-        .teamPanel {
-            border: 2px solid;
-            box-shadow: 0 0 18px currentColor;
-            background: #000;
-        }
-
-        /* Top header */
-        .teamHeaderTop {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 8px;
-            background: #000;
-            border-bottom: 2px solid #111;
-        }
-
-        .teamTitle {
-            font-size: 38px;
-            font-weight: 900;
-            letter-spacing: 1px;
-        }
-
-        #teamXIOverlay .teamTitle {
-            font-size: 38px;
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-
-        /* PLAYING XI BAR */
-        .playingXIBar {
-            text-align: center;
-            font-size: 18px;
-            font-weight: 900;
-            padding: 6px 0;
-            letter-spacing: 2px;
-        }
-
-        #teamXIOverlay .playingXIBar {
-            text-align: center;
-            font-size: 18px;
-            font-weight: 900;
-            padding: 6px 0;
-            letter-spacing: 2px;
-            background: linear-gradient(to right, currentColor, #000); /* ESPN */
-            color: #fff;
-        }
-
-        /* Player rows */
-        .playerRow {
-            display: flex;
-            align-items: center;
-            height: 42px; /* 🔥 tighter */
-            border-top: 1px solid #222; /* 🔥 thin separator */
-            opacity: 0;
-            transform: translateX(-15px);
-            animation: slidePlayer 0.3s ease forwards;
-        }
-
-        /* Number column */
-        .playerNumberBox {
-            width: 45px; /* 🔥 narrower */
-            text-align: center;
-            font-size: 20px;
-            font-weight: 900;
-            color: #fff;
-        }
-
-        #teamXIOverlay .playerNumberBox {
-            width: 45px;
-            text-align: center;
-            font-size: 20px;
-            font-weight: 800;
-            color: #fff;
-            box-shadow: inset -2px 0 6px rgba(0,0,0,0.6); /* depth */
-        }
-
-        /* Name */
-        .playerName {
-            flex: 1;
-            padding-left: 12px;
-            font-size: 24px; /* 🔥 bigger */
-            font-weight: 900;
-            color: #e5e5e5;
-        }
-
-        #teamXIOverlay .playerName {
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 25px;
-            letter-spacing: 0.5px;
-            text-shadow: 0 0 4px rgba(255,255,255,0.15);
-        }
-
         /* Roles */
         .role {
             margin-left: 6px;
@@ -1956,59 +1823,6 @@
             }
         }
 
-
-        /* ===== TEAM XI OVERLAY CLEAN FIX ===== */
-
-        #teamXIOverlay {
-            position: absolute;
-            inset: 0;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0,0,0,0.6); /* 🔥 lighter, broadcast style */
-            z-index: 99999;
-        }
-
-        #teamXIContent {
-            width: 1600px;
-            display: flex;
-            justify-content: space-between; /* 🔥 important */
-            align-items: flex-start;
-            margin: 0 auto;
-            gap: 40px;
-        }
-
-            #teamXIContent .tv-card {
-                width: 48%;
-                max-width: 760px;
-            }
-
-                #teamXIContent .tv-card:only-child {
-                    width: 700px;
-                }
-
-        /* ===== ESPN DARK TABLE FIX ===== */
-
-        #teamXIOverlay .tv-card {
-            position: relative !important;
-            top: auto !important;
-            left: auto !important;
-            transform: none !important;
-            opacity: 1 !important;
-            width: 100%;
-        }
-
-        /* ===== HEADER BAR ===== */
-        .teamHeader {
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: 900;
-            color: #fff;
-        }
-
         /* ===== TEAM BLOCK ===== */
         #teamXIContent .teamBlock {
             display: flex;
@@ -2021,19 +1835,29 @@
 
         /* ===== TOP LOGO ===== */
         .teamLogoTop {
+            width: 90px;
+            height: 90px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
             margin-bottom: 15px;
+            box-shadow: 0 0 22px rgba(255,255,255,.10), 0 0 40px rgba(37,99,235,.08);
         }
 
             .teamLogoTop img {
-                width: 80px;
-                height: 80px;
-                object-fit: contain;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                clip-path: circle(50% at 50% 50%);
             }
 
 
         /* LEFT "XI" TAG */
         #teamXIOverlay .espn-banner {
-            background: linear-gradient(135deg, #e11d48, #991b1b);
+            background: linear-gradient(90deg, #7f1d1d, #991b1b);
             padding: 0 18px;
             font-weight: 900;
             color: #fff;
@@ -2053,58 +1877,10 @@
             color: #fff;
         }
 
-        /* TABLE */
-        #teamXIOverlay .tv-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: 'Eurostile', sans-serif;
-        }
-
-            /* HEADER ROW */
-            #teamXIOverlay .tv-table thead {
-                background: #111;
-                color: #aaa;
-                font-size: 12px;
-                text-transform: uppercase;
-            }
-
-            /* BODY */
-            #teamXIOverlay .tv-table tbody tr {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-                /* ZEBRA STRIPES */
-                #teamXIOverlay .tv-table tbody tr:nth-child(odd) {
-                    background: #050505;
-                }
 
         /* animate when visible */
         .teamBlock.show .tv-table tbody tr {
             animation: fadeRow 0.4s ease forwards;
-        }
-
-        #teamXIOverlay .tv-table tbody tr:nth-child(even) {
-            background: #0a0a0a;
-        }
-
-        /* NUMBER */
-        #teamXIOverlay .tv-table td:first-child {
-            width: 50px;
-            text-align: center;
-            color: #6b7280;
-            font-size: 14px;
-            font-weight: 800;
-        }
-
-        /* ===== FIX TEAM XI TEXT COLOR (FINAL) ===== */
-
-        #teamXIOverlay .tv-table td {
-            color: #ffffff !important;
-        }
-
-        #teamXIOverlay .tv-table th {
-            color: #9ca3af !important;
         }
 
         @keyframes fadeRow {
@@ -2114,20 +1890,6 @@
             }
         }
 
-        #teamXIOverlay .player {
-            color: #ffffff !important;
-        }
-
-        #teamXIOverlay .tv-table td:first-child {
-            color: #6b7280 !important;
-        }
-
-        /* PLAYER */
-        #teamXIOverlay .player {
-            color: #fff;
-            font-weight: 800;
-            padding-left: 10px;
-        }
 
         #teamXIOverlay .tv-header {
             display: flex;
@@ -2152,6 +1914,211 @@
             transform: translateX(0) !important;
             opacity: 1 !important;
         }
+
+        /* =====================================
+             ICC STYLE TEAM XI OVERLAY
+           ===================================== */
+
+        #teamXIOverlay {
+            position: absolute;
+            inset: 0;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(0,0,0,.70), rgba(0,0,0,.70)), radial-gradient(circle at center, #1e3a8a 0%, #020617 100%);
+            z-index: 99999;
+        }
+
+        #teamXIContent {
+            width: 1500px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .xiLogoWrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            clip-path: circle(50% at 50% 50%);
+        }
+
+        .xiTeamName {
+            font-family: 'Oswald', sans-serif;
+            font-size: 40px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .xiPlayers {
+            padding: 16px 28px 28px 28px;
+        }
+
+        .xiRow {
+            display: flex;
+            align-items: center;
+            height: 48px;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+            background: linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,0));
+        }
+
+            .xiRow:nth-child(even) {
+                background: linear-gradient(90deg, rgba(255,255,255,.07), rgba(255,255,255,0));
+            }
+
+        .xiNum {
+            width: 44px;
+            text-align: center;
+            font-family: 'Eurostile', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #94a3b8;
+        }
+
+        .xiPlayer {
+            flex: 1;
+            padding-left: 14px;
+            font-family: 'Eurostile', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: .4px;
+            color: white;
+        }
+
+        .xiAccentRed {
+            border-top: 5px solid #991b1b;
+        }
+
+        .xiAccentBlue {
+            border-top: 5px solid #1d4ed8;
+        }
+
+        /* =========================
+           NEW ICC STYLE TEAM XI
+        ========================= */
+
+        .xiCard {
+            width: 640px;
+            min-width: 640px;
+            max-width: 640px;
+            background: linear-gradient(180deg, rgba(15,23,42,.98), rgba(2,6,23,.98));
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 18px 50px rgba(0,0,0,.75), 0 0 20px rgba(255,255,255,.04);
+        }
+
+        .xiTop {
+            text-align: center;
+            padding: 24px 0 18px 0;
+        }
+
+        .xiPlaying {
+            font-family: 'Oswald', sans-serif;
+            font-size: 46px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,.07);
+            margin-bottom: 12px;
+        }
+
+        .teamHeader {
+            margin-top: 16px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 30px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: white;
+            text-transform: uppercase;
+            padding: 8px 0;
+        }
+
+        .xiPlayers {
+            padding: 10px 24px 28px 24px;
+        }
+
+        .xiRow {
+            display: flex;
+            align-items: center;
+            height: 48px;
+            border-bottom: 1px solid rgba(255,255,255,.04);
+            background: linear-gradient(90deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+        }
+
+            .xiRow:nth-child(even) {
+                background: linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,0));
+            }
+
+        .xiNum {
+            width: 44px;
+            text-align: center;
+            font-family: 'Eurostile', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #94a3b8;
+        }
+
+        .xiPlayer {
+            flex: 1;
+            padding-left: 14px;
+            font-family: 'Eurostile', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: .4px;
+            color: white;
+        }
+        .xiLogoWrap {
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 16px auto;
+            border-radius: 50%;
+            background: white;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 18px rgba(255,255,255,.10);
+        }
+
+        /* =====================
+            TEAM XI VS CENTER
+        ===================== */
+
+        .xiCenterVS {
+            width: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding-top: 210px;
+        }
+
+        .vsText {
+            font-family: 'Oswald', sans-serif;
+            font-size: 44px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,.80);
+            text-shadow: 0 0 10px rgba(255,255,255,.15), 0 0 24px rgba(37,99,235,.20);
+        }
+
+        .vsLine {
+            width: 2px;
+            height: 140px;
+            background: linear-gradient( to bottom, transparent, rgba(255,255,255,.35), transparent );
+        }
+
+        .leftHeader {
+            background: linear-gradient(90deg, #5b0f16 0%, #7f1d1d 50%, #991b1b 100%);
+        }
+
+        .rightHeader {
+            background: linear-gradient(90deg, #1e293b 0%, #1e3a8a 50%, #2563eb 100%);
+        }
+
     </style>
 </head>
 
@@ -2441,6 +2408,18 @@
 
         const DEBUG = true;
 
+        function safeArray(v) {
+            return Array.isArray(v) ? v : [];
+        }
+
+        function safeString(v) {
+            return v || "";
+        }
+
+        function safeNumber(v, fallback = 0) {
+            return Number.isFinite(Number(v)) ? Number(v) : fallback;
+        }
+
         function enqueueOverlay(name, duration, renderFn) {
             const priority = {
                 wicket: 1,
@@ -2583,7 +2562,6 @@
                 lastScore = data.score;
             }
 
-
             if (data.overs !== undefined) {
                 matchState.overs = data.overs;
                 sbOvers.textContent = "(" + data.overs + ")";
@@ -2630,7 +2608,9 @@
             if (data.thisOver !== undefined) {
                 renderBalls(data.thisOver || "");
 
-                const balls = (data.thisOver || "").split(" ");
+                const balls = String(data.thisOver || "")
+                    .split(" ")
+                    .filter(b => b.trim() !== "");
                 const lastBall = balls[balls.length - 1] || "";
 
                 const bar = document.getElementById("scoreboard");
@@ -2666,14 +2646,14 @@
             let battingHTML = "<h3>Batting</h3>";
             battingHTML += "<table>";
 
-            data.batting.forEach(p => {
+            safeArray(data.batting).forEach(p => {
                 battingHTML += `
-                                                                                                  <tr>
-                                                                                                    <td>${p.name}</td>
-                                                                                                    <td>${p.runs} (${p.balls})</td>
-                                                                                                    <td>${p.out ? p.dismissal : "not out"}</td>
-                                                                                                  </tr>
-                                                                                                `;
+                                                                                                      <tr>
+                                                                                                        <td>${p.name}</td>
+                                                                                                        <td>${p.runs} (${p.balls})</td>
+                                                                                                        <td>${p.out ? p.dismissal : "not out"}</td>
+                                                                                                      </tr>
+                                                                                                    `;
             });
 
             battingHTML += "</table>";
@@ -2681,24 +2661,24 @@
             // bowling
             let bowlingHTML = "<h3>Bowling</h3><table>";
 
-            data.bowling.forEach(b => {
+            safeArray(data.bowling).forEach(b => {
                 bowlingHTML += `
-                                                                                                  <tr>
-                                                                                                    <td>${b.name}</td>
-                                                                                                    <td>${b.overs}</td>
-                                                                                                    <td>${b.runs}/${b.wickets}</td>
-                                                                                                  </tr>
-                                                                                                `;
+                                                                                                      <tr>
+                                                                                                        <td>${b.name}</td>
+                                                                                                        <td>${b.overs}</td>
+                                                                                                        <td>${b.runs}/${b.wickets}</td>
+                                                                                                      </tr>
+                                                                                                    `;
             });
 
             bowlingHTML += "</table>";
 
             container.innerHTML = `
-                                                                                        <h2>${data.teamA} vs ${data.teamB}</h2>
-                                                                                        ${battingHTML}
-                                                                                        ${bowlingHTML}
-                                                                                        <div>Total: ${data.total}/${data.wickets} (${data.overs})</div>
-                                                                                      `;
+                                                                                            <h2>${data.teamA} vs ${data.teamB}</h2>
+                                                                                            ${battingHTML}
+                                                                                            ${bowlingHTML}
+                                                                                            <div>Total: ${data.total}/${data.wickets} (${data.overs})</div>
+                                                                                          `;
         });
 
         channel.bind('fullScorecard', data => {
@@ -2766,18 +2746,18 @@
                 const isStriker = striker === name;
 
                 rows += `
-                                                                                <tr class="${isNotOut ? 'not-out-row' : ''} ${isStriker ? 'striker-row' : ''}">
-                                                                                    <td class="player">
-                                                                            ${name}
-                                                                            ${isStriker ? '<span class="strike-star">★</span>' : ''}
-                                                                                    </td>
-                                                                                    <td class="dismissal">
-                                                                                        ${isNotOut ? "not out" : (s.dismissal || "")}
-                                                                                    </td>
-                                                                                    <td class="runs">${s.runs}</td>
-                                                                                    <td class="balls">${s.balls}</td>
-                                                                                </tr>
-                                                                            `;
+                                                                                    <tr class="${isNotOut ? 'not-out-row' : ''} ${isStriker ? 'striker-row' : ''}">
+                                                                                        <td class="player">
+                                                                                ${name}
+                                                                                ${isStriker ? '<span class="strike-star">★</span>' : ''}
+                                                                                        </td>
+                                                                                        <td class="dismissal">
+                                                                                            ${isNotOut ? "not out" : (s.dismissal || "")}
+                                                                                        </td>
+                                                                                        <td class="runs">${s.runs}</td>
+                                                                                        <td class="balls">${s.balls}</td>
+                                                                                    </tr>
+                                                                                `;
             });
 
             // Then show remaining as "Yet to Bat"
@@ -2788,13 +2768,13 @@
                 })
                 .forEach(name => {
                     rows += `
-                                                                                <tr>
-                                                                                    <td class="player">${name}</td>
-                                                                                    <td class="dismissal">Yet to Bat</td>
-                                                                                    <td class="runs">—</td>
-                                                                                    <td class="balls">—</td>
-                                                                                </tr>
-                                                                            `;
+                                                                                    <tr>
+                                                                                        <td class="player">${name}</td>
+                                                                                        <td class="dismissal">Yet to Bat</td>
+                                                                                        <td class="runs">—</td>
+                                                                                        <td class="balls">—</td>
+                                                                                    </tr>
+                                                                                `;
                 });
 
             let showLastWicketBar = false;
@@ -2807,60 +2787,60 @@
 
             (data.bowlers || []).forEach(b => {
                 bowlingHTML += `
-                                                                            <tr>
-                                                                                <td>${b.name}</td>
-                                                                                <td>${b.overs}</td>
-                                                                                <td>${b.runs}</td>
-                                                                                <td>${b.wickets}</td>
-                                                                            </tr>
-                                                                        `;
+                                                                                <tr>
+                                                                                    <td>${b.name}</td>
+                                                                                    <td>${b.overs}</td>
+                                                                                    <td>${b.runs}</td>
+                                                                                    <td>${b.wickets}</td>
+                                                                                </tr>
+                                                                            `;
             });
 
             container.innerHTML = `
-                                                                                    <div class="tv-card">
-                                                                                        <div class="tv-header">
-                                                                                           <div class="espn-banner">MKTV</div>
-                                                                                            <div class="header-team">
-                                                                                                <span>${(data.team || "").toUpperCase()}</span>
-                                                                                            </div>
-                                                                                            <div class="header-overs">
-                                                                                                ${data.overs} OVERS
-                                                                                            </div>
-                                                                                        </div>
-
-                                                                                        <table class="tv-table">
-                                                                                            <thead>
-                                                                                                <tr>
-                                                                                                    <th class="col-player">PLAYER</th>
-                                                                                                    <th class="col-dismissal"></th>
-                                                                                                    <th class="col-runs">RUNS</th>
-                                                                                                    <th class="col-balls">BALLS</th>
-                                                                                                </tr>
-                                                                                            </thead>
-                                                                                            <tbody>
-                                                                                                ${rows}
-                                                                                            </tbody>
-                                                                                        </table>
-
-                                                                                        <div class="tv-footer">
-                                                                                            <div>OVERS ${data.overs}</div>
-                                                                                            <div class="tv-total">TOTAL ${data.score || "0/0"}</div>
-                                                                                        </div>
-
-                                                                                        ${showLastWicketBar ? `
-                                                                                            <div class="tv-lastwicket">
-                                                                                                <div class="lw-left">
-                                                                                                    LAST WICKET: ${data.lastWicket}
+                                                                                        <div class="tv-card">
+                                                                                            <div class="tv-header">
+                                                                                               <div class="espn-banner">MKTV</div>
+                                                                                                <div class="header-team">
+                                                                                                    <span>${(data.team || "").toUpperCase()}</span>
                                                                                                 </div>
-
-                                                                                                <div class="lw-right">
-                                                                                                    ${data.target > 0 ? `TARGET ${data.target}` : ""}
-                                                                                                    ${data.requiredRunRate > 0 ? `REQ RR ${Number(data.requiredRunRate).toFixed(1)}` : ""}
+                                                                                                <div class="header-overs">
+                                                                                                    ${data.overs} OVERS
                                                                                                 </div>
                                                                                             </div>
-                                                                                            ` : ""}
-                                                                                    </div>
-                                                                                    `;
+
+                                                                                            <table class="tv-table">
+                                                                                                <thead>
+                                                                                                    <tr>
+                                                                                                        <th class="col-player">PLAYER</th>
+                                                                                                        <th class="col-dismissal"></th>
+                                                                                                        <th class="col-runs">RUNS</th>
+                                                                                                        <th class="col-balls">BALLS</th>
+                                                                                                    </tr>
+                                                                                                </thead>
+                                                                                                <tbody>
+                                                                                                    ${rows}
+                                                                                                </tbody>
+                                                                                            </table>
+
+                                                                                            <div class="tv-footer">
+                                                                                                <div>OVERS ${data.overs}</div>
+                                                                                                <div class="tv-total">TOTAL ${data.score || "0/0"}</div>
+                                                                                            </div>
+
+                                                                                            ${showLastWicketBar ? `
+                                                                                                <div class="tv-lastwicket">
+                                                                                                    <div class="lw-left">
+                                                                                                        LAST WICKET: ${data.lastWicket}
+                                                                                                    </div>
+
+                                                                                                    <div class="lw-right">
+                                                                                                        ${data.target > 0 ? `TARGET ${data.target}` : ""}
+                                                                                                        ${data.requiredRunRate > 0 ? `REQ RR ${Number(data.requiredRunRate).toFixed(1)}` : ""}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                ` : ""}
+                                                                                        </div>
+                                                                                        `;
 
             setTimeout(() => {
                 document.querySelector('.tv-card')?.classList.add('show');
@@ -3104,19 +3084,19 @@
             let fallbackText = raw;
 
             if (raw === "4" || raw === "FOUR") {
-                file = "/assets/moments/four.png";
+                file = "assets/moments/four.png";
                 glowColor = "#facc15";
             }
             else if (raw === "6" || raw === "SIX") {
-                file = "/assets/moments/six.png";
+                file = "assets/moments/six.png";
                 glowColor = "#22c55e";
             }
             else if (raw === "W" || raw === "WICKET") {
-                file = "/assets/moments/wicket.png";
+                file = "assets/moments/wicket.png";
                 glowColor = "#ef4444";
             }
             else if (raw === "HATTRICK") {
-                file = "/assets/moments/hattrick.png";
+                file = "assets/moments/hattrick.png";
                 glowColor = "#a855f7"; // purple (premium feel)
             }
             else return;
@@ -3205,14 +3185,21 @@
             const teamBXI = data.teamBXI || [];
 
             content.innerHTML = `
-                    ${renderTeamXI(data.teamA, teamAXI, '#e11d48', data.teamALogo, 'left')}
-                    ${renderTeamXI(data.teamB, teamBXI, '#2563eb', data.teamBLogo, 'right')}
-                `;
+                        ${renderTeamXI(data.teamA, teamAXI, '#7f1d1d', data.teamALogo, 'left')}
+                        <div class="xiCenterVS">
+                            <div class="vsLine"></div>
+                            <div class="vsText">VS</div>
+                            <div class="vsLine"></div>
+                        </div>
+                        ${renderTeamXI(data.teamB, teamBXI, '#1e3a8a', data.teamBLogo, 'right')}
+                    `;
 
             // 🔥 THIS IS THE FIX
             setTimeout(() => {
                 const blocks = document.querySelectorAll('#teamXIContent .teamBlock');
-
+                   document.querySelectorAll('.show').forEach(el => {
+                        el.classList.remove('show');
+                    });
                 if (blocks[0]) {
                     blocks[0].classList.add('show'); // Team A
                 }
@@ -3224,28 +3211,6 @@
                 }
 
             }, 50);
-        });
-
-        channel.bind('hide', data => {
-            console.log("HIDE EVENT:", data);
-
-            if (!data || !data.hide) return;
-
-            // 🔴 HARD HIDE EVERYTHING
-            document.querySelectorAll(
-                '#teamXIOverlay, #fullScorecard, #breakOverlay, #replayOverlay'
-            ).forEach(el => {
-                if (el) el.style.display = 'none';
-            });
-
-            // 🔴 REMOVE ALL ANIMATION STATES
-            document.querySelectorAll('.show').forEach(el => {
-                el.classList.remove('show');
-            });
-
-            // 🔴 CLEAR TEAM XI CONTENT
-            const content = document.getElementById("teamXIContent");
-            if (content) content.innerHTML = '';
         });
 
         channel.bind('hide', data => {
@@ -3267,7 +3232,10 @@
 
             // Hide break screen
             const breakGraphic = document.getElementById("breakGraphic");
-            if (breakGraphic) breakGraphic.classList.remove("show");
+            if (breakGraphic) {
+                breakGraphic.classList.remove("show");           
+            }
+
 
             // Hide replay
             const replay = document.getElementById("replayGraphic");
@@ -3278,9 +3246,19 @@
                 el.classList.remove("show");
             });
 
+            setTimeout(() => {
+                scoreboardBar.classList.add("show");
+            }, 100);
+
             // Optional: clear content so it doesn't persist
             const teamXIContent = document.getElementById("teamXIContent");
             if (teamXIContent) teamXIContent.innerHTML = "";
+
+            if (!isFullScorecardVisible) {
+                setTimeout(() => {
+                    scoreboardBar.classList.add("show");
+                }, 50);
+            }
         });
 
         channel.bind('teamXIHide', () => {
@@ -3362,16 +3340,18 @@
                 ).forEach(el => {
                     if (el) el.style.display = 'none';
                 });
+               
 
                 // Remove animation classes
                 document.querySelectorAll('.show').forEach(el => {
                     el.classList.remove('show');
-                });
+                });               
 
                 // Clear Team XI content
                 const content = document.getElementById("teamXIContent");
                 if (content) content.innerHTML = '';
 
+                scoreboardBar.classList.add("show");
                 return; // 🔥 IMPORTANT: stop further break logic
             }
 
@@ -3418,7 +3398,9 @@
             }
 
             breakText.textContent = (data.text || "BREAK").toUpperCase();
-
+            document.querySelectorAll('.show').forEach(el => {
+                el.classList.remove('show');
+            });
             breakGraphic.classList.add("show");
         });
 
@@ -3514,35 +3496,48 @@
         function renderTeamXI(teamName, players, color, logo, side) {
 
             return `
-                      <div class="teamBlock ${side}">
+        <div class="teamBlock ${side}">
 
-                        <!-- LOGO ABOVE -->
-                        <div class="teamLogoTop">
-                            <img src="${logo}" />
-                        </div>
+            <div class="xiCard ${side === 'left' ? 'xiAccentRed' : 'xiAccentBlue'}">
 
-                        <!-- CARD -->
-                        <div class="tv-card">
+                <div class="xiTop">
 
-                            <!-- CLEAN HEADER -->
-                            <div class="teamHeader" style="background:${color}">
-                                ${teamName}
+                    <div class="xiPlaying">
+                        PLAYING XI
+                    </div>
+
+                    <div class="xiLogoWrap">
+                        <img src="${logo}" />
+                    </div>
+
+                    <div class="teamHeader ${side === 'left' ? 'leftHeader' : 'rightHeader'}">
+                        ${teamName}
+                    </div>
+
+                </div>
+
+                <div class="xiPlayers">
+
+                    ${players.map((p, i) => `
+                        <div class="xiRow">
+
+                            <div class="xiNum">
+                                ${i + 1}
                             </div>
 
-                            <table class="tv-table">
-                                <tbody>
-                                    ${players.map((p, i) => `
-                                        <tr style="animation-delay:${i * 0.05}s">
-                                            <td>${i + 1}</td>
-                                            <td class="player">${p}</td>
-                                        </tr>
-                                    `).join("")}
-                                </tbody>
-                            </table>
+                            <div class="xiPlayer">
+                                ${formatPlayer(p)}
+                            </div>
 
                         </div>
-                    </div>
-                `;
+                    `).join("")}
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
         }
 
         function formatPlayer(name) {
@@ -3565,41 +3560,41 @@
 
             (data.bowlers || []).forEach(b => {
                 rows += `
-                                                                            <tr>
-                                                                                <td class="player">${b.name}</td>
-                                                                                <td class="runs">${b.overs}</td>
-                                                                                <td class="runs">${b.maidens ?? 0}</td>
-                                                                                <td class="runs">${b.runs}</td>
-                                                                                <td class="runs">${b.wickets}</td>
-                                                                            </tr>
-                                                                        `;
+                                                                                <tr>
+                                                                                    <td class="player">${b.name}</td>
+                                                                                    <td class="runs">${b.overs}</td>
+                                                                                    <td class="runs">${b.maidens ?? 0}</td>
+                                                                                    <td class="runs">${b.runs}</td>
+                                                                                    <td class="runs">${b.wickets}</td>
+                                                                                </tr>
+                                                                            `;
             });
 
             // ===== INJECT HTML (THIS WAS MISSING) =====
             el.innerHTML = `
-                                                                        <div class="tv-card">
-                                                                            <div class="tv-header">
-                                                                                <div class="espn-banner">MKTV</div>
-                                                                                <div class="header-team bowling-team">${(data.bowlingTeam || "").toUpperCase()}</div>
-                                                                                <div class="header-overs">${data.overs} OVERS</div>
-                                                                            </div>
+                                                                            <div class="tv-card">
+                                                                                <div class="tv-header">
+                                                                                    <div class="espn-banner">MKTV</div>
+                                                                                    <div class="header-team bowling-team">${(data.bowlingTeam || "").toUpperCase()}</div>
+                                                                                    <div class="header-overs">${data.overs} OVERS</div>
+                                                                                </div>
 
-                                                                            <table class="tv-table">
-                                                                                <thead>
-                                                                                    <tr>
-                                                                                        <th class="col-player">BOWLER</th>
-                                                                                        <th class="col-runs">O</th>
-                                                                                        <th class="col-runs">M</th>
-                                                                                        <th class="col-runs">R</th>
-                                                                                        <th class="col-runs">W</th>
-                                                                                    </tr>
-                                                                                </thead>
-                                                                                <tbody>
-                                                                                    ${rows}
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </div>
-                                                                    `;
+                                                                                <table class="tv-table">
+                                                                                    <thead>
+                                                                                        <tr>
+                                                                                            <th class="col-player">BOWLER</th>
+                                                                                            <th class="col-runs">O</th>
+                                                                                            <th class="col-runs">M</th>
+                                                                                            <th class="col-runs">R</th>
+                                                                                            <th class="col-runs">W</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        ${rows}
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        `;
 
             // ===== SHOW =====
             el.style.display = "none"; // reset
@@ -3674,7 +3669,10 @@
 
         function renderBalls(over) {
             thisOverBalls.innerHTML = "";
-            const balls = over.split(" ");
+
+            const balls = String(over || "")
+                .split(" ")
+                .filter(b => b.trim() !== "");
 
             balls.forEach((b, i) => {
                 const el = document.createElement("span");
@@ -3725,24 +3723,24 @@
 
             if (container) {
                 container.innerHTML = `
-                                                    <div style="display:flex;align-items:center;gap:16px">
+                                                        <div style="display:flex;align-items:center;gap:16px">
 
-                                                        <div style="text-align:center">
-                                                            <img src="${data.bat1Img || ''}"
-                                                                 style="width:50px;height:50px;border-radius:50%;object-fit:cover">
-                                                            <div>${data.bat1 || ''}</div>
+                                                            <div style="text-align:center">
+                                                                <img src="${data.bat1Img || ''}"
+                                                                     style="width:50px;height:50px;border-radius:50%;object-fit:cover">
+                                                                <div>${data.bat1 || ''}</div>
+                                                            </div>
+
+                                                            <div style="font-weight:700">+</div>
+
+                                                            <div style="text-align:center">
+                                                                <img src="${data.bat2Img || ''}"
+                                                                     style="width:50px;height:50px;border-radius:50%;object-fit:cover">
+                                                                <div>${data.bat2 || ''}</div>
+                                                            </div>
+
                                                         </div>
-
-                                                        <div style="font-weight:700">+</div>
-
-                                                        <div style="text-align:center">
-                                                            <img src="${data.bat2Img || ''}"
-                                                                 style="width:50px;height:50px;border-radius:50%;object-fit:cover">
-                                                            <div>${data.bat2 || ''}</div>
-                                                        </div>
-
-                                                    </div>
-                                                `;
+                                                    `;
             }
 
             // SHOW GRAPHIC
@@ -3774,11 +3772,11 @@
                 if (!el) return;
 
                 el.style.background = `
-                                                    linear-gradient(90deg,
-                                                        rgba(2,6,23,${opacity}),
-                                                        rgba(15,23,42,${opacity})
-                                                    )
-                                                `;
+                                                        linear-gradient(90deg,
+                                                            rgba(2,6,23,${opacity}),
+                                                            rgba(15,23,42,${opacity})
+                                                        )
+                                                    `;
             });
         }
 
