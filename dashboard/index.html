@@ -1032,6 +1032,7 @@
               updateBattingTeams();
               updatePlayerDropdown();
               updateStrikerDropdown();
+              rebuildBattingOrder();
               restoreSelections(data);
               updateLiveDisplay();
             }, 500);
@@ -1292,7 +1293,6 @@
                 resetInnings();
                 updatePlayerDropdown();
                 updateStrikerDropdown();
-                rebuildBattingOrder();
             });
             document.getElementById('target').addEventListener('input', () => {
                 targetManuallyEdited = true;
