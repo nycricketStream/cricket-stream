@@ -2009,12 +2009,60 @@
 
         /* ============== Show Next Batter ======== */
         function showNextBatter() {
-            if (battingOrder.length === 0) return;
-            const next = battingOrder[0];
-            const panel = document.getElementById("nextBatterPanel");
-            const name = document.getElementById("nextBatterName");
-            name.innerText = next;
-            panel.style.display = "block";
+            openNextBatterModal();
+        }
+
+        function openNextBatterModal() {
+            const modal = document.getElementById("nextBatterModal");
+            const list = document.getElementById("nextBatterList");
+        
+            list.innerHTML = "";
+        
+            let players = [];
+        
+            if (batting.value === teamA.value) {
+                players = teamAPlayers.value.split('\n');
+            } else {
+                players = teamBPlayers.value.split('\n');
+            }
+        
+            players.forEach(p => {
+        
+                const [name] = p.split('|');
+        
+                const cleanName = name.trim();
+        
+                if (!cleanName) return;
+        
+                // ❌ skip OUT players
+                if (batsmanStats[cleanName]?.out) return;
+        
+                // ❌ skip current batters
+                if (
+                    cleanName === document.getElementById('striker').value ||
+                    cleanName === document.getElementById('nonStriker').value
+                ) return;
+        
+                const btn = document.createElement("button");
+        
+                btn.innerText = cleanName;
+        
+                btn.onclick = () => {
+        
+                    document.getElementById('striker').value = cleanName;
+        
+                    awaitingNewBatsman = false;
+                    lockedOut = false;
+        
+                    modal.style.display = "none";
+        
+                    updateLiveDisplay();
+                };
+        
+                list.appendChild(btn);
+            });
+        
+            modal.style.display = "flex";
         }
         /* ========= Confirm Next Batter ======== */
         function confirmNextBatter() {
@@ -4117,5 +4165,37 @@
             <button onclick="closeModal()">OK</button>
         </div>
     </div>
+
+    <div id="nextBatterModal" style="
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.7);
+        z-index:99999;
+        align-items:center;
+        justify-content:center;
+    ">
+    
+        <div style="
+            width:320px;
+            background:#020617;
+            border:1px solid #1f2937;
+            border-radius:12px;
+            padding:20px;
+        ">
+    
+            <h3 style="margin-top:0">
+                Select Next Batter
+            </h3>
+    
+            <div id="nextBatterList"
+                 style="
+                    display:flex;
+                    flex-direction:column;
+                    gap:8px;
+                 ">
+            </div>
+    </div>
+</div>
 </body>
 </html>
