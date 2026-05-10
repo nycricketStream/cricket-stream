@@ -1207,6 +1207,22 @@
             players.map(p => p.trim()).filter(Boolean).forEach(p => dropdown.add(new Option(p, p)));
         }
 
+        function rebuildBattingOrder() {
+            battingOrder = [];        
+            let players = [];        
+            if (batting.value === teamA.value) {
+                players = teamAPlayers.value.split('\n');
+            } else {
+                players = teamBPlayers.value.split('\n');
+            }
+        
+            battingOrder = players
+                .map(p => p.split('|')[0].trim())
+                .filter(Boolean);
+        
+            console.log("✅ Batting Order Reset:", battingOrder);
+        }
+
         function updateStrikerDropdown() {
             const teamA = document.getElementById('teamA');
             const teamB = document.getElementById('teamB');
@@ -1270,6 +1286,7 @@
                 resetInnings();
                 updatePlayerDropdown();
                 updateStrikerDropdown();
+                rebuildBattingOrder();
             });
             document.getElementById('target').addEventListener('input', () => {
                 targetManuallyEdited = true;
@@ -1441,6 +1458,7 @@
 
             loadSponsorPresets();
             loadMatchFromFirebase();
+            rebuildBattingOrder();
             
             /* KEYBOARD SCORING */
             window.addEventListener("keydown", e => {
@@ -1535,6 +1553,7 @@
             graphicPlaying = false;
             overlayLocked = false;
             resetMatchSetup();
+            rebuildBattingOrder();
             updateLiveDisplay();
             await clearFirebaseMatch();
             sendEvent('manualScore', {
