@@ -1216,10 +1216,16 @@
                 players = teamBPlayers.value.split('\n');
             }
         
-            battingOrder = players
-                .map(p => p.split('|')[0].trim())
-                .filter(Boolean);
-        
+           battingOrder = players
+            .map(p => p.split('|')[0].trim())
+            .filter(name => {        
+                if (!name) return false;      
+                // ❌ remove already out players
+                if (batsmanStats[name] && batsmanStats[name].out) {
+                    return false;
+                }    
+                return true;
+            });    
             console.log("✅ Batting Order Reset:", battingOrder);
         }
 
