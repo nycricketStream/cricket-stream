@@ -3821,8 +3821,9 @@
         function showWicket(data) {
             if (!data.dismissal) return;
 
-            const parts = data.dismissal.split(" ");
-            const player = parts[0];
+            const player = data.dismissal
+            .replace(/\d+\s*\(\d+\).*/, "")
+            .trim();
 
             const scoreMatch = data.dismissal.match(/\d+\s\(\d+\)/);
 
