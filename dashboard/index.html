@@ -1027,19 +1027,17 @@
         document.getElementById('teamAPlayers').value = (data.teamAPlayers || []).join('\n');
         document.getElementById('teamBPlayers').value = (data.teamBPlayers || []).join('\n');
         
-        document.getElementById('batting').value = data.battingTeam || "";
-        setTimeout(() => {
-              updateBattingTeams();
-              updatePlayerDropdown();
-              updateStrikerDropdown();
-              rebuildBattingOrder();
-              restoreSelections(data);
-              updateLiveDisplay();
-            }, 500);
-
+        const battingTeamSaved = data.battingTeam || "";
             setTimeout(() => {
-              isLoadingFromFirebase = false;
-            }, 400);
+                updateBattingTeams();
+                // ✅ restore batting AFTER rebuilding options
+                document.getElementById('batting').value = battingTeamSaved;
+                updatePlayerDropdown();
+                updateStrikerDropdown();
+                rebuildBattingOrder();
+                restoreSelections(data);
+                updateLiveDisplay();
+            }, 500);
         }
 
        function restoreSelections(data) {
