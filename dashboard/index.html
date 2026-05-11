@@ -4002,9 +4002,11 @@
                 .map(p => p.trim())
                 .filter(Boolean)
                 .forEach(p => {
+                    const [name] = p.split("|");
+                    const cleanName = name.trim();
                     const opt = document.createElement("option");
-                    opt.value = p;
-                    opt.text = p;
+                    opt.value = cleanName;
+                    opt.text = cleanName;
                     fielderSelect.appendChild(opt);
                 });
 
