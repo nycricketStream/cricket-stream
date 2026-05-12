@@ -596,6 +596,11 @@
                         <select id="striker"></select>
                         Non-Striker
                         <select id="nonStriker"></select>
+                        <button onclick="swapBatters()" style="
+                            background:#0f172a;
+                            border:1px solid #334155; ">
+                            🔄 Swap Batters
+                        </button>
                         <h4>Bowler</h4>
                         <select id="bowler"></select>
                     </div>
@@ -2097,6 +2102,25 @@
                 return false;
             }
             return true;
+        }
+
+        function swapBatters() {
+            const strikerEl = document.getElementById('striker');
+            const nonStrikerEl = document.getElementById('nonStriker');
+        
+            const striker = strikerEl.value;
+            const nonStriker = nonStrikerEl.value;
+        
+            if (!striker || !nonStriker) {
+                showModal("Select both batters first");
+                return;
+            }
+        
+            strikerEl.value = nonStriker;
+            nonStrikerEl.value = striker;
+        
+            updateLiveDisplay();        
+            showModal("Batters swapped");
         }
 
         /* ============= Quick Score Extra ================= */
