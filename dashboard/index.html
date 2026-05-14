@@ -553,11 +553,13 @@
                                         background:#020617;
                                         border:1px solid #1f2937;
                                         border-radius:12px;
-                                        padding:20px;">
+                                        padding:20px;
+                                        text-align:left;
+                                    ">
                                         <h3 style="margin-top:0">
                                             Select Bowler
                                         </h3>
-                                        <label style="display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:18px;">
+                                        <label style="display:flex;align-items:flex-start;justify-content:flex-start;gap:12px;margin-bottom:14px;font-size:18px;text-align:left;width:100%;">
                                             <input type="radio"
                                                    name="bowlerMode"
                                                    value="rotation"
@@ -566,7 +568,7 @@
                                                 Previous Rotation Bowler
                                             </span>
                                         </label>
-                                        <label style="display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:18px;">
+                                        <label style="display:flex;align-items:flex-start;justify-content:flex-start;gap:12px;margin-bottom:14px;font-size:18px;text-align:left;width:100%;">
                                             <input type="radio"
                                                    name="bowlerMode"
                                                    value="new">
@@ -1475,7 +1477,7 @@
                 });
             
                 bowlersUsed.add(bowler);
-                previousBowler = bowler;
+               // previousBowler = bowler;
             
                 updateLiveDisplay();
             });
@@ -2098,6 +2100,11 @@
             }
 
             lastBowler = currentBowler;
+            // save alternating rotation bowler
+            rotationBowler = previousBowler;
+            
+            // current over bowler becomes previous
+            previousBowler = currentBowler;
 
             updateLiveDisplay();
         }
