@@ -557,16 +557,16 @@
                                         <h3 style="margin-top:0">
                                             Select Bowler
                                         </h3>
-                                        <label style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+                                        <label style="display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:18px;">
                                             <input type="radio"
                                                    name="bowlerMode"
                                                    value="rotation"
                                                    checked>
-                                            <span id="rotationBowlerLabel">
+                                            <span id="rotationBowlerLabel" style="white-space:nowrap">
                                                 Previous Rotation Bowler
                                             </span>
                                         </label>
-                                        <label style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+                                        <label style="display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:18px;">
                                             <input type="radio"
                                                    name="bowlerMode"
                                                    value="new">
@@ -1234,7 +1234,7 @@
         
             select.innerHTML = "";      
             // suggest previous rotation bowler
-            suggestedBowler = previousBowler || "";
+            suggestedBowler = rotationBowler || "";
         
             label.innerText =
                 suggestedBowler
@@ -1763,6 +1763,7 @@
         let graphicPlaying = false;
         let graphicCooldown = {};
         let previousBowler = "";
+        let rotationBowler = "";
         let awaitingNewBatsman = false;
         let currentOverBalls = 0;
         let currentOverBowler = "";
@@ -2078,6 +2079,8 @@
                 rotateStrike();
 
                 lastOverBowler = currentBowler;
+                rotationBowler = previousBowler;
+                previousBowler = currentBowler;
 
                 const bowlerSelect = document.getElementById('bowler');
                 bowlerSelect.value = "";
