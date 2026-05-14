@@ -539,6 +539,47 @@
                            margin-top:6px;
                            flex-wrap:wrap;
                            "></div>
+                            <div id="bowlerPopup" style="
+                                    display:none;
+                                    position:fixed;
+                                    inset:0;
+                                    background:rgba(0,0,0,.7);
+                                    z-index:99999;
+                                    align-items:center;
+                                    justify-content:center;">
+                                
+                                    <div style="
+                                        width:360px;
+                                        background:#020617;
+                                        border:1px solid #1f2937;
+                                        border-radius:12px;
+                                        padding:20px;">
+                                        <h3 style="margin-top:0">
+                                            Select Bowler
+                                        </h3>
+                                        <label style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+                                            <input type="radio"
+                                                   name="bowlerMode"
+                                                   value="rotation"
+                                                   checked>
+                                            <span id="rotationBowlerLabel">
+                                                Previous Rotation Bowler
+                                            </span>
+                                        </label>
+                                        <label style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+                                            <input type="radio"
+                                                   name="bowlerMode"
+                                                   value="new">
+                                            <span>Choose Different Bowler</span>
+                                        </label>
+                                        <div id="newBowlerSection" style="display:none">
+                                            <select id="popupBowlerSelect"></select>
+                                        </div>
+                                        <button onclick="confirmBowlerPopup()">
+                                            Confirm
+                                        </button>
+                                    </div>
+                                </div>
                             <div id="ballEditor" style="
                            display:none;
                            position:fixed;
@@ -573,7 +614,7 @@
                         <div style="font-size:22px">
                             <strong id="liveScore">0/0</strong><br>
                             Overs: <span id="liveOvers">0.0</span><br>
-                            RR: <span id="liveRR">0.00</span><br>
+                            CRR: <span id="liveRR">0.00</span><br>
                             Extras: <span id="liveExtras">0</span><br>
                             Req Runs: <span id="liveReqRuns">-</span><br>
                             Req RR: <span id="liveReqRR">-</span>
@@ -1184,7 +1225,70 @@
           showModal("Select new bowler to complete the over");
         }
 
+        let suggestedBowler = "";
+        
+        function openBowlerPopup() {      
+            const popup = document.getElementById("bowlerPopup");     
+            const label = document.getElementById("rotationBowlerLabel");  
+            const select = document.getElementById("popupBowlerSelect");
+        
+            select.innerHTML = "";      
+            // suggest previous rotation bowler
+            suggestedBowler = previousBowler || "";
+        
+            label.innerText =
+                suggestedBowler
+                    ? suggestedBowler
+                    : "No Suggested Bowler";
+        
+            // populate dropdown
+            [...document.getElementById('bowler').options]
+                .forEach(o => {       
+                    if (!o.value) return;      
+                    const opt = document.createElement("option");        
+                    opt.value = o.value;
+                    opt.text = o.value;       
+                    select.appendChild(opt);
+                });        
+            popup.style.display = "flex";
+        }
 
+        document.addEventListener("change", e => {
+            if (e.target.name !== "bowlerMode") return;
+            const section =
+                document.getElementById("newBowlerSection");
+            section.style.display =
+                e.target.value === "new"
+                    ? "block"
+                    : "none";
+        });
+
+        function confirmBowlerPopup() {
+            const mode =
+                document.querySelector(
+                    'input[name="bowlerMode"]:checked'
+                )?.value;
+        
+            const bowlerSelect =
+                document.getElementById("bowler");
+        
+            if (mode === "rotation") {     
+                bowlerSelect.value = suggestedBowler;
+            } else {    
+                bowlerSelect.value =
+                    document.getElementById(
+                        "popupBowlerSelect"
+                    ).value;
+            }
+        
+            bowlerSelect.dispatchEvent(
+                new Event("change")
+            );
+        
+            document.getElementById("bowlerPopup")
+                .style.display = "none";
+        }
+        
         function updatePlayerDropdown() {
             const teamA = document.getElementById('teamA');
             const teamB = document.getElementById('teamB');
@@ -1979,9 +2083,8 @@
                 bowlerSelect.value = "";
                 bowlerSelect.classList.add("bowler-warning");
                 bowlerSelect.focus();
-
+                openBowlerPopup();
                 setScoringEnabled(false);
-
                 sendEndOfOverGraphic();
             }
 
