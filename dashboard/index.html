@@ -681,6 +681,17 @@
                   letter-spacing:3px;">
                     -
                 </div>
+                <h4 style="margin-top:20px">Previous Over</h4>
+                <div id="previousOverTracker" style="
+                    font-size:18px;
+                    background:#020617;
+                    padding:10px;
+                    border:1px solid #1f2937;
+                    border-radius:6px;
+                    letter-spacing:3px;
+                ">
+                    -
+                </div>
                 <h4 style="margin-top:25px">Current Partnership</h4>
                 <div id="partnershipPanel" style="
                   background:#020617;
@@ -1706,7 +1717,7 @@
         function calculateRequiredRuns() {
             const targetVal = parseInt(document.getElementById('target')?.value);
             const inningsVal = document.getElementById('innings')?.value;
-            if (!targetVal || inningsVal !== "2nd Innings") return "-";
+            if (!targetVal || inningsVal !== "2") return "-";
             return Math.max(targetVal - liveTotal, 0);
         }
         /* =========== Calculate Required RR =============== */
@@ -1714,7 +1725,7 @@
             const targetVal = parseInt(document.getElementById('target')?.value);
             const inningsVal = document.getElementById('innings')?.value;
             const maxOversVal = parseInt(document.getElementById('maxOvers')?.value || 20);
-            if (!targetVal || inningsVal !== "2nd Innings") return "-";
+            if (!targetVal || inningsVal !== "2") return "-";
             const ballsLeft = (maxOversVal * 6) - liveBalls;
             const runsLeft = targetVal - liveTotal;
             if (ballsLeft <= 0 || runsLeft <= 0) return "-";
@@ -1859,6 +1870,7 @@
             renderExtrasBreakdown();
             renderFallOfWickets();
             renderCurrentOver();
+            renderPreviousOver();
             renderOverTimeline();
             renderPartnership();
             checkPartnershipMilestones();
@@ -2626,6 +2638,46 @@
             if (!tracker) return;
 
             tracker.innerText = getThisOver() || "-";
+        }
+
+        function renderPreviousOver() {
+            const el = document.getElementById("previousOverTracker");
+        
+            if (!el) return;
+        
+            const previousOverId = currentOverId - 1;
+        
+            if (previousOverId < 0) {
+                el.innerText = "-";
+                return;
+            }
+        
+            const balls = [];
+        
+            liveHistory.forEach(b => {
+        
+                if (b.overId !== previousOverId) return;
+        
+                let symbol = "";
+        
+                if (b.type === "run") symbol = b.runs;
+        
+                else if (b.type === "wicket") symbol = "W";
+        
+                else if (b.type === "extra") {
+        
+                    const r = Number(b.runs) || 1;
+        
+                    if (b.extra === "wide") symbol = r + "Wd";
+                    else if (b.extra === "noball") symbol = r + "Nb";
+                    else if (b.extra === "bye") symbol = r + "B";
+                    else if (b.extra === "legbye") symbol = r + "Lb";
+                }
+        
+                balls.push(symbol);
+            });
+        
+            el.innerText = balls.join(" ") || "-";
         }
 
         /* ======== Render Over Timeline =============== */
