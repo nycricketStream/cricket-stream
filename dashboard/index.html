@@ -78,6 +78,16 @@
             color: #fff
         }
 
+        /* BETTER TOUCH DROPDOWNS */
+        select {
+            height: 56px;
+            font-size: 18px;
+            border-radius: 14px;
+            border: 1px solid #334155;
+            background: #020617;
+            color: white;
+        }
+
         button {
             width: 100%;
             padding: 10px;
@@ -155,17 +165,44 @@
         }
         /* ===== LIVE SCORING GRID ===== */
         .live-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr 1fr;
-            gap: 14px;
+            display: grid; 
+            grid-template-columns:
+                minmax(340px, 1fr)
+                minmax(340px, .9fr);    
+            gap: 18px;
+            align-items: start;
         }
 
         .panel {
-            background: #020617;
-            border: 1px solid #1f2937;
-            border-radius: 12px;
-            padding: 14px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(15,23,42,.98),
+                    rgba(2,6,23,.98)
+                );  
+            border:
+                1px solid rgba(255,255,255,.05);     
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow:
+                0 10px 30px rgba(0,0,0,.45),
+                inset 0 0 20px rgba(255,255,255,.02);
+            backdrop-filter: blur(10px);
+        }
+
+        /* STICKY LIVE HEADER */
+        .liveStickyHeader {      
+            position: sticky;     
+            top: 0; 
+            z-index: 20;
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(2,6,23,.98),
+                    rgba(2,6,23,.92)
+                );
+            padding-bottom: 12px;
+            backdrop-filter: blur(10px);
         }
 
         .sticky-runs {
@@ -181,16 +218,41 @@
         }
 
             .run-buttons button {
-                font-size: 20px;
-                font-weight: 700;
-                padding: 16px;
-                border-radius: 10px;
+                font-size: 30px;
+                font-weight: 800;
+                padding: 24px;
+                border-radius: 16px;
+                background:
+                    linear-gradient(
+                        145deg,
+                        #1d4ed8,
+                        #1e3a8a
+                    );
+                box-shadow:
+                    0 6px 16px rgba(0,0,0,.45);
+                transition:
+                    transform .12s ease,
+                    box-shadow .2s ease;
+            }
+        
+            .run-buttons button:hover {
+                transform: translateY(-2px);
+            }
+            
+            .run-buttons button:active {
+                transform: scale(.96);
             }
 
         .extra-buttons {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
+            gap: 10px;
+        }
+
+        .extra-buttons button {
+            padding: 16px;
+            font-size: 18px;
+            border-radius: 14px;
         }
 
         .live-col {
@@ -205,7 +267,7 @@
             }
 
             .live-grid {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr;
             }
         }
 
@@ -247,6 +309,21 @@
 
             .extra-buttons {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            .panel {
+                padding: 14px;
+            }
+            
+            .run-buttons button {
+                font-size: 26px;
+            
+                padding: 20px;
+            }
+            
+            select {
+                height: 52px;
+            
+                font-size: 16px;
             }
         }
 
@@ -647,14 +724,94 @@
                                 <button style="margin-top:6px;background:#374151" onclick="closeBallEditor()">Cancel</button>
                             </div>
                         </div>
-                        <div style="font-size:22px">
-                            <strong id="liveScore">0/0</strong><br>
-                            Overs: <span id="liveOvers">0.0</span><br>
-                            CRR: <span id="liveRR">0.00</span><br>
-                            Extras: <span id="liveExtras">0</span><br>
-                            Req Runs: <span id="liveReqRuns">-</span><br>
-                            Req RR: <span id="liveReqRR">-</span>
-                        </div>
+
+                        <div class="liveStickyHeader">
+                           <div style="
+                                    display:flex;
+                                    justify-content:space-between;
+                                    align-items:flex-start;
+                                    margin-bottom:18px;
+                                ">
+                                    <div>
+                                        <div id="liveScore" style="
+                                            font-size:48px;
+                                            font-weight:900;
+                                            line-height:1;
+                                            color:white;
+                                        ">
+                                            0/0
+                                        </div>
+                                        <div style="
+                                            margin-top:6px;
+                                            color:#94a3b8;
+                                            font-size:14px;
+                                        ">
+                                            Overs <span id="liveOvers">0.0</span>
+                                        </div>
+                                    </div>
+                                    <div style="text-align:right">
+                                        <div style="
+                                            font-size:12px;
+                                            color:#94a3b8;
+                                            margin-bottom:4px;
+                                        ">
+                                            CURRENT RR
+                                        </div>
+                                
+                                        <div id="liveRR" style="
+                                            font-size:30px;
+                                            font-weight:800;
+                                        ">
+                                            0.00
+                                        </div>
+                                    </div>
+                                </div>
+                            <div style="
+                                display:grid;
+                                grid-template-columns:1fr 1fr;
+                                gap:12px;
+                                margin-bottom:18px;
+                            ">
+                                <div style="
+                                    background:#111827;
+                                    border-radius:14px;
+                                    padding:14px;
+                                ">
+                                    <div style="
+                                        font-size:12px;
+                                        color:#94a3b8;
+                                        margin-bottom:6px;
+                                    ">
+                                        REQUIRED RUNS
+                                    </div>
+                                    <div id="liveReqRuns" style="
+                                        font-size:28px;
+                                        font-weight:800;
+                                    ">
+                                        -
+                                    </div>
+                                </div>
+                                <div style="
+                                    background:#111827;
+                                    border-radius:14px;
+                                    padding:14px;
+                                ">
+                                    <div style="
+                                        font-size:12px;
+                                        color:#94a3b8;
+                                        margin-bottom:6px;
+                                    ">
+                                        REQUIRED RR
+                                    </div>
+                                    <div id="liveReqRR" style="
+                                        font-size:28px;
+                                        font-weight:800;
+                                    ">
+                                        -
+                                    </div>
+                                </div>
+                            </div>
+                        </div>    
                         <div id="nextBatterPanel" style="
                         margin-top:12px;
                         padding:8px;
@@ -673,10 +830,14 @@
                         <select id="striker"></select>
                         Non-Striker
                         <select id="nonStriker"></select>
-                        <button onclick="swapBatters()" style="
-                            background:#0f172a;
-                            border:1px solid #334155; ">
-                            🔄 Swap Batters
+                       <button onclick="swapBatters()" style="
+                            background:#111827;
+                            border:1px solid #334155;
+                            height:52px;
+                            font-size:16px;
+                            font-weight:700;
+                        ">
+                            🔄 Swap Strike
                         </button>
                         <h4>Bowler</h4>
                         <select id="bowler"></select>
