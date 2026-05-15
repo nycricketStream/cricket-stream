@@ -683,7 +683,6 @@
                     <div class="panel">
                         <h3>Scoreboard</h3>
                         <div style="margin-top:12px">
-                            <strong>This Over</strong>
                             <div style="
                                 margin-top:14px;
                                 margin-bottom:18px;
@@ -705,8 +704,8 @@
                                 </div>
                                 <div id="overTimeline" style="
                                     display:flex;
-                                    flex-wrap:wrap;
                                     gap:10px;
+                                    flex-wrap:wrap;
                                     min-height:48px;
                                     padding:12px;
                                     background:#111827;
@@ -715,83 +714,68 @@
                                 "></div>
                             </div>
                             <div id="bowlerPopup" style="
-                                    display:none;
-                                    position:fixed;
-                                    inset:0;
-                                    background:rgba(0,0,0,.7);
-                                    z-index:99999;
-                                    align-items:center;
-                                    justify-content:center;">
-                                
-                                    <div style="
-                                        width:420px;
-                                        background:#020617;
-                                        border:1px solid #1f2937;
-                                        border-radius:12px;
-                                        padding:20px;
-                                        text-align:left;
+                                display:none;
+                                position:fixed;
+                                inset:0;
+                                background:rgba(0,0,0,.7);
+                                z-index:99999;
+                                align-items:center;
+                                justify-content:center;
+                            ">
+                                <div style="
+                                    width:420px;
+                                    background:#020617;
+                                    border:1px solid #1f2937;
+                                    border-radius:12px;
+                                    padding:20px;
+                                    text-align:left;
+                                ">
+                                    <h3 style="margin-top:0">
+                                        Select Bowler
+                                    </h3>
+                                    <label class="bowlerOption">
+                                        <input type="radio"
+                                               name="bowlerMode"
+                                               value="rotation"
+                                               checked>
+                                        <span id="rotationBowlerLabel"
+                                              style="white-space:nowrap">
+                                            Previous Rotation Bowler
+                                        </span>
+                                    </label>
+                                    <label class="bowlerOption">
+                                        <input type="radio"
+                                               name="bowlerMode"
+                                               value="new">
+                                        <span>
+                                            New Bowler
+                                        </span>
+                                    </label>
+                                    <div id="newBowlerSection" style="
+                                        display:none;
+                                        margin-top:8px;
+                                        margin-bottom:14px;
                                     ">
-                                        <h3 style="margin-top:0">
-                                            Select Bowler
-                                        </h3>
-                                       <label class="bowlerOption">
-                                            <input type="radio"
-                                                   name="bowlerMode"
-                                                   value="rotation"
-                                                   checked>
-                                            <span id="rotationBowlerLabel" style="white-space:nowrap">
-                                                Previous Rotation Bowler
-                                            </span>
-                                        </label>
-                                        <label class="bowlerOption">
-                                            <input type="radio"
-                                                   name="bowlerMode"
-                                                   value="new">
-                                            <span>New Bowler</span>
-                                        </label>
-                                        <div id="newBowlerSection" style="
-                                            display:none;
-                                            margin-top:8px;
-                                            margin-bottom:14px;">
-                                            <select id="popupBowlerSelect"></select>
-                                        </div>
-                                        <button onclick="confirmBowlerPopup()">
-                                            Confirm
-                                        </button>
+                                        <select id="popupBowlerSelect"></select>
                                     </div>
+                                    <button onclick="confirmBowlerPopup()">
+                                        Confirm
+                                    </button>
                                 </div>
-                            <div id="ballEditor" style="
-                           display:none;
-                           position:fixed;
-                           bottom:20px;
-                           left:50%;
-                           transform:translateX(-50%);
-                           background:#020617;
-                           border:1px solid #1f2937;
-                           border-radius:8px;
-                           padding:12px;
-                           z-index:9999;
-                           width:280px;
-                           ">
-                                <div style="margin-bottom:8px;font-weight:bold">Edit Ball</div>
-                                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
-                                    <button onclick="editBallRun(0)">0</button>
-                                    <button onclick="editBallRun(1)">1</button>
-                                    <button onclick="editBallRun(2)">2</button>
-                                    <button onclick="editBallRun(3)">3</button>
-                                    <button onclick="editBallRun(4)">4</button>
-                                    <button onclick="editBallRun(6)">6</button>
-                                    <button onclick="editBallWicket()">W</button>
-                                    <button onclick="editBallExtra('wide')">Wd</button>
-                                    <button onclick="editBallExtra('noball')">Nb</button>
-                                    <button onclick="editBallExtra('bye')">B</button>
-                                    <button onclick="editBallExtra('legbye')">Lb</button>
-                                </div>
-                                <button style="margin-top:8px;background:#b91c1c" onclick="deleteEditedBall()">Delete Ball</button>
-                                <button style="margin-top:6px;background:#374151" onclick="closeBallEditor()">Cancel</button>
                             </div>
-                        </div>
-
+                            <div id="ballEditor" style="
+                                display:none;
+                                position:fixed;
+                                bottom:20px;
+                                left:50%;
+                                transform:translateX(-50%);
+                                background:#020617;
+                                border:1px solid #1f2937;
+                                border-radius:8px;
+                                padding:12px;
+                                z-index:9999;
+                                width:280px;
+                            "></div>
                         <div class="liveStickyHeader">
                            <div style="
                                     display:flex;
