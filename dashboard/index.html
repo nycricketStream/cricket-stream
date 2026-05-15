@@ -696,6 +696,7 @@
                                     background:#111827;
                                     border:1px solid #1f2937;
                                     border-radius:14px;
+                                    align-items:center;
                                 "></div>
                             <div id="bowlerPopup" style="
                                     display:none;
@@ -1311,15 +1312,27 @@
         document.getElementById('teamBPlayers').value = (data.teamBPlayers || []).join('\n');
         
         const battingTeamSaved = data.battingTeam || "";
-            setTimeout(() => {
+          setTimeout(() => {
                 updateBattingTeams();
-                // ✅ restore batting AFTER rebuilding options
+                // restore batting AFTER dropdown rebuild
                 document.getElementById('batting').value = battingTeamSaved;
                 updatePlayerDropdown();
                 updateStrikerDropdown();
                 rebuildBattingOrder();
                 restoreSelections(data);
+                // 🔥 FORCE FULL UI REBUILD
+                renderOverTimeline();
+                renderCurrentOver();
+                renderPreviousOver();
+                renderPartnership();
+                renderCurrentBatters();
+                renderLastWicket();
+                renderBowlerStats();
+                renderBatsmanStats();
+                renderExtrasBreakdown();
+                renderFallOfWickets();
                 updateLiveDisplay();
+                console.log("✅ Full dashboard restore complete");
             }, 500);
         }
 
@@ -1896,6 +1909,13 @@
             document.getElementById('nonStriker').value = "";
             document.getElementById('bowler').value = "";
             document.getElementById('overTimeline').innerHTML = "";
+            document.getElementById('currentOverTracker').innerHTML = "-";
+            document.getElementById('previousOverTracker').innerHTML = "-";
+            document.getElementById('partnershipPanel').innerHTML =
+                "0 runs (0 balls)";
+            document.getElementById('currentBattersPanel').innerHTML = "-";
+            document.getElementById('lastWicketPanel').innerHTML = "-";
+
             // RESET INTERNAL STATE
             appState.lastOverlayTime = 0;
             lastMoment = "";
@@ -2088,7 +2108,7 @@
                 balls.push(symbol);
             }
 
-            return balls.join(" ");
+            return balls.length ? balls.join(" ") : "-";
         }
         /* ===========get Legal Ball ============== */
         function getLegalBallIndex(index) {
