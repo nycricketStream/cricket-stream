@@ -136,33 +136,71 @@
         /* ===== STATS TABLE STYLE ===== */
         .stats-table {
             width: 100%;
-            max-width: 1100px;
-            border-collapse: collapse;
-            margin-top: 10px;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 14px;
             font-size: 14px;
+            overflow: hidden;
+            border-radius: 14px;
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(15,23,42,.98),
+                    rgba(2,6,23,.98)
+                );
+            box-shadow:
+                0 8px 20px rgba(0,0,0,.35);
         }
 
+
         .striker-row {
-            background: #1e3a8a !important;
-            font-weight: 600;
+            background:
+                linear-gradient(
+                    90deg,
+                    #1e3a8a,
+                    #2563eb
+                ) !important;
+            font-weight: 700;
+            box-shadow:
+                inset 4px 0 0 #facc15;
         }
 
         .stats-table th {
-            background: #0f172a;
-            padding: 8px;
-            border: 1px solid #1f2937;
+            background:
+                linear-gradient(
+                    180deg,
+                    #111827,
+                    #0f172a
+                );
+            padding: 12px;
+            border-bottom:
+                1px solid rgba(255,255,255,.06);
             text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: .5px;
+            color: #cbd5e1;
+            position: sticky;
+            top: 0;
+            z-index: 2;
         }
 
-        .stats-table td {
-            padding: 8px;
-            border: 1px solid #1f2937;
+
+       .stats-table td {
+            padding: 12px;
+            border-bottom:
+                1px solid rgba(255,255,255,.04);
             text-align: center;
+            color: #f8fafc;
+            font-size: 14px;
         }
+
 
         .stats-table tr:nth-child(even) {
-            background: #0b1220;
+            background:
+                rgba(255,255,255,.02);
         }
+
         /* ===== LIVE SCORING GRID ===== */
         .live-grid {
             display: grid; 
@@ -401,8 +439,13 @@
         }
 
         h4 {
-            margin-bottom: 6px;
+            margin-top: 24px;
+            margin-bottom: 10px;
             color: #93c5fd;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: .5px;
+            text-transform: uppercase;
         }
 
         .run-buttons button {
@@ -641,12 +684,36 @@
                         <h3>Scoreboard</h3>
                         <div style="margin-top:12px">
                             <strong>This Over</strong>
-                            <div id="overTimeline" style="
-                           display:flex;
-                           gap:6px;
-                           margin-top:6px;
-                           flex-wrap:wrap;
-                           "></div>
+                            <div id="overTimeline" <div style="
+                                    margin-top:14px;
+                                    margin-bottom:18px;
+                                ">
+                                    <div style="
+                                        display:flex;
+                                        justify-content:space-between;
+                                        align-items:center;
+                                        margin-bottom:10px;
+                                    ">
+                                        <strong style="
+                                            font-size:15px;
+                                            letter-spacing:.5px;
+                                            color:#93c5fd;
+                                            text-transform:uppercase;
+                                        ">
+                                            This Over
+                                        </strong>
+                                    </div>
+                                    <div id="overTimeline" style="
+                                        display:flex;
+                                        flex-wrap:wrap;
+                                        gap:10px;
+                                        min-height:48px;
+                                        padding:12px;
+                                        background:#111827;
+                                        border:1px solid #1f2937;
+                                        border-radius:14px;
+                                    "></div>
+                                </div>
                             <div id="bowlerPopup" style="
                                     display:none;
                                     position:fixed;
@@ -911,22 +978,29 @@
                 </table>
                 <h4 style="margin-top:25px">Current Over</h4>
                 <div id="currentOverTracker" style="
-                  font-size:18px;
-                  background:#020617;
-                  padding:10px;
-                  border:1px solid #1f2937;
-                  border-radius:6px;
-                  letter-spacing:3px;">
+                    display:flex;
+                    flex-wrap:wrap;
+                    gap:10px;
+                    min-height:60px;
+                    align-items:center;
+                    background:#020617;
+                    padding:14px;
+                    border:1px solid #1f2937;
+                    border-radius:14px;
+                ">
                     -
                 </div>
                 <h4 style="margin-top:20px">Previous Over</h4>
                 <div id="previousOverTracker" style="
-                    font-size:18px;
+                    display:flex;
+                    flex-wrap:wrap;
+                    gap:10px;
+                    min-height:60px;
+                    align-items:center;
                     background:#020617;
-                    padding:10px;
+                    padding:14px;
                     border:1px solid #1f2937;
-                    border-radius:6px;
-                    letter-spacing:3px;
+                    border-radius:14px;
                 ">
                     -
                 </div>
