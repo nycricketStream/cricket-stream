@@ -250,10 +250,12 @@
         }
 
         .run-buttons {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            display:grid;
+            grid-template-columns:
+                repeat(3, minmax(90px,1fr));
+            gap:12px;
         }
+
 
             .run-buttons button {
                 font-size: 30px;
@@ -789,8 +791,35 @@
                             Overs: <span id="liveOvers">0.0</span><br>
                             CRR: <span id="liveRR">0.00</span><br>
                             Extras: <span id="liveExtras">0</span><br>
-                            Req Runs: <span id="liveReqRuns">-</span><br>
-                            Req RR: <span id="liveReqRR">-</span>
+                            <div style="
+                                margin-top:10px;
+                                padding-top:10px;
+                                border-top:1px solid #1f2937;
+                            ">
+                                <div style="
+                                    display:flex;
+                                    justify-content:space-between;
+                                    margin-bottom:6px;
+                                ">
+                                    <span style="color:#94a3b8">
+                                        Required Runs
+                                    </span>
+                                    <strong id="liveReqRuns">
+                                        -
+                                    </strong>
+                                </div>
+                                <div style="
+                                    display:flex;
+                                    justify-content:space-between;
+                                ">
+                                    <span style="color:#94a3b8">
+                                        Required RR
+                                    </span>
+                                    <strong id="liveReqRR">
+                                        -
+                                    </strong>
+                                </div>
+                            </div>
                         </div>
                         <div id="nextBatterPanel" style="
                         margin-top:12px;
@@ -805,7 +834,16 @@
                             <button onclick="confirmNextBatter()">Enter Batter</button>
                             <button onclick="manualSelectBatter()">Change Batter</button>
                         </div>
-                        <h4 style="margin-top:15px">Batters</h4>
+                        <h4 style="
+                            margin-top:20px;
+                            font-size:15px;
+                            letter-spacing:.5px;
+                            text-transform:uppercase;
+                            color:#93c5fd;
+                        ">
+                            Batters
+                        </h4>
+
                         Striker
                         <select id="striker"></select>
                         Non-Striker
@@ -815,9 +853,17 @@
                             border:1px solid #334155; ">
                             🔄 Swap Batters
                         </button>
-                        <h4>Bowler</h4>
+                        <h4 style="
+                            margin-top:20px;
+                            font-size:15px;
+                            letter-spacing:.5px;
+                            text-transform:uppercase;
+                            color:#93c5fd;
+                        ">
+                            Bowler
+                        </h4>
                         <select id="bowler"></select>
-                    </div>
+                     </div>
                      <div class="panel sticky-runs">
                         <h3>Runs & Extras</h3>
                         <h4>Runs</h4>
