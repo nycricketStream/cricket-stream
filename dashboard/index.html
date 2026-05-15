@@ -776,49 +776,87 @@
                             </div>
                         </div>
                         <div style="
-                                font-size:22px;
-                                background:#111827;
-                                border-radius:14px;
-                                padding:16px;
-                                margin-top:16px;
-                                line-height:1.8;
-                            ">
-                           <strong id="liveScore" style="
-                                font-size:52px;
-                                font-weight:900;
-                                color:#ffffff;
-                            ">
-                            0/0</strong><br>
-                            Overs: <span id="liveOvers">0.0</span><br>
-                            CRR: <span id="liveRR">0.00</span><br>
-                            Extras: <span id="liveExtras">0</span><br>
+                            display:grid;
+                            grid-template-columns:1fr 1fr;
+                            gap:14px;
+                            margin-top:16px;
+                        ">
+                            <!-- MAIN SCORE CARD -->
                             <div style="
-                                margin-top:10px;
-                                padding-top:10px;
-                                border-top:1px solid #1f2937;
+                                grid-column:1 / span 2;
+                                background:#111827;
+                                border-radius:18px;
+                                padding:20px;
+                                border:1px solid #1f2937;
                             ">
-                                <div style="
-                                    display:flex;
-                                    justify-content:space-between;
-                                    margin-bottom:6px;
+                                <div id="liveScore" style="
+                                    font-size:64px;
+                                    font-weight:900;
+                                    line-height:1;
+                                    color:white;
                                 ">
-                                    <span style="color:#94a3b8">
-                                        Required Runs
-                                    </span>
-                                    <strong id="liveReqRuns">
-                                        -
-                                    </strong>
+                                    0/0
                                 </div>
                                 <div style="
-                                    display:flex;
-                                    justify-content:space-between;
+                                    margin-top:14px;
+                                    font-size:18px;
+                                    color:#cbd5e1;
+                                    line-height:1.9;
                                 ">
-                                    <span style="color:#94a3b8">
-                                        Required RR
-                                    </span>
-                                    <strong id="liveReqRR">
-                                        -
-                                    </strong>
+                                    Overs:
+                                    <span id="liveOvers">0.0</span>
+                                    <br>
+                                    CRR:
+                                    <span id="liveRR">0.00</span>
+                                    <br>
+                                    Extras:
+                                    <span id="liveExtras">0</span>
+                                </div>
+                            </div>
+                            <!-- REQUIRED RUNS -->
+                            <div style="
+                                background:#111827;
+                                border-radius:16px;
+                                padding:16px;
+                                border:1px solid #1f2937;
+                            ">
+                                <div style="
+                                    font-size:12px;
+                                    color:#94a3b8;
+                                    margin-bottom:8px;
+                                    text-transform:uppercase;
+                                    letter-spacing:.5px;
+                                ">
+                                    Required Runs
+                                </div>
+                                <div id="liveReqRuns" style="
+                                    font-size:34px;
+                                    font-weight:800;
+                                ">
+                                    -
+                                </div>
+                            </div>
+                            <!-- REQUIRED RR -->
+                            <div style="
+                                background:#111827;
+                                border-radius:16px;
+                                padding:16px;
+                                border:1px solid #1f2937;
+                            ">
+                                <div style="
+                                    font-size:12px;
+                                    color:#94a3b8;
+                                    margin-bottom:8px;
+                                    text-transform:uppercase;
+                                    letter-spacing:.5px;
+                                ">
+                                    Required RR
+                                </div>
+                                <div id="liveReqRR" style="
+                                    font-size:34px;
+                                    font-weight:800;
+                                ">
+                                    -
                                 </div>
                             </div>
                         </div>
