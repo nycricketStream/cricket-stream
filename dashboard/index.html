@@ -1239,8 +1239,10 @@
         
           if (!snap.exists()) {
             console.log("No saved match");
+            isLoadingFromFirebase = false;
             return;
-          }
+        }
+
         
           const data = snap.data();
         
