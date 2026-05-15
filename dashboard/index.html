@@ -683,186 +683,98 @@
                     <div class="panel">
                         <h3>Scoreboard</h3>
                         <div style="margin-top:12px">
-                            <div style="
-                                margin-top:14px;
-                                margin-bottom:18px;
-                            ">
-                                <div style="
-                                    display:flex;
-                                    justify-content:space-between;
-                                    align-items:center;
-                                    margin-bottom:10px;
-                                ">
-                                    <strong style="
-                                        font-size:15px;
-                                        letter-spacing:.5px;
-                                        color:#93c5fd;
-                                        text-transform:uppercase;
-                                    ">
-                                        This Over
-                                    </strong>
-                                </div>
-                                <div id="overTimeline" style="
-                                    display:flex;
-                                    gap:10px;
-                                    flex-wrap:wrap;
-                                    min-height:48px;
-                                    padding:12px;
-                                    background:#111827;
-                                    border:1px solid #1f2937;
-                                    border-radius:14px;
-                                "></div>
-                            </div>
+                            <strong>This Over</strong>
+                            <div id="overTimeline" style="
+                           display:flex;
+                           gap:6px;
+                           margin-top:6px;
+                           flex-wrap:wrap;
+                           "></div>
                             <div id="bowlerPopup" style="
-                                display:none;
-                                position:fixed;
-                                inset:0;
-                                background:rgba(0,0,0,.7);
-                                z-index:99999;
-                                align-items:center;
-                                justify-content:center;
-                            ">
-                                <div style="
-                                    width:420px;
-                                    background:#020617;
-                                    border:1px solid #1f2937;
-                                    border-radius:12px;
-                                    padding:20px;
-                                    text-align:left;
-                                ">
-                                    <h3 style="margin-top:0">
-                                        Select Bowler
-                                    </h3>
-                                    <label class="bowlerOption">
-                                        <input type="radio"
-                                               name="bowlerMode"
-                                               value="rotation"
-                                               checked>
-                                        <span id="rotationBowlerLabel"
-                                              style="white-space:nowrap">
-                                            Previous Rotation Bowler
-                                        </span>
-                                    </label>
-                                    <label class="bowlerOption">
-                                        <input type="radio"
-                                               name="bowlerMode"
-                                               value="new">
-                                        <span>
-                                            New Bowler
-                                        </span>
-                                    </label>
-                                    <div id="newBowlerSection" style="
-                                        display:none;
-                                        margin-top:8px;
-                                        margin-bottom:14px;
-                                    ">
-                                        <select id="popupBowlerSelect"></select>
-                                    </div>
-                                    <button onclick="confirmBowlerPopup()">
-                                        Confirm
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="ballEditor" style="
-                                display:none;
-                                position:fixed;
-                                bottom:20px;
-                                left:50%;
-                                transform:translateX(-50%);
-                                background:#020617;
-                                border:1px solid #1f2937;
-                                border-radius:8px;
-                                padding:12px;
-                                z-index:9999;
-                                width:280px;
-                            "></div>
-                        <div class="liveStickyHeader">
-                           <div style="
-                                    display:flex;
-                                    justify-content:space-between;
-                                    align-items:flex-start;
-                                    margin-bottom:18px;
-                                ">
-                                    <div>
-                                        <div id="liveScore" style="
-                                            font-size:48px;
-                                            font-weight:900;
-                                            line-height:1;
-                                            color:white;
-                                        ">
-                                            0/0
-                                        </div>
-                                        <div style="
-                                            margin-top:6px;
-                                            color:#94a3b8;
-                                            font-size:14px;
-                                        ">
-                                            Overs <span id="liveOvers">0.0</span>
-                                        </div>
-                                    </div>
-                                    <div style="text-align:right">
-                                        <div style="
-                                            font-size:12px;
-                                            color:#94a3b8;
-                                            margin-bottom:4px;
-                                        ">
-                                            CURRENT RR
-                                        </div>
+                                    display:none;
+                                    position:fixed;
+                                    inset:0;
+                                    background:rgba(0,0,0,.7);
+                                    z-index:99999;
+                                    align-items:center;
+                                    justify-content:center;">
                                 
-                                        <div id="liveRR" style="
-                                            font-size:30px;
-                                            font-weight:800;
-                                        ">
-                                            0.00
+                                    <div style="
+                                        width:420px;
+                                        background:#020617;
+                                        border:1px solid #1f2937;
+                                        border-radius:12px;
+                                        padding:20px;
+                                        text-align:left;
+                                    ">
+                                        <h3 style="margin-top:0">
+                                            Select Bowler
+                                        </h3>
+                                       <label class="bowlerOption">
+                                            <input type="radio"
+                                                   name="bowlerMode"
+                                                   value="rotation"
+                                                   checked>
+                                            <span id="rotationBowlerLabel" style="white-space:nowrap">
+                                                Previous Rotation Bowler
+                                            </span>
+                                        </label>
+                                        <label class="bowlerOption">
+                                            <input type="radio"
+                                                   name="bowlerMode"
+                                                   value="new">
+                                            <span>New Bowler</span>
+                                        </label>
+                                        <div id="newBowlerSection" style="
+                                            display:none;
+                                            margin-top:8px;
+                                            margin-bottom:14px;">
+                                            <select id="popupBowlerSelect"></select>
                                         </div>
+                                        <button onclick="confirmBowlerPopup()">
+                                            Confirm
+                                        </button>
                                     </div>
                                 </div>
-                            <div style="
-                                display:grid;
-                                grid-template-columns:1fr 1fr;
-                                gap:12px;
-                                margin-bottom:18px;
-                            ">
-                                <div style="
-                                    background:#111827;
-                                    border-radius:14px;
-                                    padding:14px;
-                                ">
-                                    <div style="
-                                        font-size:12px;
-                                        color:#94a3b8;
-                                        margin-bottom:6px;
-                                    ">
-                                        REQUIRED RUNS
-                                    </div>
-                                    <div id="liveReqRuns" style="
-                                        font-size:28px;
-                                        font-weight:800;
-                                    ">
-                                        -
-                                    </div>
+                            <div id="ballEditor" style="
+                           display:none;
+                           position:fixed;
+                           bottom:20px;
+                           left:50%;
+                           transform:translateX(-50%);
+                           background:#020617;
+                           border:1px solid #1f2937;
+                           border-radius:8px;
+                           padding:12px;
+                           z-index:9999;
+                           width:280px;
+                           ">
+                                <div style="margin-bottom:8px;font-weight:bold">Edit Ball</div>
+                                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+                                    <button onclick="editBallRun(0)">0</button>
+                                    <button onclick="editBallRun(1)">1</button>
+                                    <button onclick="editBallRun(2)">2</button>
+                                    <button onclick="editBallRun(3)">3</button>
+                                    <button onclick="editBallRun(4)">4</button>
+                                    <button onclick="editBallRun(6)">6</button>
+                                    <button onclick="editBallWicket()">W</button>
+                                    <button onclick="editBallExtra('wide')">Wd</button>
+                                    <button onclick="editBallExtra('noball')">Nb</button>
+                                    <button onclick="editBallExtra('bye')">B</button>
+                                    <button onclick="editBallExtra('legbye')">Lb</button>
                                 </div>
-                                <div style="
-                                    background:#111827;
-                                    border-radius:14px;
-                                    padding:14px;
-                                ">
-                                    <div style="
-                                        font-size:12px;
-                                        color:#94a3b8;
-                                        margin-bottom:6px;
-                                    ">
-                                        REQUIRED RR
-                                    </div>
-                                    <div id="liveReqRR" style="
-                                        font-size:28px;
-                                        font-weight:800;
-                                    ">
-                                        -
-                                    </div>
-                                </div>
+                                <button style="margin-top:8px;background:#b91c1c" onclick="deleteEditedBall()">Delete Ball</button>
+                                <button style="margin-top:6px;background:#374151" onclick="closeBallEditor()">Cancel</button>
                             </div>
-                        </div>    
+                        </div>
+                        <div style="font-size:22px">
+                            <strong id="liveScore">0/0</strong><br>
+                            Overs: <span id="liveOvers">0.0</span><br>
+                            CRR: <span id="liveRR">0.00</span><br>
+                            Extras: <span id="liveExtras">0</span><br>
+                            Req Runs: <span id="liveReqRuns">-</span><br>
+                            Req RR: <span id="liveReqRR">-</span>
+                        </div>
                         <div id="nextBatterPanel" style="
                         margin-top:12px;
                         padding:8px;
@@ -881,14 +793,10 @@
                         <select id="striker"></select>
                         Non-Striker
                         <select id="nonStriker"></select>
-                       <button onclick="swapBatters()" style="
-                            background:#111827;
-                            border:1px solid #334155;
-                            height:52px;
-                            font-size:16px;
-                            font-weight:700;
-                        ">
-                            🔄 Swap Strike
+                        <button onclick="swapBatters()" style="
+                            background:#0f172a;
+                            border:1px solid #334155; ">
+                            🔄 Swap Batters
                         </button>
                         <h4>Bowler</h4>
                         <select id="bowler"></select>
