@@ -71,7 +71,7 @@
         select {
             width: 100%;
             padding: 10px;
-            margin-bottom: 14px;
+            margin-bottom: 10px;
             border-radius: 8px;
             border: 1px solid #1f2937;
             background: #020617;
@@ -221,7 +221,7 @@
             border:
                 1px solid rgba(255,255,255,.05);     
             border-radius: 18px;
-            padding: 18px;
+            padding: 14px;
             box-shadow:
                 0 10px 30px rgba(0,0,0,.45),
                 inset 0 0 20px rgba(255,255,255,.02);
@@ -258,9 +258,9 @@
 
 
             .run-buttons button {
-                font-size: 30px;
+                font-size: 24px;
                 font-weight: 800;
-                padding: 24px;
+                padding: 18px;
                 border-radius: 16px;
                 background:
                     linear-gradient(
@@ -290,8 +290,8 @@
         }
 
         .extra-buttons button {
-            padding: 16px;
-            font-size: 18px;
+            padding: 12px;
+            font-size: 15px;
             border-radius: 14px;
         }
 
@@ -676,8 +676,24 @@
         <div id="livescoring" class="tab">
             <h3>Live Scoring</h3>
             <div style="display:flex;gap:8px;margin-bottom:15px">
-                <button id="basicTabBtn" onclick="showLiveSubTab('basic')">Basic</button>
-                <button id="advancedTabBtn" onclick="showLiveSubTab('advanced')">Advanced</button>
+                <button id="basicTabBtn"
+                    onclick="showLiveSubTab('basic')"
+                    style="
+                        height:44px;
+                        font-size:14px;
+                        font-weight:700;
+                        border-radius:12px;
+                    ">Basic</button>
+                <button id="advancedTabBtn"
+                        onclick="showLiveSubTab('advanced')"
+                        style="
+                            height:44px;
+                            font-size:14px;
+                            font-weight:700;
+                            border-radius:12px;
+                        ">
+                    Advanced
+                </button>
             </div>
             <!-- BASIC TAB -->
             <div id="basicLiveTab">
@@ -688,11 +704,11 @@
                             <strong>This Over</strong>
                             <div id="overTimeline" style="
                                     display:flex;
-                                    gap:10px;
+                                    gap:6px;
                                     margin-top:10px;
                                     flex-wrap:wrap;
-                                    min-height:48px;
-                                    padding:12px;
+                                    min-height:40px;
+                                    padding:8px;
                                     background:#111827;
                                     border:1px solid #1f2937;
                                     border-radius:14px;
@@ -789,7 +805,7 @@
                                 gap:12px;
                                 background:#111827;
                                 border-radius:18px;
-                                padding:16px;
+                                padding:12px;
                                 border:1px solid #1f2937;
                             ">
                                 <!-- SCORE -->
@@ -799,7 +815,7 @@
                                     justify-content:center;
                                 ">
                                     <div id="liveScore" style="
-                                        font-size:52px;
+                                        font-size:44px;
                                         font-weight:900;
                                         line-height:1;
                                         color:white;
@@ -825,7 +841,7 @@
                                         Overs
                                     </div>
                                     <div id="liveOvers" style="
-                                        font-size:24px;
+                                        font-size:20px;
                                         font-weight:800;
                                     ">
                                         0.0
@@ -849,7 +865,7 @@
                                         CRR
                                     </div>
                                     <div id="liveRR" style="
-                                        font-size:24px;
+                                        font-size:20px;
                                         font-weight:800;
                                     ">
                                         0.00
@@ -873,7 +889,7 @@
                                         Extras
                                     </div>
                                     <div id="liveExtras" style="
-                                        font-size:24px;
+                                        font-size:20px;
                                         font-weight:800;
                                     ">
                                         0
@@ -884,7 +900,7 @@
                             <div style="
                                 background:#111827;
                                 border-radius:16px;
-                                padding:16px;
+                                padding:10px;
                                 border:1px solid #1f2937;
                             ">
                                 <div style="
@@ -897,7 +913,7 @@
                                     Required Runs
                                 </div>
                                 <div id="liveReqRuns" style="
-                                    font-size:34px;
+                                    font-size:26px;
                                     font-weight:800;
                                 ">
                                     -
