@@ -1381,6 +1381,7 @@
             lastOverNumber: lastOverNumber,
         
             history: liveHistory,
+            extras: extrasStats,
             updatedAt: Date.now()
           };
         
@@ -1462,6 +1463,12 @@
           });
         
         liveHistory = data.history || [];
+        extrasStats = data.extras || {
+            wide: 0,
+            noball: 0,
+            bye: 0,
+            legbye: 0
+        };
         // ✅ Restore match setup FIRST
         document.getElementById('teamA').value = data.teamA || "";
         document.getElementById('teamB').value = data.teamB || "";
