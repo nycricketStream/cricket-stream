@@ -911,9 +911,21 @@
                         <select id="bowler"></select>
                         </div>
                      </div>
-                     <div class="panel sticky-runs">
+                     <div class="panel sticky-runs" style="
+                        padding:20px;
+                    ">
                         <h3>Runs & Extras</h3>
-                        <h4>Runs</h4>
+                        <h4 style="
+                            margin-top:0;
+                            margin-bottom:12px;
+                            font-size:13px;
+                            letter-spacing:1px;
+                            text-transform:uppercase;
+                            color:#93c5fd;
+                        ">
+                            Runs
+                        </h4>
+
                         <div class="run-buttons">
                             <button data-run="0">0</button>
                             <button data-run="1">1</button>
@@ -921,11 +933,42 @@
                             <button data-run="3">3</button>
                             <button data-run="4">4</button>
                             <button data-run="6">6</button>
-                            <button onclick="openWicketModal()">OUT</button>
-                            <button onclick="undoLast()">UNDO</button>
+                            <button onclick="openWicketModal()" style="
+                                background:
+                                    linear-gradient(
+                                        145deg,
+                                        #991b1b,
+                                        #dc2626
+                                    );
+                                font-size:22px;
+                                font-weight:900;
+                            ">
+                                OUT
+                            </button>
+                            <button onclick="undoLast()" style="
+                                background:
+                                    linear-gradient(
+                                        145deg,
+                                        #374151,
+                                        #4b5563
+                                    );
+                                font-size:20px;
+                                font-weight:800;
+                            ">
+                                UNDO
+                            </button>
                             <button onclick="enableMidOverChange()" style="background:#b91c1c">
                             Bowler Injured Change
-                            </button>
+                            </button><h4 style="
+                                margin-top:18px;
+                                margin-bottom:12px;
+                                font-size:13px;
+                                letter-spacing:1px;
+                                text-transform:uppercase;
+                                color:#93c5fd;
+                            ">
+                                Extras
+                            </h4>
                         </div>                  
                         <h4 style="margin-top:12px">Extras</h4>
                         <div class="extra-buttons">
