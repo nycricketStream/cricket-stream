@@ -3314,10 +3314,12 @@
                 }
                 
                 else if (
-                    symbol.includes("Wd") ||
-                    symbol.includes("Nb") ||
-                    symbol.includes("B") ||
-                    symbol.includes("Lb")
+                   else if (
+                        String(symbol).includes("Wd") ||
+                        String(symbol).includes("Nb") ||
+                        String(symbol).includes("B") ||
+                        String(symbol).includes("Lb")
+                    )
                 ) {
                     el.classList.add("extra");
                 }
