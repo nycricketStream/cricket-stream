@@ -3301,13 +3301,13 @@
                 const el = document.createElement("div");
                 el.className = "overBall";
                 el.innerText = symbol;
-                if (symbol === "W") {
+                if (String(symbol) === "W") {
                     el.classList.add("wicket");
                 }
-                else if (symbol === "4") {
+                else if (String(symbol) === "4") {
                     el.classList.add("boundary");
                 }
-                else if (symbol === "6") {
+                else if (String(symbol) === "6") {
                     el.classList.add("six");
                 }
                 else if (
