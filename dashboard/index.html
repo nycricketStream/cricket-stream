@@ -18,7 +18,12 @@
 
         .sidebar {
             width: 260px;
-            background: linear-gradient(180deg, #081a3a, #030712);
+            background:
+                linear-gradient(
+                    180deg,
+                    #0f172a,
+                    #020617
+                );
             padding: 18px 14px;
             border-right: 1px solid rgba(59, 130, 246, .25);
             overflow-y: auto;
@@ -381,8 +386,8 @@
         }
 
         .sidebar.collapsed {
-            width: 70px;
-            padding: 10px 6px;
+            width: 58px;
+            padding: 10px 4px;
         }
 
             .sidebar.collapsed h2 {
@@ -391,7 +396,7 @@
 
             .sidebar.collapsed .tab-btn {
                 justify-content: center;
-                padding: 10px;
+                padding: 12px 6px;
             }
 
             .sidebar.collapsed .menu-title {
@@ -422,6 +427,8 @@
             .tab-btn:hover {
                 background: #111827;
                 border-color: #1f2937;
+                box-shadow:
+                    0 0 12px rgba(37,99,235,.25);
             }
 
         .tab-btn {
@@ -431,8 +438,16 @@
         }
 
             .tab-btn.active {
-                background: linear-gradient(90deg, #2563eb, #1d4ed8);
-                box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+                background:
+                    linear-gradient(
+                        90deg,
+                        #2563eb,
+                        #1d4ed8
+                    );
+                box-shadow:
+                    0 0 14px rgba(37,99,235,.45);
+                border:
+                    1px solid rgba(255,255,255,.08);
             }
 
         h3 {
