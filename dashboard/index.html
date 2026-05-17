@@ -221,7 +221,7 @@
             grid-template-columns:
                 repeat(auto-fit, minmax(420px,1fr));
             gap:18px;
-            align-items:start;
+            align-items:stretch;
         }
 
         .panel {
@@ -1316,6 +1316,7 @@
                     </thead>
                     <tbody id="fallOfWicketsBody"></tbody>
                 </table>
+                <div class="panel">
                 <h4 style="margin-top:25px">Current Over</h4>
                 <div id="currentOverTracker" style="
                     display:flex;
@@ -1330,6 +1331,8 @@
                 ">
                     -
                 </div>
+                </div>
+                <div class="panel">
                 <h4 style="margin-top:20px">Previous Over</h4>
                 <div id="previousOverTracker" style="
                     display:flex;
@@ -1344,6 +1347,8 @@
                 ">
                     -
                 </div>
+                </div>
+                <div class="panel">
                 <h4 style="margin-top:25px">Current Partnership</h4>
                 <div id="partnershipPanel" style="
                   background:#020617;
@@ -1354,6 +1359,8 @@
                   line-height:1.6;">
                     0 runs (0 balls)
                 </div>
+                </div>
+                <div class="panel">
                 <h4 style="margin-top:25px">Current Batters</h4>
                 <div id="currentBattersPanel" style="
                   background:#020617;
@@ -1363,6 +1370,7 @@
                   font-size:14px;
                   line-height:1.6;">
                     -
+                </div>
                 </div>
                 <h4 style="margin-top:25px">Last Wicket</h4>
                 <div id="lastWicketPanel" style="
