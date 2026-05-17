@@ -532,6 +532,61 @@
             
                 text-align: left;
             }
+        /* THIS OVER BALLS */
+        .overBall {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 800;
+            background: #334155;
+            color: white;
+            cursor: pointer;
+            transition:
+                transform .12s ease,
+                box-shadow .2s ease;
+        }
+        .overBall:hover {
+            transform: scale(1.08);
+            box-shadow:
+                0 0 14px rgba(37,99,235,.45);
+        }
+        .overBall.wicket {
+            background:
+                linear-gradient(
+                    145deg,
+                    #991b1b,
+                    #dc2626
+                );
+        }
+        .overBall.boundary {
+            background:
+                linear-gradient(
+                    145deg,
+                    #1d4ed8,
+                    #2563eb
+                );
+        }
+        .overBall.six {
+            background:
+                linear-gradient(
+                    145deg,
+                    #15803d,
+                    #22c55e
+                );
+        }
+        .overBall.extra {
+            background:
+                linear-gradient(
+                    145deg,
+                    #7c3aed,
+                    #8b5cf6
+                );
+        }
+
     </style>
 </head>
 <body>
@@ -3238,7 +3293,27 @@
                 }
 
                 const el = document.createElement("div");
-                el.innerText = symbol;
+                el.className = "overBall";
+                if (symbol === "W") {
+                    el.classList.add("wicket");
+                }
+                
+                else if (symbol === "4") {
+                    el.classList.add("boundary");
+                }
+                
+                else if (symbol === "6") {
+                    el.classList.add("six");
+                }
+                
+                else if (
+                    symbol.includes("Wd") ||
+                    symbol.includes("Nb") ||
+                    symbol.includes("B") ||
+                    symbol.includes("Lb")
+                ) {
+                    el.classList.add("extra");
+                }
                 el.onclick = () => openBallEditor(i);
 
                 container.appendChild(el);
