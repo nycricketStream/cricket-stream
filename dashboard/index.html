@@ -215,6 +215,14 @@
             gap: 18px;
             align-items: start;
         }
+        /* ADVANCED DASHBOARD GRID */
+        .advanced-grid {
+            display:grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(420px,1fr));
+            gap:18px;
+            align-items:start;
+        }
 
         .panel {
             background:
@@ -1264,6 +1272,8 @@
             </div>
             <!-- ADVANCED TAB -->
             <div id="advancedLiveTab" style="display:none">
+                <div class="advanced-grid">
+                <div class="panel">
                 <h4>Batsman Stats</h4>
                 <table class="stats-table">
                     <thead>
@@ -1279,6 +1289,8 @@
                     </thead>
                     <tbody id="batsmanStatsBody"></tbody>
                 </table>
+                </div>
+                <div class="panel">
                 <h4>Bowler Stats</h4>
                 <table class="stats-table">
                     <thead>
@@ -1292,6 +1304,7 @@
                     </thead>
                     <tbody id="bowlerStatsBody"></tbody>
                 </table>
+                </div>
                 <h4 style="margin-top:25px">Fall of Wickets</h4>
                 <table class="stats-table">
                     <thead>
@@ -1372,6 +1385,7 @@
                     <tbody id="extrasBreakdownBody"></tbody>
                 </table>
             </div>
+          </div>
         </div>
         <!-- LIVE SCORING END -->
         <div id="sponsors" class="tab">
