@@ -3277,7 +3277,13 @@
             container.innerHTML = "";
 
             liveHistory.forEach((b, i) => {
-                if (b.overId !== currentOverId) return;
+                //if (b.overId !== currentOverId) return;
+                const activeOverId =
+                    currentOverBalls === 0
+                        ? currentOverId - 1
+                        : currentOverId;
+                
+                if (b.overId !== activeOverId) return;
 
                 let symbol = "";
 
@@ -3294,6 +3300,7 @@
 
                 const el = document.createElement("div");
                 el.className = "overBall";
+                el.innerText = symbol;
                 if (symbol === "W") {
                     el.classList.add("wicket");
                 }
@@ -3315,7 +3322,7 @@
                     el.classList.add("extra");
                 }
                 el.onclick = () => openBallEditor(i);
-                el.innerText = symbol;
+               
                 container.appendChild(el);
             });
         }
