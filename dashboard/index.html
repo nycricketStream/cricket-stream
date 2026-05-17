@@ -786,7 +786,7 @@
             <div id="basicLiveTab">
                 <div class="live-grid">
                     <div class="panel">
-                        <div style="margin-top:10px">
+                        <div style="margin-top:2px">
                             <strong>This Over</strong>
                             <div id="overTimeline" style="
                                     display:flex;
@@ -1297,6 +1297,7 @@
                         <tr>
                             <th>Bowler</th>
                             <th>Overs</th>
+                            <th>Mdn</th>
                             <th>Runs</th>
                             <th>Wkts</th>
                             <th>Econ</th>
@@ -2668,6 +2669,7 @@
                        <tr class="${name === currentBowler ? 'bowler-row' : ''}">
                          <td>${name}</td>
                          <td>${overs}</td>
+                         <td>${calculateMaidens(name)}</td>
                          <td>${stats.runs}</td>
                          <td>${stats.wickets}</td>
                          <td>${economy}</td>
