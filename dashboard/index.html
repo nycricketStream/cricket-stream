@@ -830,21 +830,132 @@
                                         0 20px 50px rgba(0,0,0,.65);
                                 ">
                                 <div style="margin-bottom:8px;font-weight:bold">Edit Ball</div>
-                                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
-                                    <button onclick="editBallRun(0)">0</button>
-                                    <button onclick="editBallRun(1)">1</button>
-                                    <button onclick="editBallRun(2)">2</button>
-                                    <button onclick="editBallRun(3)">3</button>
-                                    <button onclick="editBallRun(4)">4</button>
-                                    <button onclick="editBallRun(6)">6</button>
-                                    <button onclick="editBallWicket()">W</button>
-                                    <button onclick="editBallExtra('wide')">Wd</button>
-                                    <button onclick="editBallExtra('noball')">Nb</button>
-                                    <button onclick="editBallExtra('bye')">B</button>
-                                    <button onclick="editBallExtra('legbye')">Lb</button>
+                                <div style="
+                                    display:grid;
+                                    grid-template-columns:repeat(3,1fr);
+                                    gap:10px;
+                                    margin-top:14px;
+                                ">
+                                    <button onclick="editBallRun(0)" style="
+                                        height:52px;
+                                        font-size:18px;
+                                        font-weight:800;
+                                        border-radius:12px;
+                                    ">
+                                        0
+                                    </button>
+                                    <button onclick="editBallRun(1)" style="
+                                        height:52px;
+                                        font-size:18px;
+                                        font-weight:800;
+                                        border-radius:12px;
+                                    ">
+                                        1
+                                    </button>
+                                    <button onclick="editBallRun(2)" style="
+                                        height:52px;
+                                        font-size:18px;
+                                        font-weight:800;
+                                        border-radius:12px;
+                                    ">
+                                        2
+                                    </button>
+                                    <button onclick="editBallRun(3)" style="
+                                        height:52px;
+                                        font-size:18px;
+                                        font-weight:800;
+                                        border-radius:12px;
+                                    ">
+                                       3
+                                    </button>
+                                    <button onclick="editBallRun(4)" style="
+                                        height:52px;
+                                        font-size:18px;
+                                        font-weight:800;
+                                        border-radius:12px;
+                                    ">
+                                        4
+                                    </button>
+                                    <button onclick="editBallRun(6)" style="
+                                        height:52px;
+                                        font-size:18px;
+                                        font-weight:800;
+                                        border-radius:12px;
+                                    ">
+                                        6
+                                    </button>
+                                    <button onclick="editBallWicket()" style="
+                                        height:52px;
+                                        font-size:18px;
+                                        font-weight:800;
+                                        border-radius:12px;
+                                    ">
+                                       W
+                                    </button>
+                                    <button onclick="editBallExtra('wide')" style="
+                                        height:52px;
+                                        font-size:18px;
+                                        font-weight:800;
+                                        border-radius:12px;
+                                    ">
+                                        Wd
+                                    </button>
+                                    <button onclick="editBallExtra('noball')" style="
+                                        height:52px;
+                                        font-size:18px;
+                                        font-weight:800;
+                                        border-radius:12px;
+                                    ">
+                                        Nb
+                                    </button>
+                                   <button onclick="editBallExtra('bye')" style="
+                                        height:52px;
+                                        font-size:18px;
+                                        font-weight:800;
+                                        border-radius:12px;
+                                    ">
+                                        B
+                                    </button>
+                                      <button onclick="editBallExtra('legbye')" style="
+                                        height:52px;
+                                        font-size:18px;
+                                        font-weight:800;
+                                        border-radius:12px;
+                                    ">
+                                        Lb
+                                    </button>
                                 </div>
-                                <button style="margin-top:8px;background:#b91c1c" onclick="deleteEditedBall()">Delete Ball</button>
-                                <button style="margin-top:6px;background:#374151" onclick="closeBallEditor()">Cancel</button>
+                               <button onclick="deleteEditedBall()"
+                                    style="
+                                        margin-top:14px;
+                                        height:52px;
+                                        font-size:18px;
+                                        font-weight:800;
+                                        border-radius:12px;
+                                        background:
+                                            linear-gradient(
+                                                145deg,
+                                                #991b1b,
+                                                #dc2626
+                                            );
+                                    ">
+                                    Delete Ball
+                                </button>
+                               <button onclick="closeBallEditor()"
+                                style="
+                                    margin-top:8px;
+                                    height:48px;
+                                    font-size:16px;
+                                    border-radius:12px;
+                                    background:
+                                        linear-gradient(
+                                            145deg,
+                                            #374151,
+                                            #4b5563
+                                        );
+                                ">
+                                Cancel
+                            </button>
                             </div>
                         </div>
                         <div style="
