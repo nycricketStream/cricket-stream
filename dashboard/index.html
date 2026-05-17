@@ -3304,25 +3304,21 @@
                 if (symbol === "W") {
                     el.classList.add("wicket");
                 }
-                
                 else if (symbol === "4") {
                     el.classList.add("boundary");
                 }
-                
                 else if (symbol === "6") {
                     el.classList.add("six");
                 }
-                
                 else if (
-                   else if (
-                        String(symbol).includes("Wd") ||
-                        String(symbol).includes("Nb") ||
-                        String(symbol).includes("B") ||
-                        String(symbol).includes("Lb")
-                    )
+                    String(symbol).includes("Wd") ||
+                    String(symbol).includes("Nb") ||
+                    String(symbol).includes("B") ||
+                    String(symbol).includes("Lb")
                 ) {
                     el.classList.add("extra");
                 }
+
                 el.onclick = () => openBallEditor(i);
                
                 container.appendChild(el);
