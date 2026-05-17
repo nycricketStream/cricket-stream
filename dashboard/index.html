@@ -607,6 +607,16 @@
 <body>
     <div class="sidebar">
         <button id="sidebarToggle">☰</button>
+        <button id="fullscreenBtn"
+        onclick="toggleFullscreen()"
+        style="
+            margin-top:8px;
+            background:#111827;
+            border:1px solid #334155;
+            font-size:12px;
+        ">
+            ⛶ Fullscreen
+        </button>
         <h2>MKTV Broadcast</h2>
         <div class="menu-section">
             <div class="menu-title">SETUP</div>
@@ -1809,6 +1819,18 @@
             if (!sidebar) return;
 
             sidebar.classList.toggle("collapsed");
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                document.getElementById("fullscreenBtn")
+                    .innerText = "✕ Exit Fullscreen";
+            } else {
+                document.exitFullscreen();
+                document.getElementById("fullscreenBtn")
+                    .innerText = "⛶ Fullscreen";
+            }
         }
 
         function updateBattingTeams() {
