@@ -3063,12 +3063,53 @@
             sendEvent('manualScore', {
                 dismissal: ''
             });
-            const bowlerSelect = document.getElementById('bowler');
-
-            if (liveBalls % 6 !== 0) {
-                bowlerSelect.classList.remove("bowler-warning");
+            const bowlerSelect =
+                document.getElementById('bowler');
+            // =====================================
+            // FIX OVER STATE AFTER UNDO
+            // =====================================
+            const lastBall =
+                liveHistory[liveHistory.length - 1];
+            // current over balls
+            currentOverBalls = liveBalls % 6;
+            // ================================
+            // IF OVER NO LONGER COMPLETE
+            // ================================
+            if (currentOverBalls !== 0) {
+                setScoringEnabled(true);
+                bowlerSelect.classList.remove(
+                    "bowler-warning"
+                );
+                // restore bowler from last legal ball
+                if (lastBall?.bowler) {
+                    bowlerSelect.value =
+                        lastBall.bowler;
+                    currentOverBowler =
+                        lastBall.bowler;
+                }
+            }
+            // ================================
+            // IF EXACT END OF OVER
+            // ================================
+            else if (liveBalls > 0) {
+                bowlerSelect.value = "";
+                bowlerSelect.classList.add(
+                    "bowler-warning"
+                );
+                currentOverBowler = "";
+                setScoringEnabled(false);
+            }
+            // ================================
+            // START OF MATCH
+            // ================================
+            else {
+                bowlerSelect.classList.remove(
+                    "bowler-warning"
+                );
+                currentOverBowler = "";
                 setScoringEnabled(true);
             }
+
             updateLiveDisplay();
         }
         /* =========== Rotate Strike ================ */
