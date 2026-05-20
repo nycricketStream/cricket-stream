@@ -873,6 +873,21 @@
                                         Change Bowler
                                     </div>
                                     <select id="editBallBowler"></select>
+                                    <button onclick="applyBowlerToEntireOver()" style="
+                                        margin-top:10px;
+                                        height:48px;
+                                        font-size:16px;
+                                        font-weight:700;
+                                        border-radius:12px;
+                                        background:
+                                            linear-gradient(
+                                                145deg,
+                                                #c2410c,
+                                                #ea580c
+                                            );
+                                    ">
+                                        Apply To Entire Over
+                                    </button>
                                 </div>
 
                                 <div style="
@@ -3564,6 +3579,33 @@
             recalculateMatch();
             updateLiveDisplay();
         }
+
+        function applyBowlerToEntireOver() {
+            const ball =
+                liveHistory[editingBallIndex];
+            if (!ball) return;
+            const newBowler =
+                document.getElementById(
+                    "editBallBowler"
+                ).value;
+            const targetOverId =
+                ball.overId;
+            // update every ball in over
+            liveHistory.forEach(b => {
+                if (b.overId === targetOverId) {
+                    b.bowler = newBowler;
+                }
+            });
+            closeBallEditor();
+            recalculateMatch();
+            updateLiveDisplay();
+            saveMatchToFirebase();
+            showModal(
+                "Entire over changed to "
+                + newBowler
+            );
+        }
+
         /* ========  Edit Ball Run ========= */
         function editBallRun(r) {
             if (editingBallIndex < 0) return;
