@@ -889,7 +889,6 @@
                                         Apply To Entire Over
                                     </button>
                                 </div>
-
                                 <div id="editOutBatterSection" style="
                                         margin-top:12px;
                                         display:none;
@@ -3578,6 +3577,7 @@
         /* ============== Open Ball Editor ========= */
         function openBallEditor(index) {
             editingBallIndex = index;
+            const ball = liveHistory[index];
             const bowlerSelect =
                 document.getElementById("editBallBowler");
             bowlerSelect.innerHTML = "";
@@ -3590,12 +3590,48 @@
                     opt.text = o.value;
                     bowlerSelect.appendChild(opt);
                 });
-            // set current ball bowler
             bowlerSelect.value =
-                liveHistory[index]?.bowler || "";
-
-            document.getElementById("ballEditor").style.display = "block";
+                ball?.bowler || "";
+            // =========================
+            // OUT BATTER SECTION
+            // =========================
+            const outSection =
+                document.getElementById(
+                    "editOutBatterSection"
+                );
+            const outSelect =
+                document.getElementById(
+                    "editOutBatter"
+                );
+            outSelect.innerHTML = "";
+            if (ball?.type === "wicket") {
+                outSection.style.display = "block";
+                let players = [];
+                if (batting.value === teamA.value) {
+                    players =
+                        teamAPlayers.value.split('\n');
+                } else {
+                    players =
+                        teamBPlayers.value.split('\n');
+                }
+                players.forEach(p => {
+                    const [name] = p.split('|');
+                    const clean = name.trim();
+                    if (!clean) return;
+                    const opt =
+                        document.createElement("option");
+                    opt.value = clean;
+                    opt.text = clean;
+                    outSelect.appendChild(opt);
+                });
+                outSelect.value = ball.striker || "";
+            } else {
+                outSection.style.display = "none";
+            }
+            document.getElementById("ballEditor")
+                .style.display = "block";
         }
+
         /* =========== Close Ball Editor ========= */
         function closeBallEditor() {
             editingBallIndex = -1;
