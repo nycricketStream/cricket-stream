@@ -3068,7 +3068,7 @@
             // =====================================
             // FIX OVER STATE AFTER UNDO
             // =====================================
-            const lastBall =
+           const latestBall =
                 liveHistory[liveHistory.length - 1];
             // current over balls
             currentOverBalls = liveBalls % 6;
@@ -3081,11 +3081,11 @@
                     "bowler-warning"
                 );
                 // restore bowler from last legal ball
-                if (lastBall?.bowler) {
+                if (latestBall?.bowler) {
                     bowlerSelect.value =
-                        lastBall.bowler;
+                        latestBall.bowler;
                     currentOverBowler =
-                        lastBall.bowler;
+                        latestBall.bowler;
                 }
             }
             // ================================
