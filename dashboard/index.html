@@ -3663,6 +3663,77 @@
                 "Entire over changed to " + newBowler
             );
         }
+
+        function applyOutBatterCorrection() {
+                const ball =
+                    liveHistory[editingBallIndex];
+                if (!ball) return;
+                if (ball.type !== "wicket") {
+                    showModal("Not a wicket ball");
+                    return;
+                }
+                const oldBatter = ball.striker;
+                const newBatter =
+                    document.getElementById(
+                        "editOutBatter"
+                    ).value;
+                if (!newBatter) {
+                    showModal("Select batter");
+                    return;
+                }
+                if (oldBatter === newBatter) {
+                    showModal("Same batter selected");
+                    return;
+                }
+                // ==================================
+                // CHANGE WICKET BALL
+                // ==================================
+                ball.striker = newBatter;
+                // ==================================
+                // MOVE FUTURE BALLS
+                // ==================================
+                let replaceActive = true;
+                for (
+                    let i = editingBallIndex + 1;
+                    i < liveHistory.length;
+                    i++
+                ) {
+                    const b = liveHistory[i];
+                    if (!replaceActive) break;
+                    // stop if old batter got out later
+                    if (
+                        b.type === "wicket" &&
+                        b.striker === oldBatter
+                    ) {
+                        replaceActive = false;
+                        break;
+                    }
+                    // move future scoring
+                    if (b.striker === oldBatter) {
+                        b.striker = newBatter;
+                    }
+                }
+                closeBallEditor();
+                recalculateMatch();
+                renderOverTimeline();
+                renderCurrentOver();
+                renderPreviousOver();
+                renderBowlerStats();
+                renderBatsmanStats();
+                renderPartnership();
+                renderCurrentBatters();
+                renderLastWicket();
+                renderExtrasBreakdown();
+                renderFallOfWickets();
+                updateLiveDisplay();
+                saveMatchToFirebase();
+                showModal(
+                    oldBatter +
+                    " corrected to " +
+                    newBatter
+                );
+            }
+
     
         /* ========  Edit Ball Run ========= */
         function editBallRun(r) {
