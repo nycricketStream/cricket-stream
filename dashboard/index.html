@@ -3196,33 +3196,75 @@
         }
 
         function calculateMaidens(bowlerName) {
-            let overs = {};
-        
+            let maidens = 0;
+            let currentRuns = 0;
+            let legalBalls = 0;
+            let currentBowler = null;
             liveHistory.forEach(ball => {
-                if (ball.bowler !== bowlerName) return;
-        
-                const over = ball.overId;
-        
-                if (!overs[over]) {
-                    overs[over] = 0;
+                // skip other bowlers
+                if (ball.bowler !== bowlerName) {
+                    // if over completed before bowler changed
+                    if (legalBalls === 6) {
+                        if (currentRuns === 0) {
+                            maidens++;
+                        }
+                    }
+                    currentRuns = 0;
+                    legalBalls = 0;
+                    currentBowler = null;
+                    return;
                 }
-        
-                // runs from bat
+                // start over tracking
+                if (!currentBowler) {
+                    currentBowler = bowlerName;
+                }
+                // =========================
+                // RUNS
+                // =========================
                 if (ball.type === "run") {
-                    overs[over] += ball.runs;
+                    currentRuns += ball.runs;
+                    legalBalls++;
                 }
-        
-                // extras that count against bowler
-                if (ball.type === "extra") {
-                    if (ball.extra === "wide" || ball.extra === "noball") {
-                        overs[over] += ball.runs || 1;
+                // =========================
+                // WICKET
+                // =========================
+                else if (ball.type === "wicket") {
+                    legalBalls++;
+                }
+                // =========================
+                // EXTRAS
+                // =========================
+                else if (ball.type === "extra") {
+                    const r = Number(ball.runs) || 1;
+                    // wides/no-balls count against bowler
+                    if (
+                        ball.extra === "wide" ||
+                        ball.extra === "noball"
+                    ) {
+                        currentRuns += r;
+                    }
+                    // byes/legbyes legal balls
+                    if (
+                        ball.extra === "bye" ||
+                        ball.extra === "legbye"
+                    ) {
+                        legalBalls++;
                     }
                 }
+                // =========================
+                // OVER COMPLETE
+                // =========================
+                if (legalBalls === 6) {
+                    if (currentRuns === 0) {
+                        maidens++;
+                    }
+                    currentRuns = 0;
+                    legalBalls = 0;
+                }
             });
+            return maidens;
+        }
 
-    // count maiden overs
-    return Object.values(overs).filter(runs => runs === 0).length;
-}
         /* ============ Ensure Batsman =========== */
         function ensureBatsman(name) {
             if (!batsmanStats[name]) {
