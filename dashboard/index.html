@@ -873,6 +873,37 @@
                                         Change Bowler
                                     </div>
                                     <select id="editBallBowler"></select>
+                                    <div id="editOutBatterSection" style="
+                                        margin-top:12px;
+                                        display:none;
+                                    ">
+                                        <div style="
+                                            font-size:13px;
+                                            color:#93c5fd;
+                                            margin-bottom:6px;
+                                            text-transform:uppercase;
+                                            letter-spacing:.5px;
+                                        ">
+                                            Correct Out Batter
+                                        </div>
+                                        <select id="editOutBatter"></select>
+                                        <button onclick="applyOutBatterCorrection()" style="
+                                            margin-top:10px;
+                                            height:48px;
+                                            font-size:16px;
+                                            font-weight:700;
+                                            border-radius:12px;
+                                            background:
+                                                linear-gradient(
+                                                    145deg,
+                                                    #7c3aed,
+                                                    #8b5cf6
+                                                );
+                                        ">
+                                            Correct Wicket Batter
+                                        </button>
+                                    </div>
+
                                     <button onclick="applyBowlerToEntireOver()" style="
                                         margin-top:10px;
                                         height:48px;
@@ -3578,6 +3609,7 @@
         /* ============== Open Ball Editor ========= */
         function openBallEditor(index) {
             editingBallIndex = index;
+            const ball = liveHistory[index];
             const bowlerSelect =
                 document.getElementById("editBallBowler");
             bowlerSelect.innerHTML = "";
@@ -3590,12 +3622,48 @@
                     opt.text = o.value;
                     bowlerSelect.appendChild(opt);
                 });
-            // set current ball bowler
             bowlerSelect.value =
-                liveHistory[index]?.bowler || "";
-
-            document.getElementById("ballEditor").style.display = "block";
+                ball?.bowler || "";
+            // =========================
+            // OUT BATTER SECTION
+            // =========================
+            const outSection =
+                document.getElementById(
+                    "editOutBatterSection"
+                );
+            const outSelect =
+                document.getElementById(
+                    "editOutBatter"
+                );
+            outSelect.innerHTML = "";
+            if (ball?.type === "wicket") {
+                outSection.style.display = "block";
+                let players = [];
+                if (batting.value === teamA.value) {
+                    players =
+                        teamAPlayers.value.split('\n');
+                } else {
+                    players =
+                        teamBPlayers.value.split('\n');
+                }
+                players.forEach(p => {
+                    const [name] = p.split('|');
+                    const clean = name.trim();
+                    if (!clean) return;
+                    const opt =
+                        document.createElement("option");
+                    opt.value = clean;
+                    opt.text = clean;
+                    outSelect.appendChild(opt);
+                });
+                outSelect.value = ball.striker || "";
+            } else {
+                outSection.style.display = "none";
+            }
+            document.getElementById("ballEditor")
+                .style.display = "block";
         }
+
         /* =========== Close Ball Editor ========= */
         function closeBallEditor() {
             editingBallIndex = -1;
@@ -3663,6 +3731,77 @@
                 "Entire over changed to " + newBowler
             );
         }
+
+        function applyOutBatterCorrection() {
+            const ball =
+                liveHistory[editingBallIndex];
+            if (!ball) return;
+            if (ball.type !== "wicket") {
+                showModal("Not a wicket ball");
+                return;
+            }
+            const oldBatter = ball.striker;
+            const newBatter =
+                document.getElementById(
+                    "editOutBatter"
+                ).value;
+            if (!newBatter) {
+                showModal("Select batter");
+                return;
+            }
+            if (oldBatter === newBatter) {
+                showModal("Same batter selected");
+                return;
+            }
+            // ==================================
+            // CHANGE WICKET BALL
+            // ==================================
+            ball.striker = newBatter;
+            // ==================================
+            // MOVE FUTURE BALLS
+            // ==================================
+            let replaceActive = true;
+            for (
+                let i = editingBallIndex + 1;
+                i < liveHistory.length;
+                i++
+            ) {
+                const b = liveHistory[i];
+                if (!replaceActive) break;
+                // stop if old batter got out later
+                if (
+                    b.type === "wicket" &&
+                    b.striker === oldBatter
+                ) {
+                    replaceActive = false;
+                    break;
+                }
+                // move future scoring
+                if (b.striker === oldBatter) {
+                    b.striker = newBatter;
+                }
+            }
+            closeBallEditor();
+            recalculateMatch();
+            renderOverTimeline();
+            renderCurrentOver();
+            renderPreviousOver();
+            renderBowlerStats();
+            renderBatsmanStats();
+            renderPartnership();
+            renderCurrentBatters();
+            renderLastWicket();
+            renderExtrasBreakdown();
+            renderFallOfWickets();
+            updateLiveDisplay();
+            saveMatchToFirebase();
+            showModal(
+                oldBatter +
+                " corrected to " +
+                newBatter
+            );
+        }
+
     
         /* ========  Edit Ball Run ========= */
         function editBallRun(r) {
