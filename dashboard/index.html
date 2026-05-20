@@ -3580,36 +3580,60 @@
             updateLiveDisplay();
         }
 
-        function applyBowlerToEntireOver() {
-            const ball =
-                liveHistory[editingBallIndex];
+       function applyBowlerToEntireOver() {
+            const ball = liveHistory[editingBallIndex];
             if (!ball) return;
             const newBowler =
-                document.getElementById(
-                    "editBallBowler"
-                ).value;
-            const targetOverId =
-                ball.overId;
-            document.getElementById("bowler").value =
-                newBowler;
-            currentOverBowler = newBowler;
-
-            // update every ball in over
+                document.getElementById("editBallBowler").value;
+            const targetOverId = ball.overId;
+            // ✅ update ALL balls in selected over
             liveHistory.forEach(b => {
                 if (b.overId === targetOverId) {
                     b.bowler = newBowler;
                 }
             });
+            // ✅ sync live scoring dropdown immediately
+            const activeOverId =
+                currentOverBalls === 0
+                    ? currentOverId - 1
+                    : currentOverId;
+            if (targetOverId === activeOverId) {
+                const liveBowlerSelect =
+                    document.getElementById("bowler");
+                liveBowlerSelect.value = newBowler;
+                currentOverBowler = newBowler;
+                previousBowler = newBowler;
+                // force refresh visually
+                liveBowlerSelect.dispatchEvent(
+                    new Event("change")
+                );
+            }
             closeBallEditor();
+            // ✅ FULL RECALC
             recalculateMatch();
+            // ✅ restore current bowler after recalc
+            if (targetOverId === activeOverId) {
+                document.getElementById("bowler").value = newBowler;
+                currentOverBowler = newBowler;
+            }
+            // ✅ rebuild ALL UI instantly
+            renderOverTimeline();
+            renderCurrentOver();
+            renderPreviousOver();
+            renderBowlerStats();
+            renderBatsmanStats();
+            renderPartnership();
+            renderCurrentBatters();
+            renderLastWicket();
+            renderExtrasBreakdown();
+            renderFallOfWickets();
             updateLiveDisplay();
             saveMatchToFirebase();
             showModal(
-                "Entire over changed to "
-                + newBowler
+                "Entire over changed to " + newBowler
             );
         }
-
+    
         /* ========  Edit Ball Run ========= */
         function editBallRun(r) {
             if (editingBallIndex < 0) return;
@@ -3658,9 +3682,7 @@
             updateLiveDisplay();
         }
         /* =========== Recalculate Match =========== */
-        function recalculateMatch() {
-            currentOverId = 0;
-
+      function recalculateMatch() {
             liveTotal = 0;
             liveWickets = 0;
             liveBalls = 0;
@@ -3672,66 +3694,96 @@
                 bye: 0,
                 legbye: 0
             };
+            currentOverId = 0;
+            let legalBallsInOver = 0;
             liveHistory.forEach(ball => {
+                // ✅ preserve correct over id rebuild
                 ball.overId = currentOverId;
                 const striker = ball.striker;
                 const bowler = ball.bowler;
                 if (striker) ensureBatsman(striker);
                 if (bowler) ensureBowler(bowler);
-                /* RUN */
+                // =========================
+                // RUNS
+                // =========================
                 if (ball.type === "run") {
                     liveTotal += ball.runs;
                     liveBalls++;
-                    ;
-
-                    if (isOverComplete()) {
-                        currentOverId++;
-                    }
+                    legalBallsInOver++;
                     batsmanStats[striker].runs += ball.runs;
                     batsmanStats[striker].balls++;
-                    if (ball.runs === 4) batsmanStats[striker].fours++;
-                    if (ball.runs === 6) batsmanStats[striker].sixes++;
+                    if (ball.runs === 4)
+                        batsmanStats[striker].fours++;
+                    if (ball.runs === 6)
+                        batsmanStats[striker].sixes++;
                     bowlerStats[bowler].runs += ball.runs;
                     bowlerStats[bowler].balls++;
                 }
-                /* WICKET */
-                if (ball.type === "wicket") {
+                // =========================
+                // WICKET
+                // =========================
+                else if (ball.type === "wicket") {
                     liveWickets++;
                     liveBalls++;
-                    ;
-
-                    if (isOverComplete()) {
-                        currentOverId++;
-                    }
-
+                    legalBallsInOver++;
                     batsmanStats[striker].balls++;
                     batsmanStats[striker].out = true;
                     bowlerStats[bowler].balls++;
-                    bowlerStats[bowler].wickets++;
+                    // wickets credited only to bowler dismissals
+                    if (
+                        !ball.dismissal?.includes("Run Out") &&
+                        !ball.dismissal?.includes("Obstructing") &&
+                        !ball.dismissal?.includes("Timed Out")
+                    ) {
+                        bowlerStats[bowler].wickets++;
+                    }
                 }
-                /* EXTRAS */
-                if (ball.type === "extra") {
-                    const r = ball.runs ?? 1;
+                // =========================
+                // EXTRAS
+                // =========================
+                else if (ball.type === "extra") {
+                    const r = Number(ball.runs) || 1;
                     liveTotal += r;
                     if (extrasStats[ball.extra] !== undefined) {
                         extrasStats[ball.extra] += r;
                     }
-                    if (ball.extra === "wide" || ball.extra === "noball") {
+                    // wides + no balls
+                    if (
+                        ball.extra === "wide" ||
+                        ball.extra === "noball"
+                    ) {
                         bowlerStats[bowler].runs += r;
                     }
-                    if (ball.extra === "bye" || ball.extra === "legbye") {
+                    // byes + leg byes count as legal balls
+                    if (
+                        ball.extra === "bye" ||
+                        ball.extra === "legbye"
+                    ) {
                         liveBalls++;
-                        ;
-
-                        if (isOverComplete()) {
-                            currentOverId++;
+                        legalBallsInOver++;
+                        if (striker) {
+                            batsmanStats[striker].balls++;
                         }
-
-                        if (striker) batsmanStats[striker].balls++;
-                        if (bowler) bowlerStats[bowler].balls++;
+                        if (bowler) {
+                            bowlerStats[bowler].balls++;
+                        }
                     }
                 }
+                // ✅ move over ONLY after 6 legal balls
+                if (legalBallsInOver >= 6) {
+                    currentOverId++;
+                    legalBallsInOver = 0;
+                }
             });
+            // ✅ restore current over state
+            currentOverBalls = legalBallsInOver;
+            // ✅ restore current bowler
+            const lastBall = liveHistory[liveHistory.length - 1];
+            if (lastBall) {
+                currentOverBowler = lastBall.bowler || "";
+            } else {
+                currentOverBowler = "";
+            }
         }
 
         /* ============ Render Last Wicket =============== */
