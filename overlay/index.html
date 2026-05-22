@@ -536,21 +536,21 @@
             bottom: 40px;
             left: 50%;
             transform: translate(-50%,140%);
-            width: 1650px;
-            height: 110px;
-            background: linear-gradient(90deg,#020617,#0f172a);
+            width: 1720px;
+            height: 96px;
+            background: linear-gradient( 90deg, rgba(6,12,28,.90), rgba(15,23,42,.92) );
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 30px;
+            padding: 0 22px;
             color: white;
             z-index: var(--z-scoreboard);
             transition: transform .6s ease, opacity .3s ease;
             box-shadow: 0 8px 30px rgba(0,0,0,.6);
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255,255,255,0.05);
-            z-index: 100;
+            overflow: hidden;
         }
 
             #scoreboard.show {
@@ -562,8 +562,13 @@
         #sbTeamA, #sbTeamB {
             display: flex;
             align-items: center;
-            gap: 12px;
-            min-width: 240px;
+            gap: 10px;
+            min-width: 220px;
+            max-width: 280px;
+            flex-shrink: 0;
+        }
+        #sbTeamB {
+            justify-content: flex-end;
         }
 
         #logoA, #logoB {
@@ -574,9 +579,14 @@
         }
 
         #nameA, #nameB {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: .5px;
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
         }
 
         /* SCORE CENTER */
@@ -585,23 +595,32 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-width: 240px;
+            justify-content: center;
+            min-width: 180px;
+            max-width: 180px;
+            flex-shrink: 0;
         }
 
         #sbScore {
-            font-size: 44px;
-            font-weight: 800;
-            letter-spacing: 2px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 34px;
+            line-height: 34px;
+            font-weight: 700;
+            letter-spacing: 0;
         }
 
         #sbOvers {
-            font-size: 18px;
+            font-size: 14px;
+            line-height: 14px;
+            margin-top: 2px;
             color: #cbd5f5;
         }
 
         #sbRR {
-            font-size: 15px;
+            font-size: 12px;
+            margin-top: 2px;
             color: #94a3b8;
+            opacity: .9;
         }
 
         /* BATTERS */
@@ -609,14 +628,17 @@
         #sbBatters {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            font-size: 18px;
+            gap: 4px;
+            font-size: 14px;
+            width: 250px;
+            flex-shrink: 0;
         }
 
         .batRow {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
+            align-items: center;
+            gap: 6px;
         }
 
             .batRow span:first-child {
@@ -628,9 +650,12 @@
         #sbBowler {
             display: flex;
             flex-direction: column;
-            font-size: 18px;
+            justify-content: center;
+            font-size: 14px;
             text-align: right;
-            min-width: 220px;
+            min-width: 150px;
+            max-width: 150px;
+            flex-shrink: 0;
         }
 
         #bowlerName {
@@ -647,20 +672,23 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-width: 180px;
+            justify-content: center;
+            min-width: 120px;
+            max-width: 120px;
+            flex-shrink: 0;
         }
 
         #thisOverLabel {
-            font-size: 12px;
+            font-size: 10px;
             color: #94a3b8;
-            letter-spacing: 1px;
+            letter-spacing: .5px;
         }
 
         #thisOverBalls {
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-top: 6px;
+            gap: 4px;
+            margin-top: 4px;
             flex-wrap: wrap;
             justify-content: center;
         }
@@ -670,10 +698,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 26px;
-            height: 26px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            font-size: 13px;
+            font-size: 10px;
             font-weight: 700;
             background: #334155;
             color: white;
@@ -760,16 +788,66 @@
 
         /* ================= BATTING TEAM HIGHLIGHT ================= */
         .battingHighlight {
-            background: linear-gradient(90deg, var(--espn-primary), #1e40af);
-            padding: 6px 12px;
-            border-radius: 4px;
-            box-shadow: 0 0 16px var(--espn-glow);
-            transition: all .4s ease;
+            position: relative;
+            animation: battingPulse 2.8s ease-in-out infinite;
+            background: linear-gradient( 90deg, rgba(37,99,235,.30) 0%, rgba(37,99,235,.52) 50%, rgba(37,99,235,.30) 100% );
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(147,197,253,.35);
+            box-shadow: 0 0 18px rgba(37,99,235,.22), inset 0 0 14px rgba(255,255,255,.05);
+            transition: all .35s ease;
+            overflow: hidden;
         }
 
-            .battingHighlight img {
-                filter: drop-shadow(0 0 6px rgba(255,255,255,.6));
+            /* animated shine sweep */
+            .battingHighlight::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -120%;
+                width: 70%;
+                height: 100%;
+                background: linear-gradient( 90deg, transparent, rgba(255,255,255,.18), transparent );
+                transform: skewX(-20deg);
+                animation: battingSweep 3.5s linear infinite;
             }
+
+            /* glowing active team text */
+            .battingHighlight span {
+                color: #ffffff;
+                text-shadow: 0 0 8px rgba(255,255,255,.15), 0 0 14px rgba(147,197,253,.25);
+            }
+
+            /* logo glow */
+            .battingHighlight img {
+                filter: drop-shadow(0 0 4px rgba(255,255,255,.35)) drop-shadow(0 0 10px rgba(37,99,235,.35));
+            }
+
+        /* subtle pulsing */
+        @keyframes battingPulse {
+            0% {
+                box-shadow: 0 0 18px rgba(37,99,235,.18), inset 0 0 12px rgba(255,255,255,.04);
+            }
+
+            50% {
+                box-shadow: 0 0 26px rgba(37,99,235,.30), inset 0 0 18px rgba(255,255,255,.07);
+            }
+
+            100% {
+                box-shadow: 0 0 18px rgba(37,99,235,.18), inset 0 0 12px rgba(255,255,255,.04);
+            }
+        }
+
+        /* moving sheen */
+        @keyframes battingSweep {
+            0% {
+                left: -120%;
+            }
+
+            100% {
+                left: 140%;
+            }
+        }
 
         #runworm {
             position: absolute;
@@ -2495,18 +2573,31 @@
             overlayState.teamBLogo = data.teamBLogo || overlayState.teamBLogo;
             overlayState.battingTeam = data.batting || overlayState.battingTeam;
 
-            nameA.textContent = (data.teamA || "").toUpperCase();
-            nameB.textContent = (data.teamB || "").toUpperCase();
+            const isTeamABatting = data.batting === data.teamA;
 
-            if (data.teamALogo && data.teamALogo.trim() !== "") {
-                logoA.src = data.teamALogo;
+            const leftTeamName = isTeamABatting ? data.teamA : data.teamB;
+            const rightTeamName = isTeamABatting ? data.teamB : data.teamA;
+
+            const leftTeamLogo = isTeamABatting ? data.teamALogo : data.teamBLogo;
+            const rightTeamLogo = isTeamABatting ? data.teamBLogo : data.teamALogo;
+
+            /* LEFT SIDE = ALWAYS BATTING */
+            nameA.textContent = (leftTeamName || "").toUpperCase();
+
+            /* RIGHT SIDE = ALWAYS BOWLING */
+            nameB.textContent = (rightTeamName || "").toUpperCase();
+
+            /* LEFT LOGO */
+            if (leftTeamLogo && leftTeamLogo.trim() !== "") {
+                logoA.src = leftTeamLogo;
                 logoA.style.display = "block";
             } else {
                 logoA.style.display = "none";
             }
 
-            if (data.teamBLogo && data.teamBLogo.trim() !== "") {
-                logoB.src = data.teamBLogo;
+            /* RIGHT LOGO */
+            if (rightTeamLogo && rightTeamLogo.trim() !== "") {
+                logoB.src = rightTeamLogo;
                 logoB.style.display = "block";
             } else {
                 logoB.style.display = "none";
@@ -2521,17 +2612,11 @@
             sbTeamA.classList.remove("battingHighlight");
             sbTeamB.classList.remove("battingHighlight");
 
-            if (battingTeam === data.teamA) {
+            /* LEFT SIDE ALWAYS BATTING */
+            bar.classList.add("teamAColor");
 
-                bar.classList.add("teamAColor");
-                sbTeamA.classList.add("battingHighlight");
-
-            } else {
-
-                bar.classList.add("teamBColor");
-                sbTeamB.classList.add("battingHighlight");
-
-            }
+            sbTeamA.classList.add("battingHighlight");
+            sbTeamB.classList.remove("battingHighlight");
         });
 
         channel.bind('manualScore', data => {
@@ -3822,8 +3907,8 @@
             if (!data.dismissal) return;
 
             const player = data.dismissal
-            .replace(/\d+\s*\(\d+\).*/, "")
-            .trim();
+                .replace(/\d+\s*\(\d+\).*/, "")
+                .trim();
 
             const scoreMatch = data.dismissal.match(/\d+\s\(\d+\)/);
 
