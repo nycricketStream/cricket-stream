@@ -543,7 +543,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 22px;
+            padding: 0 24px 0 0;
             color: white;
             z-index: var(--z-scoreboard);
             transition: transform .6s ease, opacity .3s ease;
@@ -590,6 +590,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            color: rgba(255,255,255,.94);
             flex: 1;
             display: flex;
             align-items: center;
@@ -610,7 +611,9 @@
             gap: 5px;
             padding-right: 22px;
             margin-right: 10px;
-            border-right: 1px solid rgba(255,255,255,.06);
+            padding-top: 8px;
+            padding-bottom: 8px;
+            border-right: 1px solid rgba(255,255,255,.05);
         }
 
         #sbScore {
@@ -620,6 +623,7 @@
             font-weight: 700;
             letter-spacing: 0;
             text-shadow: 0 0 12px rgba(255,255,255,.12);
+            color: rgba(255,255,255,.98);
         }
 
         #sbOvers {
@@ -658,10 +662,10 @@
         }
 
             .batRow span:first-child {
-                font-weight: 700;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
+                font-weight: 600;
             }
         #bat1Score,
         #bat2Score {
@@ -824,14 +828,14 @@
         /* ================= BATTING TEAM HIGHLIGHT ================= */
         .battingHighlight {
             position: relative;
-            animation: battingPulse 2.8s ease-in-out infinite;
-            background: linear-gradient( 90deg, rgba(37,99,235,.30) 0%, rgba(37,99,235,.52) 50%, rgba(37,99,235,.30) 100% );
-            padding: 8px 14px;
-            border-radius: 8px;
-            border: 1px solid rgba(147,197,253,.35);
-            box-shadow: 0 0 18px rgba(37,99,235,.22), inset 0 0 14px rgba(255,255,255,.05);
+            background: linear-gradient( 90deg, rgba(37,99,235,.40) 0%, rgba(37,99,235,.62) 50%, rgba(37,99,235,.40) 100% );
+            padding: 8px 18px;
+            border-radius: 0 8px 8px 0;
+            border-right: 1px solid rgba(147,197,253,.25);
+            box-shadow: inset 0 0 20px rgba(255,255,255,.04), 0 0 24px rgba(37,99,235,.16);
             transition: all .35s ease;
             overflow: hidden;
+            animation: battingPulse 2.8s ease-in-out infinite;
         }
 
             /* animated shine sweep */
