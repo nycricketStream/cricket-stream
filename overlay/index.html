@@ -533,7 +533,7 @@
 
         #scoreboard {
             position: absolute;
-            bottom: 40px;
+            bottom: 45px;
             left: 50%;
             transform: translate(-50%,140%);
             width: 1720px;
@@ -551,6 +551,7 @@
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255,255,255,0.05);
             overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.05), inset 0 -1px 0 rgba(0,0,0,.4);
         }
 
             #scoreboard.show {
@@ -562,11 +563,13 @@
         #sbTeamA, #sbTeamB {
             display: flex;
             align-items: center;
-            gap: 10px;
-            min-width: 220px;
-            max-width: 280px;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 340px;
             flex-shrink: 0;
+            height: 100%;
         }
+
         #sbTeamB {
             justify-content: flex-end;
         }
@@ -579,7 +582,8 @@
         }
 
         #nameA, #nameB {
-            font-size: 18px;
+            font-size: 22px;
+            line-height: 24px;
             font-weight: 700;
             letter-spacing: .5px;
             max-width: 220px;
@@ -587,6 +591,10 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             flex: 1;
+            display: flex;
+            align-items: center;
+            height: 32px;
+            padding-top: 2px;
         }
 
         /* SCORE CENTER */
@@ -596,31 +604,37 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-width: 180px;
-            max-width: 180px;
+            min-width: 200px;
+            max-width: 200px;
             flex-shrink: 0;
+            gap: 5px;
+            padding-right: 22px;
+            margin-right: 10px;
+            border-right: 1px solid rgba(255,255,255,.06);
         }
 
         #sbScore {
             font-family: 'Oswald', sans-serif;
-            font-size: 34px;
-            line-height: 34px;
+            font-size: 44px;
+            line-height: 44px;
             font-weight: 700;
             letter-spacing: 0;
+            text-shadow: 0 0 12px rgba(255,255,255,.12);
         }
 
         #sbOvers {
-            font-size: 14px;
-            line-height: 14px;
-            margin-top: 2px;
-            color: #cbd5f5;
+            font-size: 15px;
+            line-height: 17px;
+            color: rgba(255,255,255,.92);
+            font-weight: 600;
+            text-shadow: 0 0 6px rgba(255,255,255,.08);
         }
 
         #sbRR {
-            font-size: 12px;
-            margin-top: 2px;
-            color: #94a3b8;
-            opacity: .9;
+            font-size: 13px;
+            line-height: 15px;
+            color: rgba(255,255,255,.72);
+            font-weight: 500;
         }
 
         /* BATTERS */
@@ -628,22 +642,32 @@
         #sbBatters {
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            font-size: 14px;
-            width: 250px;
+            justify-content: center;
+            gap: 10px;
+            font-size: 17px;
+            width: 340px;
             flex-shrink: 0;
         }
 
         .batRow {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto;
             align-items: center;
-            gap: 6px;
+            gap: 10px;
+            line-height: 24px;
         }
 
             .batRow span:first-child {
                 font-weight: 700;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
+        #bat1Score,
+        #bat2Score {
+            font-weight: 700;
+            color: rgba(255,255,255,.92);
+        }
 
         /* BOWLER */
 
@@ -651,7 +675,8 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            font-size: 14px;
+            gap: 6px;
+            font-size: 15px;
             text-align: right;
             min-width: 150px;
             max-width: 150px;
@@ -660,10 +685,14 @@
 
         #bowlerName {
             font-weight: 700;
+            line-height: 18px;
         }
 
         #bowlerStats {
-            color: #cbd5f5;
+            color: rgba(255,255,255,.78);
+            font-size: 13px;
+            line-height: 15px;
+            font-weight: 500;
         }
 
         /* THIS OVER */
