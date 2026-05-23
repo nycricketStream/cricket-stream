@@ -2494,6 +2494,7 @@
         let currentOverBowler = "";
         let lockedOut = false;
         let lastOverNumber = 0;
+        let pendingOverChange = false;
         let lastSentScore = "";
         let lastStriker = "";
         let lastNonStriker = "";
@@ -2662,11 +2663,59 @@
             
                 bowlerMaidens = calculateMaidens(bowlerName); // ✅ ADD THIS
             }
-            const thisOver = getThisOver() || "";
             const currentOverNumber = Math.floor(liveBalls / 6);
+
+            // detect over completion
             if (currentOverNumber !== lastOverNumber) {
+            
+                pendingOverChange = true;
+            
                 lastOverNumber = currentOverNumber;
-                currentOverBowler = ""; // reset for new over
+            
+                currentOverBowler = "";
+            }
+            
+            // KEEP previous over visible until new bowler selected
+            let thisOver = "";
+            
+            if (
+                pendingOverChange &&
+                !document.getElementById('bowler')?.value
+            ) {
+            
+                // show previous completed over
+                const previousOverId = currentOverId - 1;
+            
+                let balls = [];
+            
+                liveHistory.forEach(b => {
+            
+                    if (b.overId !== previousOverId) return;
+            
+                    let symbol = "";
+            
+                    if (b.type === "run") symbol = b.runs;
+                    else if (b.type === "wicket") symbol = "W";
+                    else if (b.type === "extra") {
+            
+                        const r = Number(b.runs) || 1;
+            
+                        if (b.extra === "wide") symbol = r + "Wd";
+                        else if (b.extra === "noball") symbol = r + "Nb";
+                        else if (b.extra === "bye") symbol = r + "B";
+                        else if (b.extra === "legbye") symbol = r + "Lb";
+                    }
+            
+                    balls.push(symbol);
+                });
+            
+                thisOver = balls.join(" ");
+            
+            } else {
+            
+                pendingOverChange = false;
+            
+                thisOver = getThisOver() || "";
             }
             lastStriker = strikerName;
             lastNonStriker = nonStrikerName;
