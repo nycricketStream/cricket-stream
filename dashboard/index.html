@@ -103,7 +103,16 @@
             border: 1px solid #334155;
             background: #020617;
             color: white;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
         }
+
+            /* DROPDOWN OPTIONS */
+            select option {
+                background: #0f172a;
+                color: #ffffff;
+            }
 
         button {
             width: 100%;
@@ -547,8 +556,8 @@
 
 
         /* =========================================
-   MATCH SETUP REDESIGN
-========================================= */
+           MATCH SETUP REDESIGN
+        ========================================= */
 
         .setup-grid {
             display: grid;
@@ -635,6 +644,188 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* =========================================
+           LIVE CONTROL ROOM
+        ========================================= */
+
+        .live-layout {
+            display: grid;
+            grid-template-columns: 290px minmax(540px, 1fr) 250px;
+            gap: 18px;
+            align-items: start;
+        }
+
+        .live-column {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .live-header-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 22px;
+            margin-bottom: 18px;
+            background: linear-gradient( 145deg, rgba(37,99,235,.18), rgba(15,23,42,.98) );
+            border: 1px solid rgba(255,255,255,.06);
+            border-radius: 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.35);
+        }
+
+        .live-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: white;
+        }
+
+        .live-subtitle {
+            color: #93c5fd;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .quick-stat-row {
+            display: flex;
+            gap: 14px;
+        }
+
+        .quick-stat {
+            background: rgba(255,255,255,.05);
+            border-radius: 16px;
+            padding: 10px 14px;
+            min-width: 90px;
+            text-align: center;
+        }
+
+        .quick-stat-label {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .quick-stat-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: white;
+            margin-top: 4px;
+        }
+
+        /* TOUCH BUTTONS */
+        .live-layout button {
+            min-height: 54px;
+            border-radius: 16px;
+        }
+
+        /* TABLET */
+        @media (max-width: 1280px) {
+
+            .live-layout {
+                grid-template-columns: 320px 1fr;
+            }
+
+            .live-column-right {
+                grid-column: span 2;
+            }
+        }
+
+        /* MOBILE */
+        @media (max-width: 900px) {
+
+            .live-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .live-column-right {
+                grid-column: auto;
+            }
+
+            .live-header-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
+            }
+
+            .quick-stat-row {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+        }
+
+        /* =========================================
+            RIGHT PRODUCTION PANEL
+        ========================================= */
+
+        .production-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .production-card {
+            background: linear-gradient( 180deg, rgba(15,23,42,.98), rgba(2,6,23,.98) );
+            border: 1px solid rgba(255,255,255,.05);
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.28);
+        }
+
+            .production-card h4 {
+                margin-top: 0;
+                margin-bottom: 14px;
+                color: white;
+                font-size: 15px;
+                font-weight: 800;
+                letter-spacing: .6px;
+                text-transform: uppercase;
+            }
+
+        .production-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .production-btn {
+            min-height: 52px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 800;
+            border: 1px solid rgba(255,255,255,.05);
+            background: linear-gradient( 145deg, #1e293b, #0f172a );
+            color: white;
+            transition: transform .12s ease, box-shadow .18s ease;
+        }
+
+            .production-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 0 18px rgba(37,99,235,.18);
+            }
+
+        .info-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+        }
+
+            .info-stat:last-child {
+                border-bottom: none;
+            }
+
+        .info-stat-label {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .info-stat-value {
+            color: white;
+            font-size: 15px;
+            font-weight: 800;
+        }
     </style>
 </head>
 <body>
@@ -695,7 +886,7 @@
         </div>
         <!-- MATCH SETUP -->
         <div id="match" class="tab active">
-                   <h3>🏏 Match Setup</h3>
+            <h3>🏏 Match Setup</h3>
 
             <div class="setup-grid">
 
@@ -709,7 +900,7 @@
 
                     <label>Team Logo URL</label>
                     <input id="teamALogo"
-                        placeholder="https://example.com/logo.png">
+                           placeholder="https://example.com/logo.png">
 
                     <label>Players</label>
                     <textarea id="teamAPlayers"></textarea>
@@ -726,7 +917,7 @@
 
                     <label>Team Logo URL</label>
                     <input id="teamBLogo"
-                        placeholder="https://example.com/logo.png">
+                           placeholder="https://example.com/logo.png">
 
                     <label>Players</label>
                     <textarea id="teamBPlayers"></textarea>
@@ -756,7 +947,7 @@
 
                     <label>Target (2nd Innings Only)</label>
                     <input id="target"
-                        placeholder="e.g. 250">
+                           placeholder="e.g. 250">
 
                 </div>
 
@@ -792,7 +983,7 @@
                 <div class="setup-actions">
 
                     <button class="match-start-btn"
-                        onclick="
+                            onclick="
                            sendEvent('match',{
                            teamA:teamA.value,
                            teamB:teamB.value,
@@ -873,35 +1064,89 @@
         </div>
         <!-- LIVE SCORING -->
         <div id="livescoring" class="tab">
-            <div style="display:flex;gap:8px;margin-bottom:6px;margin-top:-18px;">
-                <button id="basicTabBtn"
-                        onclick="showLiveSubTab('basic')"
-                        style="
+            <div class="live-header-card">
+
+                <div>
+                    <div class="live-title"
+                         id="liveMatchTitle">
+                        Team A vs Team B
+                    </div>
+
+                    <div class="live-subtitle"
+                         id="liveMatchSubtitle">
+                        1st Innings • Match Ready
+                    </div>
+                </div>
+
+                <div class="quick-stat-row">
+
+                    <div class="quick-stat">
+                        <div class="quick-stat-label">
+                            Score
+                        </div>
+
+                        <div class="quick-stat-value"
+                             id="liveHeaderScore">
+                            0/0
+                        </div>
+                    </div>
+
+                    <div class="quick-stat">
+                        <div class="quick-stat-label">
+                            Overs
+                        </div>
+
+                        <div class="quick-stat-value"
+                             id="liveHeaderOvers">
+                            0.0
+                        </div>
+                    </div>
+
+                    <div class="quick-stat">
+                        <div class="quick-stat-label">
+                            RR
+                        </div>
+
+                        <div class="quick-stat-value"
+                             id="liveHeaderRR">
+                            0.00
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="live-layout">
+                <div style="display:flex;gap:8px;margin-bottom:6px;margin-top:-18px;">
+                    <button id="basicTabBtn"
+                            onclick="showLiveSubTab('basic')"
+                            style="
                         height:44px;
                         font-size:14px;
                         font-weight:700;
                         border-radius:12px;
                     ">
-                    Basic
-                </button>
-                <button id="advancedTabBtn"
-                        onclick="showLiveSubTab('advanced')"
-                        style="
+                        Basic
+                    </button>
+                    <button id="advancedTabBtn"
+                            onclick="showLiveSubTab('advanced')"
+                            style="
                             height:44px;
                             font-size:14px;
                             font-weight:700;
                             border-radius:12px;
                         ">
-                    Advanced
-                </button>
-            </div>
-            <!-- BASIC TAB -->
-            <div id="basicLiveTab">
-                <div class="live-grid">
-                    <div class="panel">
-                        <div style="margin-top:2px">
-                            <strong>This Over</strong>
-                            <div id="overTimeline" style="
+                        Advanced
+                    </button>
+                </div>
+                <!-- BASIC TAB -->
+                <div id="basicLiveTab">
+                    <div class="live-grid">
+                        <div class="panel">
+                            <div style="margin-top:2px">
+                                <strong>This Over</strong>
+                                <div id="overTimeline" style="
                                     display:flex;
                                     gap:6px;
                                     margin-top:6px;
@@ -913,7 +1158,7 @@
                                     border-radius:14px;
                                     align-items:center;
                                 "></div>
-                            <div id="bowlerPopup" style="
+                                <div id="bowlerPopup" style="
                                     display:none;
                                     position:fixed;
                                     inset:0;
@@ -922,7 +1167,7 @@
                                     align-items:center;
                                     justify-content:center;">
 
-                                <div style="
+                                    <div style="
                                         width:420px;
                                         background:#020617;
                                         border:1px solid #1f2937;
@@ -930,36 +1175,36 @@
                                         padding:20px;
                                         text-align:left;
                                     ">
-                                    <h3 style="margin-top:0">
-                                        Select Bowler
-                                    </h3>
-                                    <label class="bowlerOption">
-                                        <input type="radio"
-                                               name="bowlerMode"
-                                               value="rotation"
-                                               checked>
-                                        <span id="rotationBowlerLabel" style="white-space:nowrap">
-                                            Previous Rotation Bowler
-                                        </span>
-                                    </label>
-                                    <label class="bowlerOption">
-                                        <input type="radio"
-                                               name="bowlerMode"
-                                               value="new">
-                                        <span>New Bowler</span>
-                                    </label>
-                                    <div id="newBowlerSection" style="
+                                        <h3 style="margin-top:0">
+                                            Select Bowler
+                                        </h3>
+                                        <label class="bowlerOption">
+                                            <input type="radio"
+                                                   name="bowlerMode"
+                                                   value="rotation"
+                                                   checked>
+                                            <span id="rotationBowlerLabel" style="white-space:nowrap">
+                                                Previous Rotation Bowler
+                                            </span>
+                                        </label>
+                                        <label class="bowlerOption">
+                                            <input type="radio"
+                                                   name="bowlerMode"
+                                                   value="new">
+                                            <span>New Bowler</span>
+                                        </label>
+                                        <div id="newBowlerSection" style="
                                             display:none;
                                             margin-top:8px;
                                             margin-bottom:14px;">
-                                        <select id="popupBowlerSelect"></select>
+                                            <select id="popupBowlerSelect"></select>
+                                        </div>
+                                        <button onclick="confirmBowlerPopup()">
+                                            Confirm
+                                        </button>
                                     </div>
-                                    <button onclick="confirmBowlerPopup()">
-                                        Confirm
-                                    </button>
                                 </div>
-                            </div>
-                            <div id="ballEditor" style="
+                                <div id="ballEditor" style="
                                     display:none;
                                     position:fixed;
                                     top:50%;
@@ -974,19 +1219,19 @@
                                     box-shadow:
                                         0 20px 50px rgba(0,0,0,.65);
                                 ">
-                                <div style="margin-bottom:8px;font-weight:bold">Edit Ball</div>
-                                <div style="margin-top:12px">
-                                    <div style="
+                                    <div style="margin-bottom:8px;font-weight:bold">Edit Ball</div>
+                                    <div style="margin-top:12px">
+                                        <div style="
                                         font-size:13px;
                                         color:#93c5fd;
                                         margin-bottom:6px;
                                         text-transform:uppercase;
                                         letter-spacing:.5px;
                                     ">
-                                        Change Bowler
-                                    </div>
-                                    <select id="editBallBowler"></select>
-                                    <button onclick="applyBowlerToEntireOver()" style="
+                                            Change Bowler
+                                        </div>
+                                        <select id="editBallBowler"></select>
+                                        <button onclick="applyBowlerToEntireOver()" style="
                                         margin-top:10px;
                                         height:48px;
                                         font-size:16px;
@@ -999,24 +1244,24 @@
                                                 #ea580c
                                             );
                                     ">
-                                        Apply To Entire Over
-                                    </button>
-                                </div>
-                                <div id="editOutBatterSection" style="
+                                            Apply To Entire Over
+                                        </button>
+                                    </div>
+                                    <div id="editOutBatterSection" style="
                                         margin-top:12px;
                                         display:none;
                                     ">
-                                    <div style="
+                                        <div style="
                                             font-size:13px;
                                             color:#93c5fd;
                                             margin-bottom:6px;
                                             text-transform:uppercase;
                                             letter-spacing:.5px;
                                         ">
-                                        Correct Out Batter
-                                    </div>
-                                    <select id="editOutBatter"></select>
-                                    <button onclick="applyOutBatterCorrection()" style="
+                                            Correct Out Batter
+                                        </div>
+                                        <select id="editOutBatter"></select>
+                                        <button onclick="applyOutBatterCorrection()" style="
                                             margin-top:10px;
                                             height:48px;
                                             font-size:16px;
@@ -1029,106 +1274,106 @@
                                                     #8b5cf6
                                                 );
                                         ">
-                                        Correct Wicket Batter
-                                    </button>
-                                </div>
-                                <div style="
+                                            Correct Wicket Batter
+                                        </button>
+                                    </div>
+                                    <div style="
                                     display:grid;
                                     grid-template-columns:repeat(3,1fr);
                                     gap:10px;
                                     margin-top:14px;
                                 ">
-                                    <button onclick="editBallRun(0)" style="
+                                        <button onclick="editBallRun(0)" style="
                                         height:52px;
                                         font-size:18px;
                                         font-weight:800;
                                         border-radius:12px;
                                     ">
-                                        0
-                                    </button>
-                                    <button onclick="editBallRun(1)" style="
+                                            0
+                                        </button>
+                                        <button onclick="editBallRun(1)" style="
                                         height:52px;
                                         font-size:18px;
                                         font-weight:800;
                                         border-radius:12px;
                                     ">
-                                        1
-                                    </button>
-                                    <button onclick="editBallRun(2)" style="
+                                            1
+                                        </button>
+                                        <button onclick="editBallRun(2)" style="
                                         height:52px;
                                         font-size:18px;
                                         font-weight:800;
                                         border-radius:12px;
                                     ">
-                                        2
-                                    </button>
-                                    <button onclick="editBallRun(3)" style="
+                                            2
+                                        </button>
+                                        <button onclick="editBallRun(3)" style="
                                         height:52px;
                                         font-size:18px;
                                         font-weight:800;
                                         border-radius:12px;
                                     ">
-                                        3
-                                    </button>
-                                    <button onclick="editBallRun(4)" style="
+                                            3
+                                        </button>
+                                        <button onclick="editBallRun(4)" style="
                                         height:52px;
                                         font-size:18px;
                                         font-weight:800;
                                         border-radius:12px;
                                     ">
-                                        4
-                                    </button>
-                                    <button onclick="editBallRun(6)" style="
+                                            4
+                                        </button>
+                                        <button onclick="editBallRun(6)" style="
                                         height:52px;
                                         font-size:18px;
                                         font-weight:800;
                                         border-radius:12px;
                                     ">
-                                        6
-                                    </button>
-                                    <button onclick="editBallWicket()" style="
+                                            6
+                                        </button>
+                                        <button onclick="editBallWicket()" style="
                                         height:52px;
                                         font-size:18px;
                                         font-weight:800;
                                         border-radius:12px;
                                     ">
-                                        W
-                                    </button>
-                                    <button onclick="editBallExtra('wide')" style="
+                                            W
+                                        </button>
+                                        <button onclick="editBallExtra('wide')" style="
                                         height:52px;
                                         font-size:18px;
                                         font-weight:800;
                                         border-radius:12px;
                                     ">
-                                        Wd
-                                    </button>
-                                    <button onclick="editBallExtra('noball')" style="
+                                            Wd
+                                        </button>
+                                        <button onclick="editBallExtra('noball')" style="
                                         height:52px;
                                         font-size:18px;
                                         font-weight:800;
                                         border-radius:12px;
                                     ">
-                                        Nb
-                                    </button>
-                                    <button onclick="editBallExtra('bye')" style="
+                                            Nb
+                                        </button>
+                                        <button onclick="editBallExtra('bye')" style="
                                         height:52px;
                                         font-size:18px;
                                         font-weight:800;
                                         border-radius:12px;
                                     ">
-                                        B
-                                    </button>
-                                    <button onclick="editBallExtra('legbye')" style="
+                                            B
+                                        </button>
+                                        <button onclick="editBallExtra('legbye')" style="
                                         height:52px;
                                         font-size:18px;
                                         font-weight:800;
                                         border-radius:12px;
                                     ">
-                                        Lb
-                                    </button>
-                                </div>
-                                <button onclick="deleteEditedBall()"
-                                        style="
+                                            Lb
+                                        </button>
+                                    </div>
+                                    <button onclick="deleteEditedBall()"
+                                            style="
                                         margin-top:14px;
                                         height:52px;
                                         font-size:18px;
@@ -1141,10 +1386,10 @@
                                                 #dc2626
                                             );
                                     ">
-                                    Delete Ball
-                                </button>
-                                <button onclick="closeBallEditor()"
-                                        style="
+                                        Delete Ball
+                                    </button>
+                                    <button onclick="closeBallEditor()"
+                                            style="
                                     margin-top:8px;
                                     height:48px;
                                     font-size:16px;
@@ -1156,18 +1401,18 @@
                                             #4b5563
                                         );
                                 ">
-                                    Cancel
-                                </button>
+                                        Cancel
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        <div style="
+                            <div style="
                             display:grid;
                             grid-template-columns:1fr 1fr;
                             gap:14px;
                             margin-top:16px;
                         ">
-                            <!-- MAIN SCORE CARD -->
-                            <div style="
+                                <!-- MAIN SCORE CARD -->
+                                <div style="
                                 grid-column:1 / span 2;
                                 display:grid;
                                 grid-template-columns:1.2fr 1fr 1fr 1fr;
@@ -1177,23 +1422,23 @@
                                 padding:12px;
                                 border:1px solid #1f2937;
                             ">
-                                <!-- SCORE -->
-                                <div style="
+                                    <!-- SCORE -->
+                                    <div style="
                                     display:flex;
                                     flex-direction:column;
                                     justify-content:center;
                                 ">
-                                    <div id="liveScore" style="
+                                        <div id="liveScore" style="
                                         font-size:44px;
                                         font-weight:900;
                                         line-height:1;
                                         color:white;
                                     ">
-                                        0/0
+                                            0/0
+                                        </div>
                                     </div>
-                                </div>
-                                <!-- OVERS -->
-                                <div style="
+                                    <!-- OVERS -->
+                                    <div style="
                                     background:#0f172a;
                                     border-radius:14px;
                                     padding:12px;
@@ -1202,22 +1447,22 @@
                                     justify-content:center;
                                     align-items:center;
                                 ">
-                                    <div style="
+                                        <div style="
                                         font-size:11px;
                                         color:#94a3b8;
                                         text-transform:uppercase;
                                     ">
-                                        Overs
-                                    </div>
-                                    <div id="liveOvers" style="
+                                            Overs
+                                        </div>
+                                        <div id="liveOvers" style="
                                         font-size:20px;
                                         font-weight:800;
                                     ">
-                                        0.0
+                                            0.0
+                                        </div>
                                     </div>
-                                </div>
-                                <!-- CRR -->
-                                <div style="
+                                    <!-- CRR -->
+                                    <div style="
                                     background:#0f172a;
                                     border-radius:14px;
                                     padding:12px;
@@ -1226,22 +1471,22 @@
                                     justify-content:center;
                                     align-items:center;
                                 ">
-                                    <div style="
+                                        <div style="
                                         font-size:11px;
                                         color:#94a3b8;
                                         text-transform:uppercase;
                                     ">
-                                        CRR
-                                    </div>
-                                    <div id="liveRR" style="
+                                            CRR
+                                        </div>
+                                        <div id="liveRR" style="
                                         font-size:20px;
                                         font-weight:800;
                                     ">
-                                        0.00
+                                            0.00
+                                        </div>
                                     </div>
-                                </div>
-                                <!-- EXTRAS -->
-                                <div style="
+                                    <!-- EXTRAS -->
+                                    <div style="
                                     background:#0f172a;
                                     border-radius:14px;
                                     padding:12px;
@@ -1250,69 +1495,69 @@
                                     justify-content:center;
                                     align-items:center;
                                 ">
-                                    <div style="
+                                        <div style="
                                         font-size:11px;
                                         color:#94a3b8;
                                         text-transform:uppercase;
                                     ">
-                                        Extras
-                                    </div>
-                                    <div id="liveExtras" style="
+                                            Extras
+                                        </div>
+                                        <div id="liveExtras" style="
                                         font-size:20px;
                                         font-weight:800;
                                     ">
-                                        0
+                                            0
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- REQUIRED RUNS -->
-                            <div style="
+                                <!-- REQUIRED RUNS -->
+                                <div style="
                                 background:#111827;
                                 border-radius:16px;
                                 padding:10px;
                                 border:1px solid #1f2937;
                             ">
-                                <div style="
+                                    <div style="
                                     font-size:12px;
                                     color:#94a3b8;
                                     margin-bottom:8px;
                                     text-transform:uppercase;
                                     letter-spacing:.5px;
                                 ">
-                                    Required Runs
-                                </div>
-                                <div id="liveReqRuns" style="
+                                        Required Runs
+                                    </div>
+                                    <div id="liveReqRuns" style="
                                     font-size:26px;
                                     font-weight:800;
                                 ">
-                                    -
+                                        -
+                                    </div>
                                 </div>
-                            </div>
-                            <!-- REQUIRED RR -->
-                            <div style="
+                                <!-- REQUIRED RR -->
+                                <div style="
                                 background:#111827;
                                 border-radius:16px;
                                 padding:16px;
                                 border:1px solid #1f2937;
                             ">
-                                <div style="
+                                    <div style="
                                     font-size:12px;
                                     color:#94a3b8;
                                     margin-bottom:8px;
                                     text-transform:uppercase;
                                     letter-spacing:.5px;
                                 ">
-                                    Required RR
-                                </div>
-                                <div id="liveReqRR" style="
+                                        Required RR
+                                    </div>
+                                    <div id="liveReqRR" style="
                                     font-size:34px;
                                     font-weight:800;
                                 ">
-                                    -
+                                        -
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div id="nextBatterPanel" style="
+                            <div id="nextBatterPanel" style="
                         margin-top:12px;
                         padding:8px;
                         background:#111827;
@@ -1320,53 +1565,53 @@
                         border-radius:6px;
                         display:none;
                         ">
-                            <strong>Next Batter</strong>
-                            <div id="nextBatterName" style="margin:6px 0;font-size:16px"></div>
-                            <button onclick="confirmNextBatter()">Enter Batter</button>
-                            <button onclick="manualSelectBatter()">Change Batter</button>
-                        </div>
-                        <div style="
+                                <strong>Next Batter</strong>
+                                <div id="nextBatterName" style="margin:6px 0;font-size:16px"></div>
+                                <button onclick="confirmNextBatter()">Enter Batter</button>
+                                <button onclick="manualSelectBatter()">Change Batter</button>
+                            </div>
+                            <div style="
                             background:#111827;
                             border:1px solid #1f2937;
                             border-radius:16px;
                             padding:16px;
                             margin-top:18px;
                         ">
-                            <h4 style="
+                                <h4 style="
                             margin-top:20px;
                             font-size:15px;
                             letter-spacing:.5px;
                             text-transform:uppercase;
                             color:#93c5fd;
                         ">
-                                Batters
-                            </h4>
+                                    Batters
+                                </h4>
 
-                            Striker
-                            <select id="striker"></select>
-                            Non-Striker
-                            <select id="nonStriker"></select>
-                            <button onclick="swapBatters()" style="
+                                Striker
+                                <select id="striker"></select>
+                                Non-Striker
+                                <select id="nonStriker"></select>
+                                <button onclick="swapBatters()" style="
                             background:#0f172a;
                             border:1px solid #334155; ">
-                                🔄 Swap Batters
-                            </button>
-                            <h4 style="
+                                    🔄 Swap Batters
+                                </button>
+                                <h4 style="
                             margin-top:20px;
                             font-size:15px;
                             letter-spacing:.5px;
                             text-transform:uppercase;
                             color:#93c5fd;
                         ">
-                                Bowler
-                            </h4>
-                            <select id="bowler"></select>
+                                    Bowler
+                                </h4>
+                                <select id="bowler"></select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="panel sticky-runs" style="
+                        <div class="panel sticky-runs" style="
                         padding:20px;
                     ">
-                        <h4 style="
+                            <h4 style="
                             margin-top:0;
                             margin-bottom:12px;
                             font-size:13px;
@@ -1374,17 +1619,17 @@
                             text-transform:uppercase;
                             color:#93c5fd;
                         ">
-                            Runs
-                        </h4>
+                                Runs
+                            </h4>
 
-                        <div class="run-buttons">
-                            <button data-run="0">0</button>
-                            <button data-run="1">1</button>
-                            <button data-run="2">2</button>
-                            <button data-run="3">3</button>
-                            <button data-run="4">4</button>
-                            <button data-run="6">6</button>
-                            <button onclick="openWicketModal()" style="
+                            <div class="run-buttons">
+                                <button data-run="0">0</button>
+                                <button data-run="1">1</button>
+                                <button data-run="2">2</button>
+                                <button data-run="3">3</button>
+                                <button data-run="4">4</button>
+                                <button data-run="6">6</button>
+                                <button onclick="openWicketModal()" style="
                                 background:
                                     linear-gradient(
                                         145deg,
@@ -1394,9 +1639,9 @@
                                 font-size:22px;
                                 font-weight:900;
                             ">
-                                OUT
-                            </button>
-                            <button onclick="undoLast()" style="
+                                    OUT
+                                </button>
+                                <button onclick="undoLast()" style="
                                 background:
                                     linear-gradient(
                                         145deg,
@@ -1406,9 +1651,9 @@
                                 font-size:20px;
                                 font-weight:800;
                             ">
-                                UNDO
-                            </button>
-                            <button onclick="enableMidOverChange()" style="
+                                    UNDO
+                                </button>
+                                <button onclick="enableMidOverChange()" style="
                                 background:
                                     linear-gradient(
                                         145deg,
@@ -1417,10 +1662,10 @@
                                     );
                                 font-weight:700;
                             ">
-                                Injured Bowler
-                            </button>
+                                    Injured Bowler
+                                </button>
 
-                            <h4 style="
+                                <h4 style="
                                 margin-top:18px;
                                 margin-bottom:12px;
                                 font-size:13px;
@@ -1428,70 +1673,70 @@
                                 text-transform:uppercase;
                                 color:#93c5fd;
                             ">
-                                Extras
-                            </h4>
-                        </div>
-                        <div class="extra-buttons">
-                            <button onclick="openExtraModal('wide')">Wd</button>
-                            <button onclick="openExtraModal('noball')">Nb</button>
-                            <button onclick="openExtraModal('bye')">B</button>
-                            <button onclick="openExtraModal('legbye')">Lb</button>
+                                    Extras
+                                </h4>
+                            </div>
+                            <div class="extra-buttons">
+                                <button onclick="openExtraModal('wide')">Wd</button>
+                                <button onclick="openExtraModal('noball')">Nb</button>
+                                <button onclick="openExtraModal('bye')">B</button>
+                                <button onclick="openExtraModal('legbye')">Lb</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- ADVANCED TAB -->
-            <div id="advancedLiveTab" style="display:none">
-                <div class="advanced-grid">
-                    <div class="panel">
-                        <h4>Batsman Stats</h4>
-                        <table class="stats-table">
-                            <thead>
-                                <tr>
-                                    <th>Batter</th>
-                                    <th>R</th>
-                                    <th>B</th>
-                                    <th>4s</th>
-                                    <th>6s</th>
-                                    <th>SR</th>
-                                    <th>Dismissal</th>
-                                </tr>
-                            </thead>
-                            <tbody id="batsmanStatsBody"></tbody>
-                        </table>
-                    </div>
-                    <div class="panel">
-                        <h4>Bowler Stats</h4>
-                        <table class="stats-table">
-                            <thead>
-                                <tr>
-                                    <th>Bowler</th>
-                                    <th>Overs</th>
-                                    <th>Mdn</th>
-                                    <th>Runs</th>
-                                    <th>Wkts</th>
-                                    <th>Econ</th>
-                                </tr>
-                            </thead>
-                            <tbody id="bowlerStatsBody"></tbody>
-                        </table>
-                    </div>
-                    <div class="panel">
-                        <h4 style="margin-top:25px">Fall of Wickets</h4>
-                        <table class="stats-table">
-                            <thead>
-                                <tr>
-                                    <th>Score</th>
-                                    <th>Batsman</th>
-                                    <th>Over</th>
-                                </tr>
-                            </thead>
-                            <tbody id="fallOfWicketsBody"></tbody>
-                        </table>
-                    </div>
-                    <div class="panel">
-                        <h4 style="margin-top:25px">Current Over</h4>
-                        <div id="currentOverTracker" style="
+                <!-- ADVANCED TAB -->
+                <div id="advancedLiveTab" style="display:none">
+                    <div class="advanced-grid">
+                        <div class="panel">
+                            <h4>Batsman Stats</h4>
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Batter</th>
+                                        <th>R</th>
+                                        <th>B</th>
+                                        <th>4s</th>
+                                        <th>6s</th>
+                                        <th>SR</th>
+                                        <th>Dismissal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="batsmanStatsBody"></tbody>
+                            </table>
+                        </div>
+                        <div class="panel">
+                            <h4>Bowler Stats</h4>
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Bowler</th>
+                                        <th>Overs</th>
+                                        <th>Mdn</th>
+                                        <th>Runs</th>
+                                        <th>Wkts</th>
+                                        <th>Econ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bowlerStatsBody"></tbody>
+                            </table>
+                        </div>
+                        <div class="panel">
+                            <h4 style="margin-top:25px">Fall of Wickets</h4>
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Score</th>
+                                        <th>Batsman</th>
+                                        <th>Over</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fallOfWicketsBody"></tbody>
+                            </table>
+                        </div>
+                        <div class="panel">
+                            <h4 style="margin-top:25px">Current Over</h4>
+                            <div id="currentOverTracker" style="
                     display:flex;
                     flex-wrap:wrap;
                     gap:10px;
@@ -1502,12 +1747,12 @@
                     border:1px solid #1f2937;
                     border-radius:14px;
                 ">
-                            -
+                                -
+                            </div>
                         </div>
-                    </div>
-                    <div class="panel">
-                        <h4 style="margin-top:20px">Previous Over</h4>
-                        <div id="previousOverTracker" style="
+                        <div class="panel">
+                            <h4 style="margin-top:20px">Previous Over</h4>
+                            <div id="previousOverTracker" style="
                     display:flex;
                     flex-wrap:wrap;
                     gap:10px;
@@ -1518,57 +1763,170 @@
                     border:1px solid #1f2937;
                     border-radius:14px;
                 ">
-                            -
+                                -
+                            </div>
                         </div>
-                    </div>
-                    <div class="panel">
-                        <h4 style="margin-top:25px">Current Partnership</h4>
-                        <div id="partnershipPanel" style="
+                        <div class="panel">
+                            <h4 style="margin-top:25px">Current Partnership</h4>
+                            <div id="partnershipPanel" style="
                   background:#020617;
                   border:1px solid #1f2937;
                   border-radius:6px;
                   padding:12px;
                   font-size:14px;
                   line-height:1.6;">
-                            0 runs (0 balls)
+                                0 runs (0 balls)
+                            </div>
                         </div>
-                    </div>
-                    <div class="panel">
-                        <h4 style="margin-top:25px">Current Batters</h4>
-                        <div id="currentBattersPanel" style="
+                        <div class="panel">
+                            <h4 style="margin-top:25px">Current Batters</h4>
+                            <div id="currentBattersPanel" style="
                   background:#020617;
                   border:1px solid #1f2937;
                   border-radius:6px;
                   padding:12px;
                   font-size:14px;
                   line-height:1.6;">
-                            -
+                                -
+                            </div>
                         </div>
-                    </div>
-                    <div class="panel">
-                        <h4 style="margin-top:25px">Last Wicket</h4>
-                        <div id="lastWicketPanel" style="
+                        <div class="panel">
+                            <h4 style="margin-top:25px">Last Wicket</h4>
+                            <div id="lastWicketPanel" style="
                   background:#020617;
                   border:1px solid #1f2937;
                   border-radius:6px;
                   padding:12px;
                   font-size:14px;
                   line-height:1.6;">
-                            -
+                                -
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <h4 style="margin-top:25px">Extras Breakdown</h4>
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="extrasBreakdownBody"></tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="panel">
-                        <h4 style="margin-top:25px">Extras Breakdown</h4>
-                        <table class="stats-table">
-                            <thead>
-                                <tr>
-                                    <th>Type</th>
-                                    <th>Count</th>
-                                </tr>
-                            </thead>
-                            <tbody id="extrasBreakdownBody"></tbody>
-                        </table>
+                </div>
+                <div class="live-column live-column-right">
+
+                    <!-- QUICK GRAPHICS -->
+                    <div class="production-card">
+
+                        <h4>Quick Graphics</h4>
+
+                        <div class="production-grid">
+
+                            <button class="production-btn"
+                                    onclick="showScorecard()">
+                                📄 Scorecard
+                            </button>
+
+                            <button class="production-btn">
+                                🏏 Batters
+                            </button>
+
+                            <button class="production-btn">
+                                🎯 Bowler
+                            </button>
+
+                            <button class="production-btn">
+                                🤝 Partnership
+                            </button>
+
+                        </div>
+
                     </div>
+
+                    <!-- MATCH MOMENTS -->
+                    <div class="production-card">
+
+                        <h4>Match Moments</h4>
+
+                        <div class="production-grid">
+
+                            <button class="production-btn">
+                                4️⃣ Boundary
+                            </button>
+
+                            <button class="production-btn">
+                                6️⃣ Six
+                            </button>
+
+                            <button class="production-btn">
+                                ❌ Wicket
+                            </button>
+
+                            <button class="production-btn">
+                                🎉 Milestone
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- OVERLAY CONTROL -->
+                    <div class="production-card">
+
+                        <h4>Overlay Control</h4>
+
+                        <div class="production-grid">
+
+                            <button class="production-btn">
+                                👁 Show
+                            </button>
+
+                            <button class="production-btn">
+                                🚫 Hide
+                            </button>
+
+                            <button class="production-btn">
+                                🪟 Fullscreen
+                            </button>
+
+                            <button class="production-btn">
+                                🏷 Lower Third
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- STREAM UTILITIES -->
+                    <div class="production-card">
+
+                        <h4>Stream Utilities</h4>
+
+                        <div class="production-grid">
+
+                            <button class="production-btn">
+                                📸 Screenshot
+                            </button>
+
+                            <button class="production-btn">
+                                🎬 Replay Mark
+                            </button>
+
+                            <button class="production-btn">
+                                ⭐ Highlight
+                            </button>
+
+                            <button class="production-btn">
+                                📤 Export
+                            </button>
+
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -2744,6 +3102,29 @@
                 extrasStats.bye +
                 extrasStats.legbye;
             document.getElementById('liveExtras').innerText = totalExtras;
+            const battingTeam =
+                document.getElementById('batting')?.value || "";
+
+            const bowlingTeam =
+                battingTeam === teamA.value
+                    ? teamB.value
+                    : teamA.value;
+
+            document.getElementById(
+                'liveMatchTitle'
+            ).innerText =
+                `${battingTeam} vs ${bowlingTeam}`;
+
+            const inningsText =
+                document.getElementById('innings')?.value === "2"
+                    ? "2nd Innings"
+                    : "1st Innings";
+
+            document.getElementById(
+                'liveMatchSubtitle'
+            ).innerText =
+                `${inningsText} • Over ${calculateOvers()}`;
+
             let strikerRuns = 0;
             let strikerBalls = 0;
             let nonStrikerRuns = 0;
@@ -2885,15 +3266,15 @@
                 const currentBowler = document.getElementById('bowler')?.value;
 
                 body.innerHTML += `
-                           <tr class="${name === currentBowler ? 'bowler-row' : ''}">
-                             <td>${name}</td>
-                             <td>${overs}</td>
-                             <td>${calculateMaidens(name)}</td>
-                             <td>${stats.runs}</td>
-                             <td>${stats.wickets}</td>
-                             <td>${economy}</td>
-                           </tr>
-                         `;
+                                       <tr class="${name === currentBowler ? 'bowler-row' : ''}">
+                                         <td>${name}</td>
+                                         <td>${overs}</td>
+                                         <td>${calculateMaidens(name)}</td>
+                                         <td>${stats.runs}</td>
+                                         <td>${stats.wickets}</td>
+                                         <td>${economy}</td>
+                                       </tr>
+                                     `;
             });
         }
 
@@ -3382,20 +3763,20 @@
                     ((stats.runs / stats.balls) * 100).toFixed(1) :
                     "0.0";
                 body.innerHTML += `
-                           <tr class="${name === striker ? 'striker-row' : ''}">
-                             <td>${name}</td>
-                             <td>${stats.runs}</td>
-                             <td>${stats.balls}</td>
-                             <td>${stats.fours}</td>
-                             <td>${stats.sixes}</td>
-                             <td>${strikeRate}</td>
-                             <td>
-                               ${stats.out
+                                       <tr class="${name === striker ? 'striker-row' : ''}">
+                                         <td>${name}</td>
+                                         <td>${stats.runs}</td>
+                                         <td>${stats.balls}</td>
+                                         <td>${stats.fours}</td>
+                                         <td>${stats.sixes}</td>
+                                         <td>${strikeRate}</td>
+                                         <td>
+                                           ${stats.out
                         ? stats.dismissal + " b " + stats.bowler
                         : "Not Out"}
-                             </td>
-                           </tr>
-                           `;
+                                         </td>
+                                       </tr>
+                                       `;
             });
         }
         /* ============ Render Extras Breakdown ============== */
@@ -3403,17 +3784,17 @@
             const body = document.getElementById('extrasBreakdownBody');
             if (!body) return;
             body.innerHTML = `
-                           <tr><td>Wides</td><td>${extrasStats.wide}</td></tr>
-                           <tr><td>No Balls</td><td>${extrasStats.noball}</td></tr>
-                           <tr><td>Byes</td><td>${extrasStats.bye}</td></tr>
-                           <tr><td>Leg Byes</td><td>${extrasStats.legbye}</td></tr>
-                           <tr><td><strong>Total</strong></td>
-                               <td><strong>${extrasStats.wide +
+                                       <tr><td>Wides</td><td>${extrasStats.wide}</td></tr>
+                                       <tr><td>No Balls</td><td>${extrasStats.noball}</td></tr>
+                                       <tr><td>Byes</td><td>${extrasStats.bye}</td></tr>
+                                       <tr><td>Leg Byes</td><td>${extrasStats.legbye}</td></tr>
+                                       <tr><td><strong>Total</strong></td>
+                                           <td><strong>${extrasStats.wide +
                 extrasStats.noball +
                 extrasStats.bye +
                 extrasStats.legbye
                 }</strong></td></tr>
-                         `;
+                                     `;
         }
         /* =========== Render Fall Of Wickets ============= */
         function renderFallOfWickets() {
@@ -3435,12 +3816,12 @@
 
                     const over = Math.floor(balls / 6) + "." + (balls % 6);
                     body.innerHTML += `
-                        <tr>
-                        <td>${ball.scoreAtWicket}/${ball.wicketNumber}</td>
-                        <td>${ball.striker}</td>
-                        <td>${over}</td>
-                        </tr>
-                        `;
+                                    <tr>
+                                    <td>${ball.scoreAtWicket}/${ball.wicketNumber}</td>
+                                    <td>${ball.striker}</td>
+                                    <td>${over}</td>
+                                    </tr>
+                                    `;
                 }
             });
         }
@@ -4151,9 +4532,9 @@
             const over =
                 Math.floor((ballIndex + 1) / 6) + "." + ((ballIndex + 1) % 6);
             panel.innerHTML = `
-                         <strong>${batsman}</strong> ${stats.runs} (${stats.balls})<br>
-                         ${liveTotal}/${liveWickets}  ${over} ov
-                         `;
+                                     <strong>${batsman}</strong> ${stats.runs} (${stats.balls})<br>
+                                     ${liveTotal}/${liveWickets}  ${over} ov
+                                     `;
         }
         /* ========== Trigger Moment ============= */
         function triggerMoment(type) {
@@ -4389,21 +4770,21 @@
                 }
 
                 html += `
-                        <div class="player-card"
-                             onclick="togglePlayerCard(this)">
+                                    <div class="player-card"
+                                         onclick="togglePlayerCard(this)">
 
-                            <input type="checkbox"
-                                   class="${team === 'A' ? 'teamAXI' : 'teamBXI'}"
-                                   value="${cleanName}"
-                                   data-img="${cleanImg}"
-                                   style="display:none">
+                                        <input type="checkbox"
+                                               class="${team === 'A' ? 'teamAXI' : 'teamBXI'}"
+                                               value="${cleanName}"
+                                               data-img="${cleanImg}"
+                                               style="display:none">
 
-                            <img src="${cleanImg || ''}"
-                                 onerror="this.style.display='none'">
+                                        <img src="${cleanImg || ''}"
+                                             onerror="this.style.display='none'">
 
-                            <div class="player-card-name">${cleanName}</div>
-                        </div>
-                    `;
+                                        <div class="player-card-name">${cleanName}</div>
+                                    </div>
+                                `;
             });
 
             html += `</div>`;
