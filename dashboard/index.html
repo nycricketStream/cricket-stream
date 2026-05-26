@@ -3668,6 +3668,7 @@
         function openBallEditor(index) {
             editingBallIndex = index;
             const ball = liveHistory[index];
+            console.log("CLICKED BALL", index, ball);
             const bowlerSelect =
                 document.getElementById("editBallBowler");
             bowlerSelect.innerHTML = "";
