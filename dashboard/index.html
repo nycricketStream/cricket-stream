@@ -1817,116 +1817,136 @@
                     </div>
                 </div>
                 <div class="live-column live-column-right">
-
-                    <!-- QUICK GRAPHICS -->
+                    <!-- MATCH STATUS -->
                     <div class="production-card">
 
-                        <h4>Quick Graphics</h4>
+                        <h4>Match Status</h4>
 
-                        <div class="production-grid">
+                        <div class="info-stat">
+                            <div class="info-stat-label">
+                                Target
+                            </div>
 
-                            <button class="production-btn"
-                                    onclick="showScorecard()">
-                                📄 Scorecard
-                            </button>
+                            <div class="info-stat-value"
+                                 id="liveTargetInfo">
+                                -
+                            </div>
+                        </div>
 
-                            <button class="production-btn">
-                                🏏 Batters
-                            </button>
+                        <div class="info-stat">
+                            <div class="info-stat-label">
+                                Required RR
+                            </div>
 
-                            <button class="production-btn">
-                                🎯 Bowler
-                            </button>
+                            <div class="info-stat-value"
+                                 id="liveReqRRInfo">
+                                -
+                            </div>
+                        </div>
 
-                            <button class="production-btn">
-                                🤝 Partnership
-                            </button>
+                        <div class="info-stat">
+                            <div class="info-stat-label">
+                                Projected Score
+                            </div>
 
+                            <div class="info-stat-value"
+                                 id="liveProjectedInfo">
+                                -
+                            </div>
+                        </div>
+
+                        <div class="info-stat">
+                            <div class="info-stat-label">
+                                Partnership
+                            </div>
+
+                            <div class="info-stat-value"
+                                 id="livePartnershipInfo">
+                                0 (0)
+                            </div>
                         </div>
 
                     </div>
 
-                    <!-- MATCH MOMENTS -->
+                    <!-- LAST EVENTS -->
                     <div class="production-card">
 
-                        <h4>Match Moments</h4>
+                        <h4>Last Events</h4>
 
-                        <div class="production-grid">
+                        <div class="info-stat">
+                            <div class="info-stat-label">
+                                Last Wicket
+                            </div>
 
-                            <button class="production-btn">
-                                4️⃣ Boundary
-                            </button>
+                            <div class="info-stat-value"
+                                 id="liveLastWicketInfo">
+                                -
+                            </div>
+                        </div>
 
-                            <button class="production-btn">
-                                6️⃣ Six
-                            </button>
+                        <div class="info-stat">
+                            <div class="info-stat-label">
+                                Last Boundary
+                            </div>
 
-                            <button class="production-btn">
-                                ❌ Wicket
-                            </button>
+                            <div class="info-stat-value"
+                                 id="liveLastBoundaryInfo">
+                                -
+                            </div>
+                        </div>
 
-                            <button class="production-btn">
-                                🎉 Milestone
-                            </button>
+                        <div class="info-stat">
+                            <div class="info-stat-label">
+                                Current Over
+                            </div>
 
+                            <div class="info-stat-value"
+                                 id="liveCurrentOverInfo">
+                                -
+                            </div>
                         </div>
 
                     </div>
 
-                    <!-- OVERLAY CONTROL -->
+                    <!-- MATCH MOMENTUM -->
                     <div class="production-card">
 
-                        <h4>Overlay Control</h4>
+                        <h4>Match Momentum</h4>
 
-                        <div class="production-grid">
+                        <div class="info-stat">
+                            <div class="info-stat-label">
+                                Last 5 Overs
+                            </div>
 
-                            <button class="production-btn">
-                                👁 Show
-                            </button>
+                            <div class="info-stat-value"
+                                 id="liveLast5Overs">
+                                -
+                            </div>
+                        </div>
 
-                            <button class="production-btn">
-                                🚫 Hide
-                            </button>
+                        <div class="info-stat">
+                            <div class="info-stat-label">
+                                Wickets In Hand
+                            </div>
 
-                            <button class="production-btn">
-                                🪟 Fullscreen
-                            </button>
+                            <div class="info-stat-value"
+                                 id="liveWicketsInHand">
+                                10
+                            </div>
+                        </div>
 
-                            <button class="production-btn">
-                                🏷 Lower Third
-                            </button>
+                        <div class="info-stat">
+                            <div class="info-stat-label">
+                                Powerplay
+                            </div>
 
+                            <div class="info-stat-value"
+                                 id="livePowerplayInfo">
+                                Yes
+                            </div>
                         </div>
 
                     </div>
-
-                    <!-- STREAM UTILITIES -->
-                    <div class="production-card">
-
-                        <h4>Stream Utilities</h4>
-
-                        <div class="production-grid">
-
-                            <button class="production-btn">
-                                📸 Screenshot
-                            </button>
-
-                            <button class="production-btn">
-                                🎬 Replay Mark
-                            </button>
-
-                            <button class="production-btn">
-                                ⭐ Highlight
-                            </button>
-
-                            <button class="production-btn">
-                                📤 Export
-                            </button>
-
-                        </div>
-
-                    </div>
-
                 </div>
             </div>
         </div>
