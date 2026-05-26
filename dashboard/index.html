@@ -544,6 +544,97 @@
             .overBall.extra {
                 background: linear-gradient( 145deg, #7c3aed, #8b5cf6 );
             }
+
+
+        /* =========================================
+   MATCH SETUP REDESIGN
+========================================= */
+
+        .setup-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .setup-card {
+            background: linear-gradient( 180deg, rgba(30,41,59,.96), rgba(15,23,42,.96) );
+            border: 1px solid rgba(255,255,255,.05);
+            border-radius: 22px;
+            padding: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.28);
+        }
+
+            .setup-card h4 {
+                margin-top: 0;
+                margin-bottom: 16px;
+                color: white;
+                font-size: 20px;
+                font-weight: 800;
+            }
+
+            .setup-card label {
+                display: block;
+                margin-bottom: 6px;
+                margin-top: 14px;
+                font-size: 13px;
+                font-weight: 700;
+                color: #cbd5e1;
+            }
+
+            .setup-card input,
+            .setup-card select,
+            .setup-card textarea {
+                width: 100%;
+                background: rgba(255,255,255,.04);
+                border: 1px solid rgba(255,255,255,.06);
+                border-radius: 14px;
+                padding: 12px;
+                color: white;
+                font-size: 14px;
+                box-sizing: border-box;
+            }
+
+            .setup-card textarea {
+                min-height: 220px;
+                resize: vertical;
+            }
+
+        .setup-bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 18px;
+        }
+
+        .setup-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+            .setup-actions button {
+                flex: 1;
+                min-width: 180px;
+                padding: 14px;
+                border-radius: 16px;
+                font-size: 15px;
+                font-weight: 800;
+            }
+
+        .match-start-btn {
+            background: linear-gradient( 145deg, #16a34a, #15803d ) !important;
+            box-shadow: 0 0 20px rgba(22,163,74,.28);
+        }
+
+        @media (max-width: 1100px) {
+
+            .setup-grid,
+            .setup-bottom-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -604,59 +695,145 @@
         </div>
         <!-- MATCH SETUP -->
         <div id="match" class="tab active">
-            <h3>Match Setup</h3>
-            Team A<input id="teamA">
-            Team A Logo URL<input id="teamALogo" placeholder="https://example.com/logo.png">
-            Team A Players
-            <textarea id="teamAPlayers"></textarea>
-            Team B<input id="teamB">
-            Team B Logo URL<input id="teamBLogo" placeholder="https://example.com/logo.png">
-            Team B Players
-            <textarea id="teamBPlayers"></textarea>
-            Batting Team<select id="batting"></select>
-            Innings
-            <select id="innings">
-                <option value="1">1st Innings</option>
-                <option value="2">2nd Innings</option>
-            </select>
-            Total Overs<input id="maxOvers" value="50">
-            Target (2nd Innings Only)<input id="target" placeholder="e.g. 250">
-            <h4>Saved Matches</h4>
-            <select id="matchList"></select>
-            <button onclick="loadMatchFromCloud()">Load Match</button>
-            <button onclick="deleteMatch()">Delete Match</button>
-            <hr>
-            <button onclick="
-               sendEvent('match',{
-               teamA:teamA.value,
-               teamB:teamB.value,
-               teamALogo:teamALogo.value,
-               teamBLogo:teamBLogo.value,
-               teamAColor:'#2563eb',
-               teamBColor:'#dc2626',
-               batting:batting.value,
-               innings:innings.value,
-               teamAPlayers:teamAPlayers.value.split('\n'),
-               teamBPlayers:teamBPlayers.value.split('\n')
-               });
-               sendEvent('manualScore',{
-               score:'0/0',
-               overs:'0.0',
-               runRate:'0.00',
-               bat1:'',
-               bat1Score:'0 (0)',
-               bat2:'',
-               bat2Score:'0 (0)',
-               bowlerName:'',
-               bowlerStats:'',
-               thisOver:'',
-               runsPerOver:[]
-               });
-               updateLiveDisplay();
-               ">
-                Update Match
-            </button>
-            <button onclick="saveMatchToCloud()">💾 Save Match</button>
+                   <h3>🏏 Match Setup</h3>
+
+            <div class="setup-grid">
+
+                <!-- TEAM A -->
+                <div class="setup-card">
+
+                    <h4>Team A</h4>
+
+                    <label>Team Name</label>
+                    <input id="teamA">
+
+                    <label>Team Logo URL</label>
+                    <input id="teamALogo"
+                        placeholder="https://example.com/logo.png">
+
+                    <label>Players</label>
+                    <textarea id="teamAPlayers"></textarea>
+
+                </div>
+
+                <!-- TEAM B -->
+                <div class="setup-card">
+
+                    <h4>Team B</h4>
+
+                    <label>Team Name</label>
+                    <input id="teamB">
+
+                    <label>Team Logo URL</label>
+                    <input id="teamBLogo"
+                        placeholder="https://example.com/logo.png">
+
+                    <label>Players</label>
+                    <textarea id="teamBPlayers"></textarea>
+
+                </div>
+
+            </div>
+
+            <div class="setup-bottom-grid">
+
+                <!-- MATCH SETTINGS -->
+                <div class="setup-card">
+
+                    <h4>Match Settings</h4>
+
+                    <label>Batting Team</label>
+                    <select id="batting"></select>
+
+                    <label>Innings</label>
+                    <select id="innings">
+                        <option value="1">1st Innings</option>
+                        <option value="2">2nd Innings</option>
+                    </select>
+
+                    <label>Total Overs</label>
+                    <input id="maxOvers" value="50">
+
+                    <label>Target (2nd Innings Only)</label>
+                    <input id="target"
+                        placeholder="e.g. 250">
+
+                </div>
+
+                <!-- SAVED MATCHES -->
+                <div class="setup-card">
+
+                    <h4>Saved Matches</h4>
+
+                    <label>Cloud Saves</label>
+
+                    <select id="matchList"></select>
+
+                    <div class="setup-actions">
+
+                        <button onclick="loadMatchFromCloud()">
+                            🔄 Load Match
+                        </button>
+
+                        <button onclick="deleteMatch()">
+                            🗑️ Delete Match
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="setup-card" style="margin-top:18px;">
+
+                <h4>Production Controls</h4>
+
+                <div class="setup-actions">
+
+                    <button class="match-start-btn"
+                        onclick="
+                           sendEvent('match',{
+                           teamA:teamA.value,
+                           teamB:teamB.value,
+                           teamALogo:teamALogo.value,
+                           teamBLogo:teamBLogo.value,
+                           teamAColor:'#2563eb',
+                           teamBColor:'#dc2626',
+                           batting:batting.value,
+                           innings:innings.value,
+                           teamAPlayers:teamAPlayers.value.split('\n'),
+                           teamBPlayers:teamBPlayers.value.split('\n')
+                           });
+                           sendEvent('manualScore',{
+                           score:'0/0',
+                           overs:'0.0',
+                           runRate:'0.00',
+                           bat1:'',
+                           bat1Score:'0 (0)',
+                           bat2:'',
+                           bat2Score:'0 (0)',
+                           bowlerName:'',
+                           bowlerStats:'',
+                           thisOver:'',
+                           runsPerOver:[]
+                           });
+                           updateLiveDisplay();
+                        ">
+                        ▶ Start Match
+                    </button>
+
+                    <button onclick="saveMatch()">
+                        💾 Save Match
+                    </button>
+
+                    <button onclick="showScorecard()">
+                        📄 Show Scorecard
+                    </button>
+
+                </div>
+
+            </div>
         </div>
         <div id="lineups" class="tab">
             <h3>Select Teams</h3>
