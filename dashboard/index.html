@@ -651,8 +651,8 @@
 
         .live-layout {
             display: grid;
-            grid-template-columns: 290px minmax(540px, 1fr) 250px;
-            gap: 18px;
+            grid-template-columns: minmax(760px, 1fr) 250px;
+            gap: 14px;
             align-items: start;
         }
 
@@ -723,11 +723,7 @@
         @media (max-width: 1280px) {
 
             .live-layout {
-                grid-template-columns: 320px 1fr;
-            }
-
-            .live-column-right {
-                grid-column: span 2;
+                grid-template-columns: 1fr 240px;
             }
         }
 
@@ -1126,33 +1122,43 @@
 
                     </div>
 
-                </div>
+                    <div style="
+                        display:flex;
+                        gap:8px;
+                        align-items:center;
+                        margin-left:8px;
+                    ">
 
+                        <button id="basicTabBtn"
+                                onclick="showLiveSubTab('basic')"
+                                style="
+                                    width:110px;
+                                    height:54px;
+                                    font-size:14px;
+                                    font-weight:700;
+                                    border-radius:14px;
+                                    margin-top:0;
+                                ">
+                            Basic
+                        </button>
+
+                        <button id="advancedTabBtn"
+                                onclick="showLiveSubTab('advanced')"
+                                style="
+                                    width:110px;
+                                    height:54px;
+                                    font-size:14px;
+                                    font-weight:700;
+                                    border-radius:14px;
+                                    margin-top:0;
+                                ">
+                            Advanced
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div class="live-layout">
-                <div style="display:flex;gap:8px;margin-bottom:6px;margin-top:-18px;">
-                    <button id="basicTabBtn"
-                            onclick="showLiveSubTab('basic')"
-                            style="
-                        height:44px;
-                        font-size:14px;
-                        font-weight:700;
-                        border-radius:12px;
-                    ">
-                        Basic
-                    </button>
-                    <button id="advancedTabBtn"
-                            onclick="showLiveSubTab('advanced')"
-                            style="
-                            height:44px;
-                            font-size:14px;
-                            font-weight:700;
-                            border-radius:12px;
-                        ">
-                        Advanced
-                    </button>
-                </div>
                 <!-- BASIC TAB -->
                 <div id="basicLiveTab">
                     <div class="live-grid">
@@ -1829,11 +1835,11 @@
 
                         <div class="info-stat">
                             <div class="info-stat-label">
-                                Last 5 Overs
+                                Current Over
                             </div>
 
                             <div class="info-stat-value"
-                                 id="liveLast5Overs">
+                                 id="liveCurrentOverSummary">
                                 -
                             </div>
                         </div>
@@ -3387,6 +3393,67 @@
                     ? `Yes (${powerplayOvers})`
                     : "No";
 
+            /* =========================================
+CURRENT OVER SUMMARY
+========================================= */
+
+            let overRuns = 0;
+            let overBalls = 0;
+
+            const currentOverIdValue =
+                currentOverId;
+
+            const currentOverHistory =
+                liveHistory.filter(
+                    b => b.overId === currentOverIdValue
+                );
+
+            currentOverHistory.forEach(ball => {
+
+                // RUNS
+                overRuns +=
+                    parseInt(ball.runs || 0);
+
+                // LEGAL BALLS
+                if (
+                    ball.type === "run" ||
+                    ball.type === "wicket" ||
+                    (
+                        ball.type === "extra" &&
+                        (
+                            ball.extra === "bye" ||
+                            ball.extra === "legbye"
+                        )
+                    )
+                ) {
+
+                    overBalls++;
+                }
+
+            });
+
+            const currentBowler =
+                document.getElementById(
+                    'bowler'
+                ).value || "-";
+
+            document.getElementById(
+                'liveCurrentOverSummary'
+            ).innerHTML =
+                `
+            <div style="font-size:14px">
+                ${currentBowler}
+            </div>
+
+            <div style="
+                font-size:12px;
+                color:#94a3b8;
+                margin-top:4px;
+            ">
+                ${overBalls}/6 balls • ${overRuns} runs
+            </div>
+            `;
+
         }
         /* ============= Render Bowler Stats ================= */
         function renderBowlerStats() {
@@ -3402,15 +3469,15 @@
                 const currentBowler = document.getElementById('bowler')?.value;
 
                 body.innerHTML += `
-                                       <tr class="${name === currentBowler ? 'bowler-row' : ''}">
-                                         <td>${name}</td>
-                                         <td>${overs}</td>
-                                         <td>${calculateMaidens(name)}</td>
-                                         <td>${stats.runs}</td>
-                                         <td>${stats.wickets}</td>
-                                         <td>${economy}</td>
-                                       </tr>
-                                     `;
+                                               <tr class="${name === currentBowler ? 'bowler-row' : ''}">
+                                                 <td>${name}</td>
+                                                 <td>${overs}</td>
+                                                 <td>${calculateMaidens(name)}</td>
+                                                 <td>${stats.runs}</td>
+                                                 <td>${stats.wickets}</td>
+                                                 <td>${economy}</td>
+                                               </tr>
+                                             `;
             });
         }
 
@@ -3899,20 +3966,20 @@
                     ((stats.runs / stats.balls) * 100).toFixed(1) :
                     "0.0";
                 body.innerHTML += `
-                                       <tr class="${name === striker ? 'striker-row' : ''}">
-                                         <td>${name}</td>
-                                         <td>${stats.runs}</td>
-                                         <td>${stats.balls}</td>
-                                         <td>${stats.fours}</td>
-                                         <td>${stats.sixes}</td>
-                                         <td>${strikeRate}</td>
-                                         <td>
-                                           ${stats.out
+                                               <tr class="${name === striker ? 'striker-row' : ''}">
+                                                 <td>${name}</td>
+                                                 <td>${stats.runs}</td>
+                                                 <td>${stats.balls}</td>
+                                                 <td>${stats.fours}</td>
+                                                 <td>${stats.sixes}</td>
+                                                 <td>${strikeRate}</td>
+                                                 <td>
+                                                   ${stats.out
                         ? stats.dismissal + " b " + stats.bowler
                         : "Not Out"}
-                                         </td>
-                                       </tr>
-                                       `;
+                                                 </td>
+                                               </tr>
+                                               `;
             });
         }
         /* ============ Render Extras Breakdown ============== */
@@ -3920,17 +3987,17 @@
             const body = document.getElementById('extrasBreakdownBody');
             if (!body) return;
             body.innerHTML = `
-                                       <tr><td>Wides</td><td>${extrasStats.wide}</td></tr>
-                                       <tr><td>No Balls</td><td>${extrasStats.noball}</td></tr>
-                                       <tr><td>Byes</td><td>${extrasStats.bye}</td></tr>
-                                       <tr><td>Leg Byes</td><td>${extrasStats.legbye}</td></tr>
-                                       <tr><td><strong>Total</strong></td>
-                                           <td><strong>${extrasStats.wide +
+                                               <tr><td>Wides</td><td>${extrasStats.wide}</td></tr>
+                                               <tr><td>No Balls</td><td>${extrasStats.noball}</td></tr>
+                                               <tr><td>Byes</td><td>${extrasStats.bye}</td></tr>
+                                               <tr><td>Leg Byes</td><td>${extrasStats.legbye}</td></tr>
+                                               <tr><td><strong>Total</strong></td>
+                                                   <td><strong>${extrasStats.wide +
                 extrasStats.noball +
                 extrasStats.bye +
                 extrasStats.legbye
                 }</strong></td></tr>
-                                     `;
+                                             `;
         }
         /* =========== Render Fall Of Wickets ============= */
         function renderFallOfWickets() {
@@ -3952,12 +4019,12 @@
 
                     const over = Math.floor(balls / 6) + "." + (balls % 6);
                     body.innerHTML += `
-                                    <tr>
-                                    <td>${ball.scoreAtWicket}/${ball.wicketNumber}</td>
-                                    <td>${ball.striker}</td>
-                                    <td>${over}</td>
-                                    </tr>
-                                    `;
+                                            <tr>
+                                            <td>${ball.scoreAtWicket}/${ball.wicketNumber}</td>
+                                            <td>${ball.striker}</td>
+                                            <td>${over}</td>
+                                            </tr>
+                                            `;
                 }
             });
         }
@@ -4673,9 +4740,9 @@
             const over =
                 Math.floor((ballIndex + 1) / 6) + "." + ((ballIndex + 1) % 6);
             panel.innerHTML = `
-                                     <strong>${batsman}</strong> ${stats.runs} (${stats.balls})<br>
-                                     ${liveTotal}/${liveWickets}  ${over} ov
-                                     `;
+                                             <strong>${batsman}</strong> ${stats.runs} (${stats.balls})<br>
+                                             ${liveTotal}/${liveWickets}  ${over} ov
+                                             `;
         }
         /* ========== Trigger Moment ============= */
         function triggerMoment(type) {
@@ -4911,21 +4978,21 @@
                 }
 
                 html += `
-                                    <div class="player-card"
-                                         onclick="togglePlayerCard(this)">
+                                            <div class="player-card"
+                                                 onclick="togglePlayerCard(this)">
 
-                                        <input type="checkbox"
-                                               class="${team === 'A' ? 'teamAXI' : 'teamBXI'}"
-                                               value="${cleanName}"
-                                               data-img="${cleanImg}"
-                                               style="display:none">
+                                                <input type="checkbox"
+                                                       class="${team === 'A' ? 'teamAXI' : 'teamBXI'}"
+                                                       value="${cleanName}"
+                                                       data-img="${cleanImg}"
+                                                       style="display:none">
 
-                                        <img src="${cleanImg || ''}"
-                                             onerror="this.style.display='none'">
+                                                <img src="${cleanImg || ''}"
+                                                     onerror="this.style.display='none'">
 
-                                        <div class="player-card-name">${cleanName}</div>
-                                    </div>
-                                `;
+                                                <div class="player-card-name">${cleanName}</div>
+                                            </div>
+                                        `;
             });
 
             html += `</div>`;
