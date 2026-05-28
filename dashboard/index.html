@@ -870,18 +870,21 @@
             height: 46px;
             background: #374151;
         }
+
         .sponsor-layout {
             display: grid;
             grid-template-columns: 1.5fr 1fr;
             gap: 20px;
             align-items: start;
         }
+
         .sponsor-panel-card {
             background: rgba(255,255,255,.03);
             border: 1px solid rgba(255,255,255,.06);
             border-radius: 18px;
             padding: 16px;
         }
+
         .duration-row {
             display: grid;
             grid-template-columns: auto 90px;
@@ -912,6 +915,7 @@
             .sponsor-input-grid input {
                 margin-bottom: 0;
             }
+
         .small-input {
             width: 140px !important;
             display: block;
@@ -1975,7 +1979,7 @@
                 </div>
             </div>
         </div>
-     
+
         <div id="broadcast" class="tab">
             <h3>Broadcast Graphics</h3>
             <h4 style="margin-top:10px">Scene Mode</h4>
@@ -2050,6 +2054,7 @@
         let isRestoring = false;
         let allowMidOverChange = false;
         let isLoadingFromFirebase = false;
+        let sponsorLocked = true;
 
         const appState = {
             score: "0/0",
@@ -2434,6 +2439,40 @@
                 'sponsorsModal'
             ).style.display = 'none';
         }
+
+        function toggleSponsorLock() {
+            sponsorLocked = !sponsorLocked;
+            const modal =
+                document.querySelector(
+                    '#sponsorsModal .modal-box'
+                );
+            const inputs =
+                modal.querySelectorAll(
+                    '#adDuration, [id^="preset"]'
+                );
+            inputs.forEach(input => {
+                input.disabled = sponsorLocked;
+            });
+            const saveBtn =
+                modal.querySelector(
+                    'button[onclick="saveSponsorPresets()"]'
+                );
+            if (saveBtn) {
+                saveBtn.disabled = sponsorLocked;
+            }
+            const btn =
+                document.getElementById(
+                    'sponsorLockBtn'
+                );
+            if (sponsorLocked) {
+                btn.innerHTML = '🔒 Locked';
+                btn.style.background = '#374151';
+            } else {
+                btn.innerHTML = '🔓 Unlocked';
+                btn.style.background = '#b45309';
+            }
+        }
+
 
         function updateBattingTeams() {
             const teamA = document.getElementById('teamA');
@@ -3538,18 +3577,18 @@ CURRENT OVER SUMMARY
                 'liveCurrentOverSummary'
             ).innerHTML =
                 `
-                            <div style="font-size:14px">
-                                ${currentBowler}
-                            </div>
+                                <div style="font-size:14px">
+                                    ${currentBowler}
+                                </div>
 
-                            <div style="
-                                font-size:12px;
-                                color:#94a3b8;
-                                margin-top:4px;
-                            ">
-                                ${overBalls}/6 balls • ${overRuns} runs
-                            </div>
-                            `;
+                                <div style="
+                                    font-size:12px;
+                                    color:#94a3b8;
+                                    margin-top:4px;
+                                ">
+                                    ${overBalls}/6 balls • ${overRuns} runs
+                                </div>
+                                `;
 
         }
         /* ============= Render Bowler Stats ================= */
@@ -3566,15 +3605,15 @@ CURRENT OVER SUMMARY
                 const currentBowler = document.getElementById('bowler')?.value;
 
                 body.innerHTML += `
-                                                               <tr class="${name === currentBowler ? 'bowler-row' : ''}">
-                                                                 <td>${name}</td>
-                                                                 <td>${overs}</td>
-                                                                 <td>${calculateMaidens(name)}</td>
-                                                                 <td>${stats.runs}</td>
-                                                                 <td>${stats.wickets}</td>
-                                                                 <td>${economy}</td>
-                                                               </tr>
-                                                             `;
+                                                                   <tr class="${name === currentBowler ? 'bowler-row' : ''}">
+                                                                     <td>${name}</td>
+                                                                     <td>${overs}</td>
+                                                                     <td>${calculateMaidens(name)}</td>
+                                                                     <td>${stats.runs}</td>
+                                                                     <td>${stats.wickets}</td>
+                                                                     <td>${economy}</td>
+                                                                   </tr>
+                                                                 `;
             });
         }
 
@@ -4063,20 +4102,20 @@ CURRENT OVER SUMMARY
                     ((stats.runs / stats.balls) * 100).toFixed(1) :
                     "0.0";
                 body.innerHTML += `
-                                                               <tr class="${name === striker ? 'striker-row' : ''}">
-                                                                 <td>${name}</td>
-                                                                 <td>${stats.runs}</td>
-                                                                 <td>${stats.balls}</td>
-                                                                 <td>${stats.fours}</td>
-                                                                 <td>${stats.sixes}</td>
-                                                                 <td>${strikeRate}</td>
-                                                                 <td>
-                                                                   ${stats.out
+                                                                   <tr class="${name === striker ? 'striker-row' : ''}">
+                                                                     <td>${name}</td>
+                                                                     <td>${stats.runs}</td>
+                                                                     <td>${stats.balls}</td>
+                                                                     <td>${stats.fours}</td>
+                                                                     <td>${stats.sixes}</td>
+                                                                     <td>${strikeRate}</td>
+                                                                     <td>
+                                                                       ${stats.out
                         ? stats.dismissal + " b " + stats.bowler
                         : "Not Out"}
-                                                                 </td>
-                                                               </tr>
-                                                               `;
+                                                                     </td>
+                                                                   </tr>
+                                                                   `;
             });
         }
         /* ============ Render Extras Breakdown ============== */
@@ -4084,17 +4123,17 @@ CURRENT OVER SUMMARY
             const body = document.getElementById('extrasBreakdownBody');
             if (!body) return;
             body.innerHTML = `
-                                                               <tr><td>Wides</td><td>${extrasStats.wide}</td></tr>
-                                                               <tr><td>No Balls</td><td>${extrasStats.noball}</td></tr>
-                                                               <tr><td>Byes</td><td>${extrasStats.bye}</td></tr>
-                                                               <tr><td>Leg Byes</td><td>${extrasStats.legbye}</td></tr>
-                                                               <tr><td><strong>Total</strong></td>
-                                                                   <td><strong>${extrasStats.wide +
+                                                                   <tr><td>Wides</td><td>${extrasStats.wide}</td></tr>
+                                                                   <tr><td>No Balls</td><td>${extrasStats.noball}</td></tr>
+                                                                   <tr><td>Byes</td><td>${extrasStats.bye}</td></tr>
+                                                                   <tr><td>Leg Byes</td><td>${extrasStats.legbye}</td></tr>
+                                                                   <tr><td><strong>Total</strong></td>
+                                                                       <td><strong>${extrasStats.wide +
                 extrasStats.noball +
                 extrasStats.bye +
                 extrasStats.legbye
                 }</strong></td></tr>
-                                                             `;
+                                                                 `;
         }
         /* =========== Render Fall Of Wickets ============= */
         function renderFallOfWickets() {
@@ -4116,12 +4155,12 @@ CURRENT OVER SUMMARY
 
                     const over = Math.floor(balls / 6) + "." + (balls % 6);
                     body.innerHTML += `
-                                                            <tr>
-                                                            <td>${ball.scoreAtWicket}/${ball.wicketNumber}</td>
-                                                            <td>${ball.striker}</td>
-                                                            <td>${over}</td>
-                                                            </tr>
-                                                            `;
+                                                                <tr>
+                                                                <td>${ball.scoreAtWicket}/${ball.wicketNumber}</td>
+                                                                <td>${ball.striker}</td>
+                                                                <td>${over}</td>
+                                                                </tr>
+                                                                `;
                 }
             });
         }
@@ -4837,9 +4876,9 @@ CURRENT OVER SUMMARY
             const over =
                 Math.floor((ballIndex + 1) / 6) + "." + ((ballIndex + 1) % 6);
             panel.innerHTML = `
-                                                             <strong>${batsman}</strong> ${stats.runs} (${stats.balls})<br>
-                                                             ${liveTotal}/${liveWickets}  ${over} ov
-                                                             `;
+                                                                 <strong>${batsman}</strong> ${stats.runs} (${stats.balls})<br>
+                                                                 ${liveTotal}/${liveWickets}  ${over} ov
+                                                                 `;
         }
         /* ========== Trigger Moment ============= */
         function triggerMoment(type) {
@@ -5075,21 +5114,21 @@ CURRENT OVER SUMMARY
                 }
 
                 html += `
-                                                            <div class="player-card"
-                                                                 onclick="togglePlayerCard(this)">
+                                                                <div class="player-card"
+                                                                     onclick="togglePlayerCard(this)">
 
-                                                                <input type="checkbox"
-                                                                       class="${team === 'A' ? 'teamAXI' : 'teamBXI'}"
-                                                                       value="${cleanName}"
-                                                                       data-img="${cleanImg}"
-                                                                       style="display:none">
+                                                                    <input type="checkbox"
+                                                                           class="${team === 'A' ? 'teamAXI' : 'teamBXI'}"
+                                                                           value="${cleanName}"
+                                                                           data-img="${cleanImg}"
+                                                                           style="display:none">
 
-                                                                <img src="${cleanImg || ''}"
-                                                                     onerror="this.style.display='none'">
+                                                                    <img src="${cleanImg || ''}"
+                                                                         onerror="this.style.display='none'">
 
-                                                                <div class="player-card-name">${cleanName}</div>
-                                                            </div>
-                                                        `;
+                                                                    <div class="player-card-name">${cleanName}</div>
+                                                                </div>
+                                                            `;
             });
 
             html += `</div>`;
@@ -5240,6 +5279,9 @@ CURRENT OVER SUMMARY
 
                 lastSavedSponsorsHash = currentHash;
                 showModal("Sponsor presets saved");
+                if (!sponsorLocked) {
+                    toggleSponsorLock();
+                }
                 console.log("✅ Sponsors saved successfully");
 
             } catch (err) {
@@ -6404,14 +6446,35 @@ CURRENT OVER SUMMARY
             <div class="sponsor-layout">
                 <!-- LEFT SIDE -->
                 <div class="sponsor-panel-card">
-                    <h4 style="margin-top:0">
-                        Settings
-                    </h4>
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:center;
+                        margin-bottom:10px;
+                    ">
+                        <h4 style="margin:0">
+                            Settings
+                        </h4>
+                        <button id="sponsorLockBtn"
+                                onclick="toggleSponsorLock()"
+                                style="
+                                width:auto;
+                                margin:0;
+                                padding:6px 12px;
+                                border-radius:10px;
+                                background:#374151;
+                                font-size:12px;
+                                font-weight:700;
+                            ">
+                            🔒 Locked
+                        </button>
+                    </div>
+
                     <div class="duration-row">
                         <label>
                             Ad Duration (seconds)
                         </label>
-                        <input id="adDuration"
+                        <input id="adDuration" disabled
                                value="8">
                     </div>
 
@@ -6419,28 +6482,28 @@ CURRENT OVER SUMMARY
                         Sponsor Presets
                     </h4>
                     <div class="sponsor-input-grid">
-                        <input id="preset1"
+                        <input id="preset1"  disabled
                                placeholder="Sponsor 1 URL">
-                        <input id="preset2"
+                        <input id="preset2"  disabled
                                placeholder="Sponsor 2 URL">
-                        <input id="preset3"
+                        <input id="preset3"  disabled
                                placeholder="Sponsor 3 URL">
-                        <input id="preset4"
+                        <input id="preset4"  disabled
                                placeholder="Sponsor 4 URL">
-                        <input id="preset5"
+                        <input id="preset5"  disabled
                                placeholder="Sponsor 5 URL">
-                        <input id="preset6"
+                        <input id="preset6"  disabled
                                placeholder="Sponsor 6 URL">
-                        <input id="preset7"
+                        <input id="preset7"  disabled
                                placeholder="Sponsor 7 URL">
-                        <input id="preset8"
+                        <input id="preset8"  disabled
                                placeholder="Sponsor 8 URL">
-                        <input id="preset9"
+                        <input id="preset9"  disabled
                                placeholder="Sponsor 9 URL">
-                        <input id="preset10"
+                        <input id="preset10"  disabled
                                placeholder="Sponsor 10 URL">
                     </div>
-                    <button onclick="saveSponsorPresets()"
+                    <button onclick="saveSponsorPresets()"  disabled
                             style="margin-top:14px;width:100%;">
                         💾 Save Presets
                     </button>
