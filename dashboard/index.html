@@ -5237,12 +5237,18 @@ CURRENT OVER SUMMARY
             }
 
             // Build data
+            const modal = document.getElementById("sponsorsModal");
             const presets = {};
+
             for (let i = 1; i <= 10; i++) {
-                presets[`preset${i}`] = document.getElementById(`preset${i}`)?.value || "";
+                presets[`preset${i}`] =
+                    modal.querySelector(`#preset${i}`)?.value || "";
             }
 
-            const duration = parseInt(document.getElementById("adDuration")?.value || 8);
+            const duration =
+                parseInt(
+                    modal.querySelector("#adDuration")?.value || 8
+                );
 
             const payload = { presets, duration };
 
