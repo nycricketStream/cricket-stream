@@ -1975,40 +1975,7 @@
                 </div>
             </div>
         </div>
-        <!-- LIVE SCORING END -->
-        <div id="sponsors" class="tab">
-            <h3>Sponsor Presets</h3>
-            <div class="duration-row">
-                <label>Ad Duration (seconds)</label>
-                <input id="adDuration"
-                       value="8">
-            </div>
-
-            <input id="preset1" placeholder="Sponsor 1 Image URL">
-            <input id="preset2" placeholder="Sponsor 2 Image URL">
-            <input id="preset3" placeholder="Sponsor 3 Image URL">
-            <input id="preset4" placeholder="Sponsor 4 Image URL">
-            <input id="preset5" placeholder="Sponsor 5 Image URL">
-            <input id="preset6" placeholder="Sponsor 6 Image URL">
-            <input id="preset7" placeholder="Sponsor 7 Image URL">
-            <input id="preset8" placeholder="Sponsor 8 Image URL">
-            <input id="preset9" placeholder="Sponsor 9 Image URL">
-            <input id="preset10" placeholder="Sponsor 10 Image URL">
-            <button onclick="saveSponsorPresets()">Save Presets</button>
-            <hr style="margin:15px 0;border-color:#1f2937">
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
-                <button onclick="triggerPreset(1)">Sponsor 1</button>
-                <button onclick="triggerPreset(2)">Sponsor 2</button>
-                <button onclick="triggerPreset(3)">Sponsor 3</button>
-                <button onclick="triggerPreset(4)">Sponsor 4</button>
-                <button onclick="triggerPreset(5)">Sponsor 5</button>
-                <button onclick="triggerPreset(6)">Sponsor 6</button>
-                <button onclick="triggerPreset(7)">Sponsor 7</button>
-                <button onclick="triggerPreset(8)">Sponsor 8</button>
-                <button onclick="triggerPreset(9)">Sponsor 9</button>
-                <button onclick="triggerPreset(10)">Sponsor 10</button>
-            </div>
-        </div>
+     
         <div id="broadcast" class="tab">
             <h3>Broadcast Graphics</h3>
             <h4 style="margin-top:10px">Scene Mode</h4>
@@ -5237,17 +5204,18 @@ CURRENT OVER SUMMARY
             }
 
             // Build data
-            const modal = document.getElementById("sponsorsModal");
+            const modal =
+                document.querySelector(
+                    '#sponsorsModal .modal-box'
+                );
             const presets = {};
-
             for (let i = 1; i <= 10; i++) {
                 presets[`preset${i}`] =
                     modal.querySelector(`#preset${i}`)?.value || "";
             }
-
             const duration =
                 parseInt(
-                    modal.querySelector("#adDuration")?.value || 8
+                    modal.querySelector('#adDuration')?.value || 8
                 );
 
             const payload = { presets, duration };
@@ -5286,21 +5254,28 @@ CURRENT OVER SUMMARY
 
         /* ========= Trigger Preset =====================*/
         function triggerPreset(index) {
-            const duration = parseInt(document.getElementById('adDuration')?.value || 8)
-            const input = document.getElementById(`preset${index}`);
+            const modal =
+                document.querySelector(
+                    '#sponsorsModal .modal-box'
+                );
+            const duration = parseInt(
+                modal.querySelector('#adDuration')?.value || 8
+            );
+            const input =
+                modal.querySelector(`#preset${index}`);
             if (!input) return;
-
             const url = input.value.trim();
             if (!url) {
                 console.warn("No preset image for", index);
                 return;
             }
-
             sendEvent('fullscreenSponsor', {
                 image: url,
                 duration: duration * 1000
             });
+            console.log("✅ Sponsor triggered:", url);
         }
+
         /* ================ Load Sponsor Presets ============ */
         async function loadSponsorPresets() {
             try {
@@ -5313,10 +5288,14 @@ CURRENT OVER SUMMARY
                 if (!data) return;
 
                 // Populate inputs
-                const modal = document.getElementById("sponsorsModal");
+                const modal =
+                    document.querySelector(
+                        '#sponsorsModal .modal-box'
+                    );
                 for (let i = 1; i <= 10; i++) {
                     const val = data.presets?.[`preset${i}`] || "";
-                    const el = modal?.querySelector(`#preset${i}`);
+                    const el =
+                        modal.querySelector(`#preset${i}`);
                     if (el) {
                         el.value = val;
                     }
@@ -5324,7 +5303,8 @@ CURRENT OVER SUMMARY
                 const durationInput =
                     modal?.querySelector("#adDuration");
                 if (durationInput && data.duration) {
-                    durationInput.value = data.duration;
+                    modal.querySelector("#adDuration").value =
+                        data.duration;
                 }
 
 
