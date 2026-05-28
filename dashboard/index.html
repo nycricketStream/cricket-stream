@@ -5313,15 +5313,20 @@ CURRENT OVER SUMMARY
                 if (!data) return;
 
                 // Populate inputs
+                const modal = document.getElementById("sponsorsModal");
                 for (let i = 1; i <= 10; i++) {
                     const val = data.presets?.[`preset${i}`] || "";
-                    const el = document.getElementById(`preset${i}`);
-                    if (el) el.value = val;
+                    const el = modal?.querySelector(`#preset${i}`);
+                    if (el) {
+                        el.value = val;
+                    }
+                }
+                const durationInput =
+                    modal?.querySelector("#adDuration");
+                if (durationInput && data.duration) {
+                    durationInput.value = data.duration;
                 }
 
-                if (data.duration) {
-                    document.getElementById("adDuration").value = data.duration;
-                }
 
                 // Store hash so first save doesn't trigger unnecessary write
                 lastSavedSponsorsHash = JSON.stringify(data);
