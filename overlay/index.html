@@ -256,7 +256,7 @@
             transition: opacity .4s ease;
         }
 
-        #bowlerLowerThird {
+       #bowlerLowerThird {
             position: absolute;
             bottom: 240px;
             right: 60px;
@@ -265,17 +265,19 @@
             justify-content: center;
             gap: 14px;
             padding: 14px 18px;
-            width: fit-content;
-            max-width: 420px;
+            min-width: 420px;
+            max-width: 520px;
             background: linear-gradient(90deg,#020617 0%, #0f172a 60%, #111827 100%);
             border-radius: 6px;
             border-left: 5px solid #38bdf8;
-            box-shadow: 0 6px 20px rgba(0,0,0,.6), inset 0 0 12px rgba(255,255,255,0.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,.6),
+                        inset 0 0 12px rgba(255,255,255,0.05);
             opacity: 0;
             transform: translateX(120%);
             transition: all .5s cubic-bezier(.22,.9,.3,1);
             z-index: var(--z-overlay);
         }
+
 
         @keyframes bowlerIn {
             0% {
