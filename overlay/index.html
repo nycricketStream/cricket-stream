@@ -172,6 +172,15 @@
             line-height: 28px;
         }
 
+        .lt-team,
+        .lt-name,
+        #bowlerTeam,
+        #bowlerCardName {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .lt-role {
             font-size: 12px;
             font-weight: 700;
@@ -990,12 +999,24 @@
             bottom: 210px;
             left: 50%;
             transform: translate(-50%,40px);
+        
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        
+            gap: 10px;
+        
+            min-height: 170px;
+            padding: 20px 28px;
+        
             background: #020617;
             border-left: 6px solid #38bdf8;
-            padding: 14px 28px;
             border-radius: 6px;
+        
             color: white;
             text-align: center;
+        
             opacity: 0;
             transition: all .45s cubic-bezier(.22,.9,.3,1);
             z-index: 9500;
@@ -1010,16 +1031,19 @@
             font-size: 12px;
             letter-spacing: 2px;
             color: #cbd5f5;
+            line-height: 14px;
         }
 
         #partnershipRuns {
             font-size: 28px;
             font-weight: 700;
+            line-height: 32px;
         }
 
         #partnershipBalls {
             font-size: 16px;
             color: #e5e7eb;
+            line-height: 20px;
         }
 
         .fullscreen-sponsor {
