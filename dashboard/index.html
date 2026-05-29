@@ -2424,72 +2424,57 @@
             ).style.display = 'none';
         }
 
-        function openBrandingModal() {
-            const logoEl =
-                document.getElementById(
-                    'brandingLogoModal'
-                );
-            const sizeEl =
-                document.getElementById(
-                    'brandingSizeModal'
-                );
-            if (!logoEl || !sizeEl) {
+        async function openBrandingModal() {
+            try {
+                await loadBrandingSettings();
+            } catch (err) {
                 console.error(
-                    "Branding modal missing"
+                    'Failed to load branding',
+                    err
                 );
-                return;
-            }
-            const saved =
-                localStorage.getItem(
-                    'brandingSettings'
-                );
-            if (saved) {
-                const data =
-                    JSON.parse(saved);
-                logoEl.value = data.logo || "";
-                sizeEl.value = data.size || "40";
             }
             document.getElementById(
                 'brandingModal'
             ).style.display = 'flex';
         }
-
+        
         function closeBrandingModal() {
             document.getElementById(
                 'brandingModal'
             ).style.display = 'none';
         }
 
-        function loadBrandingSettings() {
-            const logoEl =
-                document.getElementById(
-                    'brandingLogoModal'
+       async function loadBrandingSettings() {
+            try {
+                const res =
+                    await fetch(
+                        '/api/branding'
+                    );
+                const data =
+                    await res.json();
+                const logoEl =
+                    document.getElementById(
+                        'brandingLogoModal'
+                    );
+                const sizeEl =
+                    document.getElementById(
+                        'brandingSizeModal'
+                    );
+                if (!logoEl || !sizeEl) return;
+                logoEl.value =
+                    data.logo || "";
+                sizeEl.value =
+                    data.size || "40";
+                updateBranding();
+            } catch (err) {
+                console.error(
+                    'Branding load failed',
+                    err
                 );
-            const sizeEl =
-                document.getElementById(
-                    'brandingSizeModal'
-                );
-            // ✅ Prevent crash
-            if (!logoEl || !sizeEl) {
-                console.warn(
-                    "Branding modal elements missing"
-                );
-                return;
             }
-            const saved =
-                localStorage.getItem(
-                    'brandingSettings'
-                );
-            if (!saved) return;
-            const data =
-                JSON.parse(saved);
-            logoEl.value = data.logo || "";
-            sizeEl.value = data.size || "40";
-            updateBranding();
         }
 
         loadBrandingSettings();
-
 
         function toggleSponsorLock() {
             sponsorLocked = !sponsorLocked;
@@ -6268,26 +6253,38 @@ CURRENT OVER SUMMARY
             updateBranding();
         }
 
-        function saveBrandingSettings() {
-            localStorage.setItem(
-                'brandingSettings',
-                JSON.stringify({
-                    logo:
-                        document.getElementById(
-                            'brandingLogoModal'
-                        ).value,
-                    size:
-                        document.getElementById(
-                            'brandingSizeModal'
-                        ).value
+        async function saveBrandingSettings() {
+        const logo =
+            document.getElementById(
+                'brandingLogoModal'
+            ).value;
+        const size =
+            document.getElementById(
+                'brandingSizeModal'
+            ).value;
+        try {
+            await fetch('/api/branding', {
+                method: 'POST',
+                headers: {
+                    'Content-Type':
+                        'application/json'
+                },
+                body: JSON.stringify({
+                    logo,
+                    size
                 })
-            );
-            // sync to Match Setup
+            });
             updateBranding();
             showModal(
                 'Branding saved'
             );
+        } catch (err) {
+            console.error(err);
+            showModal(
+                'Failed to save branding'
+            );
         }
+    }
 
     </script>
 
