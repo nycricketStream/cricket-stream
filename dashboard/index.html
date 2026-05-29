@@ -6116,7 +6116,7 @@ CURRENT OVER SUMMARY
                     team: batting.value,
                     score: `${liveTotal}/${liveWickets}`,
                     overs: `${Math.floor(liveBalls / 6)}.${liveBalls % 6}`,
-                    rr: getRunRate()
+                    rr: calculateRR()
                 });
                 const bowlerSelect =
                     document.getElementById('bowler');
