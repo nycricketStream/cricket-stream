@@ -2801,6 +2801,12 @@
             });
             document.getElementById('striker').addEventListener('change', function () {
                 const striker = this.value;
+
+                if (!striker) {
+                    console.log("EMPTY STRIKER - SKIPPING");
+                    return;
+                }
+                
                 console.log("STRIKER VALUE:", striker);
                 
                 if (!validateBatsman(striker)) {
@@ -3881,22 +3887,29 @@ CURRENT OVER SUMMARY
             modal.style.display = "flex";
         }
         /* ========= Confirm Next Batter ======== */
-        function confirmNextBatter() {
+       function confirmNextBatter() {
             const name =
                 document.getElementById("nextBatterName").innerText;
             battingOrder =
                 battingOrder.filter(p => p !== name);
-            const strikerEl =
-                document.getElementById("striker");
-            awaitingNewBatsman = true;
-            strikerEl.value = name;
-            strikerEl.dispatchEvent(
-                new Event("change", { bubbles: true })
-            );
+            document.getElementById("striker").value = name;
+            const img =
+                getPlayerImage(name) ||
+                playerImages[name] ||
+                "";
+            sendEvent('player', {
+                team: batting.value,
+                label: 'NEW BATSMAN',
+                name: name,
+                hand: '',
+                image: img
+            });
             document.getElementById(
                 "nextBatterPanel"
             ).style.display = "none";
+            updateLiveDisplay();
         }
+
 
         /* ============ Manual Select Batter ========== */
         function manualSelectBatter() {
