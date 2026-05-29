@@ -2347,7 +2347,12 @@
             if (event === "player") delay = 1500;
             if (event === "moment" && data?.type === "WICKET") delay = 1200;
 
-            if (delay && !canTriggerOverlay(delay)) return;
+            if (delay && !canTriggerOverlay(delay)) {
+                console.log("OVERLAY BLOCKED", event, data);
+                return;
+            }
+            
+            console.log("OVERLAY SENT", event, data);
 
             try {
                 const res = await fetch('/api/broadcast', {
