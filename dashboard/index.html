@@ -3890,6 +3890,8 @@ CURRENT OVER SUMMARY
        function confirmNextBatter() {
             const name =
                 document.getElementById("nextBatterName").innerText;
+           console.log("CONFIRM NEXT BATTER:", name);
+           
             battingOrder =
                 battingOrder.filter(p => p !== name);
             document.getElementById("striker").value = name;
@@ -3898,7 +3900,7 @@ CURRENT OVER SUMMARY
                 playerImages[name] ||
                 "";
             console.log("CONFIRM BATTER", name);
-           
+           console.log("SENDING NEW BATSMAN FROM POPUP:", name);
             sendEvent('player', {
                 team: batting.value,
                 label: 'NEW BATSMAN',
@@ -3906,6 +3908,7 @@ CURRENT OVER SUMMARY
                 hand: '',
                 image: img
             });
+           console.log("NEW BATSMAN SENT");
             document.getElementById(
                 "nextBatterPanel"
             ).style.display = "none";
