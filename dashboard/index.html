@@ -3858,15 +3858,18 @@ CURRENT OVER SUMMARY
                 btn.innerText = cleanName;
 
                 btn.onclick = () => {
-
-                    document.getElementById('striker').value = cleanName;
-
-                    awaitingNewBatsman = false;
+                    awaitingNewBatsman = true;
                     lockedOut = false;
 
+                    const strikerEl = document.getElementById('striker');
+                
+                    strikerEl.value = cleanName;
+                
                     modal.style.display = "none";
-
-                    updateLiveDisplay();
+                
+                    strikerEl.dispatchEvent(
+                        new Event('change', { bubbles: true })
+                    );
                 };
 
                 list.appendChild(btn);
