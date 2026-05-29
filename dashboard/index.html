@@ -2123,6 +2123,9 @@
                 teamB: document.getElementById('teamB')?.value || "",
                 teamALogo: document.getElementById('teamALogo')?.value || "",
                 teamBLogo: document.getElementById('teamBLogo')?.value || "",
+                innings: document.getElementById('innings')?.value || "1",
+                target: document.getElementById('target')?.value || "",
+                maxOvers: document.getElementById('maxOvers')?.value || "50",
                 teamAPlayers: document.getElementById('teamAPlayers')?.value.split('\n') || [],
                 teamBPlayers: document.getElementById('teamBPlayers')?.value.split('\n') || [],
                 battingTeam: document.getElementById('batting')?.value || "",
@@ -2246,7 +2249,9 @@
             document.getElementById('teamB').value = data.teamB || "";
             document.getElementById('teamALogo').value = data.teamALogo || "";
             document.getElementById('teamBLogo').value = data.teamBLogo || "";
-
+            document.getElementById('innings').value = data.innings || "1";
+            document.getElementById('target').value = data.target || "";
+            document.getElementById('maxOvers').value = data.maxOvers || "50";
             document.getElementById('teamAPlayers').value = (data.teamAPlayers || []).join('\n');
             document.getElementById('teamBPlayers').value = (data.teamBPlayers || []).join('\n');
 
