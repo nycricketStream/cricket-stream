@@ -264,20 +264,18 @@
             align-items: center;
             justify-content: center;
             gap: 14px;
-            padding: 14px 18px;
-            min-width: 420px;
-            max-width: 520px;
+            padding: 10px 18px 10px 12px;
+            width: fit-content;
+            max-width: 420px;
             background: linear-gradient(90deg,#020617 0%, #0f172a 60%, #111827 100%);
             border-radius: 6px;
             border-left: 5px solid #38bdf8;
-            box-shadow: 0 6px 20px rgba(0,0,0,.6),
-                        inset 0 0 12px rgba(255,255,255,0.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,.6), inset 0 0 12px rgba(255,255,255,0.05);
             opacity: 0;
             transform: translateX(120%);
             transition: all .5s cubic-bezier(.22,.9,.3,1);
             z-index: var(--z-overlay);
         }
-
 
         @keyframes bowlerIn {
             0% {
@@ -299,9 +297,10 @@
         .bowler-content {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap:15px;
             align-items: center;
             text-align: center;
+            min-width: 280px;
         }
 
         #bowlerTeam {
