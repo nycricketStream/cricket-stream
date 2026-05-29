@@ -3750,6 +3750,11 @@ CURRENT OVER SUMMARY
             }
 
             if (r % 2 === 1) {
+                console.log(
+                    "ROTATE STRIKE",
+                    "striker=", document.getElementById('striker').value,
+                    "nonStriker=", document.getElementById('nonStriker').value
+                );
                 rotateStrike();
             }
 
@@ -3763,6 +3768,11 @@ CURRENT OVER SUMMARY
                     lockedOut = true;
                 }
                 // rotate strike at end of over
+                console.log(
+                    "ROTATE STRIKE",
+                    "striker=", document.getElementById('striker').value,
+                    "nonStriker=", document.getElementById('nonStriker').value
+                );
                 rotateStrike();
 
                 lastOverBowler = currentBowler;
@@ -4007,12 +4017,24 @@ CURRENT OVER SUMMARY
 
             if (type === "noball") {
                 const runsOffBat = runs - 1;
-                if (runsOffBat % 2 === 1) rotateStrike();
+                if (runsOffBat % 2 === 1){
+                    console.log(
+                        "ROTATE STRIKE",
+                        "striker=", document.getElementById('striker').value,
+                        "nonStriker=", document.getElementById('nonStriker').value
+                    );
+                    rotateStrike();
+                }
             }
 
             if (type === "wide") {
                 const runsRun = runs - 1; // subtract the automatic wide
                 if (runsRun % 2 === 1) {
+                    console.log(
+                        "ROTATE STRIKE",
+                        "striker=", document.getElementById('striker').value,
+                        "nonStriker=", document.getElementById('nonStriker').value
+                    );
                     rotateStrike();
                 }
             }
@@ -4103,6 +4125,13 @@ CURRENT OVER SUMMARY
             const strikerSel = document.getElementById('striker');
             const nonStrikerSel = document.getElementById('nonStriker');
             if (!strikerSel || !nonStrikerSel) return;
+
+             console.log(
+                "ROTATING",
+                strikerSel.value,
+                nonStrikerSel.value
+            );
+
             const temp = strikerSel.value;
             strikerSel.value = nonStrikerSel.value;
             nonStrikerSel.value = temp;
@@ -5958,6 +5987,11 @@ CURRENT OVER SUMMARY
 
                 // rotate if odd runs taken
                 if (runsTaken % 2 === 1) {
+                    console.log(
+                    "ROTATE STRIKE",
+                    "striker=", document.getElementById('striker').value,
+                    "nonStriker=", document.getElementById('nonStriker').value
+                );
                     rotateStrike();
                 }
             }
@@ -5972,6 +6006,11 @@ CURRENT OVER SUMMARY
 
                 // rotate based on runs taken
                 if (runsTaken % 2 === 1) {
+                    console.log(
+                        "ROTATE STRIKE",
+                        "striker=", document.getElementById('striker').value,
+                        "nonStriker=", document.getElementById('nonStriker').value
+                    );
                     rotateStrike();
                 }
             }
@@ -6066,7 +6105,11 @@ CURRENT OVER SUMMARY
 
             if (isOverComplete() && lastOverProcessed !== currentOverId) {
                 lastOverProcessed = currentOverId;
-
+                    console.log(
+                        "ROTATE STRIKE",
+                        "striker=", document.getElementById('striker').value,
+                        "nonStriker=", document.getElementById('nonStriker').value
+                    );
                 // rotate strike at end of over
                 rotateStrike();
 
