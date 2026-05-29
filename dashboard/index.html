@@ -2121,6 +2121,8 @@
                 runRate: calculateRR(),
                 teamA: document.getElementById('teamA')?.value || "",
                 teamB: document.getElementById('teamB')?.value || "",
+                teamALogo: document.getElementById('teamALogo')?.value || "",
+                teamBLogo: document.getElementById('teamBLogo')?.value || "",
                 teamAPlayers: document.getElementById('teamAPlayers')?.value.split('\n') || [],
                 teamBPlayers: document.getElementById('teamBPlayers')?.value.split('\n') || [],
                 battingTeam: document.getElementById('batting')?.value || "",
@@ -2242,6 +2244,8 @@
             // ✅ Restore match setup FIRST
             document.getElementById('teamA').value = data.teamA || "";
             document.getElementById('teamB').value = data.teamB || "";
+            document.getElementById('teamALogo').value = data.teamALogo || "";
+            document.getElementById('teamBLogo').value = data.teamBLogo || "";
 
             document.getElementById('teamAPlayers').value = (data.teamAPlayers || []).join('\n');
             document.getElementById('teamBPlayers').value = (data.teamBPlayers || []).join('\n');
