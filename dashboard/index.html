@@ -2796,15 +2796,19 @@
             });
             document.getElementById('striker').addEventListener('change', function () {
                 const striker = this.value;
-
+                console.log("STRIKER VALUE:", striker);
+                
                 if (!validateBatsman(striker)) {
+                    console.log("FAILED VALIDATION:", striker);
                     this.value = "";
                     return;
                 }
 
                 const nonStriker = document.getElementById('nonStriker').value;
-
+                console.log("NON STRIKER:", nonStriker);
+                
                 if (striker && striker === nonStriker) {
+                    console.log("SAME AS NON-STRIKER", striker);
                     showModal("Striker and Non-Striker cannot be the same player.");
                     this.value = "";
                     return;
@@ -2830,6 +2834,7 @@
                 );
                 // prevent duplicates
                 if (striker === lastBatsmanTriggered) {
+                    console.log("BLOCKED BY DUPLICATE CHECK", striker);
                     updateLiveDisplay();
                     return;
                 }
@@ -2838,6 +2843,12 @@
 
                 const img = getPlayerImage(striker) || playerImages[striker] || "";
 
+                console.log("SENDING NEW BATSMAN", {
+                    striker,
+                    team: batting.value,
+                    img
+                });
+                
                 sendEvent('player', {
                     team: batting.value,
                     label: 'NEW BATSMAN',
