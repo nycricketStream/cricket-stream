@@ -2838,8 +2838,11 @@
                     lastBatsmanTriggered
                 );
                 // prevent duplicates
-                if (striker === lastBatsmanTriggered) {
-                    console.log("BLOCKED BY DUPLICATE CHECK", striker);
+                if (striker &&
+                    lastBatsmanTriggered &&
+                    striker === lastBatsmanTriggered
+                ) {
+                    console.log("BLOCKED DUP:", striker);
                     updateLiveDisplay();
                     return;
                 }
