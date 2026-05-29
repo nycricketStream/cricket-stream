@@ -1137,12 +1137,22 @@
             bottom: 260px;
             left: 50%;
             transform: translate(-50%,40px);
+        
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        
+            min-height: 140px;
+            padding: 20px 36px;
+        
             background: #111827;
             border-left: 6px solid #ef4444;
-            padding: 16px 36px;
             border-radius: 6px;
             color: white;
             text-align: center;
+        
             opacity: 0;
             transition: all .45s cubic-bezier(.22,.9,.3,1);
             z-index: 9600;
@@ -1157,16 +1167,19 @@
             font-size: 12px;
             letter-spacing: 2px;
             color: #fca5a5;
+            line-height: 14px;
         }
 
         #fallWicketPlayer {
             font-size: 30px;
             font-weight: 700;
+            line-height: 34px;
         }
 
         #fallWicketScore {
             font-size: 16px;
             color: #fecaca;
+            line-height: 20px;
         }
 
         #milestoneGraphic {
