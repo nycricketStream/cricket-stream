@@ -6021,15 +6021,11 @@ CURRENT OVER SUMMARY
 
         function smartWicket(type, fielder) {
             if (!validateBeforeBall()) return;
-
             const striker = document.getElementById('striker')?.value;
             const currentBowler = document.getElementById('bowler')?.value;
-
             ensureBowler(currentBowler);
             ensureBatsman(striker);
-
             let dismissalText = "";
-
             if (type === "Caught") {
                 dismissalText = `Caught ${fielder} b ${currentBowler}`;
             }
@@ -6039,19 +6035,21 @@ CURRENT OVER SUMMARY
             else if (type === "Stumped") {
                 dismissalText = `Stumped ${fielder} b ${currentBowler}`;
             }
-            else if (type === "Bowled" || type === "LBW" || type === "Hit Wicket") {
+            else if (
+                type === "Bowled" ||
+                type === "LBW" ||
+                type === "Hit Wicket"
+            ) {
                 dismissalText = `${type} b ${currentBowler}`;
             }
             else {
                 dismissalText = type;
             }
-
             lastOutBatsman = striker;
             lastDismissal = dismissalText;
             dismissalShown = false;
             awaitingNewBatsman = true;
             lockedOut = true;
-
             liveHistory.push({
                 type: 'wicket',
                 bowler: currentBowler,
@@ -6061,7 +6059,6 @@ CURRENT OVER SUMMARY
                 wicketNumber: liveWickets + 1,
                 overId: currentOverId
             });
-
             awaitingNewBatsman = true;
             lockedOut = false;
             lastBatsmanTriggered = "";
@@ -6071,13 +6068,12 @@ CURRENT OVER SUMMARY
             lastHatTrickKey = "";
             liveWickets++;
             liveBalls++;
-
             batsmanStats[striker].balls++;
             batsmanStats[striker].out = true;
             batsmanStats[striker].dismissal = dismissalText;
-
-            bowlerStats[currentBowler].balls++;
-
+            if (currentBowler) {
+                bowlerStats[currentBowler].balls++;
+            }
             if (
                 type === "Bowled" ||
                 type === "Caught" ||
@@ -6085,63 +6081,55 @@ CURRENT OVER SUMMARY
                 type === "Stumped" ||
                 type === "Hit Wicket"
             ) {
-                bowlerStats[currentBowler].wickets++;
+                if (currentBowler) {
+                    bowlerStats[currentBowler].wickets++;
+                }
             }
             const last3 = liveHistory.slice(-3);
-
             const isHattrick =
                 last3.length === 3 &&
-                last3.every(b => b.type === 'wicket');
-
+                last3.every(b =>
+                    b.type === 'wicket' &&
+                    b.bowler === currentBowler
+                );
             if (isHattrick) {
-                triggerMoment('HATTRICK'); // replaces wicket
+                triggerMoment('HATTRICK');
             } else {
                 triggerMoment('WICKET');
             }
-
-            triggerMoment('WICKET');
-            // show UI
+            // Show next batter selector
             showNextBatter();
-
-            if (isOverComplete() && lastOverProcessed !== currentOverId) {
+            // =====================================
+            // END OF OVER PROCESSING
+            // =====================================
+            if (
+                isOverComplete() &&
+                lastOverProcessed !== currentOverId
+            ) {
                 lastOverProcessed = currentOverId;
-                    console.log(
-                        "ROTATE STRIKE",
-                        "striker=", document.getElementById('striker').value,
-                        "nonStriker=", document.getElementById('nonStriker').value
-                    );
-                // rotate strike at end of over
-                rotateStrike();
-
+                // IMPORTANT:
+                // Do NOT rotate strike when wicket
+                // falls on last ball of over.
+                // New batter comes in next over.
                 lastOverBowler = currentBowler;
-
-                const bowlerSelect = document.getElementById('bowler');
-                bowlerSelect.value = "";
-                bowlerSelect.classList.add("bowler-warning");
-                bowlerSelect.focus();
-
+                sendEvent('overSummary', {
+                    team: currentBattingTeam,
+                    score: `${liveTotal}/${liveWickets}`,
+                    overs: `${Math.floor(liveBalls / 6)}.${liveBalls % 6}`,
+                    rr: getRunRate()
+                });
+                const bowlerSelect =
+                    document.getElementById('bowler');
+                if (bowlerSelect) {
+                    bowlerSelect.value = "";
+                    bowlerSelect.classList.add(
+                        "bowler-warning"
+                    );
+                }
+                currentOverBowler = "";
                 setScoringEnabled(false);
-
-                sendEndOfOverGraphic();
-            }
-
-            if (isOverComplete()) {
-                currentOverId++;
             }
             updateLiveDisplay();
-            const strikerEl = document.getElementById('striker');
-            const nonStrikerEl = document.getElementById('nonStriker');
-
-            // determine who got out
-            const outPlayer = lastOutBatsman;
-
-            // clear ONLY the player who got out
-            if (strikerEl.value === outPlayer) {
-                strikerEl.value = "";
-                strikerEl.dispatchEvent(new Event('change'));
-            } else if (nonStrikerEl.value === outPlayer) {
-                nonStrikerEl.value = "";
-            }
         }
 
         function resetInnings() {
