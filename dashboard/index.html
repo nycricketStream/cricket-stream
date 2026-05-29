@@ -3897,6 +3897,8 @@ CURRENT OVER SUMMARY
                 getPlayerImage(name) ||
                 playerImages[name] ||
                 "";
+            console.log("CONFIRM BATTER", name);
+           
             sendEvent('player', {
                 team: batting.value,
                 label: 'NEW BATSMAN',
