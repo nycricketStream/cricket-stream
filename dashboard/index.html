@@ -2814,11 +2814,20 @@
                 const lastBall = liveHistory[liveHistory.length - 1];
                 const isAfterWicket = lastBall && lastBall.type === "wicket";
 
+                console.log("LAST BALL", lastBall);
+                console.log("AFTER WICKET?", isAfterWicket);
+                console.log("AWAITING?", awaitingNewBatsman);
+
                 if (!isAfterWicket && !awaitingNewBatsman) {
                     updateLiveDisplay();
                     return;
                 }
 
+                console.log(
+                    "DUP CHECK",
+                    striker,
+                    lastBatsmanTriggered
+                );
                 // prevent duplicates
                 if (striker === lastBatsmanTriggered) {
                     updateLiveDisplay();
@@ -3854,12 +3863,22 @@ CURRENT OVER SUMMARY
         }
         /* ========= Confirm Next Batter ======== */
         function confirmNextBatter() {
-            const name = document.getElementById("nextBatterName").innerText;
-            battingOrder = battingOrder.filter(p => p !== name);
-            document.getElementById("striker").value = name;
-            document.getElementById("nextBatterPanel").style.display = "none";
+            const name =
+                document.getElementById("nextBatterName").innerText;
+            battingOrder =
+                battingOrder.filter(p => p !== name);
+            const strikerEl =
+                document.getElementById("striker");
             awaitingNewBatsman = true;
+            strikerEl.value = name;
+            strikerEl.dispatchEvent(
+                new Event("change", { bubbles: true })
+            );
+            document.getElementById(
+                "nextBatterPanel"
+            ).style.display = "none";
         }
+
         /* ============ Manual Select Batter ========== */
         function manualSelectBatter() {
             document.getElementById("nextBatterPanel").style.display = "none";
