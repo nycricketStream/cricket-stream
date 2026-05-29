@@ -6113,7 +6113,7 @@ CURRENT OVER SUMMARY
                 // New batter comes in next over.
                 lastOverBowler = currentBowler;
                 sendEvent('overSummary', {
-                    team: currentBattingTeam,
+                    team: batting.value,
                     score: `${liveTotal}/${liveWickets}`,
                     overs: `${Math.floor(liveBalls / 6)}.${liveBalls % 6}`,
                     rr: getRunRate()
