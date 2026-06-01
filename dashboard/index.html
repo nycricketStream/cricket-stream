@@ -3868,20 +3868,31 @@ CURRENT OVER SUMMARY
                 btn.innerText = cleanName;
 
                 btn.onclick = () => {
-                    awaitingNewBatsman = true;
-                    lockedOut = false;
-
-                    const strikerEl = document.getElementById('striker');
-                
+                awaitingNewBatsman = true;
+                lockedOut = false;
+                const strikerEl =
+                    document.getElementById('striker');
+                const nonStrikerEl =
+                    document.getElementById('nonStriker');
+                if (
+                    lastOutBatsman === strikerEl.value
+                ) {
                     strikerEl.value = cleanName;
-                
-                    modal.style.display = "none";
-                
                     strikerEl.dispatchEvent(
-                        new Event('change', { bubbles: true })
+                        new Event('change', {
+                            bubbles: true
+                        })
                     );
-                };
-
+                } else {
+                    nonStrikerEl.value = cleanName;
+                    nonStrikerEl.dispatchEvent(
+                        new Event('change', {
+                            bubbles: true
+                        })
+                    );
+                }
+                modal.style.display = "none";
+            };
                 list.appendChild(btn);
             });
             if (list.children.length === 0) {
@@ -6019,12 +6030,23 @@ CURRENT OVER SUMMARY
             updateLiveDisplay();
         }
 
-        function smartWicket(type, fielder) {
+        function smartWicket(type, fielder, runOutChoice = "striker") {
             if (!validateBeforeBall()) return;
+            
             const striker = document.getElementById('striker')?.value;
             const currentBowler = document.getElementById('bowler')?.value;
+            const nonStriker = document.getElementById('nonStriker')?.value;
+            const outBatter =
+                (
+                    type === "Run Out" &&
+                    runOutChoice === "nonStriker"
+                )
+                    ? nonStriker
+                    : striker;
+            
             ensureBowler(currentBowler);
             ensureBatsman(striker);
+            
             let dismissalText = "";
             if (type === "Caught") {
                 dismissalText = `Caught ${fielder} b ${currentBowler}`;
@@ -6045,7 +6067,7 @@ CURRENT OVER SUMMARY
             else {
                 dismissalText = type;
             }
-            lastOutBatsman = striker;
+            lastOutBatsman = outBatter;
             lastDismissal = dismissalText;
             dismissalShown = false;
             awaitingNewBatsman = true;
@@ -6053,7 +6075,7 @@ CURRENT OVER SUMMARY
             liveHistory.push({
                 type: 'wicket',
                 bowler: currentBowler,
-                striker: striker,
+                striker: outBatter,
                 dismissal: dismissalText,
                 scoreAtWicket: liveTotal,
                 wicketNumber: liveWickets + 1,
@@ -6068,9 +6090,9 @@ CURRENT OVER SUMMARY
             lastHatTrickKey = "";
             liveWickets++;
             liveBalls++;
-            batsmanStats[striker].balls++;
-            batsmanStats[striker].out = true;
-            batsmanStats[striker].dismissal = dismissalText;
+            batsmanStats[outBatter].balls++;
+            batsmanStats[outBatter].out = true;
+            batsmanStats[outBatter].dismissal = dismissalText;
             if (currentBowler) {
                 bowlerStats[currentBowler].balls++;
             }
@@ -6277,6 +6299,12 @@ CURRENT OVER SUMMARY
                 } else {
                     fielderSection.style.display = "none";
                 }
+
+                  if (type === "Run Out") {
+                    runOutSection.style.display = "block";
+                } else {
+                    runOutSection.style.display = "none";
+                }
             }
 
             typeSelect.onchange = updateFielderVisibility;
@@ -6292,9 +6320,13 @@ CURRENT OVER SUMMARY
             const type = document.getElementById("wicketType").value;
             const fielder = document.getElementById("fielderSelect").value;
 
+            const runOutChoice =
+                document.getElementById("runOutBatter")?.value ||
+                "striker";
+
             closeWicketModal();
 
-            smartWicket(type, fielder);
+            smartWicket(type, fielder, runOutChoice);
         }
 
         function selectExtraRuns(runsTaken) {
@@ -6424,6 +6456,13 @@ CURRENT OVER SUMMARY
             <div id="fielderSection" style="display:none;">
                 <label>Fielder</label>
                 <select id="fielderSelect"></select>
+            </div>
+            <div id="runOutSection" style="display:none;margin-top:10px;">
+                <label>Who is Out?</label>
+                <select id="runOutBatter">
+                    <option value="striker">Striker</option>
+                    <option value="nonStriker">Non-Striker</option>
+                </select>
             </div>
             <button onclick="confirmWicket()">Confirm</button>
             <button onclick="closeWicketModal()" style="background:#374151">Cancel</button>
