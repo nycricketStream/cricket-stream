@@ -3868,7 +3868,7 @@ CURRENT OVER SUMMARY
                 btn.innerText = cleanName;
 
                 btn.onclick = () => {
-                awaitingNewBatsman = true;
+                awaitingNewBatsman = false;
                 lockedOut = false;
                 const strikerEl =
                     document.getElementById('striker');
@@ -6082,7 +6082,7 @@ CURRENT OVER SUMMARY
                 overId: currentOverId
             });
             awaitingNewBatsman = true;
-            lockedOut = false;
+            lockedOut = true;
             lastBatsmanTriggered = "";
             partnership50Shown = false;
             partnership100Shown = false;
