@@ -4255,8 +4255,8 @@ CURRENT OVER SUMMARY
                                                                          <td>${strikeRate}</td>
                                                                          <td>
                                                                            ${stats.out
-                        ? stats.dismissal + " b " + stats.bowler
-                        : "Not Out"}
+                                                                                ? stats.dismissal
+                                                                                : "Not Out"}
                                                                          </td>
                                                                        </tr>
                                                                        `;
@@ -6068,8 +6068,10 @@ CURRENT OVER SUMMARY
             else if (type === "Stumped") {
                 dismissalText = `st ${shortFielder} b ${shortBowler}`;
             }
+            else if (type === "Bowled") {
+                 dismissalText =  `b ${shortBowler}`;
+            }
             else if (
-                type === "Bowled" ||
                 type === "LBW" ||
                 type === "Hit Wicket"
             ) {
