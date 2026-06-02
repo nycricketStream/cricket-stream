@@ -1284,6 +1284,232 @@
                 overflow: auto;
             }
         }
+
+        /* =========================
+           APP-LIKE LIVE SCORING UI
+        ========================= */
+
+        body {
+            background:
+                radial-gradient(circle at 22% 0%, rgba(37,99,235,.16), transparent 34%),
+                #030712;
+        }
+
+        .main {
+            background: #030712;
+        }
+
+        .sidebar {
+            background: #071021;
+            border-right: 1px solid rgba(148,163,184,.12);
+            box-shadow: none;
+        }
+
+        .sidebar.collapsed {
+            width: 52px;
+            padding: 8px 5px;
+        }
+
+        .sidebar.collapsed #sidebarToggle,
+        .sidebar.collapsed #fullscreenBtn,
+        .sidebar.collapsed .tab-btn {
+            width: 40px;
+            min-width: 40px;
+            min-height: 40px;
+            padding: 0;
+            border-radius: 12px;
+            justify-content: center;
+        }
+
+        .sidebar.collapsed #fullscreenBtn {
+            font-size: 0 !important;
+        }
+
+        .sidebar.collapsed #fullscreenBtn::before {
+            content: "⛶";
+            font-size: 16px;
+        }
+
+        .sidebar.collapsed .tab-btn {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(145deg, #1d4ed8, #2146c7);
+            box-shadow: 0 0 0 1px rgba(96,165,250,.25), 0 8px 18px rgba(37,99,235,.28);
+        }
+
+        #livescoring.tab {
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        #livescoring .live-header-card {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            min-height: 96px;
+            margin-bottom: 10px;
+            padding: 14px 18px;
+            background: linear-gradient(180deg, #081735, #071126);
+            border: 1px solid rgba(96,165,250,.14);
+            border-radius: 18px;
+            box-shadow: none;
+        }
+
+        #livescoring .live-title {
+            font-size: 26px;
+            line-height: 1.1;
+            letter-spacing: 0;
+        }
+
+        #livescoring .live-subtitle {
+            color: #7dd3fc;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        #livescoring .quick-stat-row {
+            align-items: center;
+            gap: 10px;
+        }
+
+        #livescoring .quick-stat {
+            min-width: 88px;
+            padding: 4px 8px;
+            background: transparent;
+            border-radius: 0;
+        }
+
+        #livescoring .quick-stat-label {
+            color: #dbeafe;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        #livescoring .quick-stat-value {
+            font-size: 25px;
+            line-height: 1;
+        }
+
+        #basicTabBtn,
+        #advancedTabBtn {
+            min-height: 54px !important;
+            margin-top: 0 !important;
+            border: 1px solid rgba(147,197,253,.14) !important;
+            border-radius: 14px !important;
+            background: #10235a !important;
+            box-shadow: inset 0 -1px 0 rgba(255,255,255,.06) !important;
+        }
+
+        #basicTabBtn:hover,
+        #advancedTabBtn:hover {
+            transform: none;
+            background: #1d4ed8 !important;
+        }
+
+        #livescoring .live-layout {
+            align-items: start;
+        }
+
+        #livescoring .panel,
+        #livescoring .production-card {
+            background: #050b1a;
+            border: 1px solid rgba(148,163,184,.10);
+            border-radius: 16px;
+            box-shadow: none;
+        }
+
+        #livescoring .panel h4,
+        #livescoring .production-card h4 {
+            color: #7dd3fc;
+            font-size: 14px;
+            letter-spacing: .4px;
+        }
+
+        #livescoring .advanced-grid {
+            align-items: start;
+            gap: 10px;
+        }
+
+        #livescoring .advanced-grid .panel {
+            min-height: 0;
+            padding: 14px 16px;
+        }
+
+        #livescoring .advanced-grid .stats-table {
+            margin-top: 10px;
+            border-radius: 12px;
+            box-shadow: none;
+        }
+
+        #livescoring .advanced-grid .stats-table th {
+            height: 42px;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        #livescoring .advanced-grid .stats-table td {
+            height: 44px;
+            border-bottom: 1px solid rgba(148,163,184,.06);
+        }
+
+        #livescoring .advanced-grid .stats-table tr:nth-child(even) {
+            background: rgba(15,23,42,.28);
+        }
+
+        #livescoring .production-card {
+            padding: 16px;
+        }
+
+        #livescoring .info-stat {
+            padding: 13px 0;
+        }
+
+        #livescoring .info-stat-value {
+            font-size: 16px;
+        }
+
+        @media (min-width: 901px) and (max-width: 1280px) {
+            #livescoring .live-header-card {
+                min-height: 82px;
+                padding: 12px 14px;
+                margin-bottom: 8px;
+                border-radius: 16px;
+            }
+
+            #livescoring .live-title {
+                font-size: 23px;
+            }
+
+            #livescoring .quick-stat {
+                min-width: 70px;
+                padding: 2px 5px;
+            }
+
+            #livescoring .quick-stat-value {
+                font-size: 22px;
+            }
+
+            #basicTabBtn,
+            #advancedTabBtn {
+                width: 96px !important;
+                height: 50px !important;
+                min-height: 50px !important;
+            }
+
+            #livescoring .advanced-grid {
+                gap: 8px;
+            }
+
+            #livescoring .advanced-grid .panel {
+                padding: 12px 14px;
+            }
+        }
     </style>
 </head>
 <body>
