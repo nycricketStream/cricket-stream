@@ -4123,7 +4123,7 @@
                 ) {
 
                     lastBoundary =
-                        `${b.runs} by ${b.striker}`;
+                        `${b.runs} by ${shortName(b.striker)}`;
 
                     break;
                 }
@@ -4148,7 +4148,7 @@
                 if (b.type === "wicket") {
 
                     lastWicket =
-                        b.striker || "Wicket";
+                        b.striker ? shortName(b.striker) : "Wicket";
 
                     break;
                 }
@@ -4247,7 +4247,7 @@ CURRENT OVER SUMMARY
             ).innerHTML =
                 `
                                     <div style="font-size:14px">
-                                        ${currentBowler}
+                                        ${shortName(currentBowler)}
                                     </div>
 
                                     <div style="
@@ -4891,7 +4891,7 @@ CURRENT OVER SUMMARY
                     body.innerHTML += `
                                                                     <tr>
                                                                     <td>${ball.scoreAtWicket}/${ball.wicketNumber}</td>
-                                                                    <td>${ball.striker}</td>
+                                                                    <td title="${ball.striker}">${shortName(ball.striker)}</td>
                                                                     <td>${over}</td>
                                                                     </tr>
                                                                     `;
@@ -5115,14 +5115,14 @@ CURRENT OVER SUMMARY
                     runs: 0,
                     balls: 0
                 };
-                html += `<div><strong>${striker}*</strong> ${s.runs} (${s.balls})</div>`;
+                html += `<div title="${striker}"><strong>${shortName(striker)}*</strong> ${s.runs} (${s.balls})</div>`;
             }
             if (nonStriker) {
                 const n = batsmanStats[nonStriker] || {
                     runs: 0,
                     balls: 0
                 };
-                html += `<div>${nonStriker} ${n.runs} (${n.balls})</div>`;
+                html += `<div title="${nonStriker}">${shortName(nonStriker)} ${n.runs} (${n.balls})</div>`;
             }
             panel.innerHTML = html;
         }
@@ -5610,7 +5610,7 @@ CURRENT OVER SUMMARY
             const over =
                 Math.floor((ballIndex + 1) / 6) + "." + ((ballIndex + 1) % 6);
             panel.innerHTML = `
-                                                                     <strong>${batsman}</strong> ${stats.runs} (${stats.balls})<br>
+                                                                     <strong title="${batsman}">${shortName(batsman)}</strong> ${stats.runs} (${stats.balls})<br>
                                                                      ${liveTotal}/${liveWickets}  ${over} ov
                                                                      `;
         }
