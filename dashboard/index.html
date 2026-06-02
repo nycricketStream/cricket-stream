@@ -6030,11 +6030,22 @@ CURRENT OVER SUMMARY
             updateLiveDisplay();
         }
 
+        function shortName(name) {
+            if (!name) return "";
+            const parts = name.trim().split(/\s+/);
+            if (parts.length === 1) {
+                return parts[0];
+            }
+           return parts[0].charAt(0) + ". " + parts.slice(1).join(" ");
+        }
+
         function smartWicket(type, fielder, runOutChoice = "striker") {
             if (!validateBeforeBall()) return;
             
             const striker = document.getElementById('striker')?.value;
             const currentBowler = document.getElementById('bowler')?.value;
+            const shortBowler = shortName(currentBowler);
+            const shortFielder = shortName(fielder);
             const nonStriker = document.getElementById('nonStriker')?.value;
             const outBatter =
                 (
@@ -6049,20 +6060,20 @@ CURRENT OVER SUMMARY
             
             let dismissalText = "";
             if (type === "Caught") {
-                dismissalText = `Caught ${fielder} b ${currentBowler}`;
+                dismissalText = `c ${shortFielder} b ${shortBowler}`;
             }
             else if (type === "Run Out") {
-                dismissalText = `Run Out (${fielder})`;
+                dismissalText = `run out (${shortFielder})`;
             }
             else if (type === "Stumped") {
-                dismissalText = `Stumped ${fielder} b ${currentBowler}`;
+                dismissalText = `st ${shortFielder} b ${shortBowler}`;
             }
             else if (
                 type === "Bowled" ||
                 type === "LBW" ||
                 type === "Hit Wicket"
             ) {
-                dismissalText = `${type} b ${currentBowler}`;
+                dismissalText =  `${type} b ${shortBowler}`;
             }
             else {
                 dismissalText = type;
