@@ -2294,6 +2294,15 @@
                         <div class="panel">
                             <h4>Batsman Stats</h4>
                             <table class="stats-table">
+                                <colgroup>
+                                    <col style="width:30%">
+                                    <col style="width:9%">
+                                    <col style="width:9%">
+                                    <col style="width:9%">
+                                    <col style="width:9%">
+                                    <col style="width:12%">
+                                    <col style="width:22%">
+                                </colgroup>
                                 <thead>
                                     <tr>
                                         <th>Batter</th>
@@ -5591,11 +5600,9 @@ CURRENT OVER SUMMARY
             const panel = document.getElementById("lastWicketPanel");
             if (!panel) return;
             let lastWicket = null;
-            let ballIndex = 0;
-            liveHistory.forEach((ball, i) => {
+            liveHistory.forEach((ball) => {
                 if (ball.type === "wicket") {
                     lastWicket = ball;
-                    ballIndex = i;
                 }
             });
             if (!lastWicket) {
@@ -5607,11 +5614,8 @@ CURRENT OVER SUMMARY
                 runs: 0,
                 balls: 0
             };
-            const over =
-                Math.floor((ballIndex + 1) / 6) + "." + ((ballIndex + 1) % 6);
             panel.innerHTML = `
-                                                                     <strong title="${batsman}">${shortName(batsman)}</strong> ${stats.runs} (${stats.balls})<br>
-                                                                     ${liveTotal}/${liveWickets}  ${over} ov
+                                                                     <strong title="${batsman}">${shortName(batsman)}</strong> ${stats.runs} (${stats.balls})
                                                                      `;
         }
         /* ========== Trigger Moment ============= */
