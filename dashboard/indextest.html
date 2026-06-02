@@ -1283,6 +1283,13 @@
                 max-height: calc(100dvh - 24px);
                 overflow: auto;
             }
+
+            #livescoring .live-column-right {
+                position: static;
+                max-height: none;
+                overflow: visible;
+                padding-right: 0;
+            }
         }
 
         /* =========================
@@ -1416,6 +1423,14 @@
             align-items: start;
         }
 
+        #livescoring .live-column-right {
+            position: sticky;
+            top: 108px;
+            max-height: calc(100dvh - 118px);
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
         #livescoring .panel,
         #livescoring .production-card {
             background: #050b1a;
@@ -1480,6 +1495,11 @@
                 padding: 12px 14px;
                 margin-bottom: 8px;
                 border-radius: 16px;
+            }
+
+            #livescoring .live-column-right {
+                top: 92px;
+                max-height: calc(100dvh - 102px);
             }
 
             #livescoring .live-title {
