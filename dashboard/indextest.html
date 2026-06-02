@@ -174,9 +174,9 @@
 
 
         .striker-row {
-            background: linear-gradient( 90deg, #1e3a8a, #2563eb ) !important;
+            background: linear-gradient( 90deg, #854d0e, #ca8a04 ) !important;
             font-weight: 700;
-            box-shadow: inset 4px 0 0 #facc15;
+            box-shadow: inset 4px 0 0 #fef08a;
         }
 
         .stats-table th {
@@ -4275,7 +4275,7 @@ CURRENT OVER SUMMARY
 
                 body.innerHTML += `
                                                                        <tr class="${name === currentBowler ? 'bowler-row' : ''}">
-                                                                         <td>${name}</td>
+                                                                         <td title="${name}">${shortName(name)}</td>
                                                                          <td>${overs}</td>
                                                                          <td>${calculateMaidens(name)}</td>
                                                                          <td>${stats.runs}</td>
@@ -4837,7 +4837,7 @@ CURRENT OVER SUMMARY
                     "0.0";
                 body.innerHTML += `
                                                                        <tr class="${name === striker ? 'striker-row' : ''}">
-                                                                         <td>${name}</td>
+                                                                         <td title="${name}">${shortName(name)}</td>
                                                                          <td>${stats.runs}</td>
                                                                          <td>${stats.balls}</td>
                                                                          <td>${stats.fours}</td>
