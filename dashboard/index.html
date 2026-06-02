@@ -6152,6 +6152,13 @@ CURRENT OVER SUMMARY
                 currentOverBowler = "";
                 setScoringEnabled(false);
             }
+
+            if (isOverComplete()) {
+                currentOverId++;
+                currentOverBalls = 0;
+                currentOverBowler = "";
+            }
+
             updateLiveDisplay();
         }
 
