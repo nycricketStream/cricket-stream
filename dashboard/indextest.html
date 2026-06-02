@@ -965,6 +965,16 @@
             min-width: 560px;
         }
 
+        .advanced-grid .stats-table {
+            min-width: 100%;
+            table-layout: fixed;
+        }
+
+        .advanced-grid .stats-table th,
+        .advanced-grid .stats-table td {
+            overflow-wrap: anywhere;
+        }
+
         .sidebar {
             scrollbar-width: thin;
         }
@@ -1133,13 +1143,28 @@
 
             .advanced-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 12px;
+                gap: 8px;
+            }
+
+            .advanced-grid .panel {
+                overflow-x: hidden;
+            }
+
+            .advanced-grid .stats-table {
+                min-width: 100%;
             }
 
             .stats-table th,
             .stats-table td {
-                padding: 9px 8px;
+                padding: 8px 6px;
                 font-size: 12px;
+            }
+
+            .advanced-grid .stats-table th,
+            .advanced-grid .stats-table td {
+                padding: 7px 4px;
+                font-size: 11px;
+                letter-spacing: 0;
             }
 
             .modal-box {
