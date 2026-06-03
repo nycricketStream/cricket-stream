@@ -1474,6 +1474,11 @@
             border-bottom: 1px solid rgba(148,163,184,.06);
         }
 
+        #batsmanStatsBody td:nth-child(7) {
+            overflow-wrap: normal;
+            word-break: normal;
+        }
+
         #livescoring .advanced-grid .stats-table tr:nth-child(even) {
             background: rgba(15,23,42,.28);
         }
@@ -2373,13 +2378,13 @@
                             <h4>Batsman Stats</h4>
                             <table class="stats-table">
                                 <colgroup>
-                                    <col style="width:30%">
-                                    <col style="width:9%">
-                                    <col style="width:9%">
-                                    <col style="width:9%">
-                                    <col style="width:9%">
-                                    <col style="width:12%">
-                                    <col style="width:22%">
+                                    <col style="width:24%">
+                                    <col style="width:8%">
+                                    <col style="width:8%">
+                                    <col style="width:8%">
+                                    <col style="width:8%">
+                                    <col style="width:10%">
+                                    <col style="width:34%">
                                 </colgroup>
                                 <thead>
                                     <tr>
@@ -4930,7 +4935,7 @@ CURRENT OVER SUMMARY
                                                                          <td>${stats.fours}</td>
                                                                          <td>${stats.sixes}</td>
                                                                          <td>${strikeRate}</td>
-                                                                         <td>
+                                                                         <td title="${stats.dismissal || 'Not Out'}">
                                                                            ${stats.out
                                                                                 ? stats.dismissal
                                                                                 : "Not Out"}
