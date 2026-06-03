@@ -2612,6 +2612,358 @@
                 width: 100%;
             }
         }
+
+        /* =========================
+           NATIVE APP FINISH PASS
+        ========================= */
+
+        .main {
+            background:
+                radial-gradient(circle at 24% 0%, rgba(37,99,235,.08), transparent 34%),
+                #02060d;
+        }
+
+        .tab {
+            background:
+                linear-gradient(180deg, rgba(2,6,23,.92), rgba(2,6,23,.98));
+            border: 1px solid rgba(148,163,184,.08);
+        }
+
+        .tab > h2,
+        .tab > h3,
+        .live-header-card {
+            background:
+                linear-gradient(180deg, rgba(15,23,42,.96), rgba(8,16,34,.96));
+            border: 1px solid rgba(96,165,250,.13);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+        }
+
+        button:not(.tab-btn):not(#sidebarToggle):not(#fullscreenBtn) {
+            min-height: 44px;
+            border-radius: 13px;
+            border: 1px solid rgba(96,165,250,.12);
+            background:
+                linear-gradient(180deg, rgba(30,64,175,.88), rgba(15,37,87,.96));
+            color: #f8fafc;
+            font-weight: 850;
+            letter-spacing: 0;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+            transition: transform .12s ease, border-color .12s ease, background .12s ease;
+        }
+
+        button:not(.tab-btn):not(#sidebarToggle):not(#fullscreenBtn):hover {
+            transform: translateY(-1px);
+            border-color: rgba(125,211,252,.35);
+            background:
+                linear-gradient(180deg, rgba(37,99,235,.94), rgba(30,64,175,.96));
+        }
+
+        button[onclick*="delete"],
+        button[onclick*="Delete"],
+        button[onclick*="openWicketModal"] {
+            background:
+                linear-gradient(180deg, rgba(153,27,27,.94), rgba(127,29,29,.98)) !important;
+            border-color: rgba(248,113,113,.20) !important;
+        }
+
+        button[onclick*="clear"],
+        button[onclick*="Clear"],
+        button[onclick*="undoLastBall"] {
+            background:
+                linear-gradient(180deg, rgba(51,65,85,.94), rgba(30,41,59,.98)) !important;
+            border-color: rgba(148,163,184,.18) !important;
+        }
+
+        input,
+        select,
+        textarea {
+            border-radius: 13px !important;
+            border: 1px solid rgba(96,165,250,.10) !important;
+            background: #07101f !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: rgba(125,211,252,.45) !important;
+            box-shadow:
+                0 0 0 3px rgba(14,165,233,.10),
+                inset 0 1px 0 rgba(255,255,255,.03);
+        }
+
+        #teamManager.active,
+        #lineups.active,
+        #match.active {
+            gap: 14px;
+        }
+
+        #teamManager.active > h2,
+        #lineups.active > h3,
+        #match.active > h3 {
+            width: 100%;
+            max-width: none;
+            justify-self: stretch;
+        }
+
+        #teamManager.active > button:nth-of-type(1),
+        #teamManager.active > button:nth-of-type(2) {
+            margin-top: 0;
+        }
+
+        #teamManager.active > textarea,
+        #lineups textarea,
+        #match textarea {
+            line-height: 1.45;
+        }
+
+        #teamManager.active > .player-editor[data-source="tmPlayers"] {
+            grid-column: 1;
+        }
+
+        #lineups.active > .player-editor[data-source="teamASquad"],
+        #lineups.active > .player-editor[data-source="teamBSquad"] {
+            width: 100%;
+        }
+
+        #lineups.active > .player-editor[data-source="teamASquad"] {
+            grid-column: 1;
+        }
+
+        #lineups.active > .player-editor[data-source="teamBSquad"] {
+            grid-column: 2;
+        }
+
+        #livescoring #advancedLiveTab {
+            width: 100%;
+        }
+
+        #livescoring #advancedLiveTab .advanced-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        #livescoring #advancedLiveTab .panel {
+            display: flex;
+            min-height: 0;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 13px 14px;
+            border-radius: 16px;
+            border: 1px solid rgba(96,165,250,.12);
+            background:
+                linear-gradient(180deg, rgba(7,16,31,.98), rgba(3,9,21,.98));
+        }
+
+        #livescoring #advancedLiveTab .panel:first-child,
+        #livescoring #advancedLiveTab .panel:nth-child(2) {
+            min-height: 256px;
+        }
+
+        #livescoring #advancedLiveTab .panel h4 {
+            display: flex;
+            align-items: center;
+            min-height: 28px;
+            margin: 0 0 10px !important;
+            padding: 0 0 9px;
+            border-bottom: 1px solid rgba(148,163,184,.09);
+            color: #bae6fd;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: .5px;
+            line-height: 1.1;
+            text-transform: uppercase;
+        }
+
+        #livescoring #advancedLiveTab .stats-table {
+            width: 100%;
+            min-width: 0;
+            margin: 0;
+            overflow: hidden;
+            table-layout: fixed;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid rgba(148,163,184,.07);
+            border-radius: 13px;
+            background: #020817;
+        }
+
+        #livescoring #advancedLiveTab .stats-table thead tr {
+            background: linear-gradient(90deg, #10265a, #173c8f);
+        }
+
+        #livescoring #advancedLiveTab .stats-table th,
+        #livescoring #advancedLiveTab .stats-table td {
+            height: 36px;
+            padding: 7px 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            border-bottom: 1px solid rgba(148,163,184,.06);
+            font-size: 12.5px;
+            line-height: 1.15;
+        }
+
+        #livescoring #advancedLiveTab .stats-table th {
+            height: 34px;
+            color: #dbeafe;
+            font-size: 11.5px;
+            text-transform: uppercase;
+        }
+
+        #livescoring #advancedLiveTab .stats-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        #batsmanStatsBody td:nth-child(7) {
+            white-space: normal !important;
+            line-height: 1.25;
+        }
+
+        #currentOverTracker,
+        #previousOverTracker,
+        #partnershipPanel,
+        #currentBattersPanel,
+        #lastWicketPanel {
+            min-height: 52px !important;
+            align-content: center;
+            border-radius: 13px !important;
+            border-color: rgba(96,165,250,.10) !important;
+            background: #020817 !important;
+            color: #e2e8f0;
+            font-weight: 800;
+        }
+
+        #currentOverTracker span,
+        #previousOverTracker span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            min-height: 32px;
+            border-radius: 999px;
+            background: rgba(37,99,235,.16);
+            border: 1px solid rgba(96,165,250,.16);
+        }
+
+        .player-source-textarea.player-editor-ready {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            min-height: 1px !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .player-editor {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            min-height: 160px;
+            padding: 12px;
+            border: 1px solid rgba(96,165,250,.12);
+            border-radius: 16px;
+            background:
+                linear-gradient(180deg, rgba(7,16,31,.98), rgba(3,9,21,.98));
+        }
+
+        .player-editor-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(148,163,184,.09);
+        }
+
+        .player-editor-count {
+            color: #bae6fd;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+        }
+
+        .player-editor-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .player-editor-actions button {
+            min-height: 34px !important;
+            padding: 0 12px;
+            font-size: 12px;
+            border-radius: 10px !important;
+        }
+
+        .player-editor-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 260px;
+            overflow-y: auto;
+            padding-right: 3px;
+        }
+
+        .player-editor-row {
+            display: grid;
+            grid-template-columns: minmax(130px, .9fr) minmax(160px, 1.25fr) 40px;
+            gap: 8px;
+            align-items: center;
+            padding: 8px;
+            border: 1px solid rgba(148,163,184,.08);
+            border-radius: 13px;
+            background: rgba(2,8,23,.86);
+        }
+
+        .player-editor-row input {
+            min-height: 36px !important;
+            margin: 0 !important;
+            padding: 0 10px !important;
+            font-size: 13px;
+        }
+
+        .player-editor-remove {
+            min-height: 36px !important;
+            width: 36px;
+            padding: 0 !important;
+            border-radius: 10px !important;
+        }
+
+        .player-editor-empty {
+            padding: 20px 12px;
+            border: 1px dashed rgba(148,163,184,.18);
+            border-radius: 13px;
+            color: #94a3b8;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .player-editor.raw-mode + textarea,
+        textarea.player-source-textarea.raw-mode {
+            position: static !important;
+            width: 100% !important;
+            height: auto !important;
+            min-height: 160px !important;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @media (max-width: 980px) {
+            #livescoring #advancedLiveTab .advanced-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .player-editor-row {
+                grid-template-columns: 1fr;
+            }
+
+            .player-editor-remove {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2724,13 +3076,13 @@
             <label id="tmPlayersLabel">Players (Name|ImageURL)</label>
             <textarea id="tmPlayers" rows="10"></textarea>
             <br><br>
-            <button onclick="saveTeamManager()">💾 Save Team</button>
-            <button onclick="clearTeamManager()">🧹 Clear</button>
+            <button onclick="saveTeamManager()">Save Team</button>
+            <button onclick="clearTeamManager()">Clear</button>
             <hr>
             <h3>Saved Teams</h3>
             <select id="tmSavedTeams"></select>
-            <button onclick="loadTeamManager()">🔄 Load</button>
-            <button onclick="deleteTeamManager()">🗑️ Delete</button>
+            <button onclick="loadTeamManager()">Load</button>
+            <button onclick="deleteTeamManager()">Delete</button>
         </div>
         <!-- MATCH SETUP -->
         <div id="match" class="tab active">
@@ -2811,11 +3163,11 @@
                     <div class="setup-actions">
 
                         <button onclick="loadMatchFromCloud()">
-                            🔄 Load Match
+                            Load Match
                         </button>
 
                         <button onclick="deleteMatch()">
-                            🗑️ Delete Match
+                            Delete Match
                         </button>
 
                     </div>
@@ -2859,15 +3211,15 @@
                            });
                            updateLiveDisplay();
                         ">
-                        ▶ Start Match
+                        Start Match
                     </button>
 
                     <button onclick="saveMatchToCloud()">
-                        💾 Save Match
+                        Save Match
                     </button>
 
                     <button onclick="showTab(event,'livescoring')">
-                        🎬 Go Live
+                        Go Live
                     </button>
 
                 </div>
@@ -2890,7 +3242,7 @@
             <button onclick="generateXI('B')">Generate XI</button>
             <div id="teamBXI"></div>
             <hr>
-            <button onclick="applyPlayingXI()">✅ Apply Playing XI</button>
+            <button onclick="applyPlayingXI()">Apply Playing XI</button>
         </div>
         <!-- LIVE SCORING -->
         <div id="livescoring" class="tab">
@@ -3348,7 +3700,7 @@
                                 <button onclick="swapBatters()" style="
                             background:#0f172a;
                             border:1px solid #334155; ">
-                                    🔄 Swap Batters
+                                    Swap Batters
                                 </button>
                                 <h4 style="
                             margin-top:20px;
@@ -3444,15 +3796,15 @@
                                  ">
                                 <button class="production-btn"
                                         onclick="openGraphicsModal()">
-                                    🎬 Graphics
+                                    Graphics
                                 </button>
                                 <button class="production-btn"
                                         onclick="openSponsorsModal()">
-                                    💰 Sponsors
+                                    Sponsors
                                 </button>
                                 <button class="production-btn"
                                         onclick="openBrandingModal()">
-                                    🖥 Branding
+                                    Branding
                                 </button>
                             </div>
 
@@ -8202,6 +8554,176 @@ CURRENT OVER SUMMARY
             );
         }
     }
+
+        function parsePlayerLines(value) {
+            return (value || "")
+                .split('\n')
+                .map(line => line.trim())
+                .filter(Boolean)
+                .map(line => {
+                    const parts = line.split('|');
+                    return {
+                        name: (parts.shift() || "").trim(),
+                        image: parts.join('|').trim()
+                    };
+                })
+                .filter(player => player.name || player.image);
+        }
+
+        function serializePlayerRows(rows) {
+            return rows
+                .map(row => {
+                    const name = row.querySelector('[data-player-field="name"]').value.trim();
+                    const image = row.querySelector('[data-player-field="image"]').value.trim();
+                    if (!name && !image) return "";
+                    return image ? `${name}|${image}` : name;
+                })
+                .filter(Boolean)
+                .join('\n');
+        }
+
+        function syncPlayerEditor(textareaId, force = false) {
+            const textarea = document.getElementById(textareaId);
+            const editor = document.querySelector(`.player-editor[data-source="${textareaId}"]`);
+            if (!textarea || !editor) return;
+
+            if (!force && editor.dataset.sourceValue === textarea.value) return;
+
+            const rowsWrap = editor.querySelector('.player-editor-rows');
+            const players = parsePlayerLines(textarea.value);
+
+            rowsWrap.innerHTML = players.length
+                ? players.map((player, index) => `
+                    <div class="player-editor-row" data-player-row="${index}">
+                        <input data-player-field="name"
+                               value="${escapeHtml(player.name)}"
+                               placeholder="Player name">
+                        <input data-player-field="image"
+                               value="${escapeHtml(player.image)}"
+                               placeholder="Image URL">
+                        <button class="player-editor-remove" type="button" title="Remove player">x</button>
+                    </div>
+                `).join('')
+                : '<div class="player-editor-empty">Add players as rows, then save like normal.</div>';
+
+            editor.querySelector('.player-editor-count').textContent =
+                `${players.length} Player${players.length === 1 ? '' : 's'}`;
+            editor.dataset.sourceValue = textarea.value;
+        }
+
+        function updatePlayerEditorSource(editor) {
+            const textarea = document.getElementById(editor.dataset.source);
+            if (!textarea) return;
+
+            const rows = Array.from(editor.querySelectorAll('.player-editor-row'));
+            textarea.value = serializePlayerRows(rows);
+            editor.dataset.sourceValue = textarea.value;
+            textarea.dispatchEvent(new Event('input', { bubbles: true }));
+
+            const count = rows.filter(row => {
+                const name = row.querySelector('[data-player-field="name"]').value.trim();
+                const image = row.querySelector('[data-player-field="image"]').value.trim();
+                return name || image;
+            }).length;
+
+            editor.querySelector('.player-editor-count').textContent =
+                `${count} Player${count === 1 ? '' : 's'}`;
+        }
+
+        function addPlayerEditorRow(editor, player = { name: "", image: "" }) {
+            const rowsWrap = editor.querySelector('.player-editor-rows');
+            const empty = rowsWrap.querySelector('.player-editor-empty');
+            if (empty) empty.remove();
+
+            const row = document.createElement('div');
+            row.className = 'player-editor-row';
+            row.innerHTML = `
+                <input data-player-field="name"
+                       value="${escapeHtml(player.name)}"
+                       placeholder="Player name">
+                <input data-player-field="image"
+                       value="${escapeHtml(player.image)}"
+                       placeholder="Image URL">
+                <button class="player-editor-remove" type="button" title="Remove player">x</button>
+            `;
+            rowsWrap.appendChild(row);
+            row.querySelector('input').focus();
+            updatePlayerEditorSource(editor);
+        }
+
+        function escapeHtml(value) {
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/"/g, "&quot;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        }
+
+        function enhancePlayerTextarea(textareaId) {
+            const textarea = document.getElementById(textareaId);
+            if (!textarea || textarea.dataset.playerEditor === "true") return;
+
+            textarea.dataset.playerEditor = "true";
+            textarea.classList.add('player-source-textarea', 'player-editor-ready');
+
+            const editor = document.createElement('div');
+            editor.className = 'player-editor';
+            editor.dataset.source = textareaId;
+            editor.innerHTML = `
+                <div class="player-editor-toolbar">
+                    <div class="player-editor-count">0 Players</div>
+                    <div class="player-editor-actions">
+                        <button type="button" data-player-action="add">Add Player</button>
+                        <button type="button" data-player-action="raw">Raw</button>
+                    </div>
+                </div>
+                <div class="player-editor-rows"></div>
+            `;
+
+            textarea.insertAdjacentElement('afterend', editor);
+
+            editor.addEventListener('input', () => updatePlayerEditorSource(editor));
+            editor.addEventListener('click', event => {
+                const button = event.target.closest('button');
+                if (!button) return;
+
+                if (button.dataset.playerAction === "add") {
+                    addPlayerEditorRow(editor);
+                    return;
+                }
+
+                if (button.dataset.playerAction === "raw") {
+                    textarea.classList.toggle('raw-mode');
+                    button.textContent = textarea.classList.contains('raw-mode') ? 'Rows' : 'Raw';
+                    return;
+                }
+
+                if (button.classList.contains('player-editor-remove')) {
+                    button.closest('.player-editor-row')?.remove();
+                    updatePlayerEditorSource(editor);
+                    syncPlayerEditor(textareaId, true);
+                }
+            });
+
+            textarea.addEventListener('input', () => syncPlayerEditor(textareaId));
+            syncPlayerEditor(textareaId, true);
+        }
+
+        function initPlayerEditors() {
+            ['tmPlayers', 'teamAPlayers', 'teamBPlayers', 'teamASquad', 'teamBSquad']
+                .forEach(enhancePlayerTextarea);
+
+            setInterval(() => {
+                ['tmPlayers', 'teamAPlayers', 'teamBPlayers', 'teamASquad', 'teamBSquad']
+                    .forEach(id => syncPlayerEditor(id));
+            }, 700);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPlayerEditors);
+        } else {
+            initPlayerEditors();
+        }
 
     </script>
 
