@@ -132,7 +132,7 @@
         /* DASHBOARD LOG PANEL */
         #logPanel {
             position: fixed;
-            bottom: 10px;
+            bottom: 48px;
             left: 10px;
             width: 340px;
             max-height: 240px;
@@ -150,7 +150,7 @@
         #logToggle {
             position: fixed;
             bottom: 10px;
-            right: 10px;
+            left: 10px;
             width: auto;
             padding: 6px 10px;
             font-size: 12px;
@@ -3195,6 +3195,126 @@
             line-height: 1 !important;
         }
 
+        #match .player-editor-row input[data-player-field="image"],
+        #lineups .player-editor-row input[data-player-field="image"] {
+            display: none !important;
+        }
+
+        #match .player-editor-row,
+        #lineups .player-editor-row {
+            grid-template-columns: minmax(0, 1fr) 52px !important;
+            padding-right: 8px !important;
+            overflow: visible !important;
+        }
+
+        #match .player-editor-rows,
+        #lineups .player-editor-rows {
+            overflow-x: hidden !important;
+            padding-right: 28px !important;
+        }
+
+        #match .player-editor-remove,
+        #lineups .player-editor-remove {
+            justify-self: end !important;
+            width: 34px !important;
+            min-width: 34px !important;
+            overflow: visible !important;
+        }
+
+        .tm-parser-card {
+            grid-column: 1 / -1;
+            padding: 10px;
+            border: 1px solid rgba(148,163,184,.14);
+            border-radius: 12px;
+            background: rgba(2,6,23,.72);
+        }
+
+        .tm-parser-check {
+            display: flex !important;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 8px !important;
+        }
+
+        .tm-parser-check input {
+            width: auto !important;
+            margin: 0 !important;
+        }
+
+        .tm-parser-row {
+            display: grid;
+            grid-template-columns: 1fr 120px;
+            gap: 8px;
+        }
+
+        .tm-parser-row input,
+        .tm-parser-row button {
+            margin: 0 !important;
+        }
+
+        #bowlerPopup .bowlerOption {
+            font-size: 13px !important;
+            line-height: 1.2 !important;
+        }
+
+        #bowlerPopup h3 {
+            font-size: 18px !important;
+        }
+
+        #livescoring #basicLiveTab select#striker,
+        #livescoring #basicLiveTab select#nonStriker {
+            font-size: 14px !important;
+        }
+
+        #livescoring #basicLiveTab .live-field-label {
+            font-size: 13px !important;
+            line-height: 1.15 !important;
+            color: #d1d5db !important;
+            margin: 5px 0 3px !important;
+        }
+
+        #liveReqRuns,
+        #liveReqRR {
+            font-size: 24px !important;
+            line-height: 1.05 !important;
+        }
+
+        #livescoring #basicLiveTab div:has(> #liveReqRuns),
+        #livescoring #basicLiveTab div:has(> #liveReqRR) {
+            padding: 10px !important;
+            border-radius: 13px !important;
+        }
+
+        .app-dialog-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .app-dialog-actions button {
+            margin: 0 !important;
+            min-height: 38px;
+        }
+
+        #ballEditor .modal-grid {
+            gap: 6px !important;
+            margin-top: 8px !important;
+        }
+
+        #ballEditor button {
+            margin-top: 6px !important;
+            min-height: 36px !important;
+            height: 38px !important;
+            font-size: 14px !important;
+            border-radius: 9px !important;
+        }
+
+        #ballEditor div[style*="grid-template-columns"] {
+            gap: 6px !important;
+            margin-top: 8px !important;
+        }
+
         #teamManager.active {
             row-gap: 6px !important;
             column-gap: 14px !important;
@@ -3434,6 +3554,16 @@
             <input id="tmName">
             <label>Team Logo URL</label>
             <input id="tmLogo">
+            <div class="tm-parser-card">
+                <label class="tm-parser-check">
+                    <input id="tmParseEnabled" type="checkbox">
+                    <span>Parse Cricclubs club URL</span>
+                </label>
+                <div class="tm-parser-row">
+                    <input id="tmCricclubsUrl" placeholder="https://cricclubs.com/...">
+                    <button type="button" onclick="parseCricclubsClubUrl()">Parse</button>
+                </div>
+            </div>
             <label id="tmPlayersLabel">Players (Name|ImageURL)</label>
             <textarea id="tmPlayers" rows="10"></textarea>
             <br><br>
@@ -4086,9 +4216,9 @@
                                     Batters
                                 </h4>
 
-                                Striker
+                                <div class="live-field-label">Striker</div>
                                 <select id="striker"></select>
-                                Non-Striker
+                                <div class="live-field-label">Non-Striker</div>
                                 <select id="nonStriker"></select>
                                 <button onclick="swapBatters()" style="
                             background:#0f172a;
@@ -4199,8 +4329,10 @@
                                 <button class="production-btn"
                                         onclick="openSponsorsModal()">
                                     <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="M12 1v22"></path>
-                                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"></path>
+                                        <path d="M3 7h18v10H3z"></path>
+                                        <path d="M7 7v10"></path>
+                                        <path d="M17 7v10"></path>
+                                        <path d="M10 12h4"></path>
                                     </svg>
                                     <span>Sponsors</span>
                                 </button>
@@ -5516,6 +5648,8 @@
         }
 
         async function resetMatch() {
+            const ok = await confirmAction("Reset the current match and clear the live scoring state?", "Reset match?");
+            if (!ok) return;
             localStorage.removeItem("cricketMatchState");
             liveTotal = 0;
             liveWickets = 0;
@@ -7027,9 +7161,84 @@ CURRENT OVER SUMMARY
             document.getElementById('tmPlayers').value = "";
         }
 
+        function toAbsoluteUrl(value, baseUrl) {
+            if (!value) return "";
+            try {
+                return new URL(value, baseUrl).href;
+            } catch {
+                return value;
+            }
+        }
+
+        async function parseCricclubsClubUrl() {
+            const enabled = document.getElementById('tmParseEnabled')?.checked;
+            const url = document.getElementById('tmCricclubsUrl')?.value.trim();
+            if (!enabled) {
+                showModal("Check Parse Cricclubs club URL first");
+                return;
+            }
+            if (!url) {
+                showModal("Enter a Cricclubs URL");
+                return;
+            }
+
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`Unable to load page (${res.status})`);
+                const html = await res.text();
+                const doc = new DOMParser().parseFromString(html, "text/html");
+                const titleText = (doc.querySelector("h1,h2,title")?.textContent || "")
+                    .replace(/\s+/g, " ")
+                    .replace(/CricClubs/ig, "")
+                    .replace(/[-|]+$/g, "")
+                    .trim();
+                const logoImg = Array.from(doc.images).find(img => {
+                    const src = (img.getAttribute("src") || "").toLowerCase();
+                    return src.includes("teamlogo") || src.includes("teamlogos") || src.includes("logo");
+                });
+                const players = [];
+                const seen = new Set();
+
+                Array.from(doc.images).forEach(img => {
+                    const src = img.getAttribute("src") || "";
+                    const lower = src.toLowerCase();
+                    if (!lower.includes("profile") && !lower.includes("player")) return;
+                    const parentText = img.closest("a,td,li,div")?.textContent || "";
+                    const name = (img.getAttribute("alt") || img.getAttribute("title") || parentText)
+                        .replace(/\s+/g, " ")
+                        .trim();
+                    if (!name || seen.has(name.toLowerCase())) return;
+                    seen.add(name.toLowerCase());
+                    players.push({ name, image: toAbsoluteUrl(src, url) });
+                });
+
+                Array.from(doc.querySelectorAll('a[href*="player"], a[href*="profile"]')).forEach(link => {
+                    const name = (link.textContent || "").replace(/\s+/g, " ").trim();
+                    if (!name || seen.has(name.toLowerCase())) return;
+                    seen.add(name.toLowerCase());
+                    players.push({ name, image: "" });
+                });
+
+                if (titleText) document.getElementById('tmName').value = titleText;
+                if (logoImg) document.getElementById('tmLogo').value = toAbsoluteUrl(logoImg.getAttribute("src"), url);
+                if (players.length) {
+                    document.getElementById('tmPlayers').value =
+                        players.map(p => p.image ? `${p.name}|${p.image}` : p.name).join('\n');
+                    syncPlayerEditor('tmPlayers', true);
+                }
+
+                showModal(`Parsed ${players.length} players${titleText ? ` for ${titleText}` : ""}`);
+            } catch (error) {
+                showModal(`Could not parse Cricclubs page. ${error.message || error}`);
+            }
+        }
+
         /* ================== Delete Team Manager ================= */
         async function deleteTeamManager() {
             const name = document.getElementById('tmSavedTeams').value;
+            if (!name) return;
+            const ok = await confirmAction(`Delete ${name}?`, "Delete team?");
+            if (!ok) return;
             await fetch('/api/teams', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
@@ -7170,8 +7379,9 @@ CURRENT OVER SUMMARY
             });
         }
         /* ===========Remove Ball ============== */
-        function removeBall(index) {
-            if (!confirm("Remove this ball?")) return;
+        async function removeBall(index) {
+            const ok = await confirmAction("Remove this ball from the innings history?", "Remove ball?");
+            if (!ok) return;
             liveHistory.splice(index, 1);
             recalculateMatch();
             updateLiveDisplay();
@@ -7241,8 +7451,10 @@ CURRENT OVER SUMMARY
             document.getElementById("ballEditor").style.display = "none";
         }
         /* ===== Delete Edit Ball ============= */
-        function deleteEditedBall() {
+        async function deleteEditedBall() {
             if (editingBallIndex < 0) return;
+            const ok = await confirmAction("Delete this ball from the innings history?", "Delete ball?");
+            if (!ok) return;
             liveHistory.splice(editingBallIndex, 1);
             closeBallEditor();
             recalculateMatch();
@@ -7402,9 +7614,18 @@ CURRENT OVER SUMMARY
             updateLiveDisplay();
         }
         /* ========= Edit Ball Extra ======== */
-        function editBallExtra(type) {
+        async function editBallExtra(type) {
             if (editingBallIndex < 0) return;
-            const runs = parseInt(prompt("Enter runs for this extra", 1));
+            const value = await showAppDialog({
+                title: "Extra runs",
+                message: "Enter runs for this extra.",
+                input: true,
+                placeholder: "1",
+                okText: "OK",
+                cancelText: "Cancel"
+            });
+            if (!value) return;
+            const runs = parseInt(value);
             if (isNaN(runs) || runs < 0) {
                 showModal("Invalid runs");
                 return;
@@ -8127,6 +8348,8 @@ CURRENT OVER SUMMARY
             showModal("Loaded from cloud ✅");
         }
         async function deleteMatchSetup() {
+            const ok = await confirmAction("Delete the saved match setup from cloud?", "Delete setup?");
+            if (!ok) return;
             await fetch('/api/matchSetup', {
                 method: 'DELETE'
             });
@@ -8231,7 +8454,14 @@ CURRENT OVER SUMMARY
         }
 
         async function saveMatchToCloud() {
-            const id = prompt("Enter match name (e.g. NYC vs Titans)");
+            const id = await showAppDialog({
+                title: "Enter match name",
+                message: "Name this match save.",
+                input: true,
+                placeholder: "NYC vs NJ",
+                okText: "OK",
+                cancelText: "Cancel"
+            });
             if (!id) return;
             const data = {
                 teamA: teamA.value,
@@ -8427,7 +8657,8 @@ CURRENT OVER SUMMARY
         async function deleteMatch() {
             const id = document.getElementById('matchList').value;
             if (!id) return;
-            if (!confirm("Delete this match?")) return;
+            const ok = await confirmAction(`Delete match "${id}"?`, "Delete match?");
+            if (!ok) return;
             await fetch('/api/matchSetup', {
                 method: 'DELETE',
                 headers: {
@@ -8459,6 +8690,56 @@ CURRENT OVER SUMMARY
         function showModal(message) {
             document.getElementById("modalText").innerText = message;
             document.getElementById("customModal").style.display = "flex";
+        }
+
+        function showAppDialog({ title = "Confirm", message = "", input = false, placeholder = "", okText = "OK", cancelText = "Cancel" }) {
+            return new Promise(resolve => {
+                const dialog = document.getElementById("appDialog");
+                const titleEl = document.getElementById("appDialogTitle");
+                const messageEl = document.getElementById("appDialogMessage");
+                const inputEl = document.getElementById("appDialogInput");
+                const okBtn = document.getElementById("appDialogOk");
+                const cancelBtn = document.getElementById("appDialogCancel");
+                if (!dialog || !titleEl || !messageEl || !inputEl || !okBtn || !cancelBtn) {
+                    resolve(input ? "" : false);
+                    return;
+                }
+
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+                inputEl.style.display = input ? "block" : "none";
+                inputEl.value = "";
+                inputEl.placeholder = placeholder;
+                okBtn.textContent = okText;
+                cancelBtn.textContent = cancelText;
+                dialog.style.display = "flex";
+
+                const cleanup = value => {
+                    dialog.style.display = "none";
+                    okBtn.onclick = null;
+                    cancelBtn.onclick = null;
+                    inputEl.onkeydown = null;
+                    resolve(value);
+                };
+
+                okBtn.onclick = () => cleanup(input ? inputEl.value.trim() : true);
+                cancelBtn.onclick = () => cleanup(input ? "" : false);
+                inputEl.onkeydown = event => {
+                    if (event.key === "Enter") cleanup(inputEl.value.trim());
+                    if (event.key === "Escape") cleanup(input ? "" : false);
+                };
+
+                if (input) setTimeout(() => inputEl.focus(), 50);
+            });
+        }
+
+        function confirmAction(message, title = "Confirm") {
+            return showAppDialog({
+                title,
+                message,
+                okText: "Yes",
+                cancelText: "Cancel"
+            });
         }
 
         function updateBranding() {
@@ -9091,7 +9372,7 @@ CURRENT OVER SUMMARY
             textarea.insertAdjacentElement('afterend', editor);
 
             editor.addEventListener('input', () => updatePlayerEditorSource(editor));
-            editor.addEventListener('click', event => {
+            editor.addEventListener('click', async event => {
                 const button = event.target.closest('button');
                 if (!button) return;
 
@@ -9107,6 +9388,8 @@ CURRENT OVER SUMMARY
                 }
 
                 if (button.classList.contains('player-editor-remove')) {
+                    const ok = await confirmAction("Remove this player row?", "Remove player?");
+                    if (!ok) return;
                     button.closest('.player-editor-row')?.remove();
                     updatePlayerEditorSource(editor);
                     syncPlayerEditor(textareaId, true);
@@ -9237,6 +9520,34 @@ CURRENT OVER SUMMARY
             ">
             <div id="modalText" style="margin-bottom:15px"></div>
             <button onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
+    <div id="appDialog" style="
+         display:none;
+         position:fixed;
+         inset:0;
+         background:rgba(0,0,0,0.68);
+         z-index:1000000;
+         align-items:center;
+         justify-content:center;
+         ">
+        <div style="
+            background:#020617;
+            padding:18px;
+            border-radius:12px;
+            width:340px;
+            max-width:92vw;
+            border:1px solid #1f2937;
+            box-shadow:0 24px 70px rgba(0,0,0,.65);
+            ">
+            <h3 id="appDialogTitle" style="margin:0 0 8px;font-size:18px">Confirm</h3>
+            <div id="appDialogMessage" style="font-size:13px;color:#cbd5e1;line-height:1.35"></div>
+            <input id="appDialogInput" style="display:none;margin-top:12px" autocomplete="off">
+            <div class="app-dialog-actions">
+                <button id="appDialogCancel" type="button" style="background:#374151">Cancel</button>
+                <button id="appDialogOk" type="button">OK</button>
+            </div>
         </div>
     </div>
 
