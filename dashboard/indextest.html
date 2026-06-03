@@ -7196,7 +7196,7 @@ CURRENT OVER SUMMARY
             }
         }
 
-        async function parseCricclubsClubUrl() {
+       async function parseCricclubsClubUrl() {
             const enabled = document.getElementById('tmParseEnabled')?.checked;
             const url = document.getElementById('tmCricclubsUrl')?.value.trim();
             if (!enabled) {
@@ -7208,10 +7208,14 @@ CURRENT OVER SUMMARY
                 return;
             }
             try {
+                const pageRes = await fetch(url, {
+                    credentials: "include"
+                });
+                const html = await pageRes.text();
                 const res = await fetch('/api/parse-cricclubs', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url })
+                    body: JSON.stringify({ url, html })
                 });
                 const data = await res.json();
                 if (!res.ok) {
