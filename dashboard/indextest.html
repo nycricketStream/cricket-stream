@@ -2529,6 +2529,23 @@
                 margin-bottom: 10px;
             }
         }
+
+        /* =========================
+           TEAM MANAGER TITLE ALIGNMENT
+        ========================= */
+
+        #teamManager.active > h2 {
+            box-sizing: border-box;
+            width: calc(100% + 36% + 16px);
+            margin-right: calc(-36% - 16px);
+        }
+
+        @media (max-width: 900px) {
+            #teamManager.active > h2 {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
     </style>
 </head>
 <body>
