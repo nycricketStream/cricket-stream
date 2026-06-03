@@ -9,9 +9,13 @@ function absoluteUrl(value, baseUrl) {
 
 function cleanText(value) {
     return String(value || "")
+        .replace(/<script[\s\S]*?<\/script>/gi, " ")
+        .replace(/<style[\s\S]*?<\/style>/gi, " ")
         .replace(/<[^>]*>/g, " ")
         .replace(/&nbsp;/g, " ")
         .replace(/&amp;/g, "&")
+        .replace(/&#39;/g, "'")
+        .replace(/&quot;/g, '"')
         .replace(/\s+/g, " ")
         .trim();
 }
@@ -26,46 +30,31 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: "Method not allowed" });
     }
 
-    const { url } = req.body || {};
+    const { url, html: postedHtml } = req.body || {};
 
     if (!url || !url.includes("cricclubs.com")) {
         return res.status(400).json({ error: "Valid Cricclubs URL required" });
     }
 
     try {
+        const html = postedHtml || "";
 
-        const page = await fetch(url, {
-            headers: {
-                "User-Agent":
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
-                "Referer": "https://cricclubs.com/",
-                "Accept":
-                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                "Accept-Language": "en-US,en;q=0.9",
-                "Cache-Control": "no-cache",
-                "Pragma": "no-cache"
-            }
-        });
-    
-        console.log("================================");
-        console.log("CRICCLUBS REQUEST");
-        console.log("URL:", url);
-        console.log("STATUS:", page.status);
-        console.log("================================");
-    
-        const html = await page.text();
-    
-        console.log("FIRST 1000 CHARS:");
-        console.log(html.substring(0, 1000));
-        console.log("================================");
-    
-        if (!page.ok) {
-            return res.status(page.status).json({
-                error: `Cricclubs page failed: ${page.status}`,
-                preview: html.substring(0, 1000)
+        if (!html) {
+            return res.status(400).json({
+                error: "No HTML received. CricClubs blocks Vercel scraping with Cloudflare. Send page HTML from the dashboard/browser."
             });
         }
-    
+
+        if (
+            html.includes("Just a moment") ||
+            html.includes("challenges.cloudflare.com") ||
+            html.includes("cf-browser-verification")
+        ) {
+            return res.status(403).json({
+                error: "CricClubs returned Cloudflare challenge page, not the team page."
+            });
+        }
+
         let teamName = cleanText(
             firstMatch(html, /<h1[^>]*>([\s\S]*?)<\/h1>/i) ||
             firstMatch(html, /<h2[^>]*>([\s\S]*?)<\/h2>/i) ||
@@ -87,7 +76,8 @@ export default async function handler(req, res) {
         const players = [];
         const seen = new Set();
 
-        const imgNameRegex = /<img[^>]+src=["']([^"']+)["'][^>]*>[\s\S]{0,500}?<a[^>]*>([\s\S]*?)<\/a>/gi;
+        const imgNameRegex =
+            /<img[^>]+src=["']([^"']+)["'][^>]*>[\s\S]{0,700}?<a[^>]*>([\s\S]*?)<\/a>/gi;
 
         let match;
         while ((match = imgNameRegex.exec(html)) !== null) {
@@ -98,7 +88,7 @@ export default async function handler(req, res) {
                 name &&
                 image &&
                 !seen.has(name.toLowerCase()) &&
-                !/view|scorecard|schedule|points|club/i.test(name)
+                !/view|scorecard|schedule|points|club|league|login|register/i.test(name)
             ) {
                 seen.add(name.toLowerCase());
                 players.push({ name, image });
@@ -113,13 +103,14 @@ export default async function handler(req, res) {
                 const rowHtml = row[1];
 
                 const img = firstMatch(rowHtml, /<img[^>]+src=["']([^"']+)["']/i);
+
                 const cols = [...rowHtml.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)]
                     .map(x => cleanText(x[1]))
                     .filter(Boolean);
 
                 const name = cols.find(c =>
                     /^[A-Za-z][A-Za-z .'-]{2,}$/.test(c) &&
-                    !/bat|bowl|role|player|jersey|team/i.test(c)
+                    !/bat|bowl|role|player|jersey|team|club|league|points|score/i.test(c)
                 );
 
                 if (name && !seen.has(name.toLowerCase())) {
