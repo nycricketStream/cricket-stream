@@ -41,6 +41,14 @@ function getMeta(html, prop) {
 }
 
 export default async function handler(req, res) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+    if (req.method === "OPTIONS") {
+        return res.status(200).end();
+    }
+
     if (req.method !== "POST") {
         return res.status(405).json({ error: "Method not allowed" });
     }
@@ -55,16 +63,17 @@ export default async function handler(req, res) {
 
     if (!html) {
         return res.status(400).json({
-            error: "No HTML received. Paste CricClubs page source HTML."
+            error: "No HTML received. Open the CricClubs page and run the bookmarklet."
         });
     }
 
     if (
         html.includes("Just a moment") ||
-        html.includes("challenges.cloudflare.com")
+        html.includes("challenges.cloudflare.com") ||
+        html.includes("cf-browser-verification")
     ) {
         return res.status(403).json({
-            error: "This is a Cloudflare page, not the CricClubs team page."
+            error: "This is a Cloudflare page, not the real CricClubs team page."
         });
     }
 
@@ -79,9 +88,7 @@ export default async function handler(req, res) {
         }
 
         if (!teamName) {
-            teamName = cleanText(
-                firstMatch(html, /<title[^>]*>([\s\S]*?)<\/title>/i)
-            );
+            teamName = cleanText(firstMatch(html, /<title[^>]*>([\s\S]*?)<\/title>/i));
         }
 
         teamName = teamName
