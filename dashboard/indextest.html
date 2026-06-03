@@ -2021,6 +2021,185 @@
                 display: block;
             }
         }
+
+        /* =========================
+           APP DENSITY REFINEMENT
+        ========================= */
+
+        #teamManager.active,
+        #lineups.active,
+        #match.active {
+            row-gap: 8px;
+        }
+
+        #match .setup-grid,
+        #match .setup-bottom-grid {
+            gap: 10px;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        #match .setup-card {
+            padding: 13px 14px;
+        }
+
+        #match .setup-card h4,
+        #teamManager h3,
+        #lineups h4 {
+            margin-bottom: 8px;
+        }
+
+        #match .setup-card label,
+        #teamManager > label,
+        #lineups > h4 {
+            margin-top: 8px;
+            margin-bottom: 4px;
+        }
+
+        #match .setup-card label:first-of-type,
+        #teamManager > h2 + label {
+            margin-top: 0;
+        }
+
+        #match .setup-card input,
+        #match .setup-card select,
+        #match .setup-card textarea,
+        #teamManager > input,
+        #teamManager > select,
+        #teamManager > textarea,
+        #lineups > select,
+        #lineups > textarea {
+            margin-top: 0;
+            margin-bottom: 0;
+            min-height: 44px;
+            padding: 9px 11px;
+            border-radius: 12px;
+        }
+
+        #match .setup-card textarea,
+        #teamManager > textarea,
+        #lineups > textarea {
+            min-height: 128px;
+        }
+
+        #teamAPlayers,
+        #teamBPlayers {
+            min-height: 140px !important;
+        }
+
+        #tmPlayers {
+            min-height: 205px !important;
+        }
+
+        #teamASquad,
+        #teamBSquad {
+            min-height: 150px !important;
+        }
+
+        #match button,
+        #teamManager > button,
+        #lineups > button {
+            margin-top: 0;
+            min-height: 44px;
+            padding: 9px 12px;
+            border-radius: 12px;
+        }
+
+        #match .setup-actions {
+            gap: 9px;
+            margin-top: 10px;
+        }
+
+        #match .setup-actions button {
+            min-height: 46px;
+            padding: 10px 12px;
+        }
+
+        #match > .setup-card[style] {
+            margin-top: 10px !important;
+        }
+
+        #teamManager.active {
+            row-gap: 6px;
+        }
+
+        #teamManager > h3 {
+            padding: 12px 13px 6px;
+        }
+
+        #teamManager > select,
+        #teamManager > button:nth-of-type(3),
+        #teamManager > button:nth-of-type(4) {
+            min-height: 44px;
+        }
+
+        #lineups.active {
+            row-gap: 0;
+            column-gap: 10px;
+        }
+
+        #lineups > h4 {
+            padding: 12px 13px 6px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        #lineups > select,
+        #lineups > textarea,
+        #lineups > button:not(:last-child),
+        #teamAXI,
+        #teamBXI {
+            border-radius: 0;
+        }
+
+        #lineups > button:nth-of-type(2),
+        #lineups > button:nth-of-type(4) {
+            border-radius: 0;
+        }
+
+        #teamAXI,
+        #teamBXI {
+            padding: 10px;
+            min-height: 70px;
+        }
+
+        #lineups > button:last-child {
+            margin-top: 10px;
+            min-height: 50px;
+        }
+
+        @media (min-width: 901px) and (max-width: 1280px) {
+            #match .setup-card {
+                padding: 11px 12px;
+            }
+
+            #match .setup-card textarea {
+                min-height: 122px;
+            }
+
+            #teamAPlayers,
+            #teamBPlayers {
+                min-height: 128px !important;
+            }
+
+            #tmPlayers {
+                min-height: 180px !important;
+            }
+
+            #teamASquad,
+            #teamBSquad {
+                min-height: 130px !important;
+            }
+
+            #match .setup-card input,
+            #match .setup-card select,
+            #teamManager > input,
+            #teamManager > select,
+            #lineups > select {
+                min-height: 42px;
+            }
+        }
     </style>
 </head>
 <body>
