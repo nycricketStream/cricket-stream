@@ -2200,6 +2200,190 @@
                 min-height: 42px;
             }
         }
+
+        /* =========================
+           FORM LAYOUT CORRECTION
+           Keeps fields tight, no logic changes
+        ========================= */
+
+        #teamManager.active {
+            display: block;
+            position: relative;
+            padding-right: calc(37% + 14px);
+        }
+
+        #teamManager > h2 {
+            margin-right: calc(-37% - 14px);
+        }
+
+        #teamManager > label,
+        #teamManager > input,
+        #teamManager > textarea,
+        #teamManager > button:nth-of-type(1),
+        #teamManager > button:nth-of-type(2) {
+            display: block;
+            width: 100%;
+        }
+
+        #teamManager > label {
+            margin-top: 9px;
+            margin-bottom: 4px;
+        }
+
+        #teamManager > h2 + label {
+            margin-top: 0;
+        }
+
+        #teamManager > input,
+        #teamManager > textarea {
+            margin-bottom: 8px;
+        }
+
+        #teamManager > h3,
+        #teamManager > select,
+        #teamManager > button:nth-of-type(3),
+        #teamManager > button:nth-of-type(4) {
+            position: absolute;
+            right: 0;
+            width: 37%;
+        }
+
+        #teamManager > h3 {
+            top: 78px;
+            height: 66px;
+        }
+
+        #tmSavedTeams {
+            top: 154px;
+        }
+
+        #teamManager > button:nth-of-type(3) {
+            top: 216px;
+        }
+
+        #teamManager > button:nth-of-type(4) {
+            top: 270px;
+        }
+
+        #lineups.active {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-areas:
+                "title title"
+                "headA headB"
+                "selectA selectB"
+                "loadA loadB"
+                "squadA squadB"
+                "genA genB"
+                "xiA xiB"
+                "apply apply";
+            gap: 0 10px;
+            align-items: start;
+        }
+
+        #lineups > h3 {
+            grid-area: title;
+        }
+
+        #lineups > h4:nth-of-type(1) {
+            grid-area: headA;
+        }
+
+        #lineups > h4:nth-of-type(2) {
+            grid-area: headB;
+        }
+
+        #lineupTeamA {
+            grid-area: selectA;
+        }
+
+        #lineupTeamB {
+            grid-area: selectB;
+        }
+
+        #lineups > button:nth-of-type(1) {
+            grid-area: loadA;
+        }
+
+        #lineups > button:nth-of-type(3) {
+            grid-area: loadB;
+        }
+
+        #teamASquad {
+            grid-area: squadA;
+        }
+
+        #teamBSquad {
+            grid-area: squadB;
+        }
+
+        #lineups > button:nth-of-type(2) {
+            grid-area: genA;
+        }
+
+        #lineups > button:nth-of-type(4) {
+            grid-area: genB;
+        }
+
+        #teamAXI {
+            grid-area: xiA;
+        }
+
+        #teamBXI {
+            grid-area: xiB;
+        }
+
+        #lineups > button:last-child {
+            grid-area: apply;
+        }
+
+        #match .setup-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        #match .setup-card h4 {
+            margin-bottom: 8px;
+        }
+
+        #match .setup-card label {
+            margin-top: 8px !important;
+            margin-bottom: 4px !important;
+        }
+
+        #match .setup-card h4 + label {
+            margin-top: 0 !important;
+        }
+
+        #match .setup-card input,
+        #match .setup-card select,
+        #match .setup-card textarea {
+            margin-bottom: 0 !important;
+        }
+
+        @media (max-width: 900px) {
+            #teamManager.active {
+                display: block;
+                padding-right: 0;
+            }
+
+            #teamManager > h2 {
+                margin-right: 0;
+            }
+
+            #teamManager > h3,
+            #teamManager > select,
+            #teamManager > button:nth-of-type(3),
+            #teamManager > button:nth-of-type(4) {
+                position: static;
+                width: 100%;
+            }
+
+            #lineups.active {
+                display: block;
+            }
+        }
     </style>
 </head>
 <body>
