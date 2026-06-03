@@ -2540,7 +2540,7 @@
             column-gap: 16px;
             row-gap: 10px;
             align-items: start;
-            padding-right: 16px;
+            padding-right: 0;
         }
 
         #teamManager.active > h2 {
@@ -2549,6 +2549,13 @@
             width: 100%;
             margin-right: 0;
             margin-bottom: 4px;
+        }
+
+        #teamManager.active > h2,
+        #lineups.active > h3 {
+            justify-self: stretch;
+            width: 100%;
+            max-width: none;
         }
 
         #teamManager.active > label,
@@ -2595,7 +2602,7 @@
         @media (max-width: 900px) {
             #teamManager.active {
                 display: block;
-                padding-right: 12px;
+                padding-right: 0;
             }
 
             #teamManager.active > h3,
@@ -2632,7 +2639,7 @@
             </svg>
             <span>Fullscreen</span>
         </button>
-        <h2>MKTV Broadcast</h2>
+        <h2>Media Center</h2>
         <div class="menu-section">
             <div class="menu-title">SETUP</div>
             <button class="tab-btn" onclick="showTab(event, 'teamManager')" title="Team">
