@@ -3252,6 +3252,10 @@
             margin: 0 !important;
         }
 
+        .tm-parser-card.parse-on .tm-parser-row {
+            display: grid;
+        }
+
         #bowlerPopup .bowlerOption {
             font-size: 13px !important;
             line-height: 1.2 !important;
@@ -7075,6 +7079,28 @@ CURRENT OVER SUMMARY
             }, 300);
         }
 
+        /* ========Toggle CricClubs Parser ==========*/
+        function toggleCricclubsParser() {
+            const checked = document.getElementById('tmParseEnabled')?.checked;
+            const card = document.querySelector('.tm-parser-card');
+        
+            if (!card) return;
+        
+            card.classList.toggle('parse-on', checked);
+        
+            if (!checked) {
+                document.getElementById('tmCricclubsUrl').value = "";
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const cb = document.getElementById('tmParseEnabled');
+            if (cb) {
+                cb.addEventListener('change', toggleCricclubsParser);
+                toggleCricclubsParser();
+            }
+        });
+
         /* =========Load Team To Lineup ===========*/
         async function loadTeamToLineup(side) {
             const selectId = side === 'A' ? 'lineupTeamA' : 'lineupTeamB';
@@ -7181,55 +7207,27 @@ CURRENT OVER SUMMARY
                 showModal("Enter a Cricclubs URL");
                 return;
             }
-
             try {
-                const res = await fetch(url);
-                if (!res.ok) throw new Error(`Unable to load page (${res.status})`);
-                const html = await res.text();
-                const doc = new DOMParser().parseFromString(html, "text/html");
-                const titleText = (doc.querySelector("h1,h2,title")?.textContent || "")
-                    .replace(/\s+/g, " ")
-                    .replace(/CricClubs/ig, "")
-                    .replace(/[-|]+$/g, "")
-                    .trim();
-                const logoImg = Array.from(doc.images).find(img => {
-                    const src = (img.getAttribute("src") || "").toLowerCase();
-                    return src.includes("teamlogo") || src.includes("teamlogos") || src.includes("logo");
+                const res = await fetch('/api/parse-cricclubs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
                 });
-                const players = [];
-                const seen = new Set();
-
-                Array.from(doc.images).forEach(img => {
-                    const src = img.getAttribute("src") || "";
-                    const lower = src.toLowerCase();
-                    if (!lower.includes("profile") && !lower.includes("player")) return;
-                    const parentText = img.closest("a,td,li,div")?.textContent || "";
-                    const name = (img.getAttribute("alt") || img.getAttribute("title") || parentText)
-                        .replace(/\s+/g, " ")
-                        .trim();
-                    if (!name || seen.has(name.toLowerCase())) return;
-                    seen.add(name.toLowerCase());
-                    players.push({ name, image: toAbsoluteUrl(src, url) });
-                });
-
-                Array.from(doc.querySelectorAll('a[href*="player"], a[href*="profile"]')).forEach(link => {
-                    const name = (link.textContent || "").replace(/\s+/g, " ").trim();
-                    if (!name || seen.has(name.toLowerCase())) return;
-                    seen.add(name.toLowerCase());
-                    players.push({ name, image: "" });
-                });
-
-                if (titleText) document.getElementById('tmName').value = titleText;
-                if (logoImg) document.getElementById('tmLogo').value = toAbsoluteUrl(logoImg.getAttribute("src"), url);
-                if (players.length) {
-                    document.getElementById('tmPlayers').value =
-                        players.map(p => p.image ? `${p.name}|${p.image}` : p.name).join('\n');
-                    syncPlayerEditor('tmPlayers', true);
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || "Parse failed");
                 }
-
-                showModal(`Parsed ${players.length} players${titleText ? ` for ${titleText}` : ""}`);
-            } catch (error) {
-                showModal(`Could not parse Cricclubs page. ${error.message || error}`);
+                document.getElementById('tmName').value = data.teamName || "";
+                document.getElementById('tmLogo').value = data.teamLogo || "";
+                document.getElementById('tmPlayers').value =
+                    data.players.map(p => `${p.name}|${p.image || ""}`).join('\n');
+                const label = document.getElementById('tmPlayersLabel');
+                if (label) {
+                    label.textContent = `Players (Name|ImageURL) (${data.players.length})`;
+                }
+                showModal(`Parsed ${data.players.length} players`);
+            } catch (err) {
+                showModal("Cricclubs parse error: " + err.message);
             }
         }
 
