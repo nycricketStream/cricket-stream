@@ -1342,9 +1342,53 @@
             margin-bottom: 8px;
         }
 
+        .sidebar.collapsed #fullscreenBtn::before {
+            content: none;
+        }
+
+        .sidebar.collapsed #fullscreenBtn .app-icon {
+            width: 18px;
+            height: 18px;
+        }
+
         .tab-btn.active {
             background: linear-gradient(145deg, #1d4ed8, #2146c7);
             box-shadow: 0 0 0 1px rgba(96,165,250,.25), 0 8px 18px rgba(37,99,235,.28);
+        }
+
+        .app-icon {
+            width: 19px;
+            height: 19px;
+            flex: 0 0 19px;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        #sidebarToggle,
+        #fullscreenBtn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 800;
+        }
+
+        #sidebarToggle .app-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .tab-btn .app-icon {
+            color: #93c5fd;
+            transition: color .18s ease, filter .18s ease;
+        }
+
+        .tab-btn.active .app-icon {
+            color: #ffffff;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,.22));
         }
 
         #livescoring.tab {
@@ -1597,7 +1641,13 @@
 </head>
 <body>
     <div class="sidebar">
-        <button id="sidebarToggle">☰</button>
+        <button id="sidebarToggle" aria-label="Toggle menu">
+            <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 6h16"></path>
+                <path d="M4 12h16"></path>
+                <path d="M4 18h16"></path>
+            </svg>
+        </button>
         <button id="fullscreenBtn"
                 onclick="toggleFullscreen()"
                 style="
@@ -1606,24 +1656,87 @@
             border:1px solid #334155;
             font-size:12px;
         ">
-            ⛶ Fullscreen
+            <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+                <path d="M16 3h3a2 2 0 0 1 2 2v3"></path>
+                <path d="M8 21H5a2 2 0 0 1-2-2v-3"></path>
+                <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+            </svg>
+            <span>Fullscreen</span>
         </button>
         <h2>MKTV Broadcast</h2>
         <div class="menu-section">
             <div class="menu-title">SETUP</div>
-            <button class="tab-btn" onclick="showTab(event, 'teamManager')">🧑‍🤝‍🧑👥 <span>Team</span></button>
-            <button class="tab-btn" onclick="showTab(event,'lineups')">📋 <span>Lineups</span></button>
-            <button class="tab-btn active" onclick="showTab(event,'match')">🏏 <span>Match</span></button>
+            <button class="tab-btn" onclick="showTab(event, 'teamManager')" title="Team">
+                <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span>Team</span>
+            </button>
+            <button class="tab-btn" onclick="showTab(event,'lineups')" title="Lineups">
+                <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v16H4V6a2 2 0 0 1 2-2h2"></path>
+                    <path d="M8 2h8v4H8z"></path>
+                    <path d="M8 11h8"></path>
+                    <path d="M8 15h8"></path>
+                    <path d="M8 19h5"></path>
+                </svg>
+                <span>Lineups</span>
+            </button>
+            <button class="tab-btn active" onclick="showTab(event,'match')" title="Match">
+                <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 21h8"></path>
+                    <path d="M12 17v4"></path>
+                    <path d="M7 4h10v4a5 5 0 0 1-10 0V4z"></path>
+                    <path d="M5 5H3v3a4 4 0 0 0 4 4"></path>
+                    <path d="M19 5h2v3a4 4 0 0 1-4 4"></path>
+                </svg>
+                <span>Match</span>
+            </button>
         </div>
         <div class="menu-section">
             <div class="menu-title">SCORING</div>
-            <button class="tab-btn" onclick="showTab(event,'livescoring')">📊 <span>Live</span></button>
+            <button class="tab-btn" onclick="showTab(event,'livescoring')" title="Live">
+                <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 3v18h18"></path>
+                    <path d="M7 16v-5"></path>
+                    <path d="M12 16V7"></path>
+                    <path d="M17 16v-3"></path>
+                </svg>
+                <span>Live</span>
+            </button>
         </div>
         <div class="menu-section">
             <div class="menu-title">SYSTEM</div>
-            <button class="tab-btn" onclick="saveMatchSetup()">💾 <span>Save</span></button>
-            <button class="tab-btn" onclick="loadMatchSetup()">📂 <span>Load</span></button>
-            <button class="tab-btn" onclick="resetMatch()">🗑 <span>Reset</span></button>
+            <button class="tab-btn" onclick="saveMatchSetup()" title="Save">
+                <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l3 3v15z"></path>
+                    <path d="M17 21v-8H7v8"></path>
+                    <path d="M7 3v5h9"></path>
+                </svg>
+                <span>Save</span>
+            </button>
+            <button class="tab-btn" onclick="loadMatchSetup()" title="Load">
+                <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 7h6l2 2h10v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"></path>
+                    <path d="M12 13v5"></path>
+                    <path d="M9 16l3 3 3-3"></path>
+                </svg>
+                <span>Load</span>
+            </button>
+            <button class="tab-btn" onclick="resetMatch()" title="Reset">
+                <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 6h18"></path>
+                    <path d="M8 6V4h8v2"></path>
+                    <path d="M19 6l-1 16H6L5 6"></path>
+                    <path d="M10 11v6"></path>
+                    <path d="M14 11v6"></path>
+                </svg>
+                <span>Reset</span>
+            </button>
         </div>
     </div>
     <div class="main">
