@@ -2384,6 +2384,151 @@
                 display: block;
             }
         }
+
+        /* =========================
+           APP BREATHING ROOM FIX
+        ========================= */
+
+        #teamManager.active {
+            padding-right: calc(36% + 16px);
+        }
+
+        #teamManager > h2 {
+            margin-right: calc(-36% - 16px);
+            margin-bottom: 16px;
+        }
+
+        #teamManager > h3,
+        #teamManager > select,
+        #teamManager > button:nth-of-type(3),
+        #teamManager > button:nth-of-type(4) {
+            width: 36%;
+        }
+
+        #teamManager > h3 {
+            top: 86px;
+            height: 58px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        #tmSavedTeams {
+            top: 154px;
+        }
+
+        #teamManager > button:nth-of-type(3) {
+            top: 214px;
+        }
+
+        #teamManager > button:nth-of-type(4) {
+            top: 268px;
+        }
+
+        #teamManager > label {
+            margin-top: 12px;
+            margin-bottom: 6px;
+        }
+
+        #teamManager > h2 + label {
+            margin-top: 0;
+        }
+
+        #teamManager > input,
+        #teamManager > textarea {
+            margin-bottom: 12px;
+        }
+
+        #teamManager > button:nth-of-type(1) {
+            margin-top: 10px;
+            margin-bottom: 8px;
+        }
+
+        #teamManager > button:nth-of-type(2) {
+            margin-top: 0;
+        }
+
+        #lineups.active {
+            gap: 8px 12px;
+        }
+
+        #lineups > h4 {
+            border-radius: 16px 16px 0 0;
+        }
+
+        #lineups > select,
+        #lineups > button:not(:last-child),
+        #lineups > textarea,
+        #teamAXI,
+        #teamBXI {
+            margin-bottom: 0;
+        }
+
+        #lineups > button:nth-of-type(1),
+        #lineups > button:nth-of-type(3),
+        #lineups > button:nth-of-type(2),
+        #lineups > button:nth-of-type(4) {
+            min-height: 46px;
+        }
+
+        #lineups > button:last-child {
+            margin-top: 12px;
+        }
+
+        #match .setup-grid,
+        #match .setup-bottom-grid {
+            gap: 12px;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+
+        #match .setup-card label {
+            margin-top: 11px !important;
+            margin-bottom: 5px !important;
+        }
+
+        #match .setup-card h4 + label {
+            margin-top: 0 !important;
+        }
+
+        #match .setup-card input,
+        #match .setup-card select,
+        #match .setup-card textarea {
+            min-height: 46px;
+        }
+
+        #match .setup-actions {
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        @media (min-width: 901px) and (max-width: 1280px) {
+            #teamManager > h2 {
+                margin-bottom: 12px;
+            }
+
+            #teamManager > h3 {
+                top: 72px;
+                height: 54px;
+            }
+
+            #tmSavedTeams {
+                top: 136px;
+            }
+
+            #teamManager > button:nth-of-type(3) {
+                top: 194px;
+            }
+
+            #teamManager > button:nth-of-type(4) {
+                top: 246px;
+            }
+
+            #teamManager > input,
+            #teamManager > textarea {
+                margin-bottom: 10px;
+            }
+        }
     </style>
 </head>
 <body>
