@@ -1786,6 +1786,7 @@
 
         #teamManager > h2 {
             grid-column: 1 / -1;
+            grid-row: 1;
         }
 
         #teamManager > label,
@@ -1794,6 +1795,42 @@
         #teamManager > button:nth-of-type(1),
         #teamManager > button:nth-of-type(2) {
             grid-column: 1;
+        }
+
+        #teamManager > br {
+            display: none;
+        }
+
+        #teamManager > label:nth-of-type(1) {
+            grid-row: 2;
+        }
+
+        #tmName {
+            grid-row: 3;
+        }
+
+        #teamManager > label:nth-of-type(2) {
+            grid-row: 4;
+        }
+
+        #tmLogo {
+            grid-row: 5;
+        }
+
+        #tmPlayersLabel {
+            grid-row: 6;
+        }
+
+        #tmPlayers {
+            grid-row: 7 / span 4;
+        }
+
+        #teamManager > button:nth-of-type(1) {
+            grid-row: 11;
+        }
+
+        #teamManager > button:nth-of-type(2) {
+            grid-row: 12;
         }
 
         #teamManager > hr,
@@ -1809,12 +1846,25 @@
         }
 
         #teamManager > h3 {
+            grid-row: 2;
             padding: 16px 16px 0;
             margin: 0;
             background: #050b1a;
             border: 1px solid rgba(148,163,184,.10);
             border-bottom: 0;
             border-radius: 16px 16px 0 0;
+        }
+
+        #tmSavedTeams {
+            grid-row: 3;
+        }
+
+        #teamManager > button:nth-of-type(3) {
+            grid-row: 4;
+        }
+
+        #teamManager > button:nth-of-type(4) {
+            grid-row: 5;
         }
 
         #teamManager > select,
@@ -1844,22 +1894,56 @@
             grid-column: 1 / -1;
         }
 
+        #lineups > h3 {
+            grid-row: 1;
+        }
+
         #lineups > h4:nth-of-type(1),
         #lineupTeamA,
-        #lineups > button[onclick*="'A'"],
         #teamASquad,
-        #lineups > button[onclick*="generateXI('A')"],
         #teamAXI {
             grid-column: 1;
         }
 
         #lineups > h4:nth-of-type(2),
         #lineupTeamB,
-        #lineups > button[onclick*="'B'"],
         #teamBSquad,
-        #lineups > button[onclick*="generateXI('B')"],
         #teamBXI {
             grid-column: 2;
+        }
+
+        #lineups > h4:nth-of-type(1),
+        #lineups > h4:nth-of-type(2) {
+            grid-row: 2;
+        }
+
+        #lineupTeamA,
+        #lineupTeamB {
+            grid-row: 3;
+        }
+
+        #lineups > button:nth-of-type(1),
+        #lineups > button:nth-of-type(3) {
+            grid-row: 4;
+        }
+
+        #teamASquad,
+        #teamBSquad {
+            grid-row: 5;
+        }
+
+        #lineups > button:nth-of-type(2),
+        #lineups > button:nth-of-type(4) {
+            grid-row: 6;
+        }
+
+        #teamAXI,
+        #teamBXI {
+            grid-row: 7;
+        }
+
+        #lineups > button:last-child {
+            grid-row: 8;
         }
 
         #lineups > h4 {
