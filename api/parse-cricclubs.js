@@ -1,28 +1,43 @@
-function absoluteUrl(value, baseUrl) {
-    if (!value) return "";
-    try {
-        return new URL(value, baseUrl).href;
-    } catch {
-        return value;
-    }
+function decodeHtml(value) {
+    return String(value || "")
+        .replace(/&amp;/g, "&")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&#39;/g, "'")
+        .replace(/&quot;/g, '"')
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/\s+/g, " ")
+        .trim();
 }
 
 function cleanText(value) {
-    return String(value || "")
-        .replace(/<script[\s\S]*?<\/script>/gi, " ")
-        .replace(/<style[\s\S]*?<\/style>/gi, " ")
-        .replace(/<[^>]*>/g, " ")
-        .replace(/&nbsp;/g, " ")
-        .replace(/&amp;/g, "&")
-        .replace(/&#39;/g, "'")
-        .replace(/&quot;/g, '"')
-        .replace(/\s+/g, " ")
-        .trim();
+    return decodeHtml(
+        String(value || "")
+            .replace(/<script[\s\S]*?<\/script>/gi, " ")
+            .replace(/<style[\s\S]*?<\/style>/gi, " ")
+            .replace(/<[^>]*>/g, " ")
+    );
 }
 
 function firstMatch(html, regex) {
     const m = html.match(regex);
     return m ? m[1] : "";
+}
+
+function absoluteUrl(value, baseUrl) {
+    if (!value) return "";
+    try {
+        return new URL(decodeHtml(value), baseUrl).href;
+    } catch {
+        return decodeHtml(value);
+    }
+}
+
+function getMeta(html, prop) {
+    return firstMatch(
+        html,
+        new RegExp(`<meta[^>]+property=["']${prop}["'][^>]+content=["']([^"']+)["']`, "i")
+    );
 }
 
 export default async function handler(req, res) {
@@ -33,93 +48,79 @@ export default async function handler(req, res) {
     const { url, html: postedHtml } = req.body || {};
 
     if (!url || !url.includes("cricclubs.com")) {
-        return res.status(400).json({ error: "Valid Cricclubs URL required" });
+        return res.status(400).json({ error: "Valid CricClubs URL required" });
+    }
+
+    const html = postedHtml || "";
+
+    if (!html) {
+        return res.status(400).json({
+            error: "No HTML received. Paste CricClubs page source HTML."
+        });
+    }
+
+    if (
+        html.includes("Just a moment") ||
+        html.includes("challenges.cloudflare.com")
+    ) {
+        return res.status(403).json({
+            error: "This is a Cloudflare page, not the CricClubs team page."
+        });
     }
 
     try {
-        const html = postedHtml || "";
+        const ogTitle = decodeHtml(getMeta(html, "og:title"));
+        const ogImage = getMeta(html, "og:image");
 
-        if (!html) {
-            return res.status(400).json({
-                error: "No HTML received. CricClubs blocks Vercel scraping with Cloudflare. Send page HTML from the dashboard/browser."
-            });
+        let teamName = "";
+
+        if (ogTitle.includes(":")) {
+            teamName = ogTitle.split(":").slice(1).join(":").split(" - ")[0].trim();
         }
 
-        if (
-            html.includes("Just a moment") ||
-            html.includes("challenges.cloudflare.com") ||
-            html.includes("cf-browser-verification")
-        ) {
-            return res.status(403).json({
-                error: "CricClubs returned Cloudflare challenge page, not the team page."
-            });
+        if (!teamName) {
+            teamName = cleanText(
+                firstMatch(html, /<title[^>]*>([\s\S]*?)<\/title>/i)
+            );
         }
-
-        let teamName = cleanText(
-            firstMatch(html, /<h1[^>]*>([\s\S]*?)<\/h1>/i) ||
-            firstMatch(html, /<h2[^>]*>([\s\S]*?)<\/h2>/i) ||
-            firstMatch(html, /<title[^>]*>([\s\S]*?)<\/title>/i)
-        );
 
         teamName = teamName
             .replace(/CricClubs/ig, "")
             .replace(/View Team/ig, "")
+            .replace(/New York National Cricket League/ig, "")
             .replace(/[-|]+$/g, "")
             .trim();
 
-        const teamLogoRaw =
-            firstMatch(html, /<img[^>]+(?:class|id)=["'][^"']*(?:team|logo)[^"']*["'][^>]+src=["']([^"']+)["']/i) ||
-            firstMatch(html, /<img[^>]+src=["']([^"']+)["'][^>]+(?:class|id)=["'][^"']*(?:team|logo)[^"']*["']/i);
-
-        const teamLogo = absoluteUrl(teamLogoRaw, url);
+        const teamLogo = absoluteUrl(ogImage, url);
 
         const players = [];
         const seen = new Set();
 
-        const imgNameRegex =
-            /<img[^>]+src=["']([^"']+)["'][^>]*>[\s\S]{0,700}?<a[^>]*>([\s\S]*?)<\/a>/gi;
+        const allPlayersHtml =
+            firstMatch(html, /<div[^>]+id=["']allPlayersDiv["'][^>]*>([\s\S]*?)<\/body>/i) ||
+            html;
+
+        const playerCardRegex =
+            /<div[^>]+class=["'][^"']*col-sm-3[^"']*["'][^>]+id=["']([^"']+)["'][^>]*>[\s\S]*?<img[^>]+src=["']([^"']+)["'][^>]*>[\s\S]*?<h4[^>]*>([\s\S]*?)<\/h4>[\s\S]*?<a[^>]+href=["']([^"']*viewPlayer\.do[^"']*)["']/gi;
 
         let match;
-        while ((match = imgNameRegex.exec(html)) !== null) {
-            const image = absoluteUrl(match[1], url);
-            const name = cleanText(match[2]);
 
-            if (
-                name &&
-                image &&
-                !seen.has(name.toLowerCase()) &&
-                !/view|scorecard|schedule|points|club|league|login|register/i.test(name)
-            ) {
-                seen.add(name.toLowerCase());
-                players.push({ name, image });
-            }
-        }
+        while ((match = playerCardRegex.exec(allPlayersHtml)) !== null) {
+            const idName = cleanText(match[1]);
+            const img = absoluteUrl(match[2], url);
+            const h4Name = cleanText(match[3]);
+            const name = h4Name || idName;
 
-        if (players.length === 0) {
-            const rowRegex = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
-            let row;
+            if (!name) continue;
 
-            while ((row = rowRegex.exec(html)) !== null) {
-                const rowHtml = row[1];
+            const key = name.toLowerCase();
 
-                const img = firstMatch(rowHtml, /<img[^>]+src=["']([^"']+)["']/i);
-
-                const cols = [...rowHtml.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)]
-                    .map(x => cleanText(x[1]))
-                    .filter(Boolean);
-
-                const name = cols.find(c =>
-                    /^[A-Za-z][A-Za-z .'-]{2,}$/.test(c) &&
-                    !/bat|bowl|role|player|jersey|team|club|league|points|score/i.test(c)
-                );
-
-                if (name && !seen.has(name.toLowerCase())) {
-                    seen.add(name.toLowerCase());
-                    players.push({
-                        name,
-                        image: absoluteUrl(img, url)
-                    });
-                }
+            if (!seen.has(key)) {
+                seen.add(key);
+                players.push({
+                    name,
+                    image: img
+                });
             }
         }
 
@@ -131,7 +132,7 @@ export default async function handler(req, res) {
 
     } catch (err) {
         return res.status(500).json({
-            error: err.message || "Failed to parse Cricclubs"
+            error: err.message || "Failed to parse CricClubs HTML"
         });
     }
 }
