@@ -33,32 +33,39 @@ export default async function handler(req, res) {
     }
 
     try {
+
         const page = await fetch(url, {
             headers: {
                 "User-Agent":
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
                 "Referer": "https://cricclubs.com/",
                 "Accept":
-                    "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "Accept-Language": "en-US,en;q=0.9"
+                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.9",
+                "Cache-Control": "no-cache",
+                "Pragma": "no-cache"
             }
         });
-        
-        console.log("Status:", page.status);
-        
+    
+        console.log("================================");
+        console.log("CRICCLUBS REQUEST");
+        console.log("URL:", url);
+        console.log("STATUS:", page.status);
+        console.log("================================");
+    
         const html = await page.text();
-        
-        console.log("First 500 chars:");
-        console.log(html.substring(0, 500));
-
+    
+        console.log("FIRST 1000 CHARS:");
+        console.log(html.substring(0, 1000));
+        console.log("================================");
+    
         if (!page.ok) {
             return res.status(page.status).json({
-                error: `Cricclubs page failed: ${page.status}`
+                error: `Cricclubs page failed: ${page.status}`,
+                preview: html.substring(0, 1000)
             });
         }
-
-        const html = await page.text();
-
+    
         let teamName = cleanText(
             firstMatch(html, /<h1[^>]*>([\s\S]*?)<\/h1>/i) ||
             firstMatch(html, /<h2[^>]*>([\s\S]*?)<\/h2>/i) ||
