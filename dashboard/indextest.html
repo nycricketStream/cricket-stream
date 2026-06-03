@@ -2734,6 +2734,95 @@
             grid-column: 2;
         }
 
+        button:not(.tab-btn):not(#sidebarToggle) .app-icon {
+            width: 17px;
+            height: 17px;
+            margin-right: 7px;
+            flex: 0 0 auto;
+            stroke-width: 2.2;
+        }
+
+        button span {
+            min-width: 0;
+        }
+
+        #lineups button[onclick*="generateXI"] {
+            background:
+                linear-gradient(180deg, rgba(14,116,144,.94), rgba(8,75,92,.98)) !important;
+            border-color: rgba(103,232,249,.22) !important;
+        }
+
+        #lineups button[onclick*="applyPlayingXI"] {
+            background:
+                linear-gradient(180deg, rgba(22,163,74,.96), rgba(21,128,61,.98)) !important;
+            border-color: rgba(134,239,172,.28) !important;
+        }
+
+        #match button[onclick*="saveMatchToCloud"] {
+            background:
+                linear-gradient(180deg, rgba(217,119,6,.96), rgba(146,64,14,.98)) !important;
+            border-color: rgba(253,186,116,.28) !important;
+        }
+
+        #match button[onclick*="showTab"][onclick*="livescoring"] {
+            background:
+                linear-gradient(180deg, rgba(8,145,178,.96), rgba(14,116,144,.98)) !important;
+            border-color: rgba(125,211,252,.32) !important;
+        }
+
+        #livescoring .production-grid .production-btn[onclick*="openGraphicsModal"] {
+            background:
+                linear-gradient(180deg, rgba(37,99,235,.96), rgba(30,64,175,.98)) !important;
+            border-color: rgba(147,197,253,.28) !important;
+        }
+
+        #livescoring .production-grid .production-btn[onclick*="openSponsorsModal"] {
+            background:
+                linear-gradient(180deg, rgba(180,83,9,.96), rgba(146,64,14,.98)) !important;
+            border-color: rgba(253,186,116,.30) !important;
+        }
+
+        #livescoring .production-grid .production-btn[onclick*="openBrandingModal"] {
+            background:
+                linear-gradient(180deg, rgba(109,40,217,.96), rgba(88,28,135,.98)) !important;
+            border-color: rgba(196,181,253,.28) !important;
+        }
+
+        #lineups.active .player-editor {
+            min-height: 132px;
+            padding: 9px;
+            gap: 7px;
+        }
+
+        #lineups.active .player-editor-toolbar {
+            padding-bottom: 6px;
+        }
+
+        #lineups.active .player-editor-rows {
+            gap: 5px;
+            max-height: 218px;
+        }
+
+        #lineups.active .player-editor-row {
+            grid-template-columns: minmax(120px, .82fr) minmax(140px, 1fr) 34px;
+            gap: 5px;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        #lineups.active .player-editor-row input {
+            min-height: 32px !important;
+            padding: 0 8px !important;
+            font-size: 12.5px;
+            border-radius: 9px !important;
+        }
+
+        #lineups.active .player-editor-remove {
+            width: 32px;
+            min-height: 32px !important;
+            border-radius: 9px !important;
+        }
+
         #livescoring #advancedLiveTab {
             width: 100%;
         }
@@ -3211,15 +3300,26 @@
                            });
                            updateLiveDisplay();
                         ">
-                        Start Match
+                        <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M8 5v14l11-7z"></path>
+                        </svg>
+                        <span>Start Match</span>
                     </button>
 
                     <button onclick="saveMatchToCloud()">
-                        Save Match
+                        <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l3 3v15z"></path>
+                            <path d="M17 21v-8H7v8"></path>
+                            <path d="M7 3v5h9"></path>
+                        </svg>
+                        <span>Save Match</span>
                     </button>
 
                     <button onclick="showTab(event,'livescoring')">
-                        Go Live
+                        <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 12h4l3-8 4 16 3-8h4"></path>
+                        </svg>
+                        <span>Go Live</span>
                     </button>
 
                 </div>
@@ -3232,17 +3332,38 @@
             <select id="lineupTeamA"></select>
             <button onclick="loadTeamToLineup('A')">Load A</button>
             <textarea id="teamASquad" rows="10" placeholder="Team A players (name|image)"></textarea>
-            <button onclick="console.log('CLICK'); generateXI('A')">Generate XI</button>
+            <button onclick="console.log('CLICK'); generateXI('A')">
+                <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M19 8v6"></path>
+                    <path d="M22 11h-6"></path>
+                </svg>
+                <span>Generate XI</span>
+            </button>
             <div id="teamAXI"></div>
             <hr>
             <h4>Team B</h4>
             <select id="lineupTeamB"></select>
             <button onclick="loadTeamToLineup('B')">Load B</button>
             <textarea id="teamBSquad" rows="10" placeholder="Team B players (name|image)"></textarea>
-            <button onclick="generateXI('B')">Generate XI</button>
+            <button onclick="generateXI('B')">
+                <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M19 8v6"></path>
+                    <path d="M22 11h-6"></path>
+                </svg>
+                <span>Generate XI</span>
+            </button>
             <div id="teamBXI"></div>
             <hr>
-            <button onclick="applyPlayingXI()">Apply Playing XI</button>
+            <button onclick="applyPlayingXI()">
+                <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20 6 9 17l-5-5"></path>
+                </svg>
+                <span>Apply Playing XI</span>
+            </button>
         </div>
         <!-- LIVE SCORING -->
         <div id="livescoring" class="tab">
@@ -3796,15 +3917,30 @@
                                  ">
                                 <button class="production-btn"
                                         onclick="openGraphicsModal()">
-                                    Graphics
+                                    <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M4 5h16v10H4z"></path>
+                                        <path d="M8 21h8"></path>
+                                        <path d="M12 15v6"></path>
+                                    </svg>
+                                    <span>Graphics</span>
                                 </button>
                                 <button class="production-btn"
                                         onclick="openSponsorsModal()">
-                                    Sponsors
+                                    <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M12 1v22"></path>
+                                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"></path>
+                                    </svg>
+                                    <span>Sponsors</span>
                                 </button>
                                 <button class="production-btn"
                                         onclick="openBrandingModal()">
-                                    Branding
+                                    <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M4 4h16v16H4z"></path>
+                                        <path d="M8 8h8"></path>
+                                        <path d="M8 12h5"></path>
+                                        <path d="M8 16h8"></path>
+                                    </svg>
+                                    <span>Branding</span>
                                 </button>
                             </div>
 
