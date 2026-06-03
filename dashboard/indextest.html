@@ -3157,14 +3157,15 @@
         #teamManager .player-editor-rows {
             gap: 3px !important;
             max-height: 204px !important;
-            padding-right: 8px !important;
+            box-sizing: border-box !important;
+            padding-right: 16px !important;
             scrollbar-gutter: stable;
         }
 
         #match .player-editor-row,
         #lineups .player-editor-row,
         #teamManager .player-editor-row {
-            grid-template-columns: minmax(0, .72fr) minmax(0, 1fr) 30px !important;
+            grid-template-columns: minmax(0, .72fr) minmax(0, 1fr) 42px !important;
             gap: 3px !important;
             min-height: 30px !important;
             padding: 2px !important;
@@ -3185,7 +3186,8 @@
         #match .player-editor-remove,
         #lineups .player-editor-remove,
         #teamManager .player-editor-remove {
-            width: 28px !important;
+            justify-self: center !important;
+            width: 30px !important;
             height: 26px !important;
             min-height: 26px !important;
             border-radius: 7px !important;
@@ -3274,6 +3276,14 @@
             margin: 0 0 7px !important;
             padding: 0 !important;
             line-height: 1.1 !important;
+        }
+
+        #livescoring #basicLiveTab button[onclick="swapBatters()"] {
+            margin: 4px 0 12px !important;
+        }
+
+        #livescoring #basicLiveTab button[onclick="swapBatters()"] + h4 {
+            margin-top: 10px !important;
         }
 
         #livescoring #basicLiveTab .panel label {
