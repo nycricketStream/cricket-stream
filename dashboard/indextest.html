@@ -3202,58 +3202,100 @@
 
         #match .player-editor-row,
         #lineups .player-editor-row {
-            grid-template-columns: minmax(0, 1fr) 52px !important;
-            padding-right: 8px !important;
+            grid-template-columns: minmax(0, 1fr) 42px !important;
+            padding-right: 4px !important;
             overflow: visible !important;
         }
 
         #match .player-editor-rows,
         #lineups .player-editor-rows {
             overflow-x: hidden !important;
-            padding-right: 28px !important;
+            padding-right: 36px !important;
         }
 
         #match .player-editor-remove,
         #lineups .player-editor-remove {
             justify-self: end !important;
-            width: 34px !important;
-            min-width: 34px !important;
+            width: 30px !important;
+            min-width: 30px !important;
             overflow: visible !important;
         }
 
-        .tm-parser-card {
+        @media (max-width: 760px) {
+            .tm-color-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .tm-color-card {
             grid-column: 1 / -1;
             padding: 10px;
-            border: 1px solid rgba(148,163,184,.14);
+            border: 1px solid rgba(96,165,250,.18);
             border-radius: 12px;
-            background: rgba(2,6,23,.72);
+            background: linear-gradient(180deg, rgba(15,23,42,.86), rgba(2,6,23,.78));
         }
 
-        .tm-parser-check {
-            display: flex !important;
+        .tm-color-head {
+            display: flex;
             align-items: center;
-            gap: 8px;
-            margin: 0 0 8px !important;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: #7dd3fc;
+            font-weight: 900;
+            letter-spacing: .04em;
+            text-transform: uppercase;
         }
 
-        .tm-parser-check input {
-            width: auto !important;
-            margin: 0 !important;
+        .tm-color-head small {
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .03em;
         }
 
-        .tm-parser-row {
+        .tm-color-grid {
             display: grid;
-            grid-template-columns: 1fr 120px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 8px;
         }
 
-        .tm-parser-row input,
-        .tm-parser-row button {
+        .tm-color-field {
+            display: grid !important;
+            grid-template-columns: 34px 44px minmax(0, 1fr);
+            align-items: center;
+            gap: 7px;
             margin: 0 !important;
+            padding: 8px;
+            border: 1px solid rgba(148,163,184,.13);
+            border-radius: 10px;
+            background: rgba(8,15,27,.78);
+            color: #dbeafe;
+            font-size: 11px !important;
+            font-weight: 900;
+            line-height: 1 !important;
+            text-transform: uppercase;
         }
 
-        .tm-parser-card.parse-on .tm-parser-row {
-            display: grid;
+        .tm-color-field input[type="color"] {
+            width: 42px !important;
+            height: 30px !important;
+            min-height: 30px !important;
+            padding: 2px !important;
+            margin: 0 !important;
+            border-radius: 8px !important;
+            cursor: pointer;
+        }
+
+        .tm-color-field code {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 7px 8px;
+            border-radius: 8px;
+            background: rgba(2,6,23,.8);
+            color: #f8fafc;
+            font: 800 11px/1.1 Consolas, monospace;
         }
 
         #bowlerPopup .bowlerOption {
@@ -3558,6 +3600,29 @@
             <input id="tmName">
             <label>Team Logo URL</label>
             <input id="tmLogo">
+            <div class="tm-color-card">
+                <div class="tm-color-head">
+                    <span>Team Colors</span>
+                    <small>Sent with match events</small>
+                </div>
+                <div class="tm-color-grid">
+                    <label class="tm-color-field">
+                        <span>Primary</span>
+                        <input id="tmPrimaryColor" type="color" value="#0A1A3F">
+                        <code id="tmPrimaryColorValue">#0A1A3F</code>
+                    </label>
+                    <label class="tm-color-field">
+                        <span>Accent</span>
+                        <input id="tmAccentColor" type="color" value="#D4A017">
+                        <code id="tmAccentColorValue">#D4A017</code>
+                    </label>
+                    <label class="tm-color-field">
+                        <span>Text</span>
+                        <input id="tmTextColor" type="color" value="#ffffff">
+                        <code id="tmTextColorValue">#FFFFFF</code>
+                    </label>
+                </div>
+            </div>
             <label id="tmPlayersLabel">Players (Name|ImageURL)</label>
             <textarea id="tmPlayers" rows="10"></textarea>
             <br><br>
@@ -3674,8 +3739,7 @@
                            teamB:teamB.value,
                            teamALogo:teamALogo.value,
                            teamBLogo:teamBLogo.value,
-                           teamAColor:'#2563eb',
-                           teamBColor:'#dc2626',
+                           ...getMatchTeamDesign(),
                            batting:batting.value,
                            innings:innings.value,
                            teamAPlayers:teamAPlayers.value.split('\n'),
@@ -3692,7 +3756,9 @@
                            bowlerName:'',
                            bowlerStats:'',
                            thisOver:'',
-                           runsPerOver:[]
+                           runsPerOver:[],
+                           ...getChaseMetrics(),
+                           ...getMatchTeamDesign()
                            });
                            updateLiveDisplay();
                         ">
@@ -5701,7 +5767,9 @@
                 bowlerStats: '',
                 thisOver: '',
                 runsPerOver: [],
-                dismissal: ''
+                dismissal: '',
+                ...getChaseMetrics(),
+                ...getMatchTeamDesign()
             });
             // FORCE OVERLAY RESET
             sendEvent('match', {
@@ -5830,21 +5898,13 @@
         }
         /* =========== Calculate Required Run ============ */
         function calculateRequiredRuns() {
-            const targetVal = parseInt(document.getElementById('target')?.value);
-            const inningsVal = document.getElementById('innings')?.value;
-            if (!targetVal || inningsVal !== "2") return "-";
-            return Math.max(targetVal - liveTotal, 0);
+            const metrics = getChaseMetrics();
+            return metrics.requiredRuns === "" ? "-" : metrics.requiredRuns;
         }
         /* =========== Calculate Required RR =============== */
         function calculateRequiredRR() {
-            const targetVal = parseInt(document.getElementById('target')?.value);
-            const inningsVal = document.getElementById('innings')?.value;
-            const maxOversVal = parseInt(document.getElementById('maxOvers')?.value || 20);
-            if (!targetVal || inningsVal !== "2") return "-";
-            const ballsLeft = (maxOversVal * 6) - liveBalls;
-            const runsLeft = targetVal - liveTotal;
-            if (ballsLeft <= 0 || runsLeft <= 0) return "-";
-            return (runsLeft / (ballsLeft / 6)).toFixed(2);
+            const metrics = getChaseMetrics();
+            return metrics.requiredRunRate || "-";
         }
 
         /* ========== Get this Over ============ */
@@ -5904,8 +5964,11 @@
             if (currentState === lastSentScore) return;
 
             lastSentScore = currentState;
-            document.getElementById('liveReqRuns').innerText = calculateRequiredRuns();
-            document.getElementById('liveReqRR').innerText = calculateRequiredRR();
+            const liveChaseMetrics = getChaseMetrics();
+            document.getElementById('liveReqRuns').innerText =
+                liveChaseMetrics.requiredRuns === "" ? "-" : liveChaseMetrics.requiredRuns;
+            document.getElementById('liveReqRR').innerText =
+                liveChaseMetrics.requiredRunRate || "-";
             const totalExtras =
                 extrasStats.wide +
                 extrasStats.noball +
@@ -6057,6 +6120,8 @@
                 bowlerStats: `${bowlerOvers}-${bowlerMaidens}-${bowlerRuns}-${bowlerWickets}`,
                 thisOver: thisOver,
                 runsPerOver: getRunsPerOver(),
+                ...liveChaseMetrics,
+                ...getMatchTeamDesign(),
                 dismissal: (function () {
                     if (!lastOutBatsman) return "";
                     const text =
@@ -6094,57 +6159,15 @@
             ).innerText =
                 target.value || "-";
 
-            // REQUIRED RR
-            let reqRR = "-";
-
-            if (
-                innings.value === "2" &&
-                target.value
-            ) {
-
-                const targetRuns =
-                    parseInt(target.value || 0);
-
-                const runsNeeded =
-                    targetRuns - liveTotal;
-
-                const oversRemaining =
-                    parseFloat(maxOvers.value || 0)
-                    - calculateOvers();
-
-                if (oversRemaining > 0) {
-
-                    reqRR =
-                        (
-                            runsNeeded /
-                            oversRemaining
-                        ).toFixed(2);
-                }
-            }
-
             document.getElementById(
                 'liveReqRRInfo'
-            ).innerText = reqRR;
+            ).innerText = liveChaseMetrics.requiredRunRate || "-";
 
 
             // PROJECTED SCORE
-            let projected = "-";
-
-            const currentOvers =
-                calculateOvers();
-
-            if (currentOvers > 0) {
-
-                projected =
-                    Math.round(
-                        (liveTotal / currentOvers)
-                        * parseFloat(maxOvers.value || 20)
-                    );
-            }
-
             document.getElementById(
                 'liveProjectedInfo'
-            ).innerText = projected;
+            ).innerText = liveChaseMetrics.projectedScore;
 
 
             // WICKETS IN HAND
@@ -7038,11 +7061,126 @@ CURRENT OVER SUMMARY
             return runsPerOver;
         }
 
+        const teamColorDefaults = {
+            primaryColor: "#0A1A3F",
+            accentColor: "#D4A017",
+            textColor: "#FFFFFF"
+        };
+
+        function normalizeColor(value, fallback) {
+            const clean = String(value || "").trim();
+            return /^#[0-9a-fA-F]{6}$/.test(clean) ? clean.toUpperCase() : fallback;
+        }
+
+        function getTeamManagerColors() {
+            return {
+                primaryColor: normalizeColor(document.getElementById('tmPrimaryColor')?.value, teamColorDefaults.primaryColor),
+                accentColor: normalizeColor(document.getElementById('tmAccentColor')?.value, teamColorDefaults.accentColor),
+                textColor: normalizeColor(document.getElementById('tmTextColor')?.value, teamColorDefaults.textColor)
+            };
+        }
+
+        function setTeamManagerColors(colors = {}) {
+            const next = {
+                primaryColor: normalizeColor(colors.primaryColor, teamColorDefaults.primaryColor),
+                accentColor: normalizeColor(colors.accentColor, teamColorDefaults.accentColor),
+                textColor: normalizeColor(colors.textColor, teamColorDefaults.textColor)
+            };
+
+            [
+                ['tmPrimaryColor', 'tmPrimaryColorValue', next.primaryColor],
+                ['tmAccentColor', 'tmAccentColorValue', next.accentColor],
+                ['tmTextColor', 'tmTextColorValue', next.textColor]
+            ].forEach(([inputId, labelId, value]) => {
+                const input = document.getElementById(inputId);
+                const label = document.getElementById(labelId);
+                if (input) input.value = value;
+                if (label) label.textContent = value;
+            });
+        }
+
+        function initTeamColorPickers() {
+            setTeamManagerColors();
+            ['tmPrimaryColor', 'tmAccentColor', 'tmTextColor'].forEach(id => {
+                const input = document.getElementById(id);
+                if (!input) return;
+                input.addEventListener('input', () => setTeamManagerColors(getTeamManagerColors()));
+            });
+        }
+
+        function getManagedTeamByName(name) {
+            return (tmTeams || []).find(team => team.name === name) || {};
+        }
+
+        function getManagedTeamColors(teamName, fallbackPrimary, fallbackAccent) {
+            const team = getManagedTeamByName(teamName);
+            return {
+                primaryColor: normalizeColor(team.primaryColor || team.teamColor, fallbackPrimary),
+                accentColor: normalizeColor(team.accentColor, fallbackAccent),
+                textColor: normalizeColor(team.textColor, teamColorDefaults.textColor)
+            };
+        }
+
+        function getMatchTeamDesign() {
+            const teamADesign = getManagedTeamColors(teamA?.value, "#2563EB", "#60A5FA");
+            const teamBDesign = getManagedTeamColors(teamB?.value, "#DC2626", "#F87171");
+
+            return {
+                teamAColor: teamADesign.primaryColor,
+                teamBColor: teamBDesign.primaryColor,
+                teamAPrimaryColor: teamADesign.primaryColor,
+                teamAAccentColor: teamADesign.accentColor,
+                teamATextColor: teamADesign.textColor,
+                teamBPrimaryColor: teamBDesign.primaryColor,
+                teamBAccentColor: teamBDesign.accentColor,
+                teamBTextColor: teamBDesign.textColor
+            };
+        }
+
+        function getProjectedScore() {
+            const currentOvers = Number(calculateOvers()) || 0;
+            const totalOvers = parseFloat(maxOvers?.value || 20);
+            if (currentOvers <= 0 || !totalOvers) return "-";
+            return Math.round((liveTotal / currentOvers) * totalOvers);
+        }
+
+        function getChaseMetrics() {
+            const projectedScore = getProjectedScore();
+            const isSecondInnings = innings?.value === "2" && target?.value;
+
+            if (!isSecondInnings) {
+                return {
+                    projectedScore,
+                    requiredRuns: "",
+                    ballsRemaining: "",
+                    requiredRunInfo: "",
+                    requiredRunRate: ""
+                };
+            }
+
+            const targetRuns = parseInt(target.value || 0, 10);
+            const totalBalls = Math.round((parseFloat(maxOvers?.value || 0) || 0) * 6);
+            const ballsRemaining = Math.max(totalBalls - liveBalls, 0);
+            const requiredRuns = Math.max(targetRuns - liveTotal, 0);
+            const requiredRunRate = ballsRemaining > 0 && requiredRuns > 0
+                ? ((requiredRuns / ballsRemaining) * 6).toFixed(2)
+                : "0.00";
+
+            return {
+                projectedScore,
+                requiredRuns,
+                ballsRemaining,
+                requiredRunInfo: `${requiredRuns} runs ball remaining ${ballsRemaining}`,
+                requiredRunRate
+            };
+        }
+
         /* ====== Save team ==== */
         async function saveTeamManager() {
             const name = document.getElementById('tmName').value.trim();
             const logo = document.getElementById('tmLogo').value.trim();
             const raw = document.getElementById('tmPlayers').value;
+            const colors = getTeamManagerColors();
 
             if (!name) {
                 showModal("Enter team name");
@@ -7060,7 +7198,7 @@ CURRENT OVER SUMMARY
             await fetch('/api/teams', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, logo, players })
+                body: JSON.stringify({ name, logo, ...colors, players })
             });
 
             showModal("Team saved");
@@ -7069,26 +7207,8 @@ CURRENT OVER SUMMARY
             }, 300);
         }
 
-        /* ========Toggle CricClubs Parser ==========*/
-        function toggleCricclubsParser() {
-            const checked = document.getElementById('tmParseEnabled')?.checked;
-            const card = document.querySelector('.tm-parser-card');
-        
-            if (!card) return;
-        
-            card.classList.toggle('parse-on', checked);
-        
-            if (!checked) {
-                document.getElementById('tmCricclubsUrl').value = "";
-            }
-        }
-        
         document.addEventListener('DOMContentLoaded', () => {
-            const cb = document.getElementById('tmParseEnabled');
-            if (cb) {
-                cb.addEventListener('change', toggleCricclubsParser);
-                toggleCricclubsParser();
-            }
+            initTeamColorPickers();
         });
 
         /* =========Load Team To Lineup ===========*/
@@ -7150,6 +7270,7 @@ CURRENT OVER SUMMARY
 
             document.getElementById('tmName').value = team.name;
             document.getElementById('tmLogo').value = team.logo;
+            setTeamManagerColors(team);
 
             document.getElementById('tmPlayers').value =
                 team.players.map(p => `${p.name}|${p.image}`).join('\n');
@@ -7175,38 +7296,7 @@ CURRENT OVER SUMMARY
             document.getElementById('tmName').value = "";
             document.getElementById('tmLogo').value = "";
             document.getElementById('tmPlayers').value = "";
-        }
-
-        function toAbsoluteUrl(value, baseUrl) {
-            if (!value) return "";
-            try {
-                return new URL(value, baseUrl).href;
-            } catch {
-                return value;
-            }
-        }
-
-      function parseCricclubsClubUrl() {
-            const url = document.getElementById("tmCricclubsUrl")?.value.trim();
-            if (!url || !url.includes("cricclubs.com")) {
-                showModal("Enter a valid CricClubs team URL first.");
-                return;
-            }
-            const bookmarklet = `javascript:(()=>{const m=document.createElement('div');m.style='position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:999999;display:flex;align-items:center;justify-content:center;font-family:Arial';m.innerHTML=\`<div style="background:#081028;color:white;width:92%;max-width:430px;border-radius:20px;padding:20px;text-align:center;border:1px solid #334155"><h2 style="margin:0 0 12px">CricClubs Import</h2><p style="margin:0 0 16px;color:#cbd5e1">Import this team into your dashboard?</p><button id="ccImport" style="width:100%;padding:15px;border-radius:14px;background:#1d4ed8;color:white;border:0;font-weight:bold;font-size:16px">Import to Dashboard</button><button id="ccCancel" style="width:100%;padding:13px;margin-top:10px;border-radius:14px;background:#334155;color:white;border:0;font-size:15px">Cancel</button></div>\`;document.body.appendChild(m);document.getElementById('ccCancel').onclick=()=>m.remove();document.getElementById('ccImport').onclick=async()=>{try{document.getElementById('ccImport').innerText='Importing...';const html=document.documentElement.outerHTML;const url=location.href;const res=await fetch('https://cricket-stream-three.vercel.app/api/parse-cricclubs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url,html})});const d=await res.json();if(!res.ok)throw new Error(d.error||'Parse failed');location.href='https://cricket-stream-three.vercel.app/dashboard/indextest.html#cricclubs='+encodeURIComponent(JSON.stringify(d));}catch(e){alert('CricClubs parse error: '+e.message);}}})();`;
-            showModal(`
-                <h2>CricClubs Import Setup</h2>
-                <p><b>CORS blocks direct importing from the dashboard.</b></p>
-                <p>Use the bookmark once from the CricClubs page.</p>
-                <button onclick="navigator.clipboard.writeText(\`${bookmarklet.replace(/`/g, "\\`")}\`).then(()=>showModal('Bookmark code copied. Create a browser bookmark and paste this as the URL.'))">
-                    Copy Popup Bookmark Code
-                </button>
-                <button onclick="window.location.href='${url}'">
-                    Open CricClubs Team Page
-                </button>
-                <p style="font-size:13px;color:#94a3b8;margin-top:12px;">
-                    After opening CricClubs, tap your saved Parse CricClubs bookmark.
-                </p>
-            `);
+            setTeamManagerColors();
         }
 
         /* ================== Delete Team Manager ================= */
@@ -8404,8 +8494,7 @@ CURRENT OVER SUMMARY
                     teamB: teamB.value,
                     teamALogo: teamALogo.value,
                     teamBLogo: teamBLogo.value,
-                    teamAColor: "#2563eb",
-                    teamBColor: "#dc2626",
+                    ...getMatchTeamDesign(),
                     batting: batting.value,
                     innings: innings.value,
                     teamAPlayers: teamAPlayers.value.split('\n'),
