@@ -7196,26 +7196,28 @@ CURRENT OVER SUMMARY
             }
         }
 
-       async function parseCricclubsClubUrl() {
+      function parseCricclubsClubUrl() {
             const url = document.getElementById("tmCricclubsUrl")?.value.trim();
-            if (!url) {
-                showModal("Enter a CricClubs URL first");
+            if (!url || !url.includes("cricclubs.com")) {
+                showModal("Enter a valid CricClubs team URL first.");
                 return;
             }
-            if (!url.includes("cricclubs.com")) {
-                showModal("Enter a valid CricClubs team URL");
-                return;
-            }
-            localStorage.setItem("lastCricclubsUrl", url);
+            const bookmarklet = `javascript:(()=>{const m=document.createElement('div');m.style='position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:999999;display:flex;align-items:center;justify-content:center;font-family:Arial';m.innerHTML=\`<div style="background:#081028;color:white;width:92%;max-width:430px;border-radius:20px;padding:20px;text-align:center;border:1px solid #334155"><h2 style="margin:0 0 12px">CricClubs Import</h2><p style="margin:0 0 16px;color:#cbd5e1">Import this team into your dashboard?</p><button id="ccImport" style="width:100%;padding:15px;border-radius:14px;background:#1d4ed8;color:white;border:0;font-weight:bold;font-size:16px">Import to Dashboard</button><button id="ccCancel" style="width:100%;padding:13px;margin-top:10px;border-radius:14px;background:#334155;color:white;border:0;font-size:15px">Cancel</button></div>\`;document.body.appendChild(m);document.getElementById('ccCancel').onclick=()=>m.remove();document.getElementById('ccImport').onclick=async()=>{try{document.getElementById('ccImport').innerText='Importing...';const html=document.documentElement.outerHTML;const url=location.href;const res=await fetch('https://cricket-stream-three.vercel.app/api/parse-cricclubs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url,html})});const d=await res.json();if(!res.ok)throw new Error(d.error||'Parse failed');location.href='https://cricket-stream-three.vercel.app/dashboard/indextest.html#cricclubs='+encodeURIComponent(JSON.stringify(d));}catch(e){alert('CricClubs parse error: '+e.message);}}})();`;
             showModal(`
-                <h2>CricClubs Import</h2>
-                <p>1. CricClubs will open now.</p>
-                <p>2. Tap your <b>Parse CricClubs</b> bookmark.</p>
-                <p>3. Tap <b>Import to Dashboard</b>.</p>
-                <button onclick="window.location.href='${url}'">Open CricClubs Page</button>
+                <h2>CricClubs Import Setup</h2>
+                <p><b>CORS blocks direct importing from the dashboard.</b></p>
+                <p>Use the bookmark once from the CricClubs page.</p>
+                <button onclick="navigator.clipboard.writeText(\`${bookmarklet.replace(/`/g, "\\`")}\`).then(()=>showModal('Bookmark code copied. Create a browser bookmark and paste this as the URL.'))">
+                    Copy Popup Bookmark Code
+                </button>
+                <button onclick="window.location.href='${url}'">
+                    Open CricClubs Team Page
+                </button>
+                <p style="font-size:13px;color:#94a3b8;margin-top:12px;">
+                    After opening CricClubs, tap your saved Parse CricClubs bookmark.
+                </p>
             `);
         }
-
 
         function importCricclubsFromUrl() {
             const hash = window.location.hash || "";
