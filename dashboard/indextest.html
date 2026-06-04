@@ -7197,43 +7197,25 @@ CURRENT OVER SUMMARY
         }
 
        async function parseCricclubsClubUrl() {
-            const enabled = document.getElementById('tmParseEnabled')?.checked;
-            const url = document.getElementById('tmCricclubsUrl')?.value.trim();
-            if (!enabled) {
-                showModal("Check Parse Cricclubs club URL first");
-                return;
-            }
+            const url = document.getElementById("tmCricclubsUrl")?.value.trim();
             if (!url) {
-                showModal("Enter a Cricclubs URL");
+                showModal("Enter a CricClubs URL first");
                 return;
             }
-            try {
-                const pageRes = await fetch(url, {
-                    credentials: "include"
-                });
-                const html = await pageRes.text();
-                const res = await fetch('/api/parse-cricclubs', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url, html })
-                });
-                const data = await res.json();
-                if (!res.ok) {
-                    throw new Error(data.error || "Parse failed");
-                }
-                document.getElementById('tmName').value = data.teamName || "";
-                document.getElementById('tmLogo').value = data.teamLogo || "";
-                document.getElementById('tmPlayers').value =
-                    data.players.map(p => `${p.name}|${p.image || ""}`).join('\n');
-                const label = document.getElementById('tmPlayersLabel');
-                if (label) {
-                    label.textContent = `Players (Name|ImageURL) (${data.players.length})`;
-                }
-                showModal(`Parsed ${data.players.length} players`);
-            } catch (err) {
-                showModal("Cricclubs parse error: " + err.message);
+            if (!url.includes("cricclubs.com")) {
+                showModal("Enter a valid CricClubs team URL");
+                return;
             }
+            localStorage.setItem("lastCricclubsUrl", url);
+            showModal(`
+                <h2>CricClubs Import</h2>
+                <p>1. CricClubs will open now.</p>
+                <p>2. Tap your <b>Parse CricClubs</b> bookmark.</p>
+                <p>3. Tap <b>Import to Dashboard</b>.</p>
+                <button onclick="window.location.href='${url}'">Open CricClubs Page</button>
+            `);
         }
+
 
         function importCricclubsFromUrl() {
             const hash = window.location.hash || "";
