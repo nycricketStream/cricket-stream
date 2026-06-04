@@ -7235,6 +7235,29 @@ CURRENT OVER SUMMARY
             }
         }
 
+        function importCricclubsFromUrl() {
+            const hash = window.location.hash || "";
+            if (!hash.startsWith("#cricclubs=")) return;
+            try {
+                const data = JSON.parse(decodeURIComponent(hash.replace("#cricclubs=", "")));
+                document.getElementById("tmName").value = data.teamName || "";
+                document.getElementById("tmLogo").value = data.teamLogo || "";
+                document.getElementById("tmPlayers").value =
+                    (data.players || []).map(p => `${p.name}|${p.image || ""}`).join("\n");
+                const label = document.getElementById("tmPlayersLabel");
+                if (label) {
+                    label.textContent = `Players (Name|ImageURL) (${data.players.length})`;
+                }
+                showTab(event, "teamManager");
+                showModal(`Imported ${data.players.length} players from CricClubs`);
+                history.replaceState(null, "", window.location.pathname);
+            } catch (err) {
+                showModal("Failed to import CricClubs data: " + err.message);
+            }
+        }
+        document.addEventListener("DOMContentLoaded", importCricclubsFromUrl);
+
+
         /* ================== Delete Team Manager ================= */
         async function deleteTeamManager() {
             const name = document.getElementById('tmSavedTeams').value;
