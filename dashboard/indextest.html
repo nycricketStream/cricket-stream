@@ -3558,16 +3558,6 @@
             <input id="tmName">
             <label>Team Logo URL</label>
             <input id="tmLogo">
-            <div class="tm-parser-card">
-                <label class="tm-parser-check">
-                    <input id="tmParseEnabled" type="checkbox">
-                    <span>Parse Cricclubs club URL</span>
-                </label>
-                <div class="tm-parser-row">
-                    <input id="tmCricclubsUrl" placeholder="https://cricclubs.com/...">
-                    <button type="button" onclick="parseCricclubsClubUrl()">Parse</button>
-                </div>
-            </div>
             <label id="tmPlayersLabel">Players (Name|ImageURL)</label>
             <textarea id="tmPlayers" rows="10"></textarea>
             <br><br>
@@ -7218,29 +7208,6 @@ CURRENT OVER SUMMARY
                 </p>
             `);
         }
-
-        function importCricclubsFromUrl() {
-            const hash = window.location.hash || "";
-            if (!hash.startsWith("#cricclubs=")) return;
-            try {
-                const data = JSON.parse(decodeURIComponent(hash.replace("#cricclubs=", "")));
-                document.getElementById("tmName").value = data.teamName || "";
-                document.getElementById("tmLogo").value = data.teamLogo || "";
-                document.getElementById("tmPlayers").value =
-                    (data.players || []).map(p => `${p.name}|${p.image || ""}`).join("\n");
-                const label = document.getElementById("tmPlayersLabel");
-                if (label) {
-                    label.textContent = `Players (Name|ImageURL) (${data.players.length})`;
-                }
-                showTab(event, "teamManager");
-                showModal(`Imported ${data.players.length} players from CricClubs`);
-                history.replaceState(null, "", window.location.pathname);
-            } catch (err) {
-                showModal("Failed to import CricClubs data: " + err.message);
-            }
-        }
-        document.addEventListener("DOMContentLoaded", importCricclubsFromUrl);
-
 
         /* ================== Delete Team Manager ================= */
         async function deleteTeamManager() {
