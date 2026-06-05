@@ -2886,12 +2886,12 @@
         #livescoring #advancedLiveTab .stats-table th,
         #livescoring #advancedLiveTab .stats-table td {
             height: 36px;
-            padding: 7px 8px;
+            padding: 7px 9px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             border-bottom: 1px solid rgba(148,163,184,.06);
-            font-size: 12.5px;
+            font-size: 12px;
             line-height: 1.15;
         }
 
@@ -2909,6 +2909,19 @@
         #batsmanStatsBody td:nth-child(7) {
             white-space: normal !important;
             line-height: 1.25;
+        }
+
+        #batsmanStatsBody td:nth-child(6),
+        #batsmanStatsBody th:nth-child(6) {
+            padding-left: 6px;
+            padding-right: 6px;
+            text-align: center;
+        }
+
+        #bowlerStatsBody td:first-child,
+        #bowlerStatsBody th:first-child {
+            white-space: normal !important;
+            line-height: 1.18;
         }
 
         #currentOverTracker,
@@ -3229,7 +3242,7 @@
 
         .tm-color-card {
             grid-column: 1 / -1;
-            padding: 10px;
+            padding: 10px 12px 12px;
             border: 1px solid rgba(96,165,250,.18);
             border-radius: 12px;
             background: linear-gradient(180deg, rgba(15,23,42,.86), rgba(2,6,23,.78));
@@ -3238,20 +3251,13 @@
         .tm-color-head {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             gap: 10px;
             margin-bottom: 8px;
             color: #7dd3fc;
             font-weight: 900;
             letter-spacing: .04em;
             text-transform: uppercase;
-        }
-
-        .tm-color-head small {
-            color: #94a3b8;
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: .03em;
         }
 
         .tm-color-grid {
@@ -3262,23 +3268,30 @@
 
         .tm-color-field {
             display: grid !important;
-            grid-template-columns: 34px 44px minmax(0, 1fr);
+            grid-template-columns: minmax(58px, auto) 42px minmax(76px, 1fr);
             align-items: center;
             gap: 7px;
             margin: 0 !important;
-            padding: 8px;
+            padding: 8px 9px;
             border: 1px solid rgba(148,163,184,.13);
             border-radius: 10px;
             background: rgba(8,15,27,.78);
             color: #dbeafe;
-            font-size: 11px !important;
+            font-size: 10px !important;
             font-weight: 900;
             line-height: 1 !important;
             text-transform: uppercase;
+            overflow: hidden;
+        }
+
+        .tm-color-field span {
+            min-width: 0;
+            overflow: visible;
+            white-space: nowrap;
         }
 
         .tm-color-field input[type="color"] {
-            width: 42px !important;
+            width: 40px !important;
             height: 30px !important;
             min-height: 30px !important;
             padding: 2px !important;
@@ -3291,11 +3304,12 @@
             min-width: 0;
             overflow: hidden;
             text-overflow: ellipsis;
-            padding: 7px 8px;
+            padding: 7px 6px;
             border-radius: 8px;
             background: rgba(2,6,23,.8);
             color: #f8fafc;
-            font: 800 11px/1.1 Consolas, monospace;
+            font: 800 10.5px/1.1 Consolas, monospace;
+            text-align: center;
         }
 
         #bowlerPopup .bowlerOption {
@@ -3348,17 +3362,50 @@
             margin-top: 8px !important;
         }
 
+        #ballEditor {
+            left: 50% !important;
+            top: 50% !important;
+            width: min(360px, calc(100vw - 28px)) !important;
+            max-height: min(86vh, 680px) !important;
+            padding: 12px !important;
+            overflow-y: auto !important;
+            border-radius: 13px !important;
+        }
+
+        #ballEditor > div:first-child {
+            margin-bottom: 6px !important;
+            color: #f8fafc !important;
+            font-size: 15px !important;
+            line-height: 1.1 !important;
+            white-space: normal !important;
+        }
+
+        #ballEditor select {
+            min-height: 34px !important;
+            height: 34px !important;
+            padding: 5px 9px !important;
+            margin: 0 !important;
+            font-size: 12px !important;
+        }
+
         #ballEditor button {
             margin-top: 6px !important;
-            min-height: 36px !important;
-            height: 38px !important;
-            font-size: 14px !important;
-            border-radius: 9px !important;
+            min-height: 32px !important;
+            height: 34px !important;
+            font-size: 12px !important;
+            border-radius: 8px !important;
+            padding: 0 8px !important;
         }
 
         #ballEditor div[style*="grid-template-columns"] {
-            gap: 6px !important;
+            gap: 5px !important;
             margin-top: 8px !important;
+        }
+
+        #ballEditor button[onclick="deleteEditedBall()"],
+        #ballEditor button[onclick="closeBallEditor()"] {
+            height: 34px !important;
+            min-height: 34px !important;
         }
 
         #teamManager.active {
@@ -3376,6 +3423,11 @@
             margin: 1px 0 2px !important;
             font-size: 11px !important;
             line-height: 1.1 !important;
+        }
+
+        #tmPlayersLabel {
+            grid-column: 1 / -1 !important;
+            margin-top: 4px !important;
         }
 
         #teamManager.active > input,
@@ -3603,7 +3655,6 @@
             <div class="tm-color-card">
                 <div class="tm-color-head">
                     <span>Team Colors</span>
-                    <small>Sent with match events</small>
                 </div>
                 <div class="tm-color-grid">
                     <label class="tm-color-field">
@@ -3757,10 +3808,10 @@
                            bowlerStats:'',
                            thisOver:'',
                            runsPerOver:[],
-                           ...getChaseMetrics(),
-                           ...getMatchTeamDesign()
+                           ...getChaseMetrics()
                            });
                            updateLiveDisplay();
+                           saveMatchToFirebase();
                         ">
                         <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M8 5v14l11-7z"></path>
@@ -4418,13 +4469,13 @@
                             <h4>Batsman Stats</h4>
                             <table class="stats-table">
                                 <colgroup>
-                                    <col style="width:24%">
+                                    <col style="width:25%">
                                     <col style="width:8%">
                                     <col style="width:8%">
                                     <col style="width:8%">
                                     <col style="width:8%">
-                                    <col style="width:10%">
-                                    <col style="width:34%">
+                                    <col style="width:11%">
+                                    <col style="width:32%">
                                 </colgroup>
                                 <thead>
                                     <tr>
@@ -4443,6 +4494,14 @@
                         <div class="panel">
                             <h4>Bowler Stats</h4>
                             <table class="stats-table">
+                                <colgroup>
+                                    <col style="width:32%">
+                                    <col style="width:14%">
+                                    <col style="width:13%">
+                                    <col style="width:14%">
+                                    <col style="width:13%">
+                                    <col style="width:14%">
+                                </colgroup>
                                 <thead>
                                     <tr>
                                         <th>Bowler</th>
@@ -4829,7 +4888,7 @@
 
             const matchRef = doc(db, "matches", "liveMatch");
             const currentPlayers = getCurrentFromHistory();
-            if (currentPlayers.striker === currentPlayers.nonStriker) {
+            if (currentPlayers.striker && currentPlayers.striker === currentPlayers.nonStriker) {
                 console.warn("Invalid state: striker and non-striker are the same");
                 return;
             }
@@ -4845,6 +4904,7 @@
                 teamB: document.getElementById('teamB')?.value || "",
                 teamALogo: document.getElementById('teamALogo')?.value || "",
                 teamBLogo: document.getElementById('teamBLogo')?.value || "",
+                ...getMatchTeamDesign(),
                 innings: document.getElementById('innings')?.value || "1",
                 target: document.getElementById('target')?.value || "",
                 maxOvers: document.getElementById('maxOvers')?.value || "50",
@@ -5250,9 +5310,13 @@
             const teamA = document.getElementById('teamA');
             const teamB = document.getElementById('teamB');
             const sel = document.getElementById('batting');
+            const previous = sel.value;
             sel.innerHTML = '';
             if (teamA.value) sel.add(new Option(teamA.value, teamA.value));
             if (teamB.value) sel.add(new Option(teamB.value, teamB.value));
+            if ([...sel.options].some(o => o.value === previous)) {
+                sel.value = previous;
+            }
             updatePlayerDropdown();
             updateStrikerDropdown();
         }
@@ -5457,6 +5521,31 @@
             document.getElementById('teamBPlayers').addEventListener('input', updateStrikerDropdown);
             document.getElementById('innings').addEventListener('change', () => {
                 resetInnings();
+            });
+            let setupAutosaveTimer = null;
+            const saveSetupState = () => {
+                autoSaveMatch();
+                clearTimeout(setupAutosaveTimer);
+                setupAutosaveTimer = setTimeout(() => {
+                    saveMatchToFirebase().catch(err => console.warn('Firebase setup autosave failed', err));
+                }, 350);
+            };
+            [
+                'teamA',
+                'teamB',
+                'teamALogo',
+                'teamBLogo',
+                'teamAPlayers',
+                'teamBPlayers',
+                'batting',
+                'innings',
+                'target',
+                'maxOvers'
+            ].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('change', saveSetupState);
+                el.addEventListener('input', saveSetupState);
             });
             document.getElementById('bowler').addEventListener('change', function () {
                 const bowler = this.value;
@@ -5768,8 +5857,7 @@
                 thisOver: '',
                 runsPerOver: [],
                 dismissal: '',
-                ...getChaseMetrics(),
-                ...getMatchTeamDesign()
+                ...getChaseMetrics()
             });
             // FORCE OVERLAY RESET
             sendEvent('match', {
@@ -6121,7 +6209,6 @@
                 thisOver: thisOver,
                 runsPerOver: getRunsPerOver(),
                 ...liveChaseMetrics,
-                ...getMatchTeamDesign(),
                 dismissal: (function () {
                     if (!lastOutBatsman) return "";
                     const text =
@@ -6366,7 +6453,7 @@ CURRENT OVER SUMMARY
 
                 body.innerHTML += `
                                                                        <tr class="${name === currentBowler ? 'bowler-row' : ''}">
-                                                                         <td title="${name}">${shortName(name)}</td>
+                                                                         <td title="${name}">${name}</td>
                                                                          <td>${overs}</td>
                                                                          <td>${calculateMaidens(name)}</td>
                                                                          <td>${stats.runs}</td>
@@ -7755,6 +7842,8 @@ CURRENT OVER SUMMARY
                     legalBallsInOver++;
                     batsmanStats[striker].balls++;
                     batsmanStats[striker].out = true;
+                    batsmanStats[striker].dismissal = ball.dismissal || "Out";
+                    batsmanStats[striker].bowler = bowler || "";
                     bowlerStats[bowler].balls++;
                     // wickets credited only to bowler dismissals
                     if (
@@ -8358,6 +8447,7 @@ CURRENT OVER SUMMARY
                 teamB: teamB.value,
                 teamALogo: teamALogo.value,
                 teamBLogo: teamBLogo.value,
+                ...getMatchTeamDesign(),
                 teamAPlayers: teamAPlayers.value,
                 teamBPlayers: teamBPlayers.value,
                 batting: batting.value,
@@ -8377,6 +8467,7 @@ CURRENT OVER SUMMARY
                 teamB: teamB.value,
                 teamALogo: teamALogo.value,
                 teamBLogo: teamBLogo.value,
+                ...getMatchTeamDesign(),
                 teamAPlayers: teamAPlayers.value,
                 teamBPlayers: teamBPlayers.value,
                 batting: batting.value,
@@ -8533,6 +8624,7 @@ CURRENT OVER SUMMARY
                 teamB: teamB.value,
                 teamALogo: teamALogo.value,
                 teamBLogo: teamBLogo.value,
+                ...getMatchTeamDesign(),
                 teamAPlayers: teamAPlayers.value,
                 teamBPlayers: teamBPlayers.value,
                 batting: batting.value,
