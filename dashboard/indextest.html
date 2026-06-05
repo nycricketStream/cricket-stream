@@ -1492,12 +1492,13 @@
 
         #livescoring .advanced-grid {
             align-items: start;
-            gap: 10px;
+            gap: 9px;
+            grid-template-columns: minmax(0, 1.08fr) minmax(0, 1.08fr) 248px;
         }
 
         #livescoring .advanced-grid .panel {
             min-height: 0;
-            padding: 14px 16px;
+            padding: 13px 14px;
         }
 
         #livescoring .advanced-grid .stats-table {
@@ -1508,13 +1509,13 @@
 
         #livescoring .advanced-grid .stats-table th {
             height: 42px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 900;
         }
 
         #livescoring .advanced-grid .stats-table td {
             height: 44px;
-            font-size: 13px;
+            font-size: 12px;
             border-bottom: 1px solid rgba(148,163,184,.06);
         }
 
@@ -3408,6 +3409,31 @@
             min-height: 34px !important;
         }
 
+        .modal-action-primary {
+            background: linear-gradient(180deg, #1d4ed8, #17327d) !important;
+            border-color: rgba(147,197,253,.34) !important;
+        }
+
+        .modal-action-success {
+            background: linear-gradient(180deg, #15803d, #14532d) !important;
+            border-color: rgba(134,239,172,.32) !important;
+        }
+
+        .modal-action-warn {
+            background: linear-gradient(180deg, #b45309, #78350f) !important;
+            border-color: rgba(253,186,116,.34) !important;
+        }
+
+        .modal-action-danger {
+            background: linear-gradient(180deg, #991b1b, #6f1515) !important;
+            border-color: rgba(252,165,165,.34) !important;
+        }
+
+        .modal-action-neutral {
+            background: linear-gradient(180deg, #334155, #1f2937) !important;
+            border-color: rgba(203,213,225,.20) !important;
+        }
+
         #teamManager.active {
             row-gap: 6px !important;
             column-gap: 14px !important;
@@ -4334,6 +4360,12 @@
                                 <button onclick="swapBatters()" style="
                             background:#0f172a;
                             border:1px solid #334155; ">
+                                    <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M7 7h11l-3-3"></path>
+                                        <path d="M17 17H6l3 3"></path>
+                                        <path d="M18 7l-3 3"></path>
+                                        <path d="M6 17l3-3"></path>
+                                    </svg>
                                     Swap Batters
                                 </button>
                                 <h4 style="
@@ -5503,7 +5535,7 @@
                 bowlerSel.add(new Option(cleanName, cleanName));
             });
         }
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('teamA').addEventListener('input', updateBattingTeams);
             document.getElementById('teamB').addEventListener('input', updateBattingTeams);
             document.getElementById('teamAPlayers').addEventListener('input', updatePlayerDropdown);
@@ -5730,9 +5762,14 @@
 
                 updateLiveDisplay();
             });
+            try {
+                await loadTeamManagerList();
+            } catch (err) {
+                console.warn('Team color list load failed before restore', err);
+            }
+
             loadSavedMatch();
             loadMatchList();
-            loadTeamManagerList();
             loadTeamsToLineup();
             loadBrandingSettings(); 
             loadSponsorPresets();
@@ -6742,6 +6779,95 @@ CURRENT OVER SUMMARY
             showModal("Batters swapped");
         }
 
+        function swapBattersSilently() {
+            const strikerEl = document.getElementById('striker');
+            const nonStrikerEl = document.getElementById('nonStriker');
+            if (!strikerEl || !nonStrikerEl || !strikerEl.value || !nonStrikerEl.value) return;
+
+            const striker = strikerEl.value;
+            strikerEl.value = nonStrikerEl.value;
+            nonStrikerEl.value = striker;
+        }
+
+        function isLegalHistoryBall(ball) {
+            return !!ball && (
+                ball.type === "run" ||
+                ball.type === "wicket" ||
+                (ball.type === "extra" && (ball.extra === "bye" || ball.extra === "legbye"))
+            );
+        }
+
+        function undoShouldSwapBatters(ball, wasEndOfOverUndo) {
+            if (!ball) return false;
+            let swaps = wasEndOfOverUndo ? 1 : 0;
+
+            if (ball.type === "run" && Number(ball.runs || 0) % 2 === 1) {
+                swaps++;
+            }
+
+            if (ball.type === "extra") {
+                const totalRuns = Number(ball.runs || 0);
+                const hasRunsTaken = ball.runsTaken !== undefined && ball.runsTaken !== null;
+                const runsTaken = hasRunsTaken ? Number(ball.runsTaken || 0) : totalRuns;
+
+                if ((ball.extra === "bye" || ball.extra === "legbye") && runsTaken % 2 === 1) {
+                    swaps++;
+                }
+
+                if (ball.extra === "wide" || ball.extra === "noball") {
+                    const battersRan = hasRunsTaken ? runsTaken : Math.max(totalRuns - 1, 0);
+                    if (battersRan % 2 === 1) swaps++;
+                }
+            }
+
+            return swaps % 2 === 1;
+        }
+
+        function restoreSelectionsAfterHistoryChange() {
+            const previousStriker = document.getElementById('striker')?.value || "";
+            const previousNonStriker = document.getElementById('nonStriker')?.value || "";
+            const previousBowler = document.getElementById('bowler')?.value || "";
+            const current = getCurrentFromHistory();
+
+            updatePlayerDropdown();
+            updateStrikerDropdown();
+
+            const strikerEl = document.getElementById('striker');
+            const nonStrikerEl = document.getElementById('nonStriker');
+            const bowlerEl = document.getElementById('bowler');
+
+            const canUse = (select, value) =>
+                value && [...select.options].some(o => o.value === value);
+
+            if (canUse(strikerEl, current.striker)) {
+                strikerEl.value = current.striker;
+            } else if (canUse(strikerEl, previousStriker)) {
+                strikerEl.value = previousStriker;
+            }
+
+            if (
+                canUse(nonStrikerEl, current.nonStriker) &&
+                current.nonStriker !== strikerEl.value
+            ) {
+                nonStrikerEl.value = current.nonStriker;
+            } else if (
+                canUse(nonStrikerEl, previousNonStriker) &&
+                previousNonStriker !== strikerEl.value
+            ) {
+                nonStrikerEl.value = previousNonStriker;
+            } else {
+                const fallback = [...nonStrikerEl.options].find(o => o.value && o.value !== strikerEl.value);
+                if (fallback) nonStrikerEl.value = fallback.value;
+            }
+
+            if (canUse(bowlerEl, current.bowler)) {
+                bowlerEl.value = current.bowler;
+                currentOverBowler = current.bowler;
+            } else if (canUse(bowlerEl, previousBowler)) {
+                bowlerEl.value = previousBowler;
+            }
+        }
+
         /* ============= Quick Score Extra ================= */
         function quickExtra(type) {
             const el = document.getElementById("extraRuns");
@@ -6823,7 +6949,13 @@ CURRENT OVER SUMMARY
         /* ============ Undo Last =================== */
         function undoLast() {
             if (liveHistory.length === 0) return;
-            const last = liveHistory.pop();
+            const last = liveHistory[liveHistory.length - 1];
+            const wasEndOfOverUndo =
+                isLegalHistoryBall(last) &&
+                liveBalls > 0 &&
+                liveBalls % 6 === 0;
+
+            liveHistory.pop();
             if (last.type === "wicket") {
                 dismissalShown = false;
                 // find previous wicket (if any)
@@ -6837,6 +6969,10 @@ CURRENT OVER SUMMARY
                 }
             }
             recalculateMatch();
+            restoreSelectionsAfterHistoryChange();
+            if (undoShouldSwapBatters(last, wasEndOfOverUndo)) {
+                swapBattersSilently();
+            }
             const lastBall = liveHistory[liveHistory.length - 1];
 
             if (!lastBall || lastBall.type !== "wicket") {
@@ -7202,9 +7338,9 @@ CURRENT OVER SUMMARY
         function getManagedTeamColors(teamName, fallbackPrimary, fallbackAccent) {
             const team = getManagedTeamByName(teamName);
             return {
-                primaryColor: normalizeColor(team.primaryColor || team.teamColor, fallbackPrimary),
-                accentColor: normalizeColor(team.accentColor, fallbackAccent),
-                textColor: normalizeColor(team.textColor, teamColorDefaults.textColor)
+                primaryColor: normalizeColor(team.primaryColor || team.teamColor || team.color, fallbackPrimary),
+                accentColor: normalizeColor(team.accentColor || team.secondaryColor, fallbackAccent),
+                textColor: normalizeColor(team.textColor || team.fontColor, teamColorDefaults.textColor)
             };
         }
 
@@ -7213,8 +7349,6 @@ CURRENT OVER SUMMARY
             const teamBDesign = getManagedTeamColors(teamB?.value, "#DC2626", "#F87171");
 
             return {
-                teamAColor: teamADesign.primaryColor,
-                teamBColor: teamBDesign.primaryColor,
                 teamAPrimaryColor: teamADesign.primaryColor,
                 teamAAccentColor: teamADesign.accentColor,
                 teamATextColor: teamADesign.textColor,
@@ -7287,11 +7421,11 @@ CURRENT OVER SUMMARY
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, logo, ...colors, players })
             });
+            await loadTeamManagerList();
+            const savedSelect = document.getElementById('tmSavedTeams');
+            if (savedSelect) savedSelect.value = name;
 
             showModal("Team saved");
-            setTimeout(() => {
-                clearTeamManager();
-            }, 300);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -7357,7 +7491,11 @@ CURRENT OVER SUMMARY
 
             document.getElementById('tmName').value = team.name;
             document.getElementById('tmLogo').value = team.logo;
-            setTeamManagerColors(team);
+            setTeamManagerColors({
+                primaryColor: team.primaryColor || team.teamColor || team.color,
+                accentColor: team.accentColor || team.secondaryColor,
+                textColor: team.textColor || team.fontColor
+            });
 
             document.getElementById('tmPlayers').value =
                 team.players.map(p => `${p.name}|${p.image}`).join('\n');
@@ -7719,6 +7857,7 @@ CURRENT OVER SUMMARY
             }
             closeBallEditor();
             recalculateMatch();
+            restoreSelectionsAfterHistoryChange();
             renderOverTimeline();
             renderCurrentOver();
             renderPreviousOver();
@@ -7762,8 +7901,10 @@ CURRENT OVER SUMMARY
                 document.getElementById(
                     "editBallBowler"
                 ).value;
+            ball.dismissal = ball.dismissal || "Out";
             closeBallEditor();
             recalculateMatch();
+            restoreSelectionsAfterHistoryChange();
             updateLiveDisplay();
         }
         /* ========= Edit Ball Extra ======== */
@@ -9782,43 +9923,43 @@ CURRENT OVER SUMMARY
                 Match Graphics
             </h4>
             <div class="modal-grid">
-                <button onclick="
+                <button class="modal-action-warn" onclick="
                 sendBreak('LIVE STREAM')
             ">
                     Intro Start
                 </button>
-                <button onclick="
+                <button class="modal-action-primary" onclick="
                 showTeamXIs()
             ">
                     Team Lists
                 </button>
-                <button onclick="
+                <button class="modal-action-warn" onclick="
                 sendBreak('DRINKS BREAK')
             ">
                     Drinks Break
                 </button>
-                <button onclick="
+                <button class="modal-action-warn" onclick="
                 sendBreak(
                     'STRATEGIC TIMEOUT'
                 )
             ">
                     Timeout
                 </button>
-                <button onclick="
+                <button class="modal-action-warn" onclick="
                 sendBreak(
                     'INNINGS BREAK'
                 )
             ">
                     Innings Break
                 </button>
-                <button onclick="
+                <button class="modal-action-primary" onclick="
                 sendBreak(
                     'MATCH RESULT'
                 )
             ">
                     Match Result
                 </button>
-                <button onclick="
+                <button class="modal-action-danger" onclick="
                     hideBreak()
              ">
                     Hide Graphic
@@ -9829,18 +9970,18 @@ CURRENT OVER SUMMARY
                 Scoreboard
             </h4>
             <div class="modal-grid">
-                <button onclick="
+                <button class="modal-action-primary" onclick="
                 showScorecard()
             ">
                     Show Scorecard
                 </button>
-                <button onclick="
+                <button class="modal-action-danger" onclick="
                 hideFullScorecard()
             ">
                     Hide Scorecard
                 </button>
             </div>
-            <button class="close-modal-btn"
+            <button class="close-modal-btn modal-action-neutral"
                     onclick="
                     closeGraphicsModal()
                 ">
@@ -9923,7 +10064,7 @@ CURRENT OVER SUMMARY
                         <input id="preset10" disabled
                                placeholder="Sponsor 10 URL">
                     </div>
-                    <button onclick="saveSponsorPresets()" disabled
+                    <button class="modal-action-success" onclick="saveSponsorPresets()" disabled
                             style="margin-top:14px;width:100%;">
                         💾 Save Presets
                     </button>
@@ -9934,40 +10075,40 @@ CURRENT OVER SUMMARY
                         Trigger Sponsors
                     </h4>
                     <div class="modal-grid">
-                        <button onclick="triggerPreset(1)">
+                        <button class="modal-action-warn" onclick="triggerPreset(1)">
                             Sponsor 1
                         </button>
-                        <button onclick="triggerPreset(2)">
+                        <button class="modal-action-warn" onclick="triggerPreset(2)">
                             Sponsor 2
                         </button>
-                        <button onclick="triggerPreset(3)">
+                        <button class="modal-action-warn" onclick="triggerPreset(3)">
                             Sponsor 3
                         </button>
-                        <button onclick="triggerPreset(4)">
+                        <button class="modal-action-warn" onclick="triggerPreset(4)">
                             Sponsor 4
                         </button>
-                        <button onclick="triggerPreset(5)">
+                        <button class="modal-action-warn" onclick="triggerPreset(5)">
                             Sponsor 5
                         </button>
-                        <button onclick="triggerPreset(6)">
+                        <button class="modal-action-warn" onclick="triggerPreset(6)">
                             Sponsor 6
                         </button>
-                        <button onclick="triggerPreset(7)">
+                        <button class="modal-action-warn" onclick="triggerPreset(7)">
                             Sponsor 7
                         </button>
-                        <button onclick="triggerPreset(8)">
+                        <button class="modal-action-warn" onclick="triggerPreset(8)">
                             Sponsor 8
                         </button>
-                        <button onclick="triggerPreset(9)">
+                        <button class="modal-action-warn" onclick="triggerPreset(9)">
                             Sponsor 9
                         </button>
-                        <button onclick="triggerPreset(10)">
+                        <button class="modal-action-warn" onclick="triggerPreset(10)">
                             Sponsor 10
                         </button>
                     </div>
                 </div>
             </div>
-            <button class="close-modal-btn"
+            <button class="close-modal-btn modal-action-neutral"
                     onclick="closeSponsorsModal()">
                 Close
             </button>
@@ -10009,17 +10150,17 @@ CURRENT OVER SUMMARY
                     margin-top:18px;
                     grid-template-columns:1fr 1fr;
                  ">
-                    <button class="production-btn"
+                    <button class="production-btn modal-action-primary"
                             onclick="applyBrandingModal()">
                         🖥️ Update Branding
                     </button>
-                    <button class="production-btn"
+                    <button class="production-btn modal-action-success"
                             onclick="saveBrandingSettings()">
                         💾 Save Branding
                     </button>
                 </div>
             </div>
-            <button class="close-modal-btn"
+            <button class="close-modal-btn modal-action-neutral"
                     onclick="closeBrandingModal()">
                 Close
             </button>
