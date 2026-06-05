@@ -2907,9 +2907,22 @@
             border-bottom: 0;
         }
 
+        #livescoring #advancedLiveTab #batsmanStatsBody td,
+        #livescoring #advancedLiveTab #bowlerStatsBody td {
+            padding-left: 6px;
+            padding-right: 6px;
+            text-align: center;
+        }
+
+        #livescoring #advancedLiveTab #batsmanStatsBody td:first-child,
+        #livescoring #advancedLiveTab #bowlerStatsBody td:first-child {
+            text-align: left;
+        }
+
         #batsmanStatsBody td:nth-child(7) {
             white-space: normal !important;
             line-height: 1.25;
+            text-align: left !important;
         }
 
         #batsmanStatsBody td:nth-child(6),
@@ -3322,10 +3335,21 @@
 
         #lineups .player-editor-remove,
         #teamManager .player-editor-remove {
-            height: 30px !important;
-            min-height: 30px !important;
+            width: 32px !important;
+            min-width: 32px !important;
+            height: 34px !important;
+            min-height: 34px !important;
             line-height: 1 !important;
-            padding-bottom: 1px !important;
+            padding: 0 !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        #lineups .player-editor-row,
+        #teamManager .player-editor-row {
+            min-height: 38px !important;
+            padding-top: 3px !important;
+            padding-bottom: 3px !important;
         }
 
         #livescoring #basicLiveTab select#bowler {
@@ -4394,10 +4418,10 @@
                             background:#0f172a;
                             border:1px solid #334155; ">
                                     <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="M9 19V5"></path>
-                                        <path d="M5 9l4-4 4 4"></path>
-                                        <path d="M15 5v14"></path>
-                                        <path d="M11 15l4 4 4-4"></path>
+                                        <path d="M8 19V5"></path>
+                                        <path d="M4 9l4-4 4 4"></path>
+                                        <path d="M16 5v14"></path>
+                                        <path d="M12 15l4 4 4-4"></path>
                                     </svg>
                                     Swap Batters
                                 </button>
@@ -4534,13 +4558,13 @@
                             <h4>Batsman Stats</h4>
                             <table class="stats-table">
                                 <colgroup>
-                                    <col style="width:25%">
-                                    <col style="width:8%">
-                                    <col style="width:8%">
-                                    <col style="width:8%">
-                                    <col style="width:8%">
-                                    <col style="width:11%">
-                                    <col style="width:32%">
+                                    <col style="width:27%">
+                                    <col style="width:9%">
+                                    <col style="width:9%">
+                                    <col style="width:9%">
+                                    <col style="width:9%">
+                                    <col style="width:13%">
+                                    <col style="width:24%">
                                 </colgroup>
                                 <thead>
                                     <tr>
@@ -4560,12 +4584,12 @@
                             <h4>Bowler Stats</h4>
                             <table class="stats-table">
                                 <colgroup>
-                                    <col style="width:32%">
-                                    <col style="width:14%">
+                                    <col style="width:34%">
+                                    <col style="width:13%">
                                     <col style="width:13%">
                                     <col style="width:14%">
                                     <col style="width:13%">
-                                    <col style="width:14%">
+                                    <col style="width:13%">
                                 </colgroup>
                                 <thead>
                                     <tr>
@@ -4922,7 +4946,7 @@
 
             // ✅ get all NOT OUT batsmen
             const active = Object.keys(batsmanStats).filter(
-                name => !batsmanStats[name].out
+                name => !batsmanStats[name].out && !batsmanStats[name].retiredHurt
             );
 
             // fallback to UI if something weird
@@ -5506,7 +5530,7 @@
                 .filter(name => {
                     if (!name) return false;
                     // ❌ remove already out players
-                    if (batsmanStats[name] && batsmanStats[name].out) {
+                    if (batsmanStats[name] && (batsmanStats[name].out || batsmanStats[name].retiredHurt)) {
                         return false;
                     }
                     return true;
@@ -5659,7 +5683,7 @@
                 sendEvent('player', {
                     team: (batting.value === teamA.value ? teamB.value : teamA.value),
                     label: 'NEW BOWLER',
-                    name: bowler,
+                    name: shortName(bowler),
                     hand: stats,
                     image: img,
                     isReturning: isReturning
@@ -5681,6 +5705,13 @@
                 if (!striker) {
                     console.log("EMPTY STRIKER - SKIPPING");
                     return;
+                }
+
+                if (batsmanStats[striker]) {
+                    batsmanStats[striker].retiredHurt = false;
+                    if (batsmanStats[striker].dismissal === "Retired Hurt") {
+                        batsmanStats[striker].dismissal = "";
+                    }
                 }
                 
                 console.log("STRIKER VALUE:", striker);
@@ -5742,7 +5773,7 @@
                 sendEvent('player', {
                     team: batting.value,
                     label: 'NEW BATSMAN',
-                    name: striker,
+                    name: shortName(striker),
                     hand: '',
                     image: img
                 });
@@ -5755,6 +5786,13 @@
             document.getElementById('nonStriker').addEventListener('change', function () {
                 const player = this.value;
                 const striker = document.getElementById('striker').value;
+
+                if (batsmanStats[player]) {
+                    batsmanStats[player].retiredHurt = false;
+                    if (batsmanStats[player].dismissal === "Retired Hurt") {
+                        batsmanStats[player].dismissal = "";
+                    }
+                }
 
                 if (!validateBatsman(player)) {
                     this.value = "";
@@ -5785,7 +5823,7 @@
                 sendEvent('player', {
                     team: batting.value,
                     label: 'NEW BATSMAN',
-                    name: player,
+                    name: shortName(player),
                     hand: '',
                     image: playerImages[player] || ''
                 });
@@ -6066,31 +6104,39 @@
         }
 
         /* ========== Get this Over ============ */
-        function getThisOver() {
-            let balls = [];
-
-            for (let i = 0; i < liveHistory.length; i++) {
-                const b = liveHistory[i];
-
-                if (b.overId !== currentOverId) continue;
-
-                let symbol = "";
-
-                if (b.type === "run") symbol = b.runs;
-                else if (b.type === "wicket") symbol = "W";
-                else if (b.type === "extra") {
-                    const r = Number(b.runs) || 1;
-
-                    if (b.extra === "wide") symbol = r + "Wd";
-                    else if (b.extra === "noball") symbol = r + "Nb";
-                    else if (b.extra === "bye") symbol = r + "B";
-                    else if (b.extra === "legbye") symbol = r + "Lb";
-                }
-
-                balls.push(symbol);
+        function getBallSymbol(b) {
+            if (!b) return "";
+            if (b.type === "run") return b.runs;
+            if (b.type === "wicket") return "W";
+            if (b.type === "extra") {
+                const r = Number(b.runs) || 1;
+                if (b.extra === "wide") return r + "Wd";
+                if (b.extra === "noball") return r + "Nb";
+                if (b.extra === "bye") return r + "B";
+                if (b.extra === "legbye") return r + "Lb";
             }
+            return "";
+        }
+
+        function getOverTextById(overId) {
+            const balls = liveHistory
+                .filter(b => b.overId === overId)
+                .map(getBallSymbol)
+                .filter(symbol => symbol !== "");
 
             return balls.length ? balls.join(" ") : "-";
+        }
+
+        function getThisOver() {
+            let overId = currentOverId;
+            const currentHasBalls = liveHistory.some(b => b.overId === overId);
+            const lastBall = liveHistory[liveHistory.length - 1];
+
+            if (!currentHasBalls && lastBall && lastBall.overId !== undefined) {
+                overId = lastBall.overId;
+            }
+
+            return getOverTextById(overId);
         }
         /* ===========get Legal Ball ============== */
         function getLegalBallIndex(index) {
@@ -6117,7 +6163,8 @@
 
             const currentState =
                 liveTotal + "/" + liveWickets + "-" + liveBalls +
-                "|" + strikerName + "|" + nonStrikerName + "|" + bowlerName;
+                "|" + strikerName + "|" + nonStrikerName + "|" + bowlerName +
+                "|" + liveHistory.length;
 
             if (currentState === lastSentScore) return;
 
@@ -6231,30 +6278,7 @@
                 // show previous completed over
                 const previousOverId = currentOverId - 1;
 
-                let balls = [];
-
-                liveHistory.forEach(b => {
-
-                    if (b.overId !== previousOverId) return;
-
-                    let symbol = "";
-
-                    if (b.type === "run") symbol = b.runs;
-                    else if (b.type === "wicket") symbol = "W";
-                    else if (b.type === "extra") {
-
-                        const r = Number(b.runs) || 1;
-
-                        if (b.extra === "wide") symbol = r + "Wd";
-                        else if (b.extra === "noball") symbol = r + "Nb";
-                        else if (b.extra === "bye") symbol = r + "B";
-                        else if (b.extra === "legbye") symbol = r + "Lb";
-                    }
-
-                    balls.push(symbol);
-                });
-
-                thisOver = balls.join(" ");
+                thisOver = getOverTextById(previousOverId);
 
             } else {
 
@@ -6265,16 +6289,19 @@
             lastStriker = strikerName;
             lastNonStriker = nonStrikerName;
             lastBowlerName = bowlerName;
+            const strikerDisplayName = shortName(strikerName);
+            const nonStrikerDisplayName = shortName(nonStrikerName);
+            const bowlerDisplayName = shortName(bowlerName);
 
             sendEvent('manualScore', {
                 score: liveTotal + "/" + liveWickets,
                 overs: calculateOvers(),
                 runRate: calculateRR(),
-                bat1: strikerName ? strikerName + "*" : "",
+                bat1: strikerDisplayName ? strikerDisplayName + "*" : "",
                 bat1Score: strikerRuns + " (" + strikerBalls + ")",
-                bat2: nonStrikerName,
+                bat2: nonStrikerDisplayName,
                 bat2Score: nonStrikerRuns + " (" + nonStrikerBalls + ")",
-                bowlerName: bowlerName,
+                bowlerName: bowlerDisplayName,
                 bowlerStats: `${bowlerOvers}-${bowlerMaidens}-${bowlerRuns}-${bowlerWickets}`,
                 thisOver: thisOver,
                 runsPerOver: getRunsPerOver(),
@@ -6282,7 +6309,7 @@
                 dismissal: (function () {
                     if (!lastOutBatsman) return "";
                     const text =
-                        lastOutBatsman + " " + outRuns + " (" + outBalls + ") " + lastDismissal;
+                        shortName(lastOutBatsman) + " " + outRuns + " (" + outBalls + ") " + lastDismissal;
                     if (text === lastDismissalSent) return "";
                     lastDismissalSent = text;
                     return text;
@@ -6336,17 +6363,9 @@
 
             // CURRENT OVER
             const currentOverBalls = liveHistory
-                .slice(-6)
-                .map(ball => {
-
-                    if (ball.type === "wicket")
-                        return "W";
-
-                    if (ball.type === "extra")
-                        return "Wd";
-
-                    return ball.runs;
-                });
+                .filter(ball => ball.overId === currentOverId)
+                .map(getBallSymbol)
+                .filter(symbol => symbol !== "");
 
             document.getElementById(
                 'liveCurrentOverInfo'
@@ -6523,7 +6542,7 @@ CURRENT OVER SUMMARY
 
                 body.innerHTML += `
                                                                        <tr class="${name === currentBowler ? 'bowler-row' : ''}">
-                                                                         <td title="${name}">${name}</td>
+                                                                         <td title="${name}">${shortName(name)}</td>
                                                                          <td>${overs}</td>
                                                                          <td>${calculateMaidens(name)}</td>
                                                                          <td>${stats.runs}</td>
@@ -6693,7 +6712,7 @@ CURRENT OVER SUMMARY
                 if (!cleanName) return;
 
                 // ❌ skip OUT players
-                if (batsmanStats[cleanName]?.out) return;
+                if (batsmanStats[cleanName]?.out || batsmanStats[cleanName]?.retiredHurt) return;
 
                 // ❌ skip current batters
                 if (
@@ -6766,7 +6785,7 @@ CURRENT OVER SUMMARY
             sendEvent('player', {
                 team: batting.value,
                 label: 'NEW BATSMAN',
-                name: name,
+                name: shortName(name),
                 hand: '',
                 image: img
             });
@@ -7163,6 +7182,7 @@ CURRENT OVER SUMMARY
                     fours: 0,
                     sixes: 0,
                     out: false,
+                    retiredHurt: false,
                     dismissal: "",
                     bowler: "",
                     fiftyShown: false,
@@ -7182,6 +7202,9 @@ CURRENT OVER SUMMARY
                 const strikeRate = stats.balls ?
                     ((stats.runs / stats.balls) * 100).toFixed(1) :
                     "0.0";
+                const dismissalStatus = stats.out
+                    ? stats.dismissal
+                    : (stats.retiredHurt ? "Retired Hurt" : "Not Out");
                 body.innerHTML += `
                                                                        <tr class="${name === striker ? 'striker-row' : ''}">
                                                                          <td title="${name}">${shortName(name)}</td>
@@ -7190,10 +7213,8 @@ CURRENT OVER SUMMARY
                                                                          <td>${stats.fours}</td>
                                                                          <td>${stats.sixes}</td>
                                                                          <td>${strikeRate}</td>
-                                                                         <td title="${stats.dismissal || 'Not Out'}">
-                                                                           ${stats.out
-                                                                                ? stats.dismissal
-                                                                                : "Not Out"}
+                                                                         <td title="${dismissalStatus}">
+                                                                           ${dismissalStatus}
                                                                          </td>
                                                                        </tr>
                                                                        `;
@@ -7640,30 +7661,10 @@ CURRENT OVER SUMMARY
                 return;
             }
 
-            const balls = [];
-
-            liveHistory.forEach(b => {
-
-                if (b.overId !== previousOverId) return;
-
-                let symbol = "";
-
-                if (b.type === "run") symbol = b.runs;
-
-                else if (b.type === "wicket") symbol = "W";
-
-                else if (b.type === "extra") {
-
-                    const r = Number(b.runs) || 1;
-
-                    if (b.extra === "wide") symbol = r + "Wd";
-                    else if (b.extra === "noball") symbol = r + "Nb";
-                    else if (b.extra === "bye") symbol = r + "B";
-                    else if (b.extra === "legbye") symbol = r + "Lb";
-                }
-
-                balls.push(symbol);
-            });
+            const balls = liveHistory
+                .filter(b => b.overId === previousOverId)
+                .map(getBallSymbol)
+                .filter(symbol => symbol !== "");
 
             el.innerText = balls.join(" ") || "-";
         }
@@ -7684,18 +7685,8 @@ CURRENT OVER SUMMARY
 
                 if (b.overId !== activeOverId) return;
 
-                let symbol = "";
-
-                if (b.type === "run") symbol = b.runs;
-                else if (b.type === "wicket") symbol = "W";
-                else if (b.type === "extra") {
-                    const r = Number(b.runs) || 1;
-
-                    if (b.extra === "wide") symbol = r + "Wd";
-                    else if (b.extra === "noball") symbol = r + "Nb";
-                    else if (b.extra === "bye") symbol = r + "B";
-                    else if (b.extra === "legbye") symbol = r + "Lb";
-                }
+                const symbol = getBallSymbol(b);
+                if (symbol === "") return;
 
                 const el = document.createElement("div");
                 el.className = "overBall";
@@ -8057,6 +8048,12 @@ CURRENT OVER SUMMARY
                         bowlerStats[bowler].wickets++;
                     }
                 }
+                else if (ball.type === "retiredHurt") {
+                    ensureBatsman(striker);
+                    batsmanStats[striker].out = false;
+                    batsmanStats[striker].retiredHurt = true;
+                    batsmanStats[striker].dismissal = "Retired Hurt";
+                }
                 // =========================
                 // EXTRAS
                 // =========================
@@ -8097,9 +8094,9 @@ CURRENT OVER SUMMARY
             // ✅ restore current over state
             currentOverBalls = legalBallsInOver;
             // ✅ restore current bowler
-            const lastBall = liveHistory[liveHistory.length - 1];
-            if (lastBall) {
-                currentOverBowler = lastBall.bowler || "";
+            const lastBowledBall = [...liveHistory].reverse().find(ball => ball.bowler);
+            if (lastBowledBall) {
+                currentOverBowler = lastBowledBall.bowler || "";
             } else {
                 currentOverBowler = "";
             }
@@ -8152,7 +8149,7 @@ CURRENT OVER SUMMARY
                 score: liveTotal + "/" + liveWickets,
                 overs: overs,
                 rr: rr,
-                bowler: bowlerName,
+                bowler: shortName(bowlerName),
                 note: note,
                 thisOver: getThisOver(),
                 runsPerOver: getRunsPerOver()
@@ -8171,7 +8168,7 @@ CURRENT OVER SUMMARY
                 sendEvent('player', {
                     team: batting.value,
                     label: 'CENTURY',
-                    name: batsman + " " + stats.runs + " (" + stats.balls + ")",
+                    name: shortName(batsman) + " " + stats.runs + " (" + stats.balls + ")",
                     hand: '',
                     image: img
                 });
@@ -8187,7 +8184,7 @@ CURRENT OVER SUMMARY
                 sendEvent('player', {
                     team: batting.value,
                     label: 'FIFTY',
-                    name: batsman + " " + stats.runs + " (" + stats.balls + ")",
+                    name: shortName(batsman) + " " + stats.runs + " (" + stats.balls + ")",
                     hand: '',
                     image: img
                 });
@@ -8230,7 +8227,7 @@ CURRENT OVER SUMMARY
                 sendEvent('player', {
                     team: batting.value,
                     label: 'HAT TRICK',
-                    name: bowler,
+                    name: shortName(bowler),
                     hand: '3 wickets in 3 balls',
                     image: img
                 });
@@ -8307,9 +8304,9 @@ CURRENT OVER SUMMARY
                         team: batting.value,
                         runs: runs,
                         balls: balls,
-                        bat1: striker,
+                        bat1: shortName(striker),
                         bat1Img: bat1Img,
-                        bat2: nonStriker,
+                        bat2: shortName(nonStriker),
                         bat2Img: bat2Img,
                         milestone: 100
                     });
@@ -8329,9 +8326,9 @@ CURRENT OVER SUMMARY
                         team: batting.value,
                         runs: runs,
                         balls: balls,
-                        bat1: striker,
+                        bat1: shortName(striker),
                         bat1Img: bat1Img,
-                        bat2: nonStriker,
+                        bat2: shortName(nonStriker),
                         bat2Img: bat2Img,
                         milestone: 50
                     });
@@ -9205,6 +9202,44 @@ CURRENT OVER SUMMARY
            return parts[0].charAt(0) + ". " + parts.slice(1).join(" ");
         }
 
+        function retireHurtBatter(batterName) {
+            if (!batterName) {
+                showModal("Select a batter first");
+                return;
+            }
+
+            ensureBatsman(batterName);
+            batsmanStats[batterName].out = false;
+            batsmanStats[batterName].retiredHurt = true;
+            batsmanStats[batterName].dismissal = "Retired Hurt";
+            liveHistory.push({
+                type: 'retiredHurt',
+                striker: batterName,
+                overId: currentOverId
+            });
+
+            lastOutBatsman = batterName;
+            lastDismissal = "Retired Hurt";
+            dismissalShown = false;
+            awaitingNewBatsman = true;
+            lockedOut = false;
+            lastBatsmanTriggered = "";
+            rebuildBattingOrder();
+
+            sendEvent('player', {
+                team: batting.value,
+                label: 'RETIRED HURT',
+                name: shortName(batterName),
+                hand: 'Can return later',
+                image: getPlayerImage(batterName) || playerImages[batterName] || ''
+            });
+
+            closeWicketModal();
+            showNextBatter();
+            updateLiveDisplay();
+            saveMatchToFirebase();
+        }
+
         function smartWicket(type, fielder, runOutChoice = "striker") {
             if (!validateBeforeBall()) return;
             
@@ -9223,6 +9258,7 @@ CURRENT OVER SUMMARY
             
             ensureBowler(currentBowler);
             ensureBatsman(striker);
+            ensureBatsman(outBatter);
             
             let dismissalText = "";
             if (type === "Caught") {
@@ -9510,6 +9546,12 @@ CURRENT OVER SUMMARY
             const runOutChoice =
                 document.getElementById("runOutBatter")?.value ||
                 "striker";
+
+            if (type === "Retired Hurt") {
+                const batterName = document.getElementById('striker')?.value || "";
+                retireHurtBatter(batterName);
+                return;
+            }
 
             closeWicketModal();
 
@@ -9810,6 +9852,7 @@ CURRENT OVER SUMMARY
                 <option value="Hit the Ball Twice">Hit the Ball Twice</option>
                 <option value="Handled the Ball">Handled the Ball</option>
                 <option value="Timed Out">Timed Out</option>
+                <option value="Retired Hurt">Retired Hurt</option>
             </select>
 
             <div id="fielderSection" style="display:none;">
