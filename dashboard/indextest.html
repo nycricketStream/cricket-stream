@@ -3301,16 +3301,42 @@
             cursor: pointer;
         }
 
-        .tm-color-field code {
+        .tm-color-field code,
+        .tm-color-field .tm-color-hex {
             min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
             padding: 7px 6px;
             border-radius: 8px;
+            border: 1px solid rgba(96,165,250,.18);
             background: rgba(2,6,23,.8);
             color: #f8fafc;
             font: 800 10.5px/1.1 Consolas, monospace;
             text-align: center;
+            text-transform: uppercase;
+            outline: none;
+        }
+
+        .tm-color-field .tm-color-hex:focus {
+            border-color: rgba(125,211,252,.65);
+            box-shadow: 0 0 0 2px rgba(14,165,233,.18);
+        }
+
+        #lineups .player-editor-remove,
+        #teamManager .player-editor-remove {
+            height: 30px !important;
+            min-height: 30px !important;
+            line-height: 1 !important;
+            padding-bottom: 1px !important;
+        }
+
+        #livescoring #basicLiveTab select#bowler {
+            font-size: 14px !important;
+            line-height: 1.2 !important;
+        }
+
+        #ballEditor {
+            left: 50% !important;
+            top: 50% !important;
+            transform: translate(-50%, -50%) !important;
         }
 
         #bowlerPopup .bowlerOption {
@@ -3686,17 +3712,17 @@
                     <label class="tm-color-field">
                         <span>Primary</span>
                         <input id="tmPrimaryColor" type="color" value="#0A1A3F">
-                        <code id="tmPrimaryColorValue">#0A1A3F</code>
+                        <input id="tmPrimaryColorValue" class="tm-color-hex" type="text" value="#0A1A3F" maxlength="7" spellcheck="false">
                     </label>
                     <label class="tm-color-field">
                         <span>Accent</span>
                         <input id="tmAccentColor" type="color" value="#D4A017">
-                        <code id="tmAccentColorValue">#D4A017</code>
+                        <input id="tmAccentColorValue" class="tm-color-hex" type="text" value="#D4A017" maxlength="7" spellcheck="false">
                     </label>
                     <label class="tm-color-field">
                         <span>Text</span>
                         <input id="tmTextColor" type="color" value="#ffffff">
-                        <code id="tmTextColorValue">#FFFFFF</code>
+                        <input id="tmTextColorValue" class="tm-color-hex" type="text" value="#FFFFFF" maxlength="7" spellcheck="false">
                     </label>
                 </div>
             </div>
@@ -4073,7 +4099,7 @@
                                     display:none;
                                     position:fixed;
                                     top:50%;
-                                    left:55%;
+                                    left:50%;
                                     transform:translate(-50%, -50%);
                                     background:#020617;
                                     border:1px solid #1f2937;
@@ -4361,10 +4387,10 @@
                             background:#0f172a;
                             border:1px solid #334155; ">
                                     <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="M8 5h8"></path>
-                                        <path d="M12 5v14"></path>
-                                        <path d="M8 9l4-4 4 4"></path>
-                                        <path d="M16 15l-4 4-4-4"></path>
+                                        <path d="M9 19V5"></path>
+                                        <path d="M5 9l4-4 4 4"></path>
+                                        <path d="M15 5v14"></path>
+                                        <path d="M11 15l4 4 4-4"></path>
                                     </svg>
                                     Swap Batters
                                 </button>
@@ -7318,16 +7344,37 @@ CURRENT OVER SUMMARY
                 const input = document.getElementById(inputId);
                 const label = document.getElementById(labelId);
                 if (input) input.value = value;
-                if (label) label.textContent = value;
+                if (label) label.value = value;
             });
         }
 
         function initTeamColorPickers() {
             setTeamManagerColors();
-            ['tmPrimaryColor', 'tmAccentColor', 'tmTextColor'].forEach(id => {
-                const input = document.getElementById(id);
-                if (!input) return;
-                input.addEventListener('input', () => setTeamManagerColors(getTeamManagerColors()));
+            [
+                ['tmPrimaryColor', 'tmPrimaryColorValue'],
+                ['tmAccentColor', 'tmAccentColorValue'],
+                ['tmTextColor', 'tmTextColorValue']
+            ].forEach(([colorId, hexId]) => {
+                const colorInput = document.getElementById(colorId);
+                const hexInput = document.getElementById(hexId);
+
+                colorInput?.addEventListener('input', () => {
+                    if (hexInput) hexInput.value = normalizeColor(colorInput.value, colorInput.value);
+                });
+
+                hexInput?.addEventListener('input', () => {
+                    hexInput.value = hexInput.value.toUpperCase();
+                    const next = normalizeColor(hexInput.value, colorInput?.value || teamColorDefaults.primaryColor);
+                    if (colorInput && /^#[0-9A-F]{6}$/.test(hexInput.value)) {
+                        colorInput.value = next;
+                    }
+                });
+
+                hexInput?.addEventListener('blur', () => {
+                    const next = normalizeColor(hexInput.value, colorInput?.value || teamColorDefaults.primaryColor);
+                    if (colorInput) colorInput.value = next;
+                    hexInput.value = next;
+                });
             });
         }
 
@@ -9928,7 +9975,7 @@ CURRENT OVER SUMMARY
             ">
                     Intro Start
                 </button>
-                <button class="modal-action-primary" onclick="
+                <button class="modal-action-warn" onclick="
                 showTeamXIs()
             ">
                     Team Lists
@@ -9952,7 +9999,7 @@ CURRENT OVER SUMMARY
             ">
                     Innings Break
                 </button>
-                <button class="modal-action-primary" onclick="
+                <button class="modal-action-warn" onclick="
                 sendBreak(
                     'MATCH RESULT'
                 )
