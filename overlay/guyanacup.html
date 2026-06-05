@@ -44,7 +44,7 @@
             --espn-glow: rgba(37,99,235,0.8);
             --z-scoreboard: 100;
             --z-overlay: 500;
-            --z-fullscreen: 2000;
+            --z-fullscreen: 120000;
         }
 
         html, body {
@@ -1060,10 +1060,9 @@
 
         .fullscreen-sponsor {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
             background: #000;
             display: flex;
             align-items: center;
@@ -1080,9 +1079,10 @@
             }
 
             .fullscreen-sponsor img {
-                max-width: 100%;
-                max-height: 100%;
-                object-fit: contain;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
             }
 
         #breakGraphic {
@@ -3100,14 +3100,24 @@
             }, 10000);
         });
 
+        let fullscreenSponsorTimer = null;
+
         channel.bind('fullscreenSponsor', data => {
             const box = document.getElementById("fullscreenSponsor");
             const img = document.getElementById("fullscreenSponsorImg");
 
             if (!box || !img) return;
 
-            if (data.hide) {
+            if (fullscreenSponsorTimer) {
+                clearTimeout(fullscreenSponsorTimer);
+                fullscreenSponsorTimer = null;
+            }
+
+            if (!data || data.hide) {
                 box.classList.remove("show");
+                setTimeout(() => {
+                    if (!box.classList.contains("show")) img.removeAttribute("src");
+                }, 450);
                 return;
             }
 
@@ -3115,8 +3125,9 @@
                 img.src = data.image;
                 box.classList.add("show");
 
-                setTimeout(() => {
+                fullscreenSponsorTimer = setTimeout(() => {
                     box.classList.remove("show");
+                    fullscreenSponsorTimer = null;
                 }, data.duration || 8000);
             }
 
@@ -3385,23 +3396,43 @@
         const leagueBug = document.getElementById('leagueBug');
         const leagueLogo = document.getElementById('leagueLogo');
         let leagueTimer = null;
+        let brandingState = {
+            logo: "",
+            size: ""
+        };
+
+        function applyBrandingState() {
+            if (!leagueBug || !leagueLogo) return;
+
+            if (brandingState.logo) {
+                leagueLogo.src = brandingState.logo;
+                leagueLogo.style.display = "block";
+                leagueBug.classList.add("show");
+            } else {
+                leagueLogo.removeAttribute("src");
+                leagueLogo.style.display = "none";
+                leagueBug.classList.remove("show");
+            }
+
+            if (brandingState.size) {
+                leagueLogo.style.height = brandingState.size + "px";
+            }
+        }
+
+        function removeTransientShowClasses() {
+            document.querySelectorAll(".show").forEach(el => {
+                if (el.id === "leagueBug") return;
+                el.classList.remove("show");
+            });
+            applyBrandingState();
+        }
 
         channel.bind('branding', data => {
             if (!data) return;
 
-            if (data.logo) {
-                leagueLogo.src = data.logo;
-                leagueLogo.style.display = "block";
-            } else {
-                leagueLogo.style.display = "none";
-            }
-
-            // apply size
-            if (data.size) {
-                leagueLogo.style.height = data.size + "px";
-            }
-
-            leagueBug.classList.add('show');
+            brandingState.logo = data.logo || "";
+            brandingState.size = data.size || brandingState.size || "";
+            applyBrandingState();
         });
 
         channel.bind('teamXI', data => {
@@ -3429,9 +3460,7 @@
             // 🔥 THIS IS THE FIX
             setTimeout(() => {
                 const blocks = document.querySelectorAll('#teamXIContent .teamBlock');
-                document.querySelectorAll('.show').forEach(el => {
-                    el.classList.remove('show');
-                });
+                removeTransientShowClasses();
                 if (blocks[0]) {
                     blocks[0].classList.add('show'); // Team A
                 }
@@ -3473,10 +3502,10 @@
             const replay = document.getElementById("replayGraphic");
             if (replay) replay.classList.remove("show");
 
-            // Hide overlays that use .show
-            document.querySelectorAll(".show").forEach(el => {
-                el.classList.remove("show");
-            });
+            // Hide transient overlays that use .show, but keep persistent branding.
+            removeTransientShowClasses();
+            isFullScorecardVisible = false;
+            if (scorecardDim) scorecardDim.classList.remove("show");
 
             setTimeout(() => {
                 scoreboardBar.classList.add("show");
@@ -3525,17 +3554,19 @@
 
             if (!data || data.enabled !== true) {
                 topSponsorBar.classList.remove('show');
+                if (!isFullScorecardVisible && scoreboardBar) scoreboardBar.classList.add("show");
+                applyBrandingState();
                 return;
             }
 
-            const scoreboard = document.getElementById("scoreboard");
             // HIDE scoreboard
-            scoreboard.classList.remove("show");
+            if (scoreboardBar) scoreboardBar.classList.remove("show");
 
             sponsorList = (data.list || []).filter(x => x && x.trim() !== "");
 
             if (sponsorList.length === 0) {
                 topSponsorBar.classList.remove('show');
+                if (!isFullScorecardVisible && scoreboardBar) scoreboardBar.classList.add("show");
                 return;
             }
 
@@ -3568,16 +3599,16 @@
 
                 // Hide all overlays
                 document.querySelectorAll(
-                    '#teamXIOverlay, #fullScorecard, #breakOverlay, #replayOverlay'
+                    '#teamXIOverlay, #fullScorecard, #bowlingCard'
                 ).forEach(el => {
                     if (el) el.style.display = 'none';
                 });
 
 
-                // Remove animation classes
-                document.querySelectorAll('.show').forEach(el => {
-                    el.classList.remove('show');
-                });
+                // Remove animation classes without wiping persistent branding.
+                removeTransientShowClasses();
+                isFullScorecardVisible = false;
+                if (scorecardDim) scorecardDim.classList.remove("show");
 
                 // Clear Team XI content
                 const content = document.getElementById("teamXIContent");
@@ -3630,9 +3661,8 @@
             }
 
             breakText.textContent = (data.text || "BREAK").toUpperCase();
-            document.querySelectorAll('.show').forEach(el => {
-                el.classList.remove('show');
-            });
+            removeTransientShowClasses();
+            breakGraphic.style.display = "flex";
             breakGraphic.classList.add("show");
         });
 
