@@ -3334,9 +3334,12 @@
         }
 
         #ballEditor {
+            position: fixed !important;
+            inset: auto !important;
             left: 50% !important;
             top: 50% !important;
             transform: translate(-50%, -50%) !important;
+            margin: 0 !important;
         }
 
         #bowlerPopup .bowlerOption {
@@ -3390,8 +3393,12 @@
         }
 
         #ballEditor {
+            position: fixed !important;
+            inset: auto !important;
             left: 50% !important;
             top: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            margin: 0 !important;
             width: min(360px, calc(100vw - 28px)) !important;
             max-height: min(86vh, 680px) !important;
             padding: 12px !important;
@@ -7779,8 +7786,16 @@ CURRENT OVER SUMMARY
             } else {
                 outSection.style.display = "none";
             }
-            document.getElementById("ballEditor")
-                .style.display = "block";
+            const editor = document.getElementById("ballEditor");
+            if (editor.parentElement !== document.body) {
+                document.body.appendChild(editor);
+            }
+            editor.style.display = "block";
+            editor.style.position = "fixed";
+            editor.style.left = "50%";
+            editor.style.top = "50%";
+            editor.style.transform = "translate(-50%, -50%)";
+            editor.style.margin = "0";
         }
 
         /* =========== Close Ball Editor ========= */
