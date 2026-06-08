@@ -5,6 +5,7 @@
     <title>NYC Eagles Broadcast Overlay</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@500;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
     <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
@@ -569,21 +570,21 @@
 
         #scoreboard {
             position: absolute;
-            bottom: 46px;
+            bottom: 42px;
             left: 50%;
             transform: translate(-50%,140%);
-            width: 1840px;
-            height: 162px;
+            width: 1836px;
+            height: 100px;
             background: linear-gradient(90deg, #061224 0%, #071426 48%, #071426 100%);
-            border-radius: 10px;
+            border-radius: 9px;
             display: grid;
-            grid-template-columns: 330px 240px 550px 236px 190px 294px;
+            grid-template-columns: 308px 206px 610px 208px 168px 336px;
             align-items: center;
             padding: 0;
             color: #fff;
             z-index: var(--z-scoreboard);
             transition: transform .6s ease, opacity .3s ease;
-            box-shadow: 0 16px 40px rgba(0,0,0,.54), inset 0 1px 0 rgba(255,255,255,.08);
+            box-shadow: 0 12px 28px rgba(0,0,0,.50), inset 0 1px 0 rgba(255,255,255,.08);
             border: 1px solid rgba(255,255,255,0.08);
             overflow: hidden;
             --batting-primary: #9A0A3A;
@@ -606,26 +607,34 @@
         #sbTeamA, #sbTeamB {
             position: relative;
             display: grid;
-            grid-template-columns: 106px 1fr;
+            grid-template-columns: 78px 1fr;
             align-items: center;
-            gap: 18px;
+            gap: 14px;
             width: 100%;
             height: 100%;
             min-width: 0;
             color: var(--batting-text);
             background:
-                linear-gradient(110deg, color-mix(in srgb, var(--batting-primary) 84%, #000 16%), var(--batting-primary) 58%, color-mix(in srgb, var(--batting-accent) 86%, #000 14%) 100%);
-            padding: 0 28px 0 24px;
+                linear-gradient(108deg,
+                    color-mix(in srgb, var(--batting-primary) 86%, #000 14%) 0%,
+                    var(--batting-primary) 57%,
+                    color-mix(in srgb, var(--batting-accent) 76%, var(--batting-primary) 24%) 100%);
+            padding: 0 46px 0 22px;
             overflow: hidden;
+            clip-path: polygon(0 0, 96% 0, 86% 100%, 0 100%);
         }
 
         #sbTeamB {
-            grid-template-columns: 1fr 104px;
-            gap: 14px;
+            grid-template-columns: 1fr 78px;
+            gap: 13px;
             color: var(--bowling-text);
             background:
-                linear-gradient(110deg, color-mix(in srgb, var(--bowling-primary) 82%, #000 18%), var(--bowling-primary) 58%, color-mix(in srgb, var(--bowling-accent) 84%, #000 16%) 100%);
-            padding: 0 22px 0 34px;
+                linear-gradient(108deg,
+                    color-mix(in srgb, var(--bowling-primary) 88%, #000 12%) 0%,
+                    var(--bowling-primary) 68%,
+                    color-mix(in srgb, var(--bowling-accent) 24%, var(--bowling-primary) 76%) 100%);
+            padding: 0 20px 0 64px;
+            clip-path: polygon(12% 0, 100% 0, 100% 100%, 0 100%);
         }
 
         #scoreboard .battingHighlight {
@@ -643,27 +652,27 @@
         #sbTeamB::before {
             content: "";
             position: absolute;
-            top: -12px;
-            bottom: -12px;
-            width: 15px;
-            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--batting-accent));
-            transform: skewX(-14deg);
-            box-shadow: 0 0 18px color-mix(in srgb, var(--batting-accent) 60%, transparent);
+            top: -8px;
+            bottom: -8px;
+            width: 13px;
+            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--batting-accent) 52%, color-mix(in srgb, var(--batting-accent) 60%, #000 40%));
+            transform: skewX(-13deg);
+            box-shadow: 0 0 14px color-mix(in srgb, var(--batting-accent) 45%, transparent);
         }
 
         #sbTeamA::after {
-            right: -3px;
+            right: 29px;
         }
 
         #sbTeamB::before {
-            left: -3px;
-            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--bowling-accent));
-            box-shadow: 0 0 18px color-mix(in srgb, var(--bowling-accent) 60%, transparent);
+            left: 39px;
+            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--bowling-accent) 52%, color-mix(in srgb, var(--bowling-accent) 60%, #000 40%));
+            box-shadow: 0 0 14px color-mix(in srgb, var(--bowling-accent) 45%, transparent);
         }
 
         #scoreboard .scoreLogoWrap {
-            width: 104px;
-            height: 104px;
+            width: 78px;
+            height: 78px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -682,11 +691,11 @@
         }
 
         #nameA, #nameB {
-            font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
-            font-size: 30px;
-            line-height: 34px;
-            font-weight: 800;
-            letter-spacing: .3px;
+            font-family: 'Roboto Condensed', 'Oswald', 'Arial Narrow', Arial, sans-serif;
+            font-size: 28px;
+            line-height: 29px;
+            font-weight: 900;
+            letter-spacing: -.2px;
             color: currentColor;
             display: flex;
             align-items: center;
@@ -703,8 +712,8 @@
             justify-content: center;
             height: 100%;
             border-right: 2px solid var(--batting-accent);
-            gap: 10px;
-            padding-bottom: 4px;
+            gap: 3px;
+            padding-bottom: 2px;
             min-width: 0;
             overflow: visible;
         }
@@ -713,14 +722,14 @@
             height: 100%;
             min-width: 0;
             display: grid;
-            grid-template-rows: 76px 86px;
+            grid-template-rows: 50px 50px;
         }
 
         #sbScore {
-            font-family: 'Oswald', sans-serif;
-            font-size: 60px;
-            line-height: 62px;
-            font-weight: 700;
+            font-family: 'Roboto Condensed', 'Oswald', sans-serif;
+            font-size: 50px;
+            line-height: 50px;
+            font-weight: 600;
             letter-spacing: -1px;
             color: #fff;
             text-shadow: 0 3px 12px rgba(0,0,0,.45);
@@ -734,18 +743,18 @@
         }
 
         #sbOvers {
-            font-family: 'Oswald', sans-serif;
-            font-size: 28px;
-            line-height: 28px;
+            font-family: 'Roboto Condensed', 'Oswald', sans-serif;
+            font-size: 21px;
+            line-height: 21px;
             color: rgba(255,255,255,.94);
             font-weight: 700;
             margin-left: 7px;
         }
 
         #sbRR {
-            font-family: 'Oswald', sans-serif;
-            font-size: 28px;
-            line-height: 32px;
+            font-family: 'Roboto Condensed', 'Oswald', sans-serif;
+            font-size: 24px;
+            line-height: 24px;
             color: rgba(255,255,255,.94);
             font-weight: 700;
         }
@@ -754,12 +763,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 24px;
-            height: 58px;
+            gap: 22px;
+            height: 43px;
             color: rgba(255,255,255,.95);
-            font-family: 'Oswald', sans-serif;
-            font-size: 28px;
-            font-weight: 700;
+            font-family: 'Roboto Condensed', 'Oswald', sans-serif;
+            font-size: 26px;
+            font-weight: 600;
             border-bottom: 2px solid var(--batting-accent);
         }
 
@@ -768,7 +777,7 @@
         }
 
         .scoreMetric + .scoreMetric {
-            padding-left: 24px;
+            padding-left: 22px;
             border-left: 2px solid var(--batting-accent);
         }
 
@@ -776,20 +785,21 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            height: 64px;
-            font-family: 'Oswald', sans-serif;
+            gap: 12px;
+            height: 50px;
+            font-family: 'Roboto Condensed', 'Oswald', sans-serif;
             color: #fff;
         }
 
         .batRow {
             display: flex;
             align-items: center;
-            gap: 7px;
+            gap: 6px;
             min-width: 0;
-            padding: 0 8px;
+            width: calc(50% - 6px);
+            padding: 0 9px;
             border-right: 2px solid var(--batting-accent);
-            line-height: 30px;
+            line-height: 28px;
         }
 
             .batRow:last-child {
@@ -800,54 +810,59 @@
                 content: "";
                 width: 0;
                 height: 0;
-                border-top: 13px solid transparent;
-                border-bottom: 13px solid transparent;
-                border-left: 19px solid var(--batting-accent);
+                border-top: 11px solid transparent;
+                border-bottom: 11px solid transparent;
+                border-left: 15px solid var(--batting-accent);
                 filter: drop-shadow(0 0 5px color-mix(in srgb, var(--batting-accent) 70%, transparent));
             }
 
-            .batRow span:first-child,
-            #bat1Score,
-            #bat2Score {
-                font-size: 25px;
-                font-weight: 700;
+            .batRow span:first-child {
+                font-size: 22px;
+                font-weight: 600;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                max-width: 126px;
+                max-width: 150px;
+                min-width: 0;
             }
 
         #bat1Score,
         #bat2Score {
             color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            white-space: nowrap;
+            flex: 0 0 auto;
         }
 
         .batSr {
             color: var(--batting-accent);
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 17px;
+            font-weight: 600;
             white-space: nowrap;
+            flex: 0 0 auto;
         }
 
         #sbBowler {
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 12px;
+            gap: 6px;
             height: 100%;
-            padding: 0 24px;
+            padding: 0 16px;
             border-left: 2px solid var(--batting-accent);
             border-right: 2px solid var(--batting-accent);
-            font-family: 'Oswald', sans-serif;
+            font-family: 'Roboto Condensed', 'Oswald', sans-serif;
+            min-width: 0;
         }
 
         #bowlerName {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-weight: 700;
-            font-size: 30px;
-            line-height: 32px;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 22px;
+            line-height: 23px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -855,8 +870,8 @@
 
             #bowlerName::after {
                 content: "";
-                width: 34px;
-                height: 34px;
+                width: 27px;
+                height: 27px;
                 border-radius: 50%;
                 flex: 0 0 auto;
                 background:
@@ -867,10 +882,10 @@
 
         #bowlerStats {
             color: #fff;
-            font-family: 'Oswald', sans-serif;
-            font-size: 42px;
-            line-height: 42px;
-            font-weight: 600;
+            font-family: 'Roboto Condensed', 'Oswald', sans-serif;
+            font-size: 35px;
+            line-height: 35px;
+            font-weight: 500;
         }
 
         #sbThisOver {
@@ -879,13 +894,13 @@
             align-items: center;
             justify-content: center;
             height: 100%;
-            gap: 22px;
-            font-family: 'Oswald', sans-serif;
+            gap: 12px;
+            font-family: 'Roboto Condensed', 'Oswald', sans-serif;
         }
 
         #thisOverLabel {
-            font-size: 25px;
-            line-height: 25px;
+            font-size: 20px;
+            line-height: 20px;
             color: rgba(255,255,255,.9);
             letter-spacing: .2px;
             font-weight: 700;
@@ -896,7 +911,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 9px;
+            gap: 6px;
             flex-wrap: nowrap;
             white-space: nowrap;
         }
@@ -905,14 +920,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 38px;
-            height: 38px;
-            min-width: 38px;
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
             border-radius: 50%;
-            font-family: 'Oswald', sans-serif;
-            font-size: 25px;
-            line-height: 38px;
-            font-weight: 700;
+            font-family: 'Roboto Condensed', 'Oswald', sans-serif;
+            font-size: 20px;
+            line-height: 30px;
+            font-weight: 600;
             background: linear-gradient(180deg, #425166, #243243);
             color: white;
             transition: transform .2s ease, box-shadow .2s ease;
