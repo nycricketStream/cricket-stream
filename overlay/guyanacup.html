@@ -569,196 +569,304 @@
 
         #scoreboard {
             position: absolute;
-            bottom: 45px;
+            bottom: 46px;
             left: 50%;
             transform: translate(-50%,140%);
-            width: 1720px;
-            height: 108px;
-            background: linear-gradient( 90deg, rgba(6,12,28,.90), rgba(15,23,42,.92) );
-            border-radius: 8px;
-            display: flex;
+            width: 1840px;
+            height: 162px;
+            background: linear-gradient(90deg, #061224 0%, #071426 48%, #071426 100%);
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: 342px 220px 560px 236px 190px 292px;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 24px 0 0;
-            color: white;
+            padding: 0;
+            color: #fff;
             z-index: var(--z-scoreboard);
             transition: transform .6s ease, opacity .3s ease;
-            box-shadow: 0 8px 30px rgba(0,0,0,.6);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 16px 40px rgba(0,0,0,.54), inset 0 1px 0 rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,0.08);
             overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.05), inset 0 -1px 0 rgba(0,0,0,.4);
+            --batting-primary: #9A0A3A;
+            --batting-accent: #EC2C89;
+            --batting-text: #FFFFFF;
+            --bowling-primary: #0A1A3F;
+            --bowling-accent: #D4A017;
+            --bowling-text: #FFFFFF;
         }
 
             #scoreboard.show {
                 transform: translate(-50%,0);
             }
 
-        /* TEAM BLOCKS */
-
         #sbTeamA, #sbTeamB {
-            display: flex;
+            position: relative;
+            display: grid;
+            grid-template-columns: 118px 1fr;
             align-items: center;
-            gap: 12px;
-            min-width: 300px;
-            max-width: 340px;
-            flex-shrink: 0;
+            gap: 18px;
+            width: 100%;
             height: 100%;
+            min-width: 0;
+            color: var(--batting-text);
+            background:
+                linear-gradient(110deg, color-mix(in srgb, var(--batting-primary) 84%, #000 16%), var(--batting-primary) 58%, color-mix(in srgb, var(--batting-accent) 86%, #000 14%) 100%);
+            padding: 0 30px 0 28px;
+            overflow: hidden;
         }
 
         #sbTeamB {
-            justify-content: flex-end;
+            grid-template-columns: 1fr 118px;
+            gap: 16px;
+            color: var(--bowling-text);
+            background:
+                linear-gradient(110deg, color-mix(in srgb, var(--bowling-primary) 82%, #000 18%), var(--bowling-primary) 58%, color-mix(in srgb, var(--bowling-accent) 84%, #000 16%) 100%);
+            padding: 0 26px 0 36px;
         }
 
-        #logoA, #logoB {
+        #sbTeamA::after,
+        #sbTeamB::before {
+            content: "";
+            position: absolute;
+            top: -12px;
+            bottom: -12px;
+            width: 15px;
+            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--batting-accent));
+            transform: skewX(-14deg);
+            box-shadow: 0 0 18px color-mix(in srgb, var(--batting-accent) 60%, transparent);
+        }
+
+        #sbTeamA::after {
+            right: -3px;
+        }
+
+        #sbTeamB::before {
+            left: -3px;
+            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--bowling-accent));
+            box-shadow: 0 0 18px color-mix(in srgb, var(--bowling-accent) 60%, transparent);
+        }
+
+        .scoreLogoWrap {
+            width: 112px;
+            height: 112px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #logoA,
+        #logoB {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             display: none;
         }
 
         #nameA, #nameB {
-            font-size: 22px;
-            line-height: 24px;
-            font-weight: 700;
-            letter-spacing: .5px;
-            max-width: 220px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            color: rgba(255,255,255,.94);
-            flex: 1;
+            font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+            font-size: 32px;
+            line-height: 36px;
+            font-weight: 800;
+            letter-spacing: .3px;
+            color: currentColor;
             display: flex;
             align-items: center;
-            height: 32px;
-            padding-top: 2px;
+            min-width: 0;
+            text-transform: uppercase;
+            overflow-wrap: anywhere;
+            text-shadow: 0 2px 8px rgba(0,0,0,.55);
         }
-
-        /* SCORE CENTER */
 
         #sbScoreBlock {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-width: 200px;
-            max-width: 200px;
-            flex-shrink: 0;
-            gap: 5px;
-            padding-right: 22px;
-            margin-right: 10px;
-            padding-top: 8px;
-            padding-bottom: 8px;
-            border-right: 1px solid rgba(255,255,255,.05);
+            height: 100%;
+            border-right: 2px solid var(--batting-accent);
+            gap: 10px;
+            padding-bottom: 4px;
+        }
+
+        #sbBattingPanel {
+            height: 100%;
+            min-width: 0;
+            display: grid;
+            grid-template-rows: 76px 86px;
         }
 
         #sbScore {
             font-family: 'Oswald', sans-serif;
-            font-size: 40px;
-            line-height: 40px;
+            font-size: 64px;
+            line-height: 66px;
             font-weight: 700;
-            letter-spacing: 0;
-            color: rgba(255,255,255,.98);
-            filter: drop-shadow(0 0 6px rgba(255,255,255,.06));
+            letter-spacing: -1px;
+            color: #fff;
+            text-shadow: 0 3px 12px rgba(0,0,0,.45);
+        }
+
+        #sbScoreBlock > div:first-child {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            white-space: nowrap;
         }
 
         #sbOvers {
-            font-size: 17px;
-            line-height: 19px;
-            color: rgba(255,255,255,.96);
+            font-family: 'Oswald', sans-serif;
+            font-size: 30px;
+            line-height: 30px;
+            color: rgba(255,255,255,.94);
             font-weight: 700;
-            text-shadow: 0 0 8px rgba(255,255,255,.10);
+            margin-left: 7px;
         }
 
         #sbRR {
-            font-size: 15px;
-            line-height: 17px;
-            color: rgba(255,255,255,.82);
-            font-weight: 600;
+            font-family: 'Oswald', sans-serif;
+            font-size: 30px;
+            line-height: 32px;
+            color: rgba(255,255,255,.94);
+            font-weight: 700;
         }
 
-        /* BATTERS */
+        #scoreboardMeta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            height: 58px;
+            color: rgba(255,255,255,.95);
+            font-family: 'Oswald', sans-serif;
+            font-size: 30px;
+            font-weight: 700;
+            border-bottom: 2px solid var(--batting-accent);
+        }
+
+        .scoreMetric {
+            white-space: nowrap;
+        }
+
+        .scoreMetric + .scoreMetric {
+            padding-left: 30px;
+            border-left: 2px solid var(--batting-accent);
+        }
 
         #sbBatters {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 10px;
-            font-size: 17px;
-            width: 340px;
-            flex-shrink: 0;
+            align-items: center;
+            justify-content: space-evenly;
+            height: 64px;
+            font-family: 'Oswald', sans-serif;
+            color: #fff;
         }
 
         .batRow {
-            display: grid;
-            grid-template-columns: 1fr auto;
+            display: flex;
             align-items: center;
-            gap: 10px;
-            line-height: 26px;
+            gap: 7px;
+            min-width: 0;
+            padding: 0 12px;
+            border-right: 2px solid var(--batting-accent);
+            line-height: 30px;
         }
 
-            .batRow span:first-child {
+            .batRow:last-child {
+                border-right: 0;
+            }
+
+            .batRow::before {
+                content: "";
+                width: 0;
+                height: 0;
+                border-top: 13px solid transparent;
+                border-bottom: 13px solid transparent;
+                border-left: 19px solid var(--batting-accent);
+                filter: drop-shadow(0 0 5px color-mix(in srgb, var(--batting-accent) 70%, transparent));
+            }
+
+            .batRow span:first-child,
+            #bat1Score,
+            #bat2Score {
+                font-size: 28px;
+                font-weight: 700;
+                white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                white-space: nowrap;
-                font-weight: 600;
+                max-width: 150px;
             }
 
         #bat1Score,
         #bat2Score {
-            font-weight: 700;
-            color: rgba(255,255,255,.97);
+            color: #fff;
         }
 
-        /* BOWLER */
+        .batSr {
+            color: var(--batting-accent);
+            font-size: 22px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
 
         #sbBowler {
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 8px;
-            font-size: 15px;
-            text-align: right;
-            min-width: 150px;
-            max-width: 150px;
-            flex-shrink: 0;
-            padding-top: 6px;
+            gap: 12px;
+            height: 100%;
+            padding: 0 24px;
+            border-left: 2px solid var(--batting-accent);
+            border-right: 2px solid var(--batting-accent);
+            font-family: 'Oswald', sans-serif;
         }
 
         #bowlerName {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             font-weight: 700;
-            line-height: 18px;
-            text-transform: uppercase;
+            font-size: 30px;
+            line-height: 32px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
+
+            #bowlerName::after {
+                content: "";
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                flex: 0 0 auto;
+                background:
+                    radial-gradient(circle at 35% 35%, rgba(255,255,255,.72), transparent 32%),
+                    linear-gradient(135deg, var(--batting-accent), color-mix(in srgb, var(--batting-primary) 82%, #000 18%));
+                box-shadow: inset -4px -5px 10px rgba(0,0,0,.22), 0 0 14px color-mix(in srgb, var(--batting-accent) 45%, transparent);
+            }
 
         #bowlerStats {
-            color: rgba(255,255,255,.90);
-            font-size: 15px;
-            line-height: 17px;
+            color: #fff;
+            font-family: 'Oswald', sans-serif;
+            font-size: 42px;
+            line-height: 42px;
             font-weight: 600;
-            margin-top: 2px;
         }
-
-        /* THIS OVER */
 
         #sbThisOver {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-width: 230px;
-            max-width: 230px;
-            flex-shrink: 0;
+            height: 100%;
+            gap: 22px;
+            font-family: 'Oswald', sans-serif;
         }
 
         #thisOverLabel {
-            font-size: 13px;
-            line-height: 13px;
-            color: rgba(255,255,255,.86);
-            letter-spacing: 1px;
+            font-size: 25px;
+            line-height: 25px;
+            color: rgba(255,255,255,.9);
+            letter-spacing: .2px;
             font-weight: 700;
-            margin-bottom: 0;
-            transform: translateY(-7px);
             text-transform: uppercase;
         }
 
@@ -766,43 +874,43 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 9px;
             flex-wrap: nowrap;
             white-space: nowrap;
-            transform: translateY(4px);
         }
 
-        /* BALLS */
         .ball {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 24px;
-            height: 24px;
-            min-width: 24px;
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
             border-radius: 50%;
-            font-size: 11px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 25px;
+            line-height: 38px;
             font-weight: 700;
-            background: #334155;
+            background: linear-gradient(180deg, #425166, #243243);
             color: white;
             transition: transform .2s ease, box-shadow .2s ease;
-            box-shadow: inset 0 1px 2px rgba(255,255,255,.06), 0 0 8px rgba(0,0,0,.18);
+            box-shadow: inset 0 2px 5px rgba(255,255,255,.10), 0 5px 10px rgba(0,0,0,.30);
         }
 
             .ball.four {
-                background: var(--espn-primary);
+                background: linear-gradient(180deg, #F4B400, #A87900);
             }
 
             .ball.six {
-                background: #16a34a;
+                background: linear-gradient(180deg, #64D21C, #2E8E0F);
             }
 
             .ball.wicket {
-                background: #dc2626;
+                background: linear-gradient(180deg, #EF1B1B, #A70606);
             }
 
             .ball.extra {
-                background: #7c3aed;
+                background: linear-gradient(180deg, #425166, #243243);
             }
 
         .lastBall {
@@ -826,21 +934,8 @@
             }
         }
 
-        /* TEAM COLOR ACCENT */
-        .teamAColor {
-            border-top: 4px solid var(--espn-primary);
-        }
-
-        .teamBColor {
-            border-bottom: 4px solid #dc2626;
-        }
-
         .boundaryGlow {
             box-shadow: 0 0 40px rgba(250,204,21,0.8), inset 0 0 20px rgba(250,204,21,0.4);
-        }
-
-        .teamBColor {
-            border-top: 4px solid #dc2626;
         }
 
         /* STRIKE STAR ANIMATION */
@@ -2432,14 +2527,19 @@
         </div>
 
         <div id="sbScoreBlock">
-            <div id="sbScore">0/0</div>
-            <div id="sbOvers">(0.0)</div>
-            <div id="sbRR">RR 0.00</div>
+            <div><span id="sbScore">0/0</span><span id="sbOvers">(0.0)</span></div>
+            <div id="sbRR">CRR 0.00</div>
         </div>
 
-        <div id="sbBatters">
-            <div class="batRow"><span id="bat1">Batter1*</span><span id="bat1Score">0 (0)</span></div>
-            <div class="batRow"><span id="bat2">Batter2</span><span id="bat2Score">0 (0)</span></div>
+        <div id="sbBattingPanel">
+            <div id="scoreboardMeta">
+                <span id="scoreMetricA" class="scoreMetric">CRR 0.00</span>
+                <span id="scoreMetricB" class="scoreMetric">Projected -</span>
+            </div>
+            <div id="sbBatters">
+                <div class="batRow"><span id="bat1">Batter1*</span><span id="bat1Score">0 (0)</span><span id="bat1Sr" class="batSr">SR 0.0</span></div>
+                <div class="batRow"><span id="bat2">Batter2</span><span id="bat2Score">0 (0)</span><span id="bat2Sr" class="batSr">SR 0.0</span></div>
+            </div>
         </div>
 
         <div id="sbBowler">
@@ -2573,10 +2673,14 @@
         const sbScore = document.getElementById("sbScore");
         const sbOvers = document.getElementById("sbOvers");
         const sbRR = document.getElementById("sbRR");
+        const scoreMetricA = document.getElementById("scoreMetricA");
+        const scoreMetricB = document.getElementById("scoreMetricB");
         const bat1 = document.getElementById("bat1");
         const bat1Score = document.getElementById("bat1Score");
+        const bat1Sr = document.getElementById("bat1Sr");
         const bat2 = document.getElementById("bat2");
         const bat2Score = document.getElementById("bat2Score");
+        const bat2Sr = document.getElementById("bat2Sr");
 
         const bowlerName = document.getElementById("bowlerName");
         const bowlerStats = document.getElementById("bowlerStats");
@@ -2626,7 +2730,17 @@
             teamB: "",
             teamALogo: "",
             teamBLogo: "",
-            battingTeam: ""
+            battingTeam: "",
+            teamAColors: {
+                primary: "#9A0A3A",
+                accent: "#EC2C89",
+                text: "#FFFFFF"
+            },
+            teamBColors: {
+                primary: "#0A1A3F",
+                accent: "#D4A017",
+                text: "#FFFFFF"
+            }
         };
         let sceneMode = "normal";
         let isFullScorecardVisible = false;
@@ -2645,6 +2759,49 @@
 
         function safeNumber(v, fallback = 0) {
             return Number.isFinite(Number(v)) ? Number(v) : fallback;
+        }
+
+        function normalizeHexColor(value, fallback) {
+            const raw = String(value || "").trim();
+            if (/^#[0-9a-f]{6}$/i.test(raw)) return raw;
+            if (/^[0-9a-f]{6}$/i.test(raw)) return "#" + raw;
+            return fallback;
+        }
+
+        function getScoreboardColors(data, teamKey, fallbackPrimary, fallbackAccent, fallbackText) {
+            return {
+                primary: normalizeHexColor(data?.[`${teamKey}PrimaryColor`] || data?.[`${teamKey}Color`], fallbackPrimary),
+                accent: normalizeHexColor(data?.[`${teamKey}AccentColor`], fallbackAccent),
+                text: normalizeHexColor(data?.[`${teamKey}TextColor`], fallbackText)
+            };
+        }
+
+        function applyScoreboardColors(isTeamABatting) {
+            const battingColors = isTeamABatting ? overlayState.teamAColors : overlayState.teamBColors;
+            const bowlingColors = isTeamABatting ? overlayState.teamBColors : overlayState.teamAColors;
+            scoreboardBar.style.setProperty("--batting-primary", battingColors.primary);
+            scoreboardBar.style.setProperty("--batting-accent", battingColors.accent);
+            scoreboardBar.style.setProperty("--batting-text", battingColors.text);
+            scoreboardBar.style.setProperty("--bowling-primary", bowlingColors.primary);
+            scoreboardBar.style.setProperty("--bowling-accent", bowlingColors.accent);
+            scoreboardBar.style.setProperty("--bowling-text", bowlingColors.text);
+            document.documentElement.style.setProperty("--espn-primary", battingColors.accent);
+            document.documentElement.style.setProperty("--espn-glow", `${battingColors.accent}cc`);
+        }
+
+        function parseRunsBalls(scoreText) {
+            const match = String(scoreText || "").match(/(\d+)\s*\((\d+)\)/);
+            if (!match) return null;
+            return {
+                runs: Number(match[1]),
+                balls: Number(match[2])
+            };
+        }
+
+        function formatStrikeRate(scoreText) {
+            const parsed = parseRunsBalls(scoreText);
+            if (!parsed || parsed.balls <= 0) return "SR 0.0";
+            return `SR ${((parsed.runs / parsed.balls) * 100).toFixed(1)}`;
         }
 
         function enqueueOverlay(name, duration, renderFn) {
@@ -2721,8 +2878,11 @@
             overlayState.teamALogo = data.teamALogo || overlayState.teamALogo;
             overlayState.teamBLogo = data.teamBLogo || overlayState.teamBLogo;
             overlayState.battingTeam = data.batting || overlayState.battingTeam;
+            overlayState.teamAColors = getScoreboardColors(data, "teamA", overlayState.teamAColors.primary, overlayState.teamAColors.accent, overlayState.teamAColors.text);
+            overlayState.teamBColors = getScoreboardColors(data, "teamB", overlayState.teamBColors.primary, overlayState.teamBColors.accent, overlayState.teamBColors.text);
 
             const isTeamABatting = data.batting === data.teamA;
+            applyScoreboardColors(isTeamABatting);
 
             const leftTeamName = isTeamABatting ? data.teamA : data.teamB;
             const rightTeamName = isTeamABatting ? data.teamB : data.teamA;
@@ -2754,15 +2914,8 @@
 
             battingTeam = data.batting || "";
 
-            const bar = document.getElementById("scoreboard");
-
-            bar.classList.remove("teamAColor", "teamBColor");
-
             sbTeamA.classList.remove("battingHighlight");
             sbTeamB.classList.remove("battingHighlight");
-
-            /* LEFT SIDE ALWAYS BATTING */
-            bar.classList.add("teamAColor");
 
             sbTeamA.classList.add("battingHighlight");
             sbTeamB.classList.remove("battingHighlight");
@@ -2801,10 +2954,23 @@
                 sbOvers.textContent = "(" + data.overs + ")";
             }
 
-            if (data.runRate) sbRR.textContent = "RR " + data.runRate;
+            if (data.runRate) {
+                sbRR.textContent = "CRR " + data.runRate;
+                if (!data.requiredRunRate) scoreMetricA.textContent = "CRR " + data.runRate;
+            }
+
+            if (data.requiredRunRate) {
+                const needText = data.requiredRuns !== undefined && data.ballsRemaining !== undefined
+                    ? `Need ${data.requiredRuns} off ${data.ballsRemaining}`
+                    : (data.requiredRunInfo || "Need -");
+                scoreMetricA.textContent = needText;
+                scoreMetricB.textContent = "RRR " + data.requiredRunRate;
+            } else if (data.projectedScore !== undefined) {
+                scoreMetricB.textContent = "Projected " + data.projectedScore;
+            }
 
             if (data.bat1 !== undefined) {
-                const newBat1 = (data.bat1 || "").toUpperCase();
+                const newBat1 = data.bat1 || "";
 
                 if (newBat1 !== matchState.bat1) {
                     bat1.classList.remove("strikeMove");
@@ -2816,10 +2982,13 @@
                 bat1.textContent = newBat1;
             }
 
-            if (data.bat1Score) bat1Score.textContent = data.bat1Score;
+            if (data.bat1Score) {
+                bat1Score.textContent = data.bat1Score;
+                if (bat1Sr) bat1Sr.textContent = formatStrikeRate(data.bat1Score);
+            }
 
             if (data.bat2 !== undefined) {
-                const newBat2 = (data.bat2 || "").toUpperCase();
+                const newBat2 = data.bat2 || "";
 
                 if (newBat2 !== matchState.bat2) {
                     bat2.classList.remove("strikeMove");
@@ -2831,10 +3000,13 @@
                 bat2.textContent = newBat2;
             }
 
-            if (data.bat2Score) bat2Score.textContent = data.bat2Score;
+            if (data.bat2Score) {
+                bat2Score.textContent = data.bat2Score;
+                if (bat2Sr) bat2Sr.textContent = formatStrikeRate(data.bat2Score);
+            }
 
             if (data.bowlerName !== undefined)
-                bowlerName.textContent = data.bowlerName.toUpperCase();
+                bowlerName.textContent = data.bowlerName;
 
             if (data.bowlerStats !== undefined)
                 bowlerStats.textContent = data.bowlerStats;
