@@ -577,7 +577,7 @@
             background: linear-gradient(90deg, #061224 0%, #071426 48%, #071426 100%);
             border-radius: 10px;
             display: grid;
-            grid-template-columns: 342px 220px 560px 236px 190px 292px;
+            grid-template-columns: 330px 240px 550px 236px 190px 294px;
             align-items: center;
             padding: 0;
             color: #fff;
@@ -598,10 +598,15 @@
                 transform: translate(-50%,0);
             }
 
+        #scoreboard,
+        #scoreboard * {
+            box-sizing: border-box;
+        }
+
         #sbTeamA, #sbTeamB {
             position: relative;
             display: grid;
-            grid-template-columns: 118px 1fr;
+            grid-template-columns: 106px 1fr;
             align-items: center;
             gap: 18px;
             width: 100%;
@@ -610,17 +615,28 @@
             color: var(--batting-text);
             background:
                 linear-gradient(110deg, color-mix(in srgb, var(--batting-primary) 84%, #000 16%), var(--batting-primary) 58%, color-mix(in srgb, var(--batting-accent) 86%, #000 14%) 100%);
-            padding: 0 30px 0 28px;
+            padding: 0 28px 0 24px;
             overflow: hidden;
         }
 
         #sbTeamB {
-            grid-template-columns: 1fr 118px;
-            gap: 16px;
+            grid-template-columns: 1fr 104px;
+            gap: 14px;
             color: var(--bowling-text);
             background:
                 linear-gradient(110deg, color-mix(in srgb, var(--bowling-primary) 82%, #000 18%), var(--bowling-primary) 58%, color-mix(in srgb, var(--bowling-accent) 84%, #000 16%) 100%);
-            padding: 0 26px 0 36px;
+            padding: 0 22px 0 34px;
+        }
+
+        #scoreboard .battingHighlight {
+            animation: none;
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        #scoreboard .battingHighlight::before {
+            content: none;
         }
 
         #sbTeamA::after,
@@ -645,13 +661,15 @@
             box-shadow: 0 0 18px color-mix(in srgb, var(--bowling-accent) 60%, transparent);
         }
 
-        .scoreLogoWrap {
-            width: 112px;
-            height: 112px;
+        #scoreboard .scoreLogoWrap {
+            width: 104px;
+            height: 104px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            background: transparent;
+            border-radius: 0;
         }
 
         #logoA,
@@ -660,12 +678,13 @@
             height: 100%;
             object-fit: contain;
             display: none;
+            clip-path: none;
         }
 
         #nameA, #nameB {
             font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
-            font-size: 32px;
-            line-height: 36px;
+            font-size: 30px;
+            line-height: 34px;
             font-weight: 800;
             letter-spacing: .3px;
             color: currentColor;
@@ -686,6 +705,8 @@
             border-right: 2px solid var(--batting-accent);
             gap: 10px;
             padding-bottom: 4px;
+            min-width: 0;
+            overflow: visible;
         }
 
         #sbBattingPanel {
@@ -697,8 +718,8 @@
 
         #sbScore {
             font-family: 'Oswald', sans-serif;
-            font-size: 64px;
-            line-height: 66px;
+            font-size: 60px;
+            line-height: 62px;
             font-weight: 700;
             letter-spacing: -1px;
             color: #fff;
@@ -714,8 +735,8 @@
 
         #sbOvers {
             font-family: 'Oswald', sans-serif;
-            font-size: 30px;
-            line-height: 30px;
+            font-size: 28px;
+            line-height: 28px;
             color: rgba(255,255,255,.94);
             font-weight: 700;
             margin-left: 7px;
@@ -723,7 +744,7 @@
 
         #sbRR {
             font-family: 'Oswald', sans-serif;
-            font-size: 30px;
+            font-size: 28px;
             line-height: 32px;
             color: rgba(255,255,255,.94);
             font-weight: 700;
@@ -733,11 +754,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 30px;
+            gap: 24px;
             height: 58px;
             color: rgba(255,255,255,.95);
             font-family: 'Oswald', sans-serif;
-            font-size: 30px;
+            font-size: 28px;
             font-weight: 700;
             border-bottom: 2px solid var(--batting-accent);
         }
@@ -747,14 +768,15 @@
         }
 
         .scoreMetric + .scoreMetric {
-            padding-left: 30px;
+            padding-left: 24px;
             border-left: 2px solid var(--batting-accent);
         }
 
         #sbBatters {
             display: flex;
             align-items: center;
-            justify-content: space-evenly;
+            justify-content: center;
+            gap: 8px;
             height: 64px;
             font-family: 'Oswald', sans-serif;
             color: #fff;
@@ -765,7 +787,7 @@
             align-items: center;
             gap: 7px;
             min-width: 0;
-            padding: 0 12px;
+            padding: 0 8px;
             border-right: 2px solid var(--batting-accent);
             line-height: 30px;
         }
@@ -787,12 +809,12 @@
             .batRow span:first-child,
             #bat1Score,
             #bat2Score {
-                font-size: 28px;
+                font-size: 25px;
                 font-weight: 700;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                max-width: 150px;
+                max-width: 126px;
             }
 
         #bat1Score,
@@ -802,7 +824,7 @@
 
         .batSr {
             color: var(--batting-accent);
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
             white-space: nowrap;
         }
@@ -2915,9 +2937,6 @@
             battingTeam = data.batting || "";
 
             sbTeamA.classList.remove("battingHighlight");
-            sbTeamB.classList.remove("battingHighlight");
-
-            sbTeamA.classList.add("battingHighlight");
             sbTeamB.classList.remove("battingHighlight");
         });
 
