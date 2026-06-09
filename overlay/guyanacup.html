@@ -789,22 +789,29 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 18px;
+            gap: 24px;
             height: 43px;
             color: rgba(255,255,255,.95);
             font-family: 'Roboto Condensed', 'Oswald', sans-serif;
-            font-size: 23px;
+            font-size: 22px;
             font-weight: 600;
             border-bottom: 2px solid var(--batting-accent);
         }
 
         .scoreMetric {
             white-space: nowrap;
+            min-width: max-content;
         }
 
-        .scoreMetric + .scoreMetric {
-            padding-left: 18px;
+        #scoreboardMeta.has-target #scoreMetricA,
+        #scoreboardMeta.has-target #scoreMetricB,
+        #scoreboardMeta:not(.has-target) #scoreMetricB {
+            padding-left: 24px;
             border-left: 2px solid var(--batting-accent);
+        }
+
+        .scoreMetric.is-hidden {
+            display: none;
         }
 
         #sbBatters {
@@ -836,10 +843,10 @@
                 content: "";
                 width: 0;
                 height: 0;
-                border-top: 11px solid transparent;
-                border-bottom: 11px solid transparent;
-                border-left: 15px solid var(--batting-accent);
-                filter: drop-shadow(0 0 5px color-mix(in srgb, var(--batting-accent) 70%, transparent));
+                border-top: 10px solid transparent;
+                border-bottom: 10px solid transparent;
+                border-left: 13px solid var(--batting-accent);
+                filter: none;
             }
 
             .batRow span:first-child {
@@ -2681,6 +2688,7 @@
 
         <div id="sbBattingPanel">
             <div id="scoreboardMeta">
+                <span id="scoreMetricTarget" class="scoreMetric is-hidden">Target -</span>
                 <span id="scoreMetricA" class="scoreMetric">CRR 0.00</span>
                 <span id="scoreMetricB" class="scoreMetric">Projected -</span>
             </div>
@@ -2823,6 +2831,8 @@
         const sbRR = document.getElementById("sbRR");
         const scoreMetricA = document.getElementById("scoreMetricA");
         const scoreMetricB = document.getElementById("scoreMetricB");
+        const scoreMetricTarget = document.getElementById("scoreMetricTarget");
+        const scoreboardMeta = document.getElementById("scoreboardMeta");
         const sbBowler = document.getElementById("sbBowler");
         const bowlerNameText = document.getElementById("bowlerNameText");
         const bat1 = document.getElementById("bat1");
@@ -3135,7 +3145,11 @@
 
             if (data.runRate) {
                 sbRR.textContent = "CRR " + data.runRate;
-                if (!data.requiredRunRate) scoreMetricA.textContent = "CRR " + data.runRate;
+                if (!data.requiredRunRate) {
+                    scoreboardMeta.classList.remove("has-target");
+                    scoreMetricTarget.classList.add("is-hidden");
+                    scoreMetricA.textContent = "CRR " + data.runRate;
+                }
             }
 
             if (data.requiredRunRate) {
@@ -3145,13 +3159,18 @@
                 const targetValue = data.target ?? data.targetScore ?? data.chaseTarget ?? data.targetRuns ?? overlayState.target;
                 if (targetValue !== undefined && targetValue !== null && targetValue !== "") {
                     overlayState.target = targetValue;
+                    scoreMetricTarget.textContent = `Target ${targetValue}`;
+                    scoreMetricTarget.classList.remove("is-hidden");
+                    scoreboardMeta.classList.add("has-target");
+                } else {
+                    scoreMetricTarget.classList.add("is-hidden");
+                    scoreboardMeta.classList.remove("has-target");
                 }
-                const targetText = targetValue !== undefined && targetValue !== null && targetValue !== ""
-                    ? `Target ${targetValue}`
-                    : "";
-                scoreMetricA.textContent = targetText ? `${targetText} | ${needText}` : needText;
+                scoreMetricA.textContent = needText;
                 scoreMetricB.textContent = "RRR " + data.requiredRunRate;
             } else if (data.projectedScore !== undefined) {
+                scoreboardMeta.classList.remove("has-target");
+                scoreMetricTarget.classList.add("is-hidden");
                 scoreMetricB.textContent = "Projected " + data.projectedScore;
             }
 
@@ -4594,6 +4613,11 @@
             sbScore.textContent = "0/0";
             sbOvers.textContent = "(0.0)";
             sbRR.textContent = "RR 0.00";
+            scoreMetricTarget.textContent = "Target -";
+            scoreMetricTarget.classList.add("is-hidden");
+            scoreboardMeta.classList.remove("has-target");
+            scoreMetricA.textContent = "CRR 0.00";
+            scoreMetricB.textContent = "Projected -";
 
             bat1.textContent = "";
             bat1Score.textContent = "";
