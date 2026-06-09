@@ -4905,6 +4905,7 @@
 
         let firstInningsTotal = 0;
         let targetManuallyEdited = false;
+        let lastInningsValue = "1";
         let isRestoring = false;
         let allowMidOverChange = false;
         let isLoadingFromFirebase = false;
@@ -9381,10 +9382,11 @@ CURRENT OVER SUMMARY
 
         function resetInnings() {
 
-            const innings = document.getElementById('innings')?.value;
+            const innings = document.getElementById('innings')?.value || "1";
+            const previousInnings = lastInningsValue;
 
-            // If we are leaving 1st innings, save score
-            if (innings === "1") {
+            // If we are leaving 1st innings, save the score before clearing it.
+            if (previousInnings === "1" && innings === "2") {
                 firstInningsTotal = liveTotal;
             }
             // CORE SCORE RESET
@@ -9448,6 +9450,7 @@ CURRENT OVER SUMMARY
             if (innings === "1") {
                 targetManuallyEdited = false;
             }
+            lastInningsValue = innings;
             console.log("✅ INNINGS RESET COMPLETE");
         }
 
