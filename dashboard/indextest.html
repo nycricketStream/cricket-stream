@@ -6484,6 +6484,8 @@
 
             // POWERPLAY
             let powerplayOvers = 0;
+            const currentOvers =
+                Number(calculateOvers()) || 0;
 
             const totalOvers =
                 parseInt(maxOvers.value || 20);
