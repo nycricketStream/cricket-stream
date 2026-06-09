@@ -6093,6 +6093,16 @@
         function calculateRR() {
             return liveBalls ? (liveTotal / (liveBalls / 6)).toFixed(2) : "0.00";
         }
+
+        function hasActiveInningsScore() {
+            return liveTotal > 0 || liveWickets > 0 || liveBalls > 0 || liveHistory.length > 0;
+        }
+
+        function captureFirstInningsTotal() {
+            if (document.getElementById('innings')?.value === "1" && hasActiveInningsScore()) {
+                firstInningsTotal = liveTotal;
+            }
+        }
         /* =========== Calculate Required Run ============ */
         function calculateRequiredRuns() {
             const metrics = getChaseMetrics();
@@ -6158,9 +6168,7 @@
 
         /* ======= Update Live Display =========== */
         function updateLiveDisplay() {
-            if (document.getElementById('innings')?.value === "1") {
-                firstInningsTotal = liveTotal;
-            }
+            captureFirstInningsTotal();
 
             const strikerName = document.getElementById('striker')?.value || "";
             const nonStrikerName = document.getElementById('nonStriker')?.value || "";
@@ -9389,8 +9397,8 @@ CURRENT OVER SUMMARY
             const innings = document.getElementById('innings')?.value || "1";
             const previousInnings = lastInningsValue;
 
-            // If we are leaving 1st innings, save the score before clearing it.
-            if (previousInnings === "1" && innings === "2") {
+            // Save the completed first-innings score before any reset clears it.
+            if (previousInnings === "1" && hasActiveInningsScore()) {
                 firstInningsTotal = liveTotal;
             }
             // CORE SCORE RESET
@@ -9456,6 +9464,9 @@ CURRENT OVER SUMMARY
             // Reset manual override when going back to 1st innings
             if (innings === "1") {
                 targetManuallyEdited = false;
+                if (targetInput) {
+                    targetInput.value = "";
+                }
             }
             lastInningsValue = innings;
             console.log("✅ INNINGS RESET COMPLETE");
