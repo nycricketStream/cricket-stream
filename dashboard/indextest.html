@@ -5599,9 +5599,11 @@
             document.getElementById('teamAPlayers').addEventListener('input', updatePlayerDropdown);
             document.getElementById('teamBPlayers').addEventListener('input', updatePlayerDropdown);
             document.getElementById('batting').addEventListener('change', () => {
+                captureFirstInningsTotal();
                 resetInnings();
                 updatePlayerDropdown();
                 updateStrikerDropdown();
+                populateSecondInningsTarget();
             });
             document.getElementById('target').addEventListener('input', () => {
                 targetManuallyEdited = true;
@@ -5610,7 +5612,9 @@
             document.getElementById('teamAPlayers').addEventListener('input', updateStrikerDropdown);
             document.getElementById('teamBPlayers').addEventListener('input', updateStrikerDropdown);
             document.getElementById('innings').addEventListener('change', () => {
+                captureFirstInningsTotal();
                 resetInnings();
+                populateSecondInningsTarget(true);
             });
             let setupAutosaveTimer = null;
             const saveSetupState = () => {
@@ -5909,6 +5913,8 @@
             const ok = await confirmAction("Reset the current match and clear the live scoring state?", "Reset match?");
             if (!ok) return;
             localStorage.removeItem("cricketMatchState");
+            localStorage.removeItem("firstInningsTotal");
+            firstInningsTotal = 0;
             liveTotal = 0;
             liveWickets = 0;
             liveBalls = 0;
@@ -5982,6 +5988,10 @@
         }
 
         function resetMatchSetup() {
+            localStorage.removeItem("firstInningsTotal");
+            firstInningsTotal = 0;
+            targetManuallyEdited = false;
+            lastInningsValue = "1";
 
             // Teams
             document.getElementById('teamA').value = "";
@@ -6098,10 +6108,43 @@
             return liveTotal > 0 || liveWickets > 0 || liveBalls > 0 || liveHistory.length > 0;
         }
 
+        function readVisibleScoreTotal() {
+            const scoreText = document.getElementById('liveHeaderScore')?.innerText || "";
+            const runs = parseInt(scoreText.split('/')[0], 10);
+            return Number.isFinite(runs) ? runs : 0;
+        }
+
+        function getStoredFirstInningsTotal() {
+            const stored = parseInt(localStorage.getItem('firstInningsTotal') || "0", 10);
+            return Number.isFinite(stored) ? stored : 0;
+        }
+
+        function rememberFirstInningsTotal(runs) {
+            const total = parseInt(runs, 10);
+            if (!Number.isFinite(total) || total <= 0) return;
+            firstInningsTotal = total;
+            localStorage.setItem('firstInningsTotal', String(total));
+        }
+
         function captureFirstInningsTotal() {
-            if (document.getElementById('innings')?.value === "1" && hasActiveInningsScore()) {
-                firstInningsTotal = liveTotal;
+            const currentInnings = document.getElementById('innings')?.value || "1";
+            if ((currentInnings === "1" || lastInningsValue === "1") && hasActiveInningsScore()) {
+                rememberFirstInningsTotal(liveTotal || readVisibleScoreTotal());
             }
+        }
+
+        function populateSecondInningsTarget(force = false) {
+            const inningsSelect = document.getElementById('innings');
+            const targetInput = document.getElementById('target');
+            if (!inningsSelect || !targetInput || inningsSelect.value !== "2") return;
+            if (!force && targetManuallyEdited && targetInput.value.trim()) return;
+            const sourceTotal = firstInningsTotal || getStoredFirstInningsTotal() || readVisibleScoreTotal();
+            if (!sourceTotal && !hasActiveInningsScore()) return;
+
+            rememberFirstInningsTotal(sourceTotal);
+            targetInput.value = sourceTotal + 1;
+            targetManuallyEdited = false;
+            targetInput.dispatchEvent(new Event('change', { bubbles: true }));
         }
         /* =========== Calculate Required Run ============ */
         function calculateRequiredRuns() {
@@ -9453,9 +9496,8 @@ CURRENT OVER SUMMARY
 
             // If entering 2nd innings, populate target unless a real value is already there.
             if (innings === "2") {
-                if (targetInput && (!targetManuallyEdited || !targetInput.value.trim())) {
-                    targetInput.value = firstInningsTotal + 1;
-                    targetManuallyEdited = false;
+                if (targetInput && (!targetManuallyEdited || !targetInput.value.trim() || firstInningsTotal > 0)) {
+                    populateSecondInningsTarget(!targetInput.value.trim());
                     lastSentScore = "";
                     updateLiveDisplay();
                 }
