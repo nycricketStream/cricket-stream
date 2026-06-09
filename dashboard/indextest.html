@@ -7447,6 +7447,7 @@ CURRENT OVER SUMMARY
             if (!isSecondInnings) {
                 return {
                     projectedScore,
+                    target: target?.value || "",
                     requiredRuns: "",
                     ballsRemaining: "",
                     requiredRunInfo: "",
@@ -7464,6 +7465,7 @@ CURRENT OVER SUMMARY
 
             return {
                 projectedScore,
+                target: targetRuns,
                 requiredRuns,
                 ballsRemaining,
                 requiredRunInfo: `${requiredRuns} runs ball remaining ${ballsRemaining}`,
@@ -9586,11 +9588,14 @@ CURRENT OVER SUMMARY
                 .map(p => (p || '').split('|')[0].trim()) // ✅ remove image
                 .filter(Boolean);
 
+            const teamDesign = getMatchTeamDesign();
+
             sendEvent('teamXI', {
                 teamA: teamA.value,
                 teamB: teamB.value,
                 teamALogo: teamALogo.value,
                 teamBLogo: teamBLogo.value,
+                ...teamDesign,
                 teamAXI,
                 teamBXI
             });
