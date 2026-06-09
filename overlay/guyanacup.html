@@ -588,7 +588,7 @@
             background: linear-gradient(90deg, #061224 0%, #071426 48%, #071426 100%);
             border-radius: 9px;
             display: grid;
-            grid-template-columns: 330px 188px 610px 188px 236px 284px;
+            grid-template-columns: 330px 188px 584px 184px 220px 330px;
             align-items: center;
             padding: 0;
             color: #fff;
@@ -636,14 +636,14 @@
 
         #sbTeamB {
             grid-template-columns: 1fr 76px;
-            gap: 10px;
+            gap: 12px;
             color: var(--bowling-text);
             background:
                 linear-gradient(108deg,
                     color-mix(in srgb, var(--bowling-primary) 88%, #000 12%) 0%,
                     var(--bowling-primary) 68%,
                     color-mix(in srgb, var(--bowling-accent) 24%, var(--bowling-primary) 76%) 100%);
-            padding: 0 8px 0 48px;
+            padding: 0 8px 0 50px;
             clip-path: polygon(12% 0, 100% 0, 100% 100%, 0 100%);
         }
 
@@ -724,7 +724,11 @@
         #nameB {
             justify-content: flex-end;
             text-align: left;
-            max-width: 178px;
+            max-width: 220px;
+            white-space: nowrap;
+            overflow-wrap: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         #sbScoreBlock {
@@ -789,7 +793,7 @@
             height: 43px;
             color: rgba(255,255,255,.95);
             font-family: 'Roboto Condensed', 'Oswald', sans-serif;
-            font-size: 24px;
+            font-size: 23px;
             font-weight: 600;
             border-bottom: 2px solid var(--batting-accent);
         }
@@ -2440,15 +2444,39 @@
             width: 640px;
             min-width: 640px;
             max-width: 640px;
-            background: linear-gradient(180deg, rgba(15,23,42,.98), rgba(2,6,23,.98));
+            position: relative;
+            background:
+                radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--xi-accent) 26%, transparent), transparent 34%),
+                linear-gradient(135deg,
+                    color-mix(in srgb, var(--xi-primary) 88%, #000 12%) 0%,
+                    #071426 52%,
+                    color-mix(in srgb, var(--xi-primary) 70%, #000 30%) 100%);
             border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 18px 50px rgba(0,0,0,.75), 0 0 20px rgba(255,255,255,.04);
+            box-shadow: 0 22px 58px rgba(0,0,0,.78), 0 0 26px color-mix(in srgb, var(--xi-accent) 20%, transparent);
+            border: 1px solid color-mix(in srgb, var(--xi-accent) 34%, transparent);
+            color: var(--xi-text);
+        }
+
+            .xiCard::before {
+                content: "";
+                position: absolute;
+                inset: 0 auto 0 0;
+                width: 9px;
+                background: linear-gradient(180deg, rgba(255,255,255,.75), var(--xi-accent), color-mix(in srgb, var(--xi-accent) 60%, #000 40%));
+                box-shadow: 0 0 16px color-mix(in srgb, var(--xi-accent) 44%, transparent);
+            }
+
+            .xiCard.right::before {
+                left: auto;
+                right: 0;
+            }
         }
 
         .xiTop {
             text-align: center;
-            padding: 24px 0 18px 0;
+            padding: 22px 26px 16px 26px;
+            border-bottom: 1px solid color-mix(in srgb, var(--xi-accent) 32%, transparent);
         }
 
         .xiPlaying {
@@ -2456,19 +2484,25 @@
             font-size: 46px;
             font-weight: 700;
             letter-spacing: 3px;
-            color: rgba(255,255,255,.07);
+            color: color-mix(in srgb, var(--xi-text) 14%, transparent);
             margin-bottom: 12px;
         }
 
         .teamHeader {
             margin-top: 16px;
             font-family: 'Oswald', sans-serif;
-            font-size: 30px;
+            font-size: 32px;
             font-weight: 700;
             letter-spacing: 1px;
-            color: white;
+            color: var(--xi-text);
             text-transform: uppercase;
-            padding: 8px 0;
+            padding: 9px 14px;
+            border-radius: 8px;
+            background:
+                linear-gradient(90deg,
+                    color-mix(in srgb, var(--xi-primary) 80%, #000 20%),
+                    color-mix(in srgb, var(--xi-accent) 34%, var(--xi-primary) 66%));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
         }
 
         .xiPlayers {
@@ -2479,12 +2513,12 @@
             display: flex;
             align-items: center;
             height: 48px;
-            border-bottom: 1px solid rgba(255,255,255,.04);
-            background: linear-gradient(90deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+            border-bottom: 1px solid color-mix(in srgb, var(--xi-accent) 18%, transparent);
+            background: linear-gradient(90deg, color-mix(in srgb, var(--xi-accent) 9%, transparent), rgba(255,255,255,0));
         }
 
             .xiRow:nth-child(even) {
-                background: linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,0));
+                background: linear-gradient(90deg, color-mix(in srgb, var(--xi-primary) 24%, transparent), rgba(255,255,255,0));
             }
 
         .xiNum {
@@ -2493,7 +2527,7 @@
             font-family: 'Eurostile', sans-serif;
             font-size: 20px;
             font-weight: 700;
-            color: #94a3b8;
+            color: var(--xi-accent);
         }
 
         .xiPlayer {
@@ -2503,7 +2537,7 @@
             font-size: 24px;
             font-weight: 700;
             letter-spacing: .4px;
-            color: white;
+            color: var(--xi-text);
         }
 
         .xiLogoWrap {
@@ -2511,12 +2545,12 @@
             height: 110px;
             margin: 0 auto 16px auto;
             border-radius: 50%;
-            background: white;
+            background: color-mix(in srgb, var(--xi-primary) 82%, #000 18%);
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 18px rgba(255,255,255,.10);
+            box-shadow: 0 0 18px color-mix(in srgb, var(--xi-accent) 34%, transparent), inset 0 0 0 3px color-mix(in srgb, var(--xi-accent) 75%, transparent);
         }
 
         /* =====================
@@ -2538,8 +2572,8 @@
             font-size: 44px;
             font-weight: 700;
             letter-spacing: 2px;
-            color: rgba(255,255,255,.80);
-            text-shadow: 0 0 10px rgba(255,255,255,.15), 0 0 24px rgba(37,99,235,.20);
+            color: rgba(255,255,255,.88);
+            text-shadow: 0 0 10px rgba(255,255,255,.15), 0 0 24px var(--batting-accent);
         }
 
         .vsLine {
@@ -2549,11 +2583,11 @@
         }
 
         .leftHeader {
-            background: linear-gradient(90deg, #5b0f16 0%, #7f1d1d 50%, #991b1b 100%);
+            background: linear-gradient(90deg, color-mix(in srgb, var(--xi-primary) 82%, #000 18%), color-mix(in srgb, var(--xi-accent) 34%, var(--xi-primary) 66%));
         }
 
         .rightHeader {
-            background: linear-gradient(90deg, #1e293b 0%, #1e3a8a 50%, #2563eb 100%);
+            background: linear-gradient(90deg, color-mix(in srgb, var(--xi-primary) 82%, #000 18%), color-mix(in srgb, var(--xi-accent) 34%, var(--xi-primary) 66%));
         }
     </style>
 </head>
@@ -2853,6 +2887,7 @@
             teamALogo: "",
             teamBLogo: "",
             battingTeam: "",
+            target: "",
             teamAColors: {
                 primary: "#9A0A3A",
                 accent: "#EC2C89",
@@ -3024,6 +3059,7 @@
             overlayState.teamALogo = data.teamALogo || overlayState.teamALogo;
             overlayState.teamBLogo = data.teamBLogo || overlayState.teamBLogo;
             overlayState.battingTeam = data.batting || overlayState.battingTeam;
+            overlayState.target = data.target || data.targetScore || data.chaseTarget || overlayState.target;
             overlayState.teamAColors = getScoreboardColors(data, "teamA", overlayState.teamAColors.primary, overlayState.teamAColors.accent, overlayState.teamAColors.text);
             overlayState.teamBColors = getScoreboardColors(data, "teamB", overlayState.teamBColors.primary, overlayState.teamBColors.accent, overlayState.teamBColors.text);
 
@@ -3106,7 +3142,10 @@
                 const needText = data.requiredRuns !== undefined && data.ballsRemaining !== undefined
                     ? `Need ${data.requiredRuns} off ${data.ballsRemaining}`
                     : (data.requiredRunInfo || "Need -");
-                const targetValue = data.target ?? data.targetScore ?? data.chaseTarget ?? data.targetRuns;
+                const targetValue = data.target ?? data.targetScore ?? data.chaseTarget ?? data.targetRuns ?? overlayState.target;
+                if (targetValue !== undefined && targetValue !== null && targetValue !== "") {
+                    overlayState.target = targetValue;
+                }
                 const targetText = targetValue !== undefined && targetValue !== null && targetValue !== ""
                     ? `Target ${targetValue}`
                     : "";
@@ -3791,14 +3830,19 @@
             const teamAXI = data.teamAXI || [];
             const teamBXI = data.teamBXI || [];
 
+            const teamAColors = getScoreboardColors(data, "teamA", overlayState.teamAColors.primary, overlayState.teamAColors.accent, overlayState.teamAColors.text);
+            const teamBColors = getScoreboardColors(data, "teamB", overlayState.teamBColors.primary, overlayState.teamBColors.accent, overlayState.teamBColors.text);
+            overlayState.teamAColors = teamAColors;
+            overlayState.teamBColors = teamBColors;
+
             content.innerHTML = `
-                            ${renderTeamXI(data.teamA, teamAXI, '#7f1d1d', data.teamALogo, 'left')}
+                            ${renderTeamXI(data.teamA, teamAXI, teamAColors, data.teamALogo, 'left')}
                             <div class="xiCenterVS">
                                 <div class="vsLine"></div>
                                 <div class="vsText">VS</div>
                                 <div class="vsLine"></div>
                             </div>
-                            ${renderTeamXI(data.teamB, teamBXI, '#1e3a8a', data.teamBLogo, 'right')}
+                            ${renderTeamXI(data.teamB, teamBXI, teamBColors, data.teamBLogo, 'right')}
                         `;
 
             // 🔥 THIS IS THE FIX
@@ -4099,12 +4143,25 @@
             };
         }
 
-        function renderTeamXI(teamName, players, color, logo, side) {
+        function escapeHtml(value) {
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        function renderTeamXI(teamName, players, colors, logo, side) {
+            const primary = normalizeHexColor(colors?.primary, side === "left" ? overlayState.teamAColors.primary : overlayState.teamBColors.primary);
+            const accent = normalizeHexColor(colors?.accent, side === "left" ? overlayState.teamAColors.accent : overlayState.teamBColors.accent);
+            const text = normalizeHexColor(colors?.text, "#FFFFFF");
+            const cardStyle = `--xi-primary:${primary};--xi-accent:${accent};--xi-text:${text};`;
 
             return `
             <div class="teamBlock ${side}">
 
-                <div class="xiCard ${side === 'left' ? 'xiAccentRed' : 'xiAccentBlue'}">
+                <div class="xiCard ${side}" style="${cardStyle}">
 
                     <div class="xiTop">
 
@@ -4113,11 +4170,11 @@
                         </div>
 
                         <div class="xiLogoWrap">
-                            <img src="${logo}" />
+                            ${logo ? `<img src="${escapeHtml(logo)}" />` : ""}
                         </div>
 
                         <div class="teamHeader ${side === 'left' ? 'leftHeader' : 'rightHeader'}">
-                            ${teamName}
+                            ${escapeHtml(teamName)}
                         </div>
 
                     </div>
@@ -4132,7 +4189,7 @@
                                 </div>
 
                                 <div class="xiPlayer">
-                                    ${formatPlayer(p)}
+                                    ${formatPlayer(escapeHtml(p))}
                                 </div>
 
                             </div>
