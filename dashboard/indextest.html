@@ -6158,6 +6158,10 @@
 
         /* ======= Update Live Display =========== */
         function updateLiveDisplay() {
+            if (document.getElementById('innings')?.value === "1") {
+                firstInningsTotal = liveTotal;
+            }
+
             const strikerName = document.getElementById('striker')?.value || "";
             const nonStrikerName = document.getElementById('nonStriker')?.value || "";
             const bowlerName = document.getElementById('bowler')?.value || "";
@@ -9439,10 +9443,13 @@ CURRENT OVER SUMMARY
             updateLiveDisplay();
             const targetInput = document.getElementById('target');
 
-            // If entering 2nd innings and user has NOT edited target
-            if (innings === "2" && !targetManuallyEdited) {
-                if (targetInput) {
+            // If entering 2nd innings, populate target unless a real value is already there.
+            if (innings === "2") {
+                if (targetInput && (!targetManuallyEdited || !targetInput.value.trim())) {
                     targetInput.value = firstInningsTotal + 1;
+                    targetManuallyEdited = false;
+                    lastSentScore = "";
+                    updateLiveDisplay();
                 }
             }
 
