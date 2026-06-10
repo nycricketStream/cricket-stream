@@ -676,10 +676,15 @@
         }
 
         #sbTeamB::before {
-            left: 24px;
+            left: 0;
             z-index: 2;
-            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--bowling-accent) 52%, color-mix(in srgb, var(--bowling-accent) 60%, #000 40%));
-            box-shadow: 0 0 10px color-mix(in srgb, var(--bowling-accent) 34%, transparent);
+            top: 0;
+            bottom: 0;
+            width: 48px;
+            transform: none;
+            clip-path: polygon(78% 0, 88% 0, 12% 100%, 2% 100%);
+            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--bowling-accent) 48%, color-mix(in srgb, var(--bowling-accent) 62%, #000 38%));
+            box-shadow: 0 0 8px color-mix(in srgb, var(--bowling-accent) 30%, transparent);
         }
 
         #scoreboard .scoreLogoWrap {
