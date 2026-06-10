@@ -723,6 +723,7 @@
             min-width: 0;
             text-transform: uppercase;
             overflow-wrap: anywhere;
+            max-height: 58px;
             text-shadow: 0 2px 8px rgba(0,0,0,.55);
         }
 
@@ -730,10 +731,10 @@
             justify-content: flex-end;
             text-align: left;
             max-width: 220px;
-            white-space: nowrap;
-            overflow-wrap: normal;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            overflow: visible;
+            text-overflow: clip;
         }
 
         #sbScoreBlock {
