@@ -3819,7 +3819,7 @@
             }
 
             if (brandingState.size) {
-                const requestedSize = Number(brandingState.size);
+                const requestedSize = Number(brandingState.size) * 2;
                 const boostedSize = Number.isFinite(requestedSize) && requestedSize > 0
                     ? (requestedSize >= 110 ? Math.round(requestedSize * 1.18) : requestedSize)
                     : brandingState.size;
