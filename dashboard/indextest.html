@@ -4847,7 +4847,7 @@
             <button onclick="sendBreak('DRINKS BREAK')">Drinks Break</button>
             <button onclick="sendBreak('STRATEGIC TIMEOUT')">Strategic Timeout</button>
             <button onclick="sendBreak('INNINGS BREAK')">Innings Break</button>
-            <button onclick="sendBreak('MATCH RESULT')">Match Result</button>
+            <button onclick="sendMatchResult()">Match Result</button>
             <button onclick="hideBreak()" style="background:#991b1b">Hide Graphic</button>
             <hr>
             <h3>Full Scoreboard</h3>
@@ -8904,6 +8904,50 @@ CURRENT OVER SUMMARY
             });
         }
 
+        function buildMatchResultPayload() {
+            const teamAName = teamA?.value || "Team A";
+            const teamBName = teamB?.value || "Team B";
+            const battingTeam = batting?.value || teamAName;
+            const bowlingTeam = battingTeam === teamAName ? teamBName : teamAName;
+            const targetRuns = parseInt(target?.value || 0, 10);
+            const isSecondInnings = innings?.value === "2" && Number.isFinite(targetRuns) && targetRuns > 0;
+            let winner = "";
+            let resultText = "Match Result";
+
+            if (isSecondInnings) {
+                if (liveTotal >= targetRuns) {
+                    winner = battingTeam;
+                    const wicketsLeft = Math.max(10 - liveWickets, 0);
+                    resultText = `${winner} won by ${wicketsLeft} wicket${wicketsLeft === 1 ? "" : "s"}`;
+                } else {
+                    winner = bowlingTeam;
+                    const runsMargin = Math.max(targetRuns - 1 - liveTotal, 0);
+                    resultText = `${winner} won by ${runsMargin} run${runsMargin === 1 ? "" : "s"}`;
+                }
+            } else {
+                resultText = `${teamAName} vs ${teamBName}`;
+            }
+
+            return {
+                teamA: teamAName,
+                teamB: teamBName,
+                teamALogo: teamALogo?.value || "",
+                teamBLogo: teamBLogo?.value || "",
+                ...getMatchTeamDesign(),
+                batting: battingTeam,
+                innings: innings?.value || "1",
+                winner,
+                resultText,
+                score: `${liveTotal}/${liveWickets}`,
+                overs: calculateOvers(),
+                target: isSecondInnings ? targetRuns : ""
+            };
+        }
+
+        function sendMatchResult() {
+            sendEvent('matchResult', buildMatchResultPayload());
+        }
+
         function hideBreak() {
             sendEvent('break', {
                 hide: true
@@ -10180,9 +10224,7 @@ CURRENT OVER SUMMARY
                     Innings Break
                 </button>
                 <button class="modal-action-warn" onclick="
-                sendBreak(
-                    'MATCH RESULT'
-                )
+                sendMatchResult()
             ">
                     Match Result
                 </button>
