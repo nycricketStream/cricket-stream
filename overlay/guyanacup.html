@@ -101,10 +101,14 @@
             padding: 20px 18px;
             width: fit-content;
             max-width: 540px;
-            background: linear-gradient(90deg,#020617 0%, #0f172a 60%, #111827 100%);
+            background:
+                linear-gradient(90deg,
+                    color-mix(in srgb, var(--batting-primary) 82%, #000 18%) 0%,
+                    color-mix(in srgb, var(--batting-primary) 58%, #071426 42%) 62%,
+                    #071426 100%);
             border-radius: 6px;
-            border-left: 5px solid var(--espn-primary);
-            box-shadow: 0 6px 20px rgba(0,0,0,.6), inset 0 0 12px rgba(255,255,255,0.05);
+            border-left: 5px solid var(--batting-accent);
+            box-shadow: 0 6px 20px rgba(0,0,0,.6), 0 0 20px color-mix(in srgb, var(--batting-accent) 22%, transparent), inset 0 0 12px rgba(255,255,255,0.05);
             overflow: hidden;
         }
 
@@ -153,7 +157,7 @@
         .lt-accent {
             width: 6px;
             height: 100%;
-            background: linear-gradient(var(--espn-primary), #1e40af);
+            background: linear-gradient(var(--batting-accent), color-mix(in srgb, var(--batting-primary) 64%, #000 36%));
         }
 
         /* Content block */
@@ -166,7 +170,7 @@
         .lt-team {
             font-size: 10px;
             font-weight: 700;
-            color: #93c5fd;
+            color: color-mix(in srgb, var(--batting-accent) 70%, #fff 30%);
             letter-spacing: 1.2px;
             line-height: 14px;
         }
@@ -204,7 +208,7 @@
         .lt-role {
             font-size: 12px;
             font-weight: 700;
-            color: #cbd5f5;
+            color: color-mix(in srgb, var(--batting-accent) 42%, #fff 58%);
             line-height: 16px;
         }
 
@@ -232,7 +236,7 @@
             flex-shrink: 0;
             display: none;
             border: 2px solid rgba(255,255,255,0.25);
-            box-shadow: 0 0 0 2px var(--espn-primary), 0 0 10px var(--espn-glow);
+            box-shadow: 0 0 0 2px var(--batting-accent), 0 0 10px color-mix(in srgb, var(--batting-accent) 72%, transparent);
             transform: scale(.85);
             opacity: 0;
         }
@@ -256,15 +260,15 @@
 
         @keyframes playerPulse {
             0% {
-                box-shadow: 0 0 0 2px var(--espn-primary), 0 0 12px var(--espn-glow), 0 0 25px var(--espn-glow);
+                box-shadow: 0 0 0 2px var(--batting-accent), 0 0 12px color-mix(in srgb, var(--batting-accent) 70%, transparent), 0 0 25px color-mix(in srgb, var(--batting-accent) 48%, transparent);
             }
 
             50% {
-                box-shadow: 0 0 0 3px var(--espn-primary), 0 0 18px var(--espn-glow), 0 0 35px var(--espn-glow);
+                box-shadow: 0 0 0 3px var(--batting-accent), 0 0 18px color-mix(in srgb, var(--batting-accent) 78%, transparent), 0 0 35px color-mix(in srgb, var(--batting-accent) 54%, transparent);
             }
 
             100% {
-                box-shadow: 0 0 0 2px var(--espn-primary), 0 0 12px var(--espn-glow), 0 0 25px var(--espn-glow);
+                box-shadow: 0 0 0 2px var(--batting-accent), 0 0 12px color-mix(in srgb, var(--batting-accent) 70%, transparent), 0 0 25px color-mix(in srgb, var(--batting-accent) 48%, transparent);
             }
         }
 
@@ -388,7 +392,7 @@
             display: none;
             margin: 0 auto;
             border: 2px solid rgba(255,255,255,0.25);
-            box-shadow: 0 0 0 2px #38bdf8, 0 0 10px rgba(56,189,248,0.7);
+            box-shadow: 0 0 0 2px var(--bowling-accent), 0 0 10px color-mix(in srgb, var(--bowling-accent) 70%, transparent);
             transform: scale(.85);
             opacity: 0;
         }
@@ -1410,9 +1414,9 @@
         
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--bowling-primary) 82%, #000 18%),
+                    color-mix(in srgb, var(--batting-primary) 82%, #000 18%),
                     #071426);
-            border-left: 6px solid var(--bowling-accent);
+            border-left: 6px solid var(--batting-accent);
             border-radius: 6px;
             color: white;
             text-align: center;
@@ -1430,7 +1434,7 @@
         #fallWicketTitle {
             font-size: 13px;
             letter-spacing: 2px;
-            color: color-mix(in srgb, var(--bowling-accent) 72%, #fff 28%);
+            color: color-mix(in srgb, var(--batting-accent) 72%, #fff 28%);
             line-height: 15px;
         }
 
@@ -1444,7 +1448,7 @@
         #fallWicketScore {
             font-family: 'Roboto Condensed', 'Oswald', sans-serif;
             font-size: 18px;
-            color: color-mix(in srgb, var(--bowling-accent) 56%, #fff 44%);
+            color: color-mix(in srgb, var(--batting-accent) 56%, #fff 44%);
             line-height: 21px;
         }
 
@@ -4138,9 +4142,9 @@
             }
 
             if (brandingState.size) {
-                const requestedSize = Number(brandingState.size);
+                const requestedSize = parseFloat(brandingState.size);
                 const boostedSize = Number.isFinite(requestedSize) && requestedSize > 0
-                    ? (requestedSize >= 110 ? Math.round(requestedSize * 1.18) : requestedSize)
+                    ? Math.round(requestedSize * 2)
                     : brandingState.size;
                 leagueLogo.style.height = typeof boostedSize === "number" ? boostedSize + "px" : boostedSize;
             }
