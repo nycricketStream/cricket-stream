@@ -298,21 +298,23 @@
             bottom: 240px;
             right: 60px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 14px;
-            padding: 20px 18px 24px;
-            min-height: 120px;
-            width: fit-content;
-            max-width: 420px;
+            gap: 6px;
+            padding: 18px 26px 22px;
+            min-height: 166px;
+            width: 360px;
+            max-width: 360px;
             background:
-                linear-gradient(90deg,
-                    color-mix(in srgb, var(--bowling-primary) 78%, #000 22%) 0%,
-                    color-mix(in srgb, var(--bowling-primary) 62%, #071426 38%) 64%,
-                    #071426 100%);
+                radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--bowling-accent) 18%, transparent) 0%, transparent 36%),
+                linear-gradient(100deg,
+                    color-mix(in srgb, var(--bowling-primary) 76%, #020817 24%) 0%,
+                    #111827 72%,
+                    #394150 100%);
             border-radius: 6px;
-            border-left: 5px solid var(--bowling-accent);
-            box-shadow: 0 6px 20px rgba(0,0,0,.6), inset 0 0 12px rgba(255,255,255,0.05);
+            border-left: 6px solid var(--bowling-accent);
+            box-shadow: 0 18px 38px rgba(0,0,0,.55), inset 0 0 18px rgba(255,255,255,0.04);
             opacity: 0;
             transform: translateX(120%);
             transition: all .5s cubic-bezier(.22,.9,.3,1);
@@ -340,19 +342,21 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 6px;
+            gap: 4px;
             align-items: center;
             text-align: center;
-            min-width: 280px;
+            min-width: 0;
+            width: 100%;
         }
         
         #bowlerTeam {
-            font-size: 10px;
-            font-weight: 700;
-            color: color-mix(in srgb, var(--bowling-accent) 70%, #fff 30%);
+            font-size: 11px;
+            font-weight: 900;
+            color: color-mix(in srgb, var(--bowling-accent) 72%, #fff 28%);
             letter-spacing: 1.2px;
             line-height: 12px;
             margin: 0;
+            text-transform: uppercase;
         }
 
         #bowlerLabel {
@@ -361,22 +365,28 @@
             color: var(--bowling-accent);
             letter-spacing: 2px;
             line-height: 12px;
+            text-transform: uppercase;
         }
 
         #bowlerCardName {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 900;
             color: #ffffff;
             text-transform: uppercase;
-            line-height: 26px;
+            line-height: 30px;
             margin: 0;
+            max-width: 100%;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
         }
 
         #bowlerCardStats {
-            font-size: 11px;
+            font-size: 12px;
             color: #cbd5f5;
             line-height: 14px;
             margin: 0;
+            font-weight: 800;
         }
 
         #bowlerLowerThird.show img {
@@ -384,14 +394,14 @@
         }
 
         #bowlerImage {
-            width: 58px;
-            height: 58px;
+            width: 68px;
+            height: 68px;
             border-radius: 50%;
             object-fit: cover;
             flex-shrink: 0;
             display: none;
             margin: 0 auto;
-            border: 2px solid rgba(255,255,255,0.25);
+            border: 2px solid var(--bowling-accent);
             box-shadow: 0 0 0 2px var(--bowling-accent), 0 0 10px color-mix(in srgb, var(--bowling-accent) 70%, transparent);
             transform: scale(.85);
             opacity: 0;
@@ -1970,10 +1980,13 @@
         }
 
         #bowlingCard {
-            width: auto;
+            position: static !important;
+            width: auto !important;
             max-width: none;
+            height: 0;
             background: transparent;
             box-shadow: none;
+            transform: none !important;
         }
 
         .tv-header {
@@ -2290,6 +2303,276 @@
             font-size: 14px !important;
             font-weight: 800;
             letter-spacing: 1px;
+        }
+
+        /* ===== FINAL TV SCORECARD/BOWLING CARD POLISH ===== */
+        #scorecardDim {
+            background: radial-gradient(circle at 50% 42%, rgba(255,255,255,.20), rgba(0,0,0,.38) 58%, rgba(0,0,0,.48));
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+
+        .tv-card.scorecard-card,
+        .tv-card.bowling-card {
+            width: 760px;
+            max-width: calc(100vw - 80px);
+            background: #e8ecf2;
+            border: 1px solid rgba(255,255,255,.72);
+            border-radius: 6px;
+            box-shadow: 0 26px 58px rgba(0,0,0,.50), 0 0 0 1px rgba(3,7,18,.22);
+            overflow: hidden;
+        }
+
+        .tv-card.scorecard-card,
+        .tv-card.scorecard-card *,
+        .tv-card.bowling-card,
+        .tv-card.bowling-card * {
+            font-family: 'Roboto Condensed', 'Oswald', 'Arial Narrow', Arial, sans-serif !important;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: geometricPrecision;
+        }
+
+        .tv-card.scorecard-card .tv-header,
+        .tv-card.bowling-card .tv-header {
+            display: grid;
+            grid-template-columns: 128px minmax(0, 1fr) 144px;
+            height: 50px;
+            align-items: stretch;
+            background:
+                linear-gradient(110deg,
+                    color-mix(in srgb, var(--batting-primary) 82%, #101827 18%) 0%,
+                    color-mix(in srgb, var(--batting-primary) 92%, #2554d9 8%) 42%,
+                    color-mix(in srgb, var(--batting-accent) 24%, #7b8391 76%) 100%);
+        }
+
+        .tv-card.bowling-card .tv-header {
+            background:
+                linear-gradient(110deg,
+                    color-mix(in srgb, var(--bowling-primary) 82%, #101827 18%) 0%,
+                    color-mix(in srgb, var(--bowling-primary) 92%, #2554d9 8%) 42%,
+                    color-mix(in srgb, var(--bowling-accent) 24%, #7b8391 76%) 100%);
+        }
+
+        .tv-card.scorecard-card .espn-banner,
+        .tv-card.bowling-card .espn-banner {
+            font-size: 23px;
+            font-weight: 900;
+            letter-spacing: .6px;
+            background: linear-gradient(145deg, #dc354a 0%, #9f1d31 100%);
+            clip-path: polygon(0 0, 100% 0, 84% 100%, 0% 100%);
+        }
+
+        .tv-card.scorecard-card .header-team,
+        .tv-card.bowling-card .header-team {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 18px;
+            min-width: 0;
+            margin: 0;
+            text-align: left;
+            font-size: 17px;
+            font-weight: 900;
+            letter-spacing: .75px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .tv-card.scorecard-card .header-team span,
+        .tv-card.bowling-card .header-team span {
+            display: block;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: inherit;
+            font-weight: inherit;
+            opacity: 1;
+            letter-spacing: inherit;
+        }
+
+        .tv-card.scorecard-card .header-overs,
+        .tv-card.bowling-card .header-overs {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin: 0;
+            padding: 0 16px 0 30px;
+            color: #fff;
+            font-size: 15px !important;
+            font-weight: 900;
+            letter-spacing: .9px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, color-mix(in srgb, var(--batting-accent) 90%, #7c5f00 10%), #a98011);
+            clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .tv-card.bowling-card .header-overs {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--bowling-accent) 90%, #7c5f00 10%), #a98011);
+        }
+
+        .tv-card.scorecard-card .tv-table,
+        .tv-card.bowling-card .tv-table {
+            table-layout: fixed;
+            width: 100%;
+            border-collapse: collapse;
+            background: #eef2f7;
+        }
+
+        .tv-card.scorecard-card .tv-table thead,
+        .tv-card.bowling-card .tv-table thead {
+            background: linear-gradient(#dce2ea, #cbd3dd);
+            border-bottom: 2px solid #99a4b2;
+        }
+
+        .tv-card.scorecard-card .tv-table th,
+        .tv-card.bowling-card .tv-table th {
+            height: 26px;
+            padding: 0 12px;
+            color: #334155;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: .55px;
+            text-transform: uppercase;
+        }
+
+        .tv-card.scorecard-card .tv-table td,
+        .tv-card.bowling-card .tv-table td {
+            height: 35px;
+            padding: 0 12px;
+            color: #020617;
+            font-size: 18px;
+            font-weight: 800;
+            line-height: 1.08;
+            border-bottom: 1px solid #cdd4de;
+            vertical-align: middle;
+        }
+
+        .tv-card.scorecard-card .tv-table tbody tr:nth-child(odd),
+        .tv-card.bowling-card .tv-table tbody tr:nth-child(odd) {
+            background: #f8fafc;
+        }
+
+        .tv-card.scorecard-card .tv-table tbody tr:nth-child(even),
+        .tv-card.bowling-card .tv-table tbody tr:nth-child(even) {
+            background: #e8edf4;
+        }
+
+        .tv-card.scorecard-card .col-player {
+            width: 40%;
+        }
+
+        .tv-card.scorecard-card .col-dismissal {
+            width: 38%;
+        }
+
+        .tv-card.scorecard-card .col-runs,
+        .tv-card.scorecard-card .col-balls {
+            width: 11%;
+        }
+
+        .tv-card.bowling-card .col-player {
+            width: 48%;
+        }
+
+        .tv-card.bowling-card .col-runs {
+            width: 13%;
+        }
+
+        .tv-card.scorecard-card .player,
+        .tv-card.bowling-card .player {
+            color: #020617;
+            font-size: 18px;
+            font-weight: 900;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tv-card.scorecard-card .dismissal {
+            color: #020617;
+            font-size: 15px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tv-card.scorecard-card .runs,
+        .tv-card.scorecard-card .balls,
+        .tv-card.bowling-card .runs {
+            color: #020617;
+            font-size: 19px;
+            font-weight: 900;
+            text-align: right;
+            padding-right: 12px;
+        }
+
+        .tv-card.scorecard-card .not-out-row td,
+        .tv-card.scorecard-card .striker-row td {
+            background:
+                linear-gradient(90deg,
+                    color-mix(in srgb, var(--batting-primary) 76%, #0b1220 24%) 0%,
+                    color-mix(in srgb, var(--batting-accent) 55%, var(--batting-primary) 45%) 70%,
+                    color-mix(in srgb, var(--batting-primary) 82%, #0b1220 18%) 100%) !important;
+            color: #fff200 !important;
+            border-bottom-color: rgba(255,255,255,.18);
+        }
+
+        .tv-card.scorecard-card .not-out-row td:first-child,
+        .tv-card.scorecard-card .striker-row td:first-child {
+            border-left: 4px solid var(--batting-accent);
+        }
+
+        .tv-card.scorecard-card .not-out-row .player,
+        .tv-card.scorecard-card .not-out-row .dismissal,
+        .tv-card.scorecard-card .not-out-row .runs,
+        .tv-card.scorecard-card .not-out-row .balls,
+        .tv-card.scorecard-card .striker-row .player,
+        .tv-card.scorecard-card .striker-row .dismissal,
+        .tv-card.scorecard-card .striker-row .runs,
+        .tv-card.scorecard-card .striker-row .balls {
+            color: #fff200 !important;
+            font-weight: 900;
+        }
+
+        .tv-card.scorecard-card .tv-footer,
+        .tv-card.bowling-card .tv-footer {
+            min-height: 46px;
+            padding: 0 13px;
+            background: linear-gradient(90deg, #020817, #00030b);
+            color: #fff;
+            border-top: 1px solid rgba(255,255,255,.14);
+        }
+
+        .tv-card.scorecard-card .tv-footer div:first-child,
+        .tv-card.bowling-card .tv-footer div:first-child {
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .tv-card.scorecard-card .tv-total,
+        .tv-card.bowling-card .tv-total {
+            color: #fff200;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .bowling-card .bowling-leader td {
+            background:
+                linear-gradient(90deg,
+                    color-mix(in srgb, var(--bowling-primary) 80%, #0b1220 20%) 0%,
+                    color-mix(in srgb, var(--bowling-accent) 54%, var(--bowling-primary) 46%) 68%,
+                    color-mix(in srgb, var(--bowling-primary) 82%, #0b1220 18%) 100%) !important;
+            color: #fff200 !important;
+            border-bottom-color: rgba(255,255,255,.16);
+        }
+
+        .bowling-card .bowling-leader .player,
+        .bowling-card .bowling-leader .runs {
+            color: #fff200 !important;
         }
 
         .last-wicket::before {
@@ -3365,6 +3648,7 @@
 
             setTimeout(() => {
                 log("END OVERLAY:", item.name);
+                applyBrandingState();
                 isPlayingOverlay = false;
                 processQueue();
             }, item.duration);
@@ -3642,11 +3926,17 @@
 
                 container.style.display = "none";
                 container.innerHTML = "";
+                const bowlingCard = document.getElementById("bowlingCard");
+                if (bowlingCard) {
+                    bowlingCard.style.display = "none";
+                    bowlingCard.innerHTML = "";
+                }
 
                 if (!data.bowlers || data.bowlers.length === 0) {
                     if (scoreboardBar) scoreboardBar.classList.add("show");
                 }
                 if (scorecardDim) scorecardDim.classList.remove("show");
+                applyBrandingState();
 
                 return;
             }
@@ -3655,6 +3945,13 @@
 
             if (scoreboardBar) scoreboardBar.classList.remove("show");
             if (scorecardDim) scorecardDim.classList.add("show");
+
+            if (data.bowlingOnly) {
+                container.style.display = "none";
+                container.innerHTML = "";
+                showBowlingCard(data);
+                return;
+            }
 
             // ===== EXTRAS FIX =====
             let extras = 0;
@@ -3826,6 +4123,7 @@
                 box.classList.remove("show");
                 setTimeout(() => {
                     if (!box.classList.contains("show")) img.removeAttribute("src");
+                    applyBrandingState();
                 }, 450);
                 return;
             }
@@ -3837,6 +4135,7 @@
                 fullscreenSponsorTimer = setTimeout(() => {
                     box.classList.remove("show");
                     fullscreenSponsorTimer = null;
+                    setTimeout(applyBrandingState, 450);
                 }, data.duration || 8000);
             }
 
@@ -4261,6 +4560,7 @@
         channel.bind('teamXIHide', () => {
             const el = document.getElementById("teamXIOverlay");
             if (el) el.style.display = "none";
+            applyBrandingState();
         });
 
         const scoreFrame = document.getElementById('scoreFrame');
@@ -4303,6 +4603,7 @@
             if (sponsorList.length === 0) {
                 topSponsorBar.classList.remove('show');
                 if (!isFullScorecardVisible && scoreboardBar) scoreboardBar.classList.add("show");
+                applyBrandingState();
                 return;
             }
 
@@ -4581,9 +4882,12 @@
             // ===== BUILD ROWS =====
             let rows = "";
 
-            (data.bowlers || []).forEach(b => {
+            const sortedBowlers = [...(data.bowlers || [])]
+                .sort((a, b) => (Number(b.wickets || 0) - Number(a.wickets || 0)) || (Number(a.runs || 0) - Number(b.runs || 0)));
+
+            sortedBowlers.forEach((b, index) => {
                 rows += `
-                                                                                    <tr>
+                                                                                    <tr class="${index === 0 ? 'bowling-leader' : ''}">
                                                                                         <td class="player">${formatScorecardPlayer(b.name)}</td>
                                                                                         <td class="runs">${escapeHtml(b.overs || "0.0")}</td>
                                                                                         <td class="runs">${escapeHtml(b.maidens ?? 0)}</td>
@@ -4616,6 +4920,10 @@
                                                                                             ${rows}
                                                                                         </tbody>
                                                                                     </table>
+                                                                                    <div class="tv-footer">
+                                                                                        <div>BOWLERS ${escapeHtml(String(sortedBowlers.length))}</div>
+                                                                                        <div class="tv-total">${escapeHtml((data.bowlingTeam || "BOWLING").toUpperCase())}</div>
+                                                                                    </div>
                                                                                 </div>
                                                                             `;
 
@@ -4647,6 +4955,8 @@
                     if (scoreboardBar) {
                         scoreboardBar.classList.add("show");
                     }
+                    isFullScorecardVisible = false;
+                    applyBrandingState();
 
                 }, 400);
 
