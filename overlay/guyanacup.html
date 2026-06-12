@@ -2575,6 +2575,158 @@
             color: #fff200 !important;
         }
 
+        .tv-card.bowling-card {
+            width: 800px;
+            max-width: calc(100vw - 96px);
+            background: #eef3f8;
+            border-radius: 7px;
+        }
+
+        .tv-card.bowling-card .tv-header {
+            grid-template-columns: 128px minmax(0, 1fr) 148px;
+            height: 54px;
+            background:
+                linear-gradient(110deg,
+                    #0a1322 0%,
+                    color-mix(in srgb, var(--bowling-primary) 78%, #0a1322 22%) 44%,
+                    color-mix(in srgb, var(--bowling-accent) 34%, #64748b 66%) 100%);
+        }
+
+        .tv-card.bowling-card .espn-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,.35);
+        }
+
+        .tv-card.bowling-card .header-team {
+            font-size: 18px;
+            letter-spacing: .8px;
+        }
+
+        .tv-card.bowling-card .header-overs {
+            font-size: 15px !important;
+            background:
+                linear-gradient(135deg,
+                    color-mix(in srgb, var(--bowling-accent) 88%, #7a5d00 12%),
+                    color-mix(in srgb, var(--bowling-accent) 62%, #09111f 38%));
+        }
+
+        .tv-card.bowling-card .tv-table th {
+            height: 28px;
+            color: #1e293b;
+            background: transparent;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .tv-card.bowling-card .tv-table th:first-child {
+            text-align: left;
+        }
+
+        .tv-card.bowling-card .tv-table td {
+            height: 42px;
+            font-size: 19px;
+            color: #050b16;
+        }
+
+        .tv-card.bowling-card .col-player {
+            width: 50%;
+        }
+
+        .tv-card.bowling-card .col-runs {
+            width: 12.5%;
+        }
+
+        .tv-card.bowling-card .player {
+            padding-left: 14px;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        .tv-card.bowling-card .runs {
+            padding: 0 10px;
+            text-align: center;
+            font-size: 20px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .tv-card.bowling-card .bowling-leader td {
+            background:
+                linear-gradient(90deg,
+                    color-mix(in srgb, var(--bowling-primary) 62%, #050b16 38%) 0%,
+                    #09111f 42%,
+                    color-mix(in srgb, var(--bowling-accent) 42%, #09111f 58%) 100%) !important;
+            color: #fff200 !important;
+        }
+
+        .tv-card.bowling-card .bowling-leader td:first-child {
+            border-left: 4px solid var(--bowling-accent);
+        }
+
+        .tv-card.bowling-card .tv-footer {
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(90deg, #020817 0%, #07111f 100%);
+        }
+
+        .tv-card.bowling-card .tv-footer div:first-child {
+            font-size: 22px;
+            color: #fff;
+        }
+
+        .tv-card.bowling-card .tv-total {
+            max-width: 62%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #fff200;
+            font-size: 26px;
+        }
+
+        #breakGraphic.match-result-mode {
+            background:
+                radial-gradient(circle at 50% 44%, rgba(15,23,42,.76), rgba(0,0,0,.93) 68%),
+                linear-gradient(90deg, color-mix(in srgb, var(--batting-primary) 35%, transparent), color-mix(in srgb, var(--bowling-primary) 35%, transparent));
+        }
+
+        #breakGraphic.match-result-mode #breakContent {
+            width: min(1180px, calc(100vw - 120px));
+            padding: 44px 54px;
+            border: 1px solid rgba(255,255,255,.18);
+            border-radius: 16px;
+            background: linear-gradient(145deg, rgba(3,10,24,.92), rgba(9,18,35,.82));
+            box-shadow: 0 34px 90px rgba(0,0,0,.55);
+        }
+
+        #breakGraphic.match-result-mode #breakText {
+            display: flex !important;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Roboto Condensed', 'Oswald', 'Arial Narrow', Arial, sans-serif !important;
+            letter-spacing: 0 !important;
+            text-transform: uppercase;
+        }
+
+        .result-kicker {
+            color: var(--batting-accent);
+            font-size: 34px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .result-main {
+            color: #ffffff;
+            font-size: clamp(48px, 6vw, 92px);
+            font-weight: 900;
+            line-height: .98;
+            text-shadow: 0 3px 14px rgba(0,0,0,.55);
+        }
+
         .last-wicket::before {
             content: "LAST WICKET:";
             color: #facc15;
@@ -4529,8 +4681,9 @@
             // Hide break screen
             const breakGraphic = document.getElementById("breakGraphic");
             if (breakGraphic) {
-                breakGraphic.classList.remove("show");
+                breakGraphic.classList.remove("show", "match-result-mode");
             }
+            if (breakText) breakText.innerHTML = "";
 
 
             // Hide replay
@@ -4644,6 +4797,8 @@
 
                 // Remove animation classes without wiping persistent branding.
                 removeTransientShowClasses();
+                if (breakGraphic) breakGraphic.classList.remove("match-result-mode");
+                if (breakText) breakText.innerHTML = "";
                 isFullScorecardVisible = false;
                 if (scorecardDim) scorecardDim.classList.remove("show");
 
@@ -4697,10 +4852,65 @@
                 logoWrapB.style.display = "none";
             }
 
+            breakGraphic.classList.remove("match-result-mode");
             breakText.textContent = (data.text || "BREAK").toUpperCase();
             removeTransientShowClasses();
             breakGraphic.style.display = "flex";
             breakGraphic.classList.add("show");
+        });
+
+        channel.bind('matchResult', data => {
+            if (!data) return;
+            log("MATCH RESULT RECEIVED: ", data);
+
+            const logoWrapA = document.getElementById("logoWrapA");
+            const logoWrapB = document.getElementById("logoWrapB");
+            const logoAEl = document.getElementById("breakLogoA");
+            const logoBEl = document.getElementById("breakLogoB");
+            const nameAEl = document.getElementById("breakNameA");
+            const nameBEl = document.getElementById("breakNameB");
+
+            const teamA = data.teamA || overlayState.teamA;
+            const teamB = data.teamB || overlayState.teamB;
+            const logoA = data.teamALogo || overlayState.teamALogo;
+            const logoB = data.teamBLogo || overlayState.teamBLogo;
+
+            overlayState.teamA = teamA || overlayState.teamA;
+            overlayState.teamB = teamB || overlayState.teamB;
+            overlayState.teamALogo = logoA || overlayState.teamALogo;
+            overlayState.teamBLogo = logoB || overlayState.teamBLogo;
+            overlayState.teamAColors = getScoreboardColors(data, "teamA", overlayState.teamAColors.primary, overlayState.teamAColors.accent, overlayState.teamAColors.text);
+            overlayState.teamBColors = getScoreboardColors(data, "teamB", overlayState.teamBColors.primary, overlayState.teamBColors.accent, overlayState.teamBColors.text);
+            applyScoreboardColors((data.batting || overlayState.battingTeam) === overlayState.teamA);
+
+            if (logoA && logoA.trim() !== "") {
+                logoAEl.src = logoA;
+                logoWrapA.style.display = "flex";
+                nameAEl.style.display = "none";
+            } else {
+                nameAEl.textContent = (teamA || "").toUpperCase();
+                nameAEl.style.display = "block";
+                logoWrapA.style.display = "none";
+            }
+
+            if (logoB && logoB.trim() !== "") {
+                logoBEl.src = logoB;
+                logoWrapB.style.display = "flex";
+                nameBEl.style.display = "none";
+            } else {
+                nameBEl.textContent = (teamB || "").toUpperCase();
+                nameBEl.style.display = "block";
+                logoWrapB.style.display = "none";
+            }
+
+            removeTransientShowClasses();
+            if (scoreboardBar) scoreboardBar.classList.remove("show");
+            breakText.innerHTML = `
+                <span class="result-kicker">MATCH RESULT</span>
+                <span class="result-main">${escapeHtml(data.resultText || "MATCH RESULT")}</span>
+            `;
+            breakGraphic.style.display = "flex";
+            breakGraphic.classList.add("show", "match-result-mode");
         });
 
         const overSummary = document.getElementById("overSummary");
@@ -4886,16 +5096,29 @@
                 .sort((a, b) => (Number(b.wickets || 0) - Number(a.wickets || 0)) || (Number(a.runs || 0) - Number(b.runs || 0)));
 
             sortedBowlers.forEach((b, index) => {
+                const maidens = b.maidens === undefined || b.maidens === null || b.maidens === "" ? 0 : b.maidens;
                 rows += `
                                                                                     <tr class="${index === 0 ? 'bowling-leader' : ''}">
                                                                                         <td class="player">${formatScorecardPlayer(b.name)}</td>
                                                                                         <td class="runs">${escapeHtml(b.overs || "0.0")}</td>
-                                                                                        <td class="runs">${escapeHtml(b.maidens ?? 0)}</td>
+                                                                                        <td class="runs">${escapeHtml(maidens)}</td>
                                                                                         <td class="runs">${escapeHtml(b.runs ?? 0)}</td>
                                                                                         <td class="runs">${escapeHtml(b.wickets ?? 0)}</td>
                                                                                     </tr>
                                                                                 `;
             });
+
+            if (!rows) {
+                rows = `
+                    <tr>
+                        <td class="player">No bowlers yet</td>
+                        <td class="runs">0.0</td>
+                        <td class="runs">0</td>
+                        <td class="runs">0</td>
+                        <td class="runs">0</td>
+                    </tr>
+                `;
+            }
 
             // ===== INJECT HTML (THIS WAS MISSING) =====
             el.innerHTML = `
@@ -4934,33 +5157,13 @@
             el.style.display = "block";
             el.style.opacity = "1";
             el.style.transform = "translate(-50%, -50%) scale(1)";
+            if (scorecardDim) scorecardDim.classList.add("show");
+            isFullScorecardVisible = true;
 
             setTimeout(() => {
                 const card = el.querySelector(".tv-card");
                 if (card) card.classList.add("show");
             }, 50);
-
-            setTimeout(() => {
-                el.style.opacity = "0";
-                el.style.transform = "translate(-50%, -60%) scale(.95)";
-
-                setTimeout(() => {
-                    el.style.display = "none";
-
-                    // OPTIONAL: remove dim after bowling disappears
-                    if (scorecardDim) {
-                        scorecardDim.classList.remove("show");
-                    }
-
-                    if (scoreboardBar) {
-                        scoreboardBar.classList.add("show");
-                    }
-                    isFullScorecardVisible = false;
-                    applyBrandingState();
-
-                }, 400);
-
-            }, 8000);
         }
 
         function showWicketSequence(data) {
