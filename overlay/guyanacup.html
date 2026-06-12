@@ -60,7 +60,7 @@
             height: 1080px;
             background: transparent;
             overflow: hidden;
-            font-family: 'Eurostile', 'Roboto', Arial, sans-serif;
+            font-family: 'Roboto Condensed', 'Oswald', 'Arial Narrow', Arial, sans-serif;
         }
 
         /* CONNECTION DOT */
@@ -1940,6 +1940,252 @@
             font-weight: 700;
         }
 
+        /* ===== TV BROADCAST SCORECARD OVERRIDE ===== */
+        body,
+        button,
+        input,
+        select,
+        textarea,
+        .tv-card,
+        .tv-card *,
+        #bowlingCard,
+        #bowlingCard *,
+        #teamXIOverlay,
+        #teamXIOverlay * {
+            font-family: 'Roboto Condensed', 'Oswald', 'Arial Narrow', Arial, sans-serif !important;
+        }
+
+        .tv-card {
+            width: 760px;
+            max-width: calc(100vw - 72px);
+            background: #e8ebf0;
+            border-radius: 7px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,.34);
+            box-shadow: 0 22px 52px rgba(0,0,0,.68), 0 0 0 1px rgba(0,0,0,.2);
+        }
+
+        #bowlingCard {
+            width: auto;
+            max-width: none;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .tv-header {
+            display: grid;
+            grid-template-columns: 130px minmax(0, 1fr) 150px;
+            align-items: stretch;
+            height: 50px;
+            background: linear-gradient(90deg, #061120 0%, #173fba 58%, color-mix(in srgb, var(--batting-accent) 80%, #8b6f0c 20%) 100%);
+            overflow: hidden;
+        }
+
+        .tv-card.bowling-card .tv-header {
+            background: linear-gradient(90deg, #061120 0%, color-mix(in srgb, var(--bowling-primary) 75%, #173fba 25%) 58%, color-mix(in srgb, var(--bowling-accent) 80%, #8b6f0c 20%) 100%);
+        }
+
+        .espn-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #ffffff;
+            font-size: 23px;
+            font-weight: 700;
+            letter-spacing: .7px;
+            background: linear-gradient(135deg, #d73548 0%, #9b1d2f 100%);
+            clip-path: polygon(0 0, 100% 0, 86% 100%, 0 100%);
+            text-shadow: 0 2px 3px rgba(0,0,0,.35);
+        }
+
+        .header-team,
+        .header-overs {
+            min-width: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            color: #ffffff;
+            text-shadow: 0 2px 3px rgba(0,0,0,.28);
+        }
+
+        .header-team {
+            justify-content: flex-start;
+            padding: 0 18px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+        }
+
+        .header-team span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .header-overs {
+            justify-content: flex-end;
+            padding: 0 18px 0 26px;
+            font-size: 16px !important;
+            font-weight: 900;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, color-mix(in srgb, var(--batting-accent) 86%, #7c5f00 14%), #a7831c);
+            clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .tv-card.bowling-card .header-overs {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--bowling-accent) 86%, #7c5f00 14%), #a7831c);
+        }
+
+        .tv-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            background: #eef1f5;
+        }
+
+        .tv-table thead {
+            background: linear-gradient(#dfe3ea, #cbd2dc);
+            border-bottom: 2px solid #9aa4b3;
+        }
+
+        .tv-table th,
+        .tv-table td {
+            padding: 7px 12px;
+            line-height: 1.15;
+        }
+
+        .tv-table th {
+            height: 25px;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: .5px;
+            color: #334155;
+            text-transform: uppercase;
+        }
+
+        .tv-table td {
+            height: 28px;
+            color: #060b16;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: .1px;
+            border-bottom: 1px solid #cdd3dc;
+        }
+
+        .tv-table tbody tr:nth-child(odd) {
+            background: #f6f7fa;
+        }
+
+        .tv-table tbody tr:nth-child(even) {
+            background: #e9edf3;
+        }
+
+        .tv-table .player {
+            color: #020617;
+            font-weight: 900;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tv-table .dismissal {
+            color: #020617;
+            font-size: 15px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tv-table .runs,
+        .tv-table .balls,
+        .tv-table td.runs,
+        .tv-table td.balls {
+            color: #020617;
+            font-size: 17px;
+            font-weight: 900;
+            text-align: right;
+            padding-right: 12px;
+        }
+
+        .not-out-row td,
+        .striker-row td {
+            background:
+                linear-gradient(90deg,
+                    color-mix(in srgb, var(--batting-primary) 78%, #061120 22%) 0%,
+                    color-mix(in srgb, var(--batting-accent) 64%, var(--batting-primary) 36%) 50%,
+                    color-mix(in srgb, var(--batting-primary) 82%, #061120 18%) 100%) !important;
+            color: #ffe600 !important;
+            border-bottom-color: color-mix(in srgb, var(--batting-accent) 38%, transparent);
+        }
+
+        .not-out-row td:first-child,
+        .striker-row td:first-child {
+            border-left: 4px solid var(--batting-accent);
+        }
+
+        .not-out-row .player,
+        .not-out-row .dismissal,
+        .not-out-row .runs,
+        .not-out-row .balls,
+        .striker-row .player,
+        .striker-row .dismissal,
+        .striker-row .runs,
+        .striker-row .balls {
+            color: #ffe600 !important;
+            font-weight: 900;
+        }
+
+        .strike-star {
+            display: inline-block;
+            margin-left: 7px;
+            color: #ffe600;
+            text-shadow: 0 0 8px rgba(255,230,0,.38);
+        }
+
+        .tv-footer {
+            min-height: 44px;
+            padding: 0 13px;
+            background: linear-gradient(90deg, #020817, #00030b);
+            color: #ffffff;
+            border-top: 1px solid rgba(255,255,255,.12);
+            box-shadow: inset 0 2px 7px rgba(0,0,0,.55);
+        }
+
+        .tv-footer div:first-child {
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .tv-total {
+            color: #ffe600;
+            font-size: 27px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 3px rgba(0,0,0,.48);
+        }
+
+        .tv-lastwicket {
+            background: linear-gradient(90deg, color-mix(in srgb, var(--batting-primary) 82%, #000 18%), #020617);
+            border-top: 1px solid color-mix(in srgb, var(--batting-accent) 54%, transparent);
+            color: #ffffff;
+            font-size: 14px;
+            padding: 8px 14px;
+        }
+
+        .tv-card.bowling-card .tv-table td {
+            height: 34px;
+            font-size: 17px;
+        }
+
+        .tv-card.bowling-card .player {
+            font-size: 18px;
+        }
+
         .bowling-section {
             margin-top: 4px;
             border-top: 2px solid #111827;
@@ -2601,6 +2847,83 @@
 
         .rightHeader {
             background: linear-gradient(90deg, color-mix(in srgb, var(--xi-primary) 82%, #000 18%), color-mix(in srgb, var(--xi-accent) 34%, var(--xi-primary) 66%));
+        }
+
+        #teamXIOverlay .xiPlaying {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 230px;
+            height: 46px;
+            margin: 0 auto 16px auto;
+            padding: 0 28px;
+            border-radius: 6px;
+            background:
+                linear-gradient(90deg,
+                    color-mix(in srgb, var(--xi-primary) 84%, #000 16%),
+                    color-mix(in srgb, var(--xi-accent) 28%, var(--xi-primary) 72%));
+            border: 1px solid color-mix(in srgb, var(--xi-accent) 52%, transparent);
+            color: var(--xi-text);
+            font-family: 'Roboto Condensed', 'Oswald', 'Arial Narrow', Arial, sans-serif !important;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,.35);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.13), 0 10px 22px rgba(0,0,0,.24);
+        }
+
+        #teamXIOverlay .xiTeamName,
+        #teamXIOverlay .teamHeader,
+        #teamXIOverlay .xiNum,
+        #teamXIOverlay .xiPlayer {
+            font-family: 'Roboto Condensed', 'Oswald', 'Arial Narrow', Arial, sans-serif !important;
+        }
+
+        #teamXIOverlay .xiNum {
+            font-size: 19px;
+            font-weight: 900;
+        }
+
+        #teamXIOverlay .xiPlayer {
+            font-size: 23px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            min-width: 0;
+            gap: 8px;
+        }
+
+        .xiRoles {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            flex: 0 0 auto;
+        }
+
+        .xiRole {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 21px;
+            padding: 0 7px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: .3px;
+            color: #05101f;
+            background: var(--xi-accent);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 0 10px color-mix(in srgb, var(--xi-accent) 22%, transparent);
+        }
+
+        .xiRoleC {
+            background: color-mix(in srgb, var(--xi-accent) 82%, #ffffff 18%);
+        }
+
+        .xiRoleWk {
+            background: color-mix(in srgb, var(--xi-primary) 52%, var(--xi-accent) 48%);
+            color: var(--xi-text);
         }
     </style>
 </head>
@@ -3353,44 +3676,40 @@
                 .sort((a, b) => {
                     return (safeBatsmen[a].order || 999) - (data.batsmen[b].order || 999);
                 });
-            const notOut = [];
-            const out = [];
-            const yetToBat = [];
+            const shownPlayers = new Set();
 
             battedPlayers.forEach(name => {
                 const s = data.batsmen[name];
 
                 const isNotOut = !s.out;
                 const isStriker = striker === name;
+                shownPlayers.add(name);
 
                 rows += `
                                                                                         <tr class="${isNotOut ? 'not-out-row' : ''} ${isStriker ? 'striker-row' : ''}">
                                                                                             <td class="player">
-                                                                                    ${name}
-                                                                                    ${isStriker ? '<span class="strike-star">★</span>' : ''}
+                                                                                    ${formatScorecardPlayer(name)}
+                                                                                    ${isStriker ? '<span class="strike-star">&#9733;</span>' : ''}
                                                                                             </td>
                                                                                             <td class="dismissal">
-                                                                                                ${isNotOut ? "not out" : (s.dismissal || "")}
+                                                                                                ${isNotOut ? "not out" : escapeHtml(s.dismissal || "")}
                                                                                             </td>
-                                                                                            <td class="runs">${s.runs}</td>
-                                                                                            <td class="balls">${s.balls}</td>
+                                                                                            <td class="runs">${escapeHtml(s.runs ?? 0)}</td>
+                                                                                            <td class="balls">${escapeHtml(s.balls ?? 0)}</td>
                                                                                         </tr>
                                                                                     `;
             });
 
             // Then show remaining as "Yet to Bat"
             players
-                .filter(name => {
-                    const s = data.batsmen[name];
-                    return !s || (s.runs === 0 && s.balls === 0 && !s.out);
-                })
+                .filter(name => !shownPlayers.has(name))
                 .forEach(name => {
                     rows += `
                                                                                         <tr>
-                                                                                            <td class="player">${name}</td>
+                                                                                            <td class="player">${formatScorecardPlayer(name)}</td>
                                                                                             <td class="dismissal">Yet to Bat</td>
-                                                                                            <td class="runs">—</td>
-                                                                                            <td class="balls">—</td>
+                                                                                            <td class="runs">&mdash;</td>
+                                                                                            <td class="balls">&mdash;</td>
                                                                                         </tr>
                                                                                     `;
                 });
@@ -3415,14 +3734,14 @@
             });
 
             container.innerHTML = `
-                                                                                            <div class="tv-card">
+                                                                                            <div class="tv-card scorecard-card">
                                                                                                 <div class="tv-header">
                                                                                                    <div class="espn-banner">MKTV</div>
                                                                                                     <div class="header-team">
-                                                                                                        <span>${(data.team || "").toUpperCase()}</span>
+                                                                                                        <span>${escapeHtml((data.team || "").toUpperCase())}</span>
                                                                                                     </div>
                                                                                                     <div class="header-overs">
-                                                                                                        ${data.overs} OVERS
+                                                                                                        ${escapeHtml(data.overs || "0.0")} OVERS
                                                                                                     </div>
                                                                                                 </div>
 
@@ -3441,14 +3760,14 @@
                                                                                                 </table>
 
                                                                                                 <div class="tv-footer">
-                                                                                                    <div>OVERS ${data.overs}</div>
-                                                                                                    <div class="tv-total">TOTAL ${data.score || "0/0"}</div>
+                                                                                                    <div>OVERS ${escapeHtml(data.overs || "0.0")}</div>
+                                                                                                    <div class="tv-total">TOTAL ${escapeHtml(data.score || "0/0")}</div>
                                                                                                 </div>
 
                                                                                                 ${showLastWicketBar ? `
                                                                                                     <div class="tv-lastwicket">
                                                                                                         <div class="lw-left">
-                                                                                                            LAST WICKET: ${data.lastWicket}
+                                                                                                            LAST WICKET: ${escapeHtml(data.lastWicket)}
                                                                                                         </div>
 
                                                                                                         <div class="lw-right">
@@ -3461,13 +3780,13 @@
                                                                                             `;
 
             setTimeout(() => {
-                document.querySelector('.tv-card')?.classList.add('show');
+                container.querySelector('.tv-card')?.classList.add('show');
             }, 50);
 
             container.style.display = "block";
 
             setTimeout(() => {
-                const card = document.querySelector('.tv-card');
+                const card = container.querySelector('.tv-card');
                 if (card) card.classList.remove('show');
 
                 const container = document.getElementById('fullScorecard');
@@ -3819,7 +4138,7 @@
             }
 
             if (brandingState.size) {
-                const requestedSize = Number(brandingState.size) * 2;
+                const requestedSize = Number(brandingState.size);
                 const boostedSize = Number.isFinite(requestedSize) && requestedSize > 0
                     ? (requestedSize >= 110 ? Math.round(requestedSize * 1.18) : requestedSize)
                     : brandingState.size;
@@ -4214,7 +4533,7 @@
                                 </div>
 
                                 <div class="xiPlayer">
-                                    ${formatPlayer(escapeHtml(p))}
+                                    ${formatPlayer(p)}
                                 </div>
 
                             </div>
@@ -4228,10 +4547,22 @@
         `;
         }
 
+        function formatScorecardPlayer(name) {
+            return escapeHtml(stripRoleTags(name));
+        }
+
         function formatPlayer(name) {
-            return name
-                .replace('(C)', '<span style="color:#dc2626;font-weight:900;"> (C)</span>')
-                .replace('(WK)', '<span style="color:#2563eb;font-weight:900;"> (WK)</span>');
+            const raw = String(name || "");
+            const roles = [];
+            if (/\(WK\)/i.test(raw)) {
+                roles.push('<span class="xiRole xiRoleWk">(WK)</span>');
+            }
+            if (/\(C\)/i.test(raw)) {
+                roles.push('<span class="xiRole xiRoleC">(C)</span>');
+            }
+
+            const cleanName = escapeHtml(stripRoleTags(raw));
+            return `${cleanName}${roles.length ? ` <span class="xiRoles">${roles.join("")}</span>` : ""}`;
         }
 
         function showBowlingCard(data) {
@@ -4249,22 +4580,22 @@
             (data.bowlers || []).forEach(b => {
                 rows += `
                                                                                     <tr>
-                                                                                        <td class="player">${b.name}</td>
-                                                                                        <td class="runs">${b.overs}</td>
-                                                                                        <td class="runs">${b.maidens ?? 0}</td>
-                                                                                        <td class="runs">${b.runs}</td>
-                                                                                        <td class="runs">${b.wickets}</td>
+                                                                                        <td class="player">${formatScorecardPlayer(b.name)}</td>
+                                                                                        <td class="runs">${escapeHtml(b.overs || "0.0")}</td>
+                                                                                        <td class="runs">${escapeHtml(b.maidens ?? 0)}</td>
+                                                                                        <td class="runs">${escapeHtml(b.runs ?? 0)}</td>
+                                                                                        <td class="runs">${escapeHtml(b.wickets ?? 0)}</td>
                                                                                     </tr>
                                                                                 `;
             });
 
             // ===== INJECT HTML (THIS WAS MISSING) =====
             el.innerHTML = `
-                                                                                <div class="tv-card">
+                                                                                <div class="tv-card bowling-card">
                                                                                     <div class="tv-header">
                                                                                         <div class="espn-banner">MKTV</div>
-                                                                                        <div class="header-team bowling-team">${(data.bowlingTeam || "").toUpperCase()}</div>
-                                                                                        <div class="header-overs">${data.overs} OVERS</div>
+                                                                                        <div class="header-team bowling-team"><span>${escapeHtml((data.bowlingTeam || "BOWLING").toUpperCase())}</span></div>
+                                                                                        <div class="header-overs">${escapeHtml(data.overs || "0.0")} OVERS</div>
                                                                                     </div>
 
                                                                                     <table class="tv-table">
