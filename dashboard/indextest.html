@@ -4852,7 +4852,8 @@
             <hr>
             <h3>Full Scoreboard</h3>
             <button onclick="showScorecard()">Show Scorecard</button>
-            <button onclick="hideFullScorecard()" style="background:#991b1b">Hide Scorecard</button>
+            <button onclick="showBowlingCard()">Show Bowling Card</button>
+            <button onclick="hideFullScorecard()" style="background:#991b1b">Hide Scorecards</button>
         </div>
     </div>
     <!-- LOG PANEL UI -->
@@ -5148,7 +5149,8 @@
                 renderExtrasBreakdown();
                 renderFallOfWickets();
                 isLoadingFromFirebase = false;
-                updateLiveDisplay();
+                updateLiveDisplay({ forceSend: true, skipPersistence: true });
+                setTimeout(() => pushOverlaySnapshot('firebase-restore'), 250);
                 console.log("✅ Full dashboard restore complete");
             }, 500);
         }
@@ -5208,7 +5210,10 @@
         window.addEventListener('keydown', e => {
             if (e.key && e.key.toLowerCase() === 'l') toggleLog();
         });
-        pusher.connection.bind('connected', () => log('PUSHER CONNECTED'));
+        pusher.connection.bind('connected', () => {
+            log('PUSHER CONNECTED');
+            setTimeout(() => pushOverlaySnapshot('pusher-connected'), 600);
+        });
         pusher.connection.bind('connecting', () => log('PUSHER CONNECTING'));
         pusher.connection.bind('disconnected', () => log('PUSHER DISCONNECTED'));
 
@@ -6133,6 +6138,38 @@
             }
         }
 
+        function buildMatchEventPayload() {
+            return {
+                teamA: teamA?.value || "",
+                teamB: teamB?.value || "",
+                teamALogo: document.getElementById('teamALogo')?.value || "",
+                teamBLogo: document.getElementById('teamBLogo')?.value || "",
+                ...getMatchTeamDesign(),
+                batting: batting?.value || "",
+                innings: document.getElementById('innings')?.value || "1",
+                target: document.getElementById('target')?.value || "",
+                maxOvers: document.getElementById('maxOvers')?.value || "",
+                teamAPlayers: (teamAPlayers?.value || "").split('\n'),
+                teamBPlayers: (teamBPlayers?.value || "").split('\n')
+            };
+        }
+
+        function pushBrandingSnapshot() {
+            const logo = document.getElementById('brandingLogoModal')?.value || "";
+            const size = document.getElementById('brandingSizeModal')?.value || "";
+            if (!logo) return;
+            sendEvent('branding', { logo, size });
+        }
+
+        function pushOverlaySnapshot(reason = 'restore') {
+            if (isLoadingFromFirebase) return;
+            console.log("PUSH OVERLAY SNAPSHOT", reason);
+            sendEvent('match', buildMatchEventPayload());
+            lastSentScore = "";
+            updateLiveDisplay({ forceSend: true, skipPersistence: true });
+            pushBrandingSnapshot();
+        }
+
         function populateSecondInningsTarget(force = false) {
             const inningsSelect = document.getElementById('innings');
             const targetInput = document.getElementById('target');
@@ -6210,7 +6247,9 @@
 
 
         /* ======= Update Live Display =========== */
-        function updateLiveDisplay() {
+        function updateLiveDisplay(options = {}) {
+            const forceSend = options === true || options?.forceSend === true;
+            const skipPersistence = options?.skipPersistence === true;
             captureFirstInningsTotal();
 
             const strikerName = document.getElementById('striker')?.value || "";
@@ -6222,7 +6261,7 @@
                 "|" + strikerName + "|" + nonStrikerName + "|" + bowlerName +
                 "|" + liveHistory.length;
 
-            if (currentState === lastSentScore) return;
+            if (!forceSend && currentState === lastSentScore) return;
 
             lastSentScore = currentState;
             const liveChaseMetrics = getChaseMetrics();
@@ -6386,8 +6425,10 @@
             checkPartnershipMilestones();
             renderCurrentBatters();
             renderLastWicket();
-            autoSaveMatch();
-            saveMatchToFirebase();
+            if (!skipPersistence) {
+                autoSaveMatch();
+                saveMatchToFirebase();
+            }
 
             /* =========================================
                RIGHT SIDE LIVE INFO
@@ -8916,7 +8957,14 @@ CURRENT OVER SUMMARY
             sendFullScorecard();
         }
 
-        function sendFullScorecard() {
+        function showBowlingCard() {
+            sendEvent('fullScorecard', {
+                ...buildFullScorecardPayload(),
+                bowlingOnly: true
+            });
+        }
+
+        function buildFullScorecardPayload() {
             const playingXI = (
                 (batting.value === teamA.value
                     ? teamAPlayers.value
@@ -9002,7 +9050,7 @@ CURRENT OVER SUMMARY
                 };
             }
 
-            sendEvent('fullScorecard', {
+            return {
                 team: batting.value,
                 overs: calculateOvers(),
                 score: liveTotal + "/" + liveWickets,
@@ -9027,7 +9075,11 @@ CURRENT OVER SUMMARY
                     extrasStats.noball +
                     extrasStats.bye +
                     extrasStats.legbye
-            });
+            };
+        }
+
+        function sendFullScorecard() {
+            sendEvent('fullScorecard', buildFullScorecardPayload());
         }
 
         function hideFullScorecard() {
@@ -10150,10 +10202,15 @@ CURRENT OVER SUMMARY
             ">
                     Show Scorecard
                 </button>
+                <button class="modal-action-primary" onclick="
+                showBowlingCard()
+            ">
+                    Show Bowling Card
+                </button>
                 <button class="modal-action-danger" onclick="
                 hideFullScorecard()
             ">
-                    Hide Scorecard
+                    Hide Scorecards
                 </button>
             </div>
             <button class="close-modal-btn modal-action-neutral"
