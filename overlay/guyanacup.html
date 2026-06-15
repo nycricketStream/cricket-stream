@@ -169,7 +169,7 @@
 
         .lt-team {
             font-size: 10px;
-            font-weight: 700;
+            font-weight: 500;
             color: color-mix(in srgb, var(--batting-accent) 70%, #fff 30%);
             letter-spacing: 1.2px;
             line-height: 14px;
@@ -207,7 +207,7 @@
 
         .lt-role {
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 500;
             color: color-mix(in srgb, var(--batting-accent) 42%, #fff 58%);
             line-height: 16px;
         }
@@ -2852,15 +2852,15 @@
 
         .tv-card.scorecard-card.full-screen-scorecard .tv-table td {
             height: 43px;
-            padding: 0 16px;
+            padding: 0 14px;
             border-bottom: 1px solid color-mix(in srgb, var(--batting-accent) 42%, transparent);
             background:
                 linear-gradient(90deg,
                     color-mix(in srgb, var(--batting-primary) 86%, #020617 14%),
                     color-mix(in srgb, var(--batting-primary) 72%, #020617 28%)) !important;
             color: var(--batting-text);
-            font-size: clamp(24px, 1.72vw, 32px);
-            font-weight: 900;
+            font-size: clamp(22px, 1.55vw, 29px);
+            font-weight: 500;
             line-height: 1;
             text-shadow: 0 2px 5px rgba(0,0,0,.5);
         }
@@ -2877,7 +2877,7 @@
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-player {
-            width: 28%;
+            width: 31%;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-dismissal {
@@ -2885,25 +2885,31 @@
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-bowler {
-            width: 26%;
+            width: 31%;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-runs {
-            width: 11%;
+            width: 7%;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-balls {
-            width: 11%;
+            width: 7%;
         }
 
-        .tv-card.scorecard-card.full-screen-scorecard .player,
+        .tv-card.scorecard-card.full-screen-scorecard .player {
+            color: inherit;
+            font-size: inherit;
+            font-weight: 950;
+            text-transform: uppercase;
+        }
+
         .tv-card.scorecard-card.full-screen-scorecard .dismissal,
         .tv-card.scorecard-card.full-screen-scorecard .bowler,
         .tv-card.scorecard-card.full-screen-scorecard .runs,
         .tv-card.scorecard-card.full-screen-scorecard .balls {
             color: inherit;
             font-size: inherit;
-            font-weight: inherit;
+            font-weight: 500;
             text-transform: uppercase;
         }
 
@@ -2911,13 +2917,14 @@
         .tv-card.scorecard-card.full-screen-scorecard .bowler {
             color: color-mix(in srgb, var(--batting-text) 88%, var(--batting-accent) 12%);
             text-transform: uppercase;
-            font-size: clamp(18px, 1.35vw, 25px);
+            font-size: clamp(16px, 1.18vw, 22px);
+            letter-spacing: .3px;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .runs,
         .tv-card.scorecard-card.full-screen-scorecard .balls {
-            padding-left: 6px;
-            padding-right: 10px;
+            padding-left: 2px;
+            padding-right: 2px;
             text-align: center;
             font-variant-numeric: tabular-nums;
         }
@@ -2995,10 +3002,10 @@
 
         .scorecard-hero-footer {
             display: grid;
-            grid-template-columns: 220px 220px minmax(0, 1fr);
+            grid-template-columns: minmax(0, 1fr) 300px;
             align-items: center;
-            gap: 16px;
-            padding: 0 58px;
+            gap: 0;
+            padding: 0;
             background:
                 linear-gradient(90deg,
                     color-mix(in srgb, var(--batting-accent) 86%, #fff 14%) 0%,
@@ -3008,25 +3015,38 @@
             border-top: 3px solid color-mix(in srgb, var(--batting-primary) 60%, #fff 40%);
         }
 
+        .scorecard-footer-table {
+            display: grid;
+            grid-template-columns: 31% 24% 31% 7% 7%;
+            align-items: center;
+            height: 100%;
+            padding: 0 0 0 58px;
+            min-width: 0;
+        }
+
         .scorecard-footer-metric {
-            font-size: 30px;
+            padding: 0 14px;
+            font-size: 28px;
             font-weight: 900;
             text-transform: uppercase;
+            white-space: nowrap;
         }
 
         .scorecard-footer-total {
-            justify-self: end;
-            min-width: 240px;
+            justify-self: stretch;
+            min-width: 0;
+            width: 180px;
             padding: 0;
             border: 0;
             background: transparent;
-            font-size: 56px;
+            font-size: 48px;
             font-weight: 900;
             line-height: 1;
-            text-align: right;
+            text-align: center;
             font-variant-numeric: tabular-nums;
             letter-spacing: 1px;
             text-shadow: 0 3px 10px rgba(0,0,0,.22);
+            transform: translateX(-42px);
         }
 
         .last-wicket::before {
@@ -4460,17 +4480,17 @@
                                                                                     `;
             });
 
-            // Then show remaining as "Yet to Bat"
+            // Then show remaining players by name only.
             players
                 .filter(name => !shownPlayers.has(name))
                 .forEach(name => {
                     rows += `
                                                                                         <tr>
                                                                                             <td class="player">${formatScorecardBatter(name)}</td>
-                                                                                            <td class="dismissal">Yet to Bat</td>
+                                                                                            <td class="dismissal"></td>
                                                                                             <td class="bowler"></td>
-                                                                                            <td class="runs">&mdash;</td>
-                                                                                            <td class="balls">&mdash;</td>
+                                                                                            <td class="runs"></td>
+                                                                                            <td class="balls"></td>
                                                                                         </tr>
                                                                                     `;
                 });
@@ -4539,9 +4559,14 @@
                                                                                                 </div>
 
                                                                                                 <div class="scorecard-hero-footer">
-                                                                                                    <div class="scorecard-footer-metric">EXTRAS ${escapeHtml(extras)}</div>
-                                                                                                    <div class="scorecard-footer-metric">OVERS ${escapeHtml(data.overs || "0.0")}</div>
-                                                                                                    <div class="scorecard-footer-total">${escapeHtml(scoreText)}</div>
+                                                                                                    <div class="scorecard-footer-table">
+                                                                                                        <div class="scorecard-footer-metric">EXTRAS ${escapeHtml(extras)}</div>
+                                                                                                        <div class="scorecard-footer-metric">OVERS ${escapeHtml(data.overs || "0.0")}</div>
+                                                                                                        <div></div>
+                                                                                                        <div class="scorecard-footer-total">${escapeHtml(scoreText)}</div>
+                                                                                                        <div></div>
+                                                                                                    </div>
+                                                                                                    <div></div>
                                                                                                 </div>
 
                                                                                                 ${showLastWicketBar ? `
