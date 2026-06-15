@@ -9063,6 +9063,8 @@ CURRENT OVER SUMMARY
 
             const strikerName = document.getElementById('striker')?.value || "";
             const nonStrikerName = document.getElementById('nonStriker')?.value || "";
+            const isTeamABatting = batting.value === teamA.value;
+            const teamDesign = getMatchTeamDesign();
 
             let batsmenData = Object.fromEntries(
                 Object.entries(batsmanStats).map(([name, s]) => [
@@ -9104,6 +9106,11 @@ CURRENT OVER SUMMARY
 
             return {
                 team: batting.value,
+                teamLogo: isTeamABatting ? (teamALogo.value || "") : (teamBLogo.value || ""),
+                teamPrimaryColor: isTeamABatting ? teamDesign.teamAPrimaryColor : teamDesign.teamBPrimaryColor,
+                teamAccentColor: isTeamABatting ? teamDesign.teamAAccentColor : teamDesign.teamBAccentColor,
+                teamTextColor: isTeamABatting ? teamDesign.teamATextColor : teamDesign.teamBTextColor,
+                ...teamDesign,
                 overs: calculateOvers(),
                 score: liveTotal + "/" + liveWickets,
 
