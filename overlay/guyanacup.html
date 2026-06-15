@@ -2835,6 +2835,7 @@
         .scorecard-table-wrap {
             min-width: 0;
             padding: 18px 0 14px 58px;
+            filter: drop-shadow(0 12px 18px rgba(0,0,0,.22));
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .tv-table {
@@ -2864,6 +2865,10 @@
             text-shadow: 0 2px 5px rgba(0,0,0,.5);
         }
 
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table td:first-child {
+            border-left: 4px solid color-mix(in srgb, var(--batting-accent) 82%, var(--batting-text) 18%);
+        }
+
         .tv-card.scorecard-card.full-screen-scorecard .tv-table tbody tr:nth-child(even) td {
             background:
                 linear-gradient(90deg,
@@ -2872,20 +2877,28 @@
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-player {
-            width: 29%;
+            width: 28%;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-dismissal {
-            width: 47%;
+            width: 24%;
         }
 
-        .tv-card.scorecard-card.full-screen-scorecard .col-runs,
+        .tv-card.scorecard-card.full-screen-scorecard .col-bowler {
+            width: 26%;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .col-runs {
+            width: 11%;
+        }
+
         .tv-card.scorecard-card.full-screen-scorecard .col-balls {
-            width: 12%;
+            width: 11%;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .player,
         .tv-card.scorecard-card.full-screen-scorecard .dismissal,
+        .tv-card.scorecard-card.full-screen-scorecard .bowler,
         .tv-card.scorecard-card.full-screen-scorecard .runs,
         .tv-card.scorecard-card.full-screen-scorecard .balls {
             color: inherit;
@@ -2894,7 +2907,8 @@
             text-transform: uppercase;
         }
 
-        .tv-card.scorecard-card.full-screen-scorecard .dismissal {
+        .tv-card.scorecard-card.full-screen-scorecard .dismissal,
+        .tv-card.scorecard-card.full-screen-scorecard .bowler {
             color: color-mix(in srgb, var(--batting-text) 88%, var(--batting-accent) 12%);
             text-transform: uppercase;
             font-size: clamp(18px, 1.35vw, 25px);
@@ -2902,7 +2916,9 @@
 
         .tv-card.scorecard-card.full-screen-scorecard .runs,
         .tv-card.scorecard-card.full-screen-scorecard .balls {
-            text-align: right;
+            padding-left: 6px;
+            padding-right: 10px;
+            text-align: center;
             font-variant-numeric: tabular-nums;
         }
 
@@ -2919,7 +2935,9 @@
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .not-out-row .dismissal,
-        .tv-card.scorecard-card.full-screen-scorecard .striker-row .dismissal {
+        .tv-card.scorecard-card.full-screen-scorecard .not-out-row .bowler,
+        .tv-card.scorecard-card.full-screen-scorecard .striker-row .dismissal,
+        .tv-card.scorecard-card.full-screen-scorecard .striker-row .bowler {
             color: var(--batting-text) !important;
         }
 
@@ -2998,15 +3016,17 @@
 
         .scorecard-footer-total {
             justify-self: end;
-            min-width: 260px;
-            padding: 8px 18px;
-            border: 2px solid color-mix(in srgb, var(--batting-primary) 45%, #fff 55%);
-            background: rgba(255,255,255,.12);
-            font-size: 48px;
+            min-width: 240px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            font-size: 56px;
             font-weight: 900;
             line-height: 1;
             text-align: right;
             font-variant-numeric: tabular-nums;
+            letter-spacing: 1px;
+            text-shadow: 0 3px 10px rgba(0,0,0,.22);
         }
 
         .last-wicket::before {
@@ -4421,6 +4441,7 @@
 
                 const isNotOut = !s.out;
                 const isStriker = striker === name;
+                const dismissalParts = formatScorecardDismissal(isNotOut ? "not out" : (s.dismissal || ""));
                 shownPlayers.add(name);
 
                 rows += `
@@ -4430,8 +4451,9 @@
                                                                                     ${isStriker ? '<span class="strike-star">&#9733;</span>' : ''}
                                                                                             </td>
                                                                                             <td class="dismissal">
-                                                                                                ${isNotOut ? "not out" : escapeHtml(s.dismissal || "")}
+                                                                                                ${dismissalParts.dismissal}
                                                                                             </td>
+                                                                                            <td class="bowler">${dismissalParts.bowler}</td>
                                                                                             <td class="runs">${escapeHtml(s.runs ?? 0)}</td>
                                                                                             <td class="balls">${escapeHtml(s.balls ?? 0)}</td>
                                                                                         </tr>
@@ -4446,6 +4468,7 @@
                                                                                         <tr>
                                                                                             <td class="player">${formatScorecardBatter(name)}</td>
                                                                                             <td class="dismissal">Yet to Bat</td>
+                                                                                            <td class="bowler"></td>
                                                                                             <td class="runs">&mdash;</td>
                                                                                             <td class="balls">&mdash;</td>
                                                                                         </tr>
@@ -4499,6 +4522,7 @@
                                                                                                                 <tr>
                                                                                                                     <th class="col-player">PLAYER</th>
                                                                                                                     <th class="col-dismissal"></th>
+                                                                                                                    <th class="col-bowler"></th>
                                                                                                                     <th class="col-runs">RUNS</th>
                                                                                                                     <th class="col-balls">BALLS</th>
                                                                                                                 </tr>
@@ -5367,6 +5391,41 @@
                 : raw;
             const star = String(name || "").includes("*") ? "*" : "";
             return escapeHtml((displayName + star).toUpperCase());
+        }
+
+        function formatScorecardShortName(name) {
+            const clean = stripRoleTags(String(name || "").replace(/\*/g, ""));
+            const parts = clean.split(/\s+/).filter(Boolean);
+            if (parts.length > 1) return `${parts[0].charAt(0)}. ${parts[parts.length - 1]}`.toUpperCase();
+            return clean.toUpperCase();
+        }
+
+        function formatScorecardDismissal(text) {
+            const raw = String(text || "").replace(/\s+/g, " ").trim();
+            if (!raw || /not\s*out/i.test(raw)) {
+                return { dismissal: "NOT OUT", bowler: "" };
+            }
+            if (/yet\s*to\s*bat/i.test(raw)) {
+                return { dismissal: "YET TO BAT", bowler: "" };
+            }
+
+            const bowledBy = raw.match(/\bb\s+(.+)$/i);
+            const bowlerName = bowledBy ? bowledBy[1].trim() : "";
+            const beforeBowler = bowledBy ? raw.slice(0, bowledBy.index).trim() : raw;
+            const bowler = bowlerName ? `B ${formatScorecardShortName(bowlerName)}` : "";
+            let dismissal = beforeBowler;
+
+            const caughtBy = beforeBowler.match(/^c\s+(.+)$/i);
+            if (caughtBy) dismissal = `C ${formatScorecardShortName(caughtBy[1])}`;
+            else if (!beforeBowler && bowlerName) dismissal = "BOWLED";
+            else if (/^lbw$/i.test(beforeBowler)) dismissal = "LBW";
+            else if (/^run\s*out/i.test(beforeBowler)) dismissal = beforeBowler.toUpperCase();
+            else dismissal = beforeBowler.toUpperCase();
+
+            return {
+                dismissal: escapeHtml(dismissal),
+                bowler: escapeHtml(bowler)
+            };
         }
 
         function formatPlayer(name) {
