@@ -2727,6 +2727,280 @@
             text-shadow: 0 3px 14px rgba(0,0,0,.55);
         }
 
+        #fullScorecard {
+            position: absolute;
+            inset: 0;
+            z-index: 9002;
+            pointer-events: none;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard {
+            width: min(1500px, calc(100vw - 96px));
+            height: min(790px, calc(100vh - 110px));
+            max-width: none;
+            max-height: none;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -48%) scale(.96);
+            display: grid;
+            grid-template-rows: 104px minmax(0, 1fr) 74px;
+            overflow: hidden;
+            border: 2px solid color-mix(in srgb, var(--batting-accent) 72%, #fff 28%);
+            border-radius: 4px;
+            background:
+                linear-gradient(135deg,
+                    color-mix(in srgb, var(--batting-primary) 78%, #150015 22%) 0%,
+                    color-mix(in srgb, var(--batting-primary) 88%, #030712 12%) 52%,
+                    color-mix(in srgb, var(--batting-accent) 35%, var(--batting-primary) 65%) 100%);
+            box-shadow: 0 34px 100px rgba(0,0,0,.62);
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .scorecard-hero-header {
+            display: grid;
+            grid-template-columns: 122px minmax(0, 1fr) 260px;
+            align-items: stretch;
+            background:
+                linear-gradient(90deg,
+                    color-mix(in srgb, var(--batting-accent) 82%, #ffff66 18%) 0%,
+                    color-mix(in srgb, var(--batting-accent) 70%, #fff56a 30%) 64%,
+                    color-mix(in srgb, var(--batting-primary) 25%, #fff56a 75%) 100%);
+            color: color-mix(in srgb, var(--batting-primary) 82%, #111 18%);
+        }
+
+        .scorecard-header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .scorecard-header-logo img {
+            width: 82px;
+            height: 82px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,.35));
+        }
+
+        .scorecard-title-wrap {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 0;
+            padding: 0 24px;
+            text-transform: uppercase;
+        }
+
+        .scorecard-team-title {
+            font-size: clamp(48px, 4.7vw, 78px);
+            font-weight: 900;
+            letter-spacing: 1px;
+            line-height: .9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .scorecard-subtitle {
+            margin-top: 8px;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+        }
+
+        .scorecard-over-pill {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-self: center;
+            justify-self: end;
+            margin-right: 26px;
+            min-width: 190px;
+            height: 48px;
+            padding: 0 18px;
+            color: #fff;
+            background: color-mix(in srgb, var(--batting-primary) 78%, #09090b 22%);
+            border: 2px solid color-mix(in srgb, var(--batting-primary) 65%, #fff 35%);
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .scorecard-main {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 310px;
+            min-height: 0;
+            background:
+                linear-gradient(90deg,
+                    color-mix(in srgb, var(--batting-primary) 88%, #090018 12%) 0%,
+                    color-mix(in srgb, var(--batting-primary) 72%, #000 28%) 72%,
+                    color-mix(in srgb, var(--batting-accent) 22%, var(--batting-primary) 78%) 100%);
+        }
+
+        .scorecard-table-wrap {
+            min-width: 0;
+            padding: 16px 0 12px 64px;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table {
+            width: 100%;
+            height: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            background: transparent;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table thead {
+            display: none;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table td {
+            height: 42px;
+            padding: 0 14px;
+            border-bottom: 1px solid rgba(255,255,255,.34);
+            background: transparent !important;
+            color: var(--batting-text);
+            font-size: clamp(23px, 1.75vw, 33px);
+            font-weight: 900;
+            line-height: 1;
+            text-shadow: 0 2px 4px rgba(0,0,0,.36);
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .col-player {
+            width: 34%;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .col-dismissal {
+            width: 42%;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .col-runs,
+        .tv-card.scorecard-card.full-screen-scorecard .col-balls {
+            width: 12%;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .player,
+        .tv-card.scorecard-card.full-screen-scorecard .dismissal,
+        .tv-card.scorecard-card.full-screen-scorecard .runs,
+        .tv-card.scorecard-card.full-screen-scorecard .balls {
+            color: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .dismissal {
+            color: color-mix(in srgb, var(--batting-text) 84%, var(--batting-accent) 16%);
+            text-transform: uppercase;
+            font-size: clamp(18px, 1.35vw, 25px);
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .runs,
+        .tv-card.scorecard-card.full-screen-scorecard .balls {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .not-out-row td,
+        .tv-card.scorecard-card.full-screen-scorecard .striker-row td {
+            background: color-mix(in srgb, var(--batting-accent) 86%, #fff 14%) !important;
+            color: color-mix(in srgb, var(--batting-primary) 82%, #111 18%) !important;
+            border-top: 2px solid color-mix(in srgb, var(--batting-primary) 45%, #fff 55%);
+            border-bottom: 2px solid color-mix(in srgb, var(--batting-primary) 45%, #fff 55%);
+            text-shadow: none;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .not-out-row .dismissal,
+        .tv-card.scorecard-card.full-screen-scorecard .striker-row .dismissal {
+            color: color-mix(in srgb, var(--batting-primary) 72%, #111 28%) !important;
+        }
+
+        .scorecard-logo-panel {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+            margin: 36px 42px 36px 16px;
+            border: 2px solid color-mix(in srgb, var(--batting-accent) 75%, #fff 25%);
+            background:
+                radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--batting-accent) 32%, transparent) 0%, transparent 56%),
+                linear-gradient(135deg, rgba(255,255,255,.08), rgba(0,0,0,.24));
+            overflow: hidden;
+        }
+
+        .scorecard-logo-panel::before,
+        .scorecard-logo-panel::after {
+            content: "";
+            position: absolute;
+            inset: 18px;
+            border: 1px solid rgba(255,255,255,.16);
+            transform: skewX(-14deg);
+        }
+
+        .scorecard-logo-panel::after {
+            inset: 42px;
+            opacity: .55;
+        }
+
+        .scorecard-logo-panel img {
+            position: relative;
+            width: 76%;
+            height: 76%;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 16px rgba(0,0,0,.42));
+            z-index: 1;
+        }
+
+        .scorecard-logo-fallback {
+            position: relative;
+            z-index: 1;
+            padding: 18px;
+            text-align: center;
+            color: var(--batting-text);
+            font-size: 34px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .scorecard-hero-footer {
+            display: grid;
+            grid-template-columns: 220px 220px minmax(0, 1fr);
+            align-items: center;
+            gap: 16px;
+            padding: 0 64px;
+            background:
+                linear-gradient(90deg,
+                    color-mix(in srgb, var(--batting-accent) 86%, #fff 14%) 0%,
+                    color-mix(in srgb, var(--batting-accent) 74%, #fff066 26%) 70%,
+                    color-mix(in srgb, var(--batting-primary) 20%, #fff066 80%) 100%);
+            color: color-mix(in srgb, var(--batting-primary) 78%, #111 22%);
+            border-top: 3px solid color-mix(in srgb, var(--batting-primary) 60%, #fff 40%);
+        }
+
+        .scorecard-footer-metric {
+            font-size: 28px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .scorecard-footer-total {
+            justify-self: end;
+            min-width: 260px;
+            padding: 8px 18px;
+            border: 2px solid color-mix(in srgb, var(--batting-primary) 45%, #fff 55%);
+            background: rgba(255,255,255,.12);
+            font-size: 48px;
+            font-weight: 900;
+            line-height: 1;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
         .last-wicket::before {
             content: "LAST WICKET:";
             color: #facc15;
@@ -4186,35 +4460,54 @@
                                                                                 `;
             });
 
+            const isTeamABatting = (data.team || overlayState.battingTeam) === overlayState.teamA;
+            const fallbackColors = isTeamABatting ? overlayState.teamAColors : overlayState.teamBColors;
+            const primary = normalizeHexColor(data.teamPrimaryColor, fallbackColors.primary);
+            const accent = normalizeHexColor(data.teamAccentColor, fallbackColors.accent);
+            const text = normalizeHexColor(data.teamTextColor, fallbackColors.text || "#FFFFFF");
+            const teamLogo = data.teamLogo || (isTeamABatting ? overlayState.teamALogo : overlayState.teamBLogo);
+            const scoreText = String(data.score || "0/0").replace("/", "-");
+            const cardStyle = `--batting-primary:${primary};--batting-accent:${accent};--batting-text:${text};`;
+
             container.innerHTML = `
-                                                                                            <div class="tv-card scorecard-card">
-                                                                                                <div class="tv-header">
-                                                                                                   <div class="espn-banner">MKTV</div>
-                                                                                                    <div class="header-team">
-                                                                                                        <span>${escapeHtml((data.team || "").toUpperCase())}</span>
+                                                                                            <div class="tv-card scorecard-card full-screen-scorecard" style="${cardStyle}">
+                                                                                                <div class="scorecard-hero-header">
+                                                                                                    <div class="scorecard-header-logo">
+                                                                                                        ${teamLogo ? `<img src="${escapeHtml(teamLogo)}" alt="">` : ""}
                                                                                                     </div>
-                                                                                                    <div class="header-overs">
-                                                                                                        ${escapeHtml(data.overs || "0.0")} OVERS
+                                                                                                    <div class="scorecard-title-wrap">
+                                                                                                        <div class="scorecard-team-title">${escapeHtml((data.team || "").toUpperCase())}</div>
+                                                                                                        <div class="scorecard-subtitle">BATTING SCORECARD</div>
+                                                                                                    </div>
+                                                                                                    <div class="scorecard-over-pill">${escapeHtml(data.overs || "0.0")} OVERS</div>
+                                                                                                </div>
+
+                                                                                                <div class="scorecard-main">
+                                                                                                    <div class="scorecard-table-wrap">
+                                                                                                        <table class="tv-table">
+                                                                                                            <thead>
+                                                                                                                <tr>
+                                                                                                                    <th class="col-player">PLAYER</th>
+                                                                                                                    <th class="col-dismissal"></th>
+                                                                                                                    <th class="col-runs">RUNS</th>
+                                                                                                                    <th class="col-balls">BALLS</th>
+                                                                                                                </tr>
+                                                                                                            </thead>
+                                                                                                            <tbody>
+                                                                                                                ${rows}
+                                                                                                            </tbody>
+                                                                                                        </table>
+                                                                                                    </div>
+
+                                                                                                    <div class="scorecard-logo-panel">
+                                                                                                        ${teamLogo ? `<img src="${escapeHtml(teamLogo)}" alt="">` : `<div class="scorecard-logo-fallback">${escapeHtml(data.team || "TEAM")}</div>`}
                                                                                                     </div>
                                                                                                 </div>
 
-                                                                                                <table class="tv-table">
-                                                                                                    <thead>
-                                                                                                        <tr>
-                                                                                                            <th class="col-player">PLAYER</th>
-                                                                                                            <th class="col-dismissal"></th>
-                                                                                                            <th class="col-runs">RUNS</th>
-                                                                                                            <th class="col-balls">BALLS</th>
-                                                                                                        </tr>
-                                                                                                    </thead>
-                                                                                                    <tbody>
-                                                                                                        ${rows}
-                                                                                                    </tbody>
-                                                                                                </table>
-
-                                                                                                <div class="tv-footer">
-                                                                                                    <div>OVERS ${escapeHtml(data.overs || "0.0")}</div>
-                                                                                                    <div class="tv-total">TOTAL ${escapeHtml(data.score || "0/0")}</div>
+                                                                                                <div class="scorecard-hero-footer">
+                                                                                                    <div class="scorecard-footer-metric">EXTRAS ${escapeHtml(extras)}</div>
+                                                                                                    <div class="scorecard-footer-metric">OVERS ${escapeHtml(data.overs || "0.0")}</div>
+                                                                                                    <div class="scorecard-footer-total">${escapeHtml(scoreText)}</div>
                                                                                                 </div>
 
                                                                                                 ${showLastWicketBar ? `
@@ -4237,25 +4530,6 @@
             }, 50);
 
             container.style.display = "block";
-
-            setTimeout(() => {
-                const card = container.querySelector('.tv-card');
-                if (card) card.classList.remove('show');
-
-                const container = document.getElementById('fullScorecard');
-                if (container) container.style.display = "none";
-
-                if (!data.bowlers || data.bowlers.length === 0) {
-                    if (scoreboardBar) scoreboardBar.classList.add("show");
-                }
-                if (scorecardDim) scorecardDim.classList.remove("show");
-
-                // CALL AFTER UI RESET
-                setTimeout(() => {
-                    showBowlingCard(data);
-                }, 100);
-
-            }, 10000);
         });
 
         let fullscreenSponsorTimer = null;
