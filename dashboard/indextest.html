@@ -8905,12 +8905,20 @@ CURRENT OVER SUMMARY
         }
 
         function buildMatchResultPayload() {
-            const teamAName = teamA?.value || "Team A";
-            const teamBName = teamB?.value || "Team B";
-            const battingTeam = batting?.value || teamAName;
+            const teamAInput = document.getElementById("teamA");
+            const teamBInput = document.getElementById("teamB");
+            const battingInput = document.getElementById("batting");
+            const inningsInput = document.getElementById("innings");
+            const targetInput = document.getElementById("target");
+            const teamALogoInput = document.getElementById("teamALogo");
+            const teamBLogoInput = document.getElementById("teamBLogo");
+
+            const teamAName = teamAInput?.value || "Team A";
+            const teamBName = teamBInput?.value || "Team B";
+            const battingTeam = battingInput?.value || teamAName;
             const bowlingTeam = battingTeam === teamAName ? teamBName : teamAName;
-            const targetRuns = parseInt(target?.value || 0, 10);
-            const isSecondInnings = innings?.value === "2" && Number.isFinite(targetRuns) && targetRuns > 0;
+            const targetRuns = parseInt(targetInput?.value || 0, 10);
+            const isSecondInnings = inningsInput?.value === "2" && Number.isFinite(targetRuns) && targetRuns > 0;
             let winner = "";
             let resultText = "Match Result";
 
@@ -8931,11 +8939,11 @@ CURRENT OVER SUMMARY
             return {
                 teamA: teamAName,
                 teamB: teamBName,
-                teamALogo: teamALogo?.value || "",
-                teamBLogo: teamBLogo?.value || "",
+                teamALogo: teamALogoInput?.value || "",
+                teamBLogo: teamBLogoInput?.value || "",
                 ...getMatchTeamDesign(),
                 batting: battingTeam,
-                innings: innings?.value || "1",
+                innings: inningsInput?.value || "1",
                 winner,
                 resultText,
                 score: `${liveTotal}/${liveWickets}`,
