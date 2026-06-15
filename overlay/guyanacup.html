@@ -2732,11 +2732,14 @@
             inset: 0;
             z-index: 9002;
             pointer-events: none;
+            background:
+                radial-gradient(circle at 50% 48%, rgba(255,255,255,.10) 0%, rgba(0,0,0,.20) 38%, rgba(0,0,0,.72) 100%),
+                linear-gradient(180deg, rgba(6,10,18,.72), rgba(0,0,0,.86));
         }
 
         .tv-card.scorecard-card.full-screen-scorecard {
-            width: min(1500px, calc(100vw - 96px));
-            height: min(790px, calc(100vh - 110px));
+            width: min(1540px, calc(100vw - 110px));
+            height: min(770px, calc(100vh - 124px));
             max-width: none;
             max-height: none;
             position: absolute;
@@ -2744,16 +2747,18 @@
             top: 50%;
             transform: translate(-50%, -48%) scale(.96);
             display: grid;
-            grid-template-rows: 104px minmax(0, 1fr) 74px;
+            grid-template-rows: 104px minmax(0, 1fr) 78px;
             overflow: hidden;
-            border: 2px solid color-mix(in srgb, var(--batting-accent) 72%, #fff 28%);
-            border-radius: 4px;
+            border: 2px solid color-mix(in srgb, var(--batting-accent) 70%, #ffffff 30%);
+            border-radius: 10px;
             background:
+                linear-gradient(90deg, rgba(255,255,255,.06), transparent 12%, transparent 88%, rgba(255,255,255,.07)),
                 linear-gradient(135deg,
                     color-mix(in srgb, var(--batting-primary) 78%, #150015 22%) 0%,
                     color-mix(in srgb, var(--batting-primary) 88%, #030712 12%) 52%,
                     color-mix(in srgb, var(--batting-accent) 35%, var(--batting-primary) 65%) 100%);
-            box-shadow: 0 34px 100px rgba(0,0,0,.62);
+            box-shadow: 0 34px 100px rgba(0,0,0,.78);
+            font-family: 'Roboto Condensed', 'Oswald', 'Arial Narrow', Arial, sans-serif !important;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard.show {
@@ -2763,7 +2768,7 @@
 
         .scorecard-hero-header {
             display: grid;
-            grid-template-columns: 122px minmax(0, 1fr) 260px;
+            grid-template-columns: 126px minmax(0, 1fr);
             align-items: stretch;
             background:
                 linear-gradient(90deg,
@@ -2777,14 +2782,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 12px;
+            padding: 10px 8px 10px 18px;
         }
 
         .scorecard-header-logo img {
-            width: 82px;
-            height: 82px;
-            object-fit: contain;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,.35));
+            width: 84px;
+            height: 84px;
+            object-fit: cover;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,.18), rgba(0,0,0,.34));
+            border: 3px solid color-mix(in srgb, var(--batting-accent) 70%, #ffffff 30%);
+            box-shadow: 0 0 0 3px rgba(0,0,0,.28), 0 8px 18px rgba(0,0,0,.42);
         }
 
         .scorecard-title-wrap {
@@ -2797,10 +2805,10 @@
         }
 
         .scorecard-team-title {
-            font-size: clamp(48px, 4.7vw, 78px);
+            font-size: clamp(50px, 4.9vw, 78px);
             font-weight: 900;
             letter-spacing: 1px;
-            line-height: .9;
+            line-height: .88;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -2813,27 +2821,9 @@
             letter-spacing: 1.5px;
         }
 
-        .scorecard-over-pill {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            align-self: center;
-            justify-self: end;
-            margin-right: 26px;
-            min-width: 190px;
-            height: 48px;
-            padding: 0 18px;
-            color: #fff;
-            background: color-mix(in srgb, var(--batting-primary) 78%, #09090b 22%);
-            border: 2px solid color-mix(in srgb, var(--batting-primary) 65%, #fff 35%);
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: 1px;
-        }
-
         .scorecard-main {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 310px;
+            grid-template-columns: minmax(0, 1fr) 300px;
             min-height: 0;
             background:
                 linear-gradient(90deg,
@@ -2844,7 +2834,7 @@
 
         .scorecard-table-wrap {
             min-width: 0;
-            padding: 16px 0 12px 64px;
+            padding: 18px 0 14px 58px;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .tv-table {
@@ -2860,23 +2850,27 @@
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .tv-table td {
-            height: 42px;
-            padding: 0 14px;
+            height: 43px;
+            padding: 0 16px;
             border-bottom: 1px solid rgba(255,255,255,.34);
-            background: transparent !important;
-            color: var(--batting-text);
-            font-size: clamp(23px, 1.75vw, 33px);
+            background: rgba(245,248,252,.94) !important;
+            color: #07111f;
+            font-size: clamp(24px, 1.72vw, 32px);
             font-weight: 900;
             line-height: 1;
-            text-shadow: 0 2px 4px rgba(0,0,0,.36);
+            text-shadow: none;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table tbody tr:nth-child(even) td {
+            background: rgba(224,231,240,.96) !important;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-player {
-            width: 34%;
+            width: 29%;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-dismissal {
-            width: 42%;
+            width: 47%;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-runs,
@@ -2891,10 +2885,11 @@
             color: inherit;
             font-size: inherit;
             font-weight: inherit;
+            text-transform: uppercase;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .dismissal {
-            color: color-mix(in srgb, var(--batting-text) 84%, var(--batting-accent) 16%);
+            color: #142033;
             text-transform: uppercase;
             font-size: clamp(18px, 1.35vw, 25px);
         }
@@ -2925,8 +2920,9 @@
             align-items: center;
             justify-content: center;
             min-width: 0;
-            margin: 36px 42px 36px 16px;
-            border: 2px solid color-mix(in srgb, var(--batting-accent) 75%, #fff 25%);
+            margin: 44px 42px 44px 18px;
+            border: 2px solid color-mix(in srgb, var(--batting-accent) 70%, #fff 30%);
+            border-radius: 8px;
             background:
                 radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--batting-accent) 32%, transparent) 0%, transparent 56%),
                 linear-gradient(135deg, rgba(255,255,255,.08), rgba(0,0,0,.24));
@@ -2949,10 +2945,13 @@
 
         .scorecard-logo-panel img {
             position: relative;
-            width: 76%;
-            height: 76%;
-            object-fit: contain;
-            filter: drop-shadow(0 10px 16px rgba(0,0,0,.42));
+            width: 190px;
+            height: 190px;
+            object-fit: cover;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,.16), rgba(0,0,0,.34));
+            border: 4px solid color-mix(in srgb, var(--batting-accent) 72%, #ffffff 28%);
+            box-shadow: 0 0 0 4px rgba(0,0,0,.28), 0 12px 26px rgba(0,0,0,.45);
             z-index: 1;
         }
 
@@ -2972,7 +2971,7 @@
             grid-template-columns: 220px 220px minmax(0, 1fr);
             align-items: center;
             gap: 16px;
-            padding: 0 64px;
+            padding: 0 58px;
             background:
                 linear-gradient(90deg,
                     color-mix(in srgb, var(--batting-accent) 86%, #fff 14%) 0%,
@@ -2983,7 +2982,7 @@
         }
 
         .scorecard-footer-metric {
-            font-size: 28px;
+            font-size: 30px;
             font-weight: 900;
             text-transform: uppercase;
         }
@@ -4349,6 +4348,7 @@
             // ===== HIDE =====
             if (data.hide) {
                 isFullScorecardVisible = false;
+                suppressBrandingForGraphic = false;
 
                 container.style.display = "none";
                 container.innerHTML = "";
@@ -4368,9 +4368,11 @@
             }
 
             isFullScorecardVisible = true;
+            suppressBrandingForGraphic = true;
+            applyBrandingState();
 
             if (scoreboardBar) scoreboardBar.classList.remove("show");
-            if (scorecardDim) scorecardDim.classList.add("show");
+            if (scorecardDim) scorecardDim.classList.remove("show");
 
             if (data.bowlingOnly) {
                 container.style.display = "none";
@@ -4479,7 +4481,6 @@
                                                                                                         <div class="scorecard-team-title">${escapeHtml((data.team || "").toUpperCase())}</div>
                                                                                                         <div class="scorecard-subtitle">BATTING SCORECARD</div>
                                                                                                     </div>
-                                                                                                    <div class="scorecard-over-pill">${escapeHtml(data.overs || "0.0")} OVERS</div>
                                                                                                 </div>
 
                                                                                                 <div class="scorecard-main">
@@ -4852,9 +4853,16 @@
             logo: "",
             size: ""
         };
+        let suppressBrandingForGraphic = false;
 
         function applyBrandingState() {
             if (!leagueBug || !leagueLogo) return;
+
+            if (suppressBrandingForGraphic) {
+                leagueBug.classList.remove("show");
+                leagueLogo.style.display = "none";
+                return;
+            }
 
             if (brandingState.logo) {
                 leagueLogo.src = brandingState.logo;
@@ -4965,8 +4973,9 @@
             if (replay) replay.classList.remove("show");
 
             // Hide transient overlays that use .show, but keep persistent branding.
-            removeTransientShowClasses();
             isFullScorecardVisible = false;
+            suppressBrandingForGraphic = false;
+            removeTransientShowClasses();
             if (scorecardDim) scorecardDim.classList.remove("show");
 
             setTimeout(() => {
@@ -5070,10 +5079,11 @@
 
 
                 // Remove animation classes without wiping persistent branding.
-                removeTransientShowClasses();
                 if (breakGraphic) breakGraphic.classList.remove("match-result-mode");
                 if (breakText) breakText.innerHTML = "";
                 isFullScorecardVisible = false;
+                suppressBrandingForGraphic = false;
+                removeTransientShowClasses();
                 if (scorecardDim) scorecardDim.classList.remove("show");
 
                 // Clear Team XI content
@@ -5337,7 +5347,7 @@
         }
 
         function formatScorecardPlayer(name) {
-            return escapeHtml(stripRoleTags(name));
+            return escapeHtml(stripRoleTags(name).toUpperCase());
         }
 
         function formatPlayer(name) {
