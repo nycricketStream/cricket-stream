@@ -2843,7 +2843,7 @@
             align-self: center;
             min-width: 0;
             margin: 16px 0 16px 34px;
-            padding: 10px 12px 10px 14px;
+            padding: 42px 12px 10px 14px;
             border-radius: 12px;
             background:
                 linear-gradient(90deg,
@@ -2856,6 +2856,31 @@
             z-index: 1;
         }
 
+        .scorecard-table-wrap::before {
+            content: "RUNS          BALLS";
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            width: 18%;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            background: linear-gradient(90deg,
+                color-mix(in srgb, var(--batting-accent) 92%, #fff 8%),
+                color-mix(in srgb, var(--batting-accent) 76%, #fff566 24%));
+            color: color-mix(in srgb, var(--batting-primary) 84%, #111 16%);
+            font-family: 'Roboto Condensed', 'Oswald', 'Arial Narrow', Arial, sans-serif !important;
+            font-size: 18px;
+            font-weight: 900;
+            line-height: 1;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            word-spacing: 18px;
+            z-index: 2;
+        }
+
         .tv-card.scorecard-card.full-screen-scorecard .tv-table {
             width: 100%;
             height: auto;
@@ -2866,7 +2891,14 @@
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .tv-table thead {
-            display: table-header-group;
+            display: none;
+            background: transparent !important;
+            border-bottom: 0 !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table thead tr {
+            background: transparent !important;
+            box-shadow: none !important;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .tv-table th {
@@ -2882,6 +2914,16 @@
             text-transform: uppercase;
             letter-spacing: .8px;
             text-shadow: none;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table th.col-player,
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table th.col-dismissal,
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table th.col-bowler {
+            height: 0;
+            padding: 0;
+            line-height: 0;
+            font-size: 0;
+            background: transparent !important;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .tv-table th.col-runs,
@@ -4562,10 +4604,7 @@
             const striker = data.striker || null;
             const safeBatsmen = data.batsmen || {};
             const battedPlayers = players
-                .filter(name => safeBatsmen[name])
-                .sort((a, b) => {
-                    return (safeBatsmen[a].order || 999) - (data.batsmen[b].order || 999);
-                });
+                .filter(name => safeBatsmen[name]);
             const shownPlayers = new Set();
 
             battedPlayers.forEach(name => {
@@ -5561,10 +5600,17 @@
 
             const caughtBy = beforeBowler.match(/^c\s+(.+)$/i);
             if (caughtBy) dismissal = `c ${formatScorecardShortName(caughtBy[1])}`;
-            else if (!beforeBowler && bowlerName) dismissal = "bowled";
-            else if (/^lbw$/i.test(beforeBowler)) dismissal = "lbw";
-            else if (/^run\s*out/i.test(beforeBowler)) dismissal = beforeBowler.toLowerCase();
-            else dismissal = beforeBowler.toLowerCase();
+            else if (!beforeBowler && bowlerName) dismissal = "BOWLED";
+            else if (/^bowled$/i.test(beforeBowler)) dismissal = "BOWLED";
+            else if (/^lbw$/i.test(beforeBowler)) dismissal = "LBW";
+            else if (/^run\s*out/i.test(beforeBowler)) {
+                const runOutName = beforeBowler.match(/\(([^)]+)\)/);
+                dismissal = runOutName
+                    ? `RUN OUT (${formatScorecardShortName(runOutName[1])})`
+                    : "RUN OUT";
+            } else {
+                dismissal = beforeBowler.toUpperCase();
+            }
 
             return {
                 dismissal: escapeHtml(dismissal),
