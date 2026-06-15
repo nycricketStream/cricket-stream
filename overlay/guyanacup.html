@@ -4623,6 +4623,8 @@
                 const isStriker = striker === name;
                 const dismissalParts = formatScorecardDismissal(isNotOut ? "not out" : (s.dismissal || ""));
                 const hasBowler = Boolean(dismissalParts.bowler);
+                const runs = formatScorecardStatNumber(s.runs);
+                const balls = formatScorecardStatNumber(s.balls);
                 shownPlayers.add(name);
 
                 rows += `
@@ -4634,8 +4636,8 @@
                                                                                             ${hasBowler
                                                                                                 ? `<td class="dismissal">${dismissalParts.dismissal}</td><td class="bowler">${dismissalParts.bowler}</td>`
                                                                                                 : `<td class="dismissal" colspan="2">${dismissalParts.dismissal}</td>`}
-                                                                                            <td class="runs">${escapeHtml(s.runs ?? 0)}</td>
-                                                                                            <td class="balls">${escapeHtml(s.balls ?? 0)}</td>
+                                                                                            <td class="runs">${escapeHtml(runs)}</td>
+                                                                                            <td class="balls">${escapeHtml(balls)}</td>
                                                                                         </tr>
                                                                                     `;
             });
@@ -5589,6 +5591,12 @@
             const parts = clean.split(/\s+/).filter(Boolean);
             if (parts.length > 1) return `${parts[0].charAt(0)}. ${parts[parts.length - 1]}`.toUpperCase();
             return clean.toUpperCase();
+        }
+
+        function formatScorecardStatNumber(value) {
+            const numeric = Number(value);
+            if (Number.isFinite(numeric)) return String(numeric);
+            return "0";
         }
 
         function formatScorecardDismissal(text) {
