@@ -2824,7 +2824,7 @@
         .scorecard-main {
             position: relative;
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 248px;
+            grid-template-columns: minmax(0, 1fr) 210px;
             min-height: 0;
             background:
                 radial-gradient(circle at 14% 18%, rgba(255,255,255,.08), transparent 28%),
@@ -2894,11 +2894,11 @@
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-player {
-            width: 34%;
+            width: 32%;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-dismissal {
-            width: 27%;
+            width: 26%;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-bowler {
@@ -2906,24 +2906,24 @@
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-runs {
-            width: 4%;
+            width: 5.5%;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-balls {
-            width: 4%;
+            width: 5.5%;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .player {
             color: var(--batting-text);
             font-size: inherit;
-            font-family: Impact, 'Arial Black', 'Oswald', 'Roboto Condensed', sans-serif !important;
-            font-weight: 900;
+            font-family: 'Oswald', 'Roboto Condensed', 'Arial Narrow', Arial, sans-serif !important;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: .8px;
-            -webkit-text-stroke: .35px currentColor;
+            letter-spacing: .55px;
+            -webkit-text-stroke: 0;
             text-shadow:
-                0 1px 0 rgba(0,0,0,.55),
-                0 3px 8px rgba(0,0,0,.72);
+                0 1px 0 rgba(0,0,0,.45),
+                0 2px 5px rgba(0,0,0,.55);
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .dismissal {
@@ -2957,22 +2957,23 @@
         .tv-card.scorecard-card.full-screen-scorecard .balls {
             padding-left: 0;
             padding-right: 0;
-            font-family: Impact, 'Arial Black', 'Oswald', 'Roboto Condensed', sans-serif !important;
-            font-size: clamp(18px, 1.12vw, 22px);
-            font-weight: 900;
+            font-family: 'Oswald', 'Roboto Condensed', 'Arial Narrow', Arial, sans-serif !important;
+            font-size: clamp(18px, 1.1vw, 22px);
+            font-weight: 700;
             color: var(--batting-text);
-            -webkit-text-stroke: .35px currentColor;
+            -webkit-text-stroke: 0;
             font-variant-numeric: tabular-nums;
+            letter-spacing: .2px;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .runs {
             text-align: right;
-            padding-right: 3px;
+            padding-right: 8px;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .balls {
             text-align: left;
-            padding-left: 3px;
+            padding-left: 8px;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .not-out-row,
@@ -3008,7 +3009,7 @@
             align-items: center;
             justify-content: center;
             min-width: 0;
-            margin: 24px 30px 24px 12px;
+            margin: 24px 24px 24px 10px;
             border: 2px solid color-mix(in srgb, var(--batting-accent) 64%, #fff 36%);
             border-radius: 12px;
             background:
@@ -3035,8 +3036,8 @@
 
         .scorecard-logo-panel img {
             position: relative;
-            width: 136px;
-            height: 136px;
+            width: 122px;
+            height: 122px;
             object-fit: cover;
             border-radius: 50%;
             background: radial-gradient(circle, rgba(255,255,255,.16), rgba(0,0,0,.34));
@@ -3058,7 +3059,7 @@
 
         .scorecard-hero-footer {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 248px;
+            grid-template-columns: minmax(0, 1fr) 210px;
             align-items: center;
             gap: 0;
             padding: 0;
@@ -3074,7 +3075,7 @@
 
         .scorecard-footer-table {
             display: grid;
-            grid-template-columns: 34% 27% 31% 4% 4%;
+            grid-template-columns: 32% 26% 31% 5.5% 5.5%;
             align-items: center;
             height: 100%;
             padding: 0 0 0 42px;
