@@ -2738,10 +2738,10 @@
         }
 
         .tv-card.scorecard-card.full-screen-scorecard {
-            width: min(1320px, calc(100vw - 118px));
-            height: min(720px, calc(100vh - 118px));
-            max-width: 1320px;
-            max-height: 720px;
+            width: min(1400px, calc(100vw - 84px));
+            height: min(750px, calc(100vh - 88px));
+            max-width: 1400px;
+            max-height: 750px;
             position: absolute;
             left: 50%;
             top: 50%;
@@ -3047,6 +3047,9 @@
             font-weight: 400;
             letter-spacing: .2px;
             text-shadow: 0 2px 5px rgba(0,0,0,.38);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .runs,
@@ -4603,8 +4606,14 @@
             const players = data.playingXI || [];
             const striker = data.striker || null;
             const safeBatsmen = data.batsmen || {};
-            const battedPlayers = players
-                .filter(name => safeBatsmen[name]);
+            const xiNames = new Set(players);
+            const statOrder = new Map(Object.keys(safeBatsmen).map((name, index) => [name, index]));
+            const getScorecardOrder = (name) => {
+                return statOrder.get(name) ?? 999;
+            };
+            const battedPlayers = Object.keys(safeBatsmen)
+                .filter(name => xiNames.has(name))
+                .sort((a, b) => getScorecardOrder(a) - getScorecardOrder(b));
             const shownPlayers = new Set();
 
             battedPlayers.forEach(name => {
@@ -4613,6 +4622,7 @@
                 const isNotOut = !s.out;
                 const isStriker = striker === name;
                 const dismissalParts = formatScorecardDismissal(isNotOut ? "not out" : (s.dismissal || ""));
+                const hasBowler = Boolean(dismissalParts.bowler);
                 shownPlayers.add(name);
 
                 rows += `
@@ -4621,10 +4631,9 @@
                                                                                     ${formatScorecardBatter(name)}
                                                                                     ${isStriker ? '<span class="strike-star">&#9733;</span>' : ''}
                                                                                             </td>
-                                                                                            <td class="dismissal">
-                                                                                                ${dismissalParts.dismissal}
-                                                                                            </td>
-                                                                                            <td class="bowler">${dismissalParts.bowler}</td>
+                                                                                            ${hasBowler
+                                                                                                ? `<td class="dismissal">${dismissalParts.dismissal}</td><td class="bowler">${dismissalParts.bowler}</td>`
+                                                                                                : `<td class="dismissal" colspan="2">${dismissalParts.dismissal}</td>`}
                                                                                             <td class="runs">${escapeHtml(s.runs ?? 0)}</td>
                                                                                             <td class="balls">${escapeHtml(s.balls ?? 0)}</td>
                                                                                         </tr>
@@ -4638,8 +4647,7 @@
                     rows += `
                                                                                         <tr>
                                                                                             <td class="player">${formatScorecardBatter(name)}</td>
-                                                                                            <td class="dismissal"></td>
-                                                                                            <td class="bowler"></td>
+                                                                                            <td class="dismissal" colspan="2"></td>
                                                                                             <td class="runs"></td>
                                                                                             <td class="balls"></td>
                                                                                         </tr>
