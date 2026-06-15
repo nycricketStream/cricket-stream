@@ -2852,17 +2852,23 @@
         .tv-card.scorecard-card.full-screen-scorecard .tv-table td {
             height: 43px;
             padding: 0 16px;
-            border-bottom: 1px solid rgba(255,255,255,.34);
-            background: rgba(245,248,252,.94) !important;
-            color: #07111f;
+            border-bottom: 1px solid color-mix(in srgb, var(--batting-accent) 42%, transparent);
+            background:
+                linear-gradient(90deg,
+                    color-mix(in srgb, var(--batting-primary) 86%, #020617 14%),
+                    color-mix(in srgb, var(--batting-primary) 72%, #020617 28%)) !important;
+            color: var(--batting-text);
             font-size: clamp(24px, 1.72vw, 32px);
             font-weight: 900;
             line-height: 1;
-            text-shadow: none;
+            text-shadow: 0 2px 5px rgba(0,0,0,.5);
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .tv-table tbody tr:nth-child(even) td {
-            background: rgba(224,231,240,.96) !important;
+            background:
+                linear-gradient(90deg,
+                    color-mix(in srgb, var(--batting-primary) 76%, #020617 24%),
+                    color-mix(in srgb, var(--batting-primary) 62%, #020617 38%)) !important;
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .col-player {
@@ -2889,7 +2895,7 @@
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .dismissal {
-            color: #142033;
+            color: color-mix(in srgb, var(--batting-text) 88%, var(--batting-accent) 12%);
             text-transform: uppercase;
             font-size: clamp(18px, 1.35vw, 25px);
         }
@@ -2902,16 +2908,19 @@
 
         .tv-card.scorecard-card.full-screen-scorecard .not-out-row td,
         .tv-card.scorecard-card.full-screen-scorecard .striker-row td {
-            background: color-mix(in srgb, var(--batting-accent) 86%, #fff 14%) !important;
-            color: color-mix(in srgb, var(--batting-primary) 82%, #111 18%) !important;
-            border-top: 2px solid color-mix(in srgb, var(--batting-primary) 45%, #fff 55%);
-            border-bottom: 2px solid color-mix(in srgb, var(--batting-primary) 45%, #fff 55%);
-            text-shadow: none;
+            background:
+                linear-gradient(90deg,
+                    color-mix(in srgb, var(--batting-accent) 88%, var(--batting-primary) 12%),
+                    color-mix(in srgb, var(--batting-accent) 68%, var(--batting-primary) 32%)) !important;
+            color: var(--batting-text) !important;
+            border-top: 2px solid color-mix(in srgb, var(--batting-text) 38%, var(--batting-accent) 62%);
+            border-bottom: 2px solid color-mix(in srgb, var(--batting-text) 38%, var(--batting-accent) 62%);
+            text-shadow: 0 2px 5px rgba(0,0,0,.45);
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .not-out-row .dismissal,
         .tv-card.scorecard-card.full-screen-scorecard .striker-row .dismissal {
-            color: color-mix(in srgb, var(--batting-primary) 72%, #111 28%) !important;
+            color: var(--batting-text) !important;
         }
 
         .scorecard-logo-panel {
@@ -4417,7 +4426,7 @@
                 rows += `
                                                                                         <tr class="${isNotOut ? 'not-out-row' : ''} ${isStriker ? 'striker-row' : ''}">
                                                                                             <td class="player">
-                                                                                    ${formatScorecardPlayer(name)}
+                                                                                    ${formatScorecardBatter(name)}
                                                                                     ${isStriker ? '<span class="strike-star">&#9733;</span>' : ''}
                                                                                             </td>
                                                                                             <td class="dismissal">
@@ -4435,7 +4444,7 @@
                 .forEach(name => {
                     rows += `
                                                                                         <tr>
-                                                                                            <td class="player">${formatScorecardPlayer(name)}</td>
+                                                                                            <td class="player">${formatScorecardBatter(name)}</td>
                                                                                             <td class="dismissal">Yet to Bat</td>
                                                                                             <td class="runs">&mdash;</td>
                                                                                             <td class="balls">&mdash;</td>
@@ -5348,6 +5357,16 @@
 
         function formatScorecardPlayer(name) {
             return escapeHtml(stripRoleTags(name).toUpperCase());
+        }
+
+        function formatScorecardBatter(name) {
+            const raw = stripRoleTags(String(name || "").replace(/\*/g, ""));
+            const parts = raw.split(/\s+/).filter(Boolean);
+            const displayName = parts.length > 1
+                ? `${parts[0].charAt(0)}. ${parts[parts.length - 1]}`
+                : raw;
+            const star = String(name || "").includes("*") ? "*" : "";
+            return escapeHtml((displayName + star).toUpperCase());
         }
 
         function formatPlayer(name) {
