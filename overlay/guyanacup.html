@@ -2707,7 +2707,7 @@
         .bowling-score-table tr {
             display: grid;
             grid-template-columns: 38% repeat(5, 12.4%);
-            height: calc(100% / var(--bowler-count, 1));
+            height: calc(100% / var(--bowler-row-capacity, 11));
             min-height: 0;
         }
 
@@ -5847,7 +5847,7 @@
             const bowlingLogo = data.bowlingTeamLogo || (isTeamABowling ? (data.teamALogo || overlayState.teamALogo) : (data.teamBLogo || overlayState.teamBLogo));
             const bowlers = [...(data.bowlers || [])];
             const bowlerDensityClass = bowlers.length > 7 ? " many-bowlers" : "";
-            const cardStyle = `--bowling-primary:${primary};--bowling-accent:${accent};--bowling-text:${text};--bowler-count:${Math.max(bowlers.length, 1)};`;
+            const cardStyle = `--bowling-primary:${primary};--bowling-accent:${accent};--bowling-text:${text};--bowler-row-capacity:11;`;
             const teamName = (data.bowlingTeam || "BOWLING").toUpperCase();
 
             let rows = "";
