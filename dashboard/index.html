@@ -4847,12 +4847,13 @@
             <button onclick="sendBreak('DRINKS BREAK')">Drinks Break</button>
             <button onclick="sendBreak('STRATEGIC TIMEOUT')">Strategic Timeout</button>
             <button onclick="sendBreak('INNINGS BREAK')">Innings Break</button>
-            <button onclick="sendBreak('MATCH RESULT')">Match Result</button>
+            <button onclick="sendMatchResult()">Match Result</button>
             <button onclick="hideBreak()" style="background:#991b1b">Hide Graphic</button>
             <hr>
             <h3>Full Scoreboard</h3>
             <button onclick="showScorecard()">Show Scorecard</button>
-            <button onclick="hideFullScorecard()" style="background:#991b1b">Hide Scorecard</button>
+            <button onclick="showBowlingCard()">Show Bowling Card</button>
+            <button onclick="hideFullScorecard()" style="background:#991b1b">Hide Scorecards</button>
         </div>
     </div>
     <!-- LOG PANEL UI -->
@@ -4905,6 +4906,7 @@
 
         let firstInningsTotal = 0;
         let targetManuallyEdited = false;
+        let lastInningsValue = "1";
         let isRestoring = false;
         let allowMidOverChange = false;
         let isLoadingFromFirebase = false;
@@ -5147,7 +5149,8 @@
                 renderExtrasBreakdown();
                 renderFallOfWickets();
                 isLoadingFromFirebase = false;
-                updateLiveDisplay();
+                updateLiveDisplay({ forceSend: true, skipPersistence: true });
+                setTimeout(() => pushOverlaySnapshot('firebase-restore'), 250);
                 console.log("✅ Full dashboard restore complete");
             }, 500);
         }
@@ -5207,7 +5210,10 @@
         window.addEventListener('keydown', e => {
             if (e.key && e.key.toLowerCase() === 'l') toggleLog();
         });
-        pusher.connection.bind('connected', () => log('PUSHER CONNECTED'));
+        pusher.connection.bind('connected', () => {
+            log('PUSHER CONNECTED');
+            setTimeout(() => pushOverlaySnapshot('pusher-connected'), 600);
+        });
         pusher.connection.bind('connecting', () => log('PUSHER CONNECTING'));
         pusher.connection.bind('disconnected', () => log('PUSHER DISCONNECTED'));
 
@@ -5598,9 +5604,11 @@
             document.getElementById('teamAPlayers').addEventListener('input', updatePlayerDropdown);
             document.getElementById('teamBPlayers').addEventListener('input', updatePlayerDropdown);
             document.getElementById('batting').addEventListener('change', () => {
+                captureFirstInningsTotal();
                 resetInnings();
                 updatePlayerDropdown();
                 updateStrikerDropdown();
+                populateSecondInningsTarget();
             });
             document.getElementById('target').addEventListener('input', () => {
                 targetManuallyEdited = true;
@@ -5609,7 +5617,9 @@
             document.getElementById('teamAPlayers').addEventListener('input', updateStrikerDropdown);
             document.getElementById('teamBPlayers').addEventListener('input', updateStrikerDropdown);
             document.getElementById('innings').addEventListener('change', () => {
+                captureFirstInningsTotal();
                 resetInnings();
+                populateSecondInningsTarget(true);
             });
             let setupAutosaveTimer = null;
             const saveSetupState = () => {
@@ -5908,6 +5918,8 @@
             const ok = await confirmAction("Reset the current match and clear the live scoring state?", "Reset match?");
             if (!ok) return;
             localStorage.removeItem("cricketMatchState");
+            localStorage.removeItem("firstInningsTotal");
+            firstInningsTotal = 0;
             liveTotal = 0;
             liveWickets = 0;
             liveBalls = 0;
@@ -5981,6 +5993,10 @@
         }
 
         function resetMatchSetup() {
+            localStorage.removeItem("firstInningsTotal");
+            firstInningsTotal = 0;
+            targetManuallyEdited = false;
+            lastInningsValue = "1";
 
             // Teams
             document.getElementById('teamA').value = "";
@@ -6092,6 +6108,81 @@
         function calculateRR() {
             return liveBalls ? (liveTotal / (liveBalls / 6)).toFixed(2) : "0.00";
         }
+
+        function hasActiveInningsScore() {
+            return liveTotal > 0 || liveWickets > 0 || liveBalls > 0 || liveHistory.length > 0;
+        }
+
+        function readVisibleScoreTotal() {
+            const scoreText = document.getElementById('liveHeaderScore')?.innerText || "";
+            const runs = parseInt(scoreText.split('/')[0], 10);
+            return Number.isFinite(runs) ? runs : 0;
+        }
+
+        function getStoredFirstInningsTotal() {
+            const stored = parseInt(localStorage.getItem('firstInningsTotal') || "0", 10);
+            return Number.isFinite(stored) ? stored : 0;
+        }
+
+        function rememberFirstInningsTotal(runs) {
+            const total = parseInt(runs, 10);
+            if (!Number.isFinite(total) || total <= 0) return;
+            firstInningsTotal = total;
+            localStorage.setItem('firstInningsTotal', String(total));
+        }
+
+        function captureFirstInningsTotal() {
+            const currentInnings = document.getElementById('innings')?.value || "1";
+            if ((currentInnings === "1" || lastInningsValue === "1") && hasActiveInningsScore()) {
+                rememberFirstInningsTotal(liveTotal || readVisibleScoreTotal());
+            }
+        }
+
+        function buildMatchEventPayload() {
+            return {
+                teamA: teamA?.value || "",
+                teamB: teamB?.value || "",
+                teamALogo: document.getElementById('teamALogo')?.value || "",
+                teamBLogo: document.getElementById('teamBLogo')?.value || "",
+                ...getMatchTeamDesign(),
+                batting: batting?.value || "",
+                innings: document.getElementById('innings')?.value || "1",
+                target: document.getElementById('target')?.value || "",
+                maxOvers: document.getElementById('maxOvers')?.value || "",
+                teamAPlayers: (teamAPlayers?.value || "").split('\n'),
+                teamBPlayers: (teamBPlayers?.value || "").split('\n')
+            };
+        }
+
+        function pushBrandingSnapshot() {
+            const logo = document.getElementById('brandingLogoModal')?.value || "";
+            const size = document.getElementById('brandingSizeModal')?.value || "";
+            if (!logo) return;
+            sendEvent('branding', { logo, size });
+        }
+
+        function pushOverlaySnapshot(reason = 'restore') {
+            if (isLoadingFromFirebase) return;
+            console.log("PUSH OVERLAY SNAPSHOT", reason);
+            sendEvent('match', buildMatchEventPayload());
+            lastSentScore = "";
+            updateLiveDisplay({ forceSend: true, skipPersistence: true });
+            pushBrandingSnapshot();
+        }
+
+        function populateSecondInningsTarget(force = false) {
+            const inningsSelect = document.getElementById('innings');
+            const targetInput = document.getElementById('target');
+            if (!inningsSelect || !targetInput || inningsSelect.value !== "2") return;
+            if (!force && targetManuallyEdited && targetInput.value.trim()) return;
+            const sourceTotal = firstInningsTotal || getStoredFirstInningsTotal() || readVisibleScoreTotal();
+            if (!sourceTotal && !hasActiveInningsScore()) return;
+
+            rememberFirstInningsTotal(sourceTotal);
+            targetInput.value = sourceTotal + 1;
+            targetManuallyEdited = false;
+            targetInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
         /* =========== Calculate Required Run ============ */
         function calculateRequiredRuns() {
             const metrics = getChaseMetrics();
@@ -6156,7 +6247,11 @@
 
 
         /* ======= Update Live Display =========== */
-        function updateLiveDisplay() {
+        function updateLiveDisplay(options = {}) {
+            const forceSend = options === true || options?.forceSend === true;
+            const skipPersistence = options?.skipPersistence === true;
+            captureFirstInningsTotal();
+
             const strikerName = document.getElementById('striker')?.value || "";
             const nonStrikerName = document.getElementById('nonStriker')?.value || "";
             const bowlerName = document.getElementById('bowler')?.value || "";
@@ -6166,7 +6261,7 @@
                 "|" + strikerName + "|" + nonStrikerName + "|" + bowlerName +
                 "|" + liveHistory.length;
 
-            if (currentState === lastSentScore) return;
+            if (!forceSend && currentState === lastSentScore) return;
 
             lastSentScore = currentState;
             const liveChaseMetrics = getChaseMetrics();
@@ -6330,8 +6425,10 @@
             checkPartnershipMilestones();
             renderCurrentBatters();
             renderLastWicket();
-            autoSaveMatch();
-            saveMatchToFirebase();
+            if (!skipPersistence) {
+                autoSaveMatch();
+                saveMatchToFirebase();
+            }
 
             /* =========================================
                RIGHT SIDE LIVE INFO
@@ -6428,6 +6525,8 @@
 
             // POWERPLAY
             let powerplayOvers = 0;
+            const currentOvers =
+                Number(calculateOvers()) || 0;
 
             const totalOvers =
                 parseInt(maxOvers.value || 20);
@@ -7447,6 +7546,7 @@ CURRENT OVER SUMMARY
             if (!isSecondInnings) {
                 return {
                     projectedScore,
+                    target: target?.value || "",
                     requiredRuns: "",
                     ballsRemaining: "",
                     requiredRunInfo: "",
@@ -7464,6 +7564,7 @@ CURRENT OVER SUMMARY
 
             return {
                 projectedScore,
+                target: targetRuns,
                 requiredRuns,
                 ballsRemaining,
                 requiredRunInfo: `${requiredRuns} runs ball remaining ${ballsRemaining}`,
@@ -8803,6 +8904,58 @@ CURRENT OVER SUMMARY
             });
         }
 
+        function buildMatchResultPayload() {
+            const teamAInput = document.getElementById("teamA");
+            const teamBInput = document.getElementById("teamB");
+            const battingInput = document.getElementById("batting");
+            const inningsInput = document.getElementById("innings");
+            const targetInput = document.getElementById("target");
+            const teamALogoInput = document.getElementById("teamALogo");
+            const teamBLogoInput = document.getElementById("teamBLogo");
+
+            const teamAName = teamAInput?.value || "Team A";
+            const teamBName = teamBInput?.value || "Team B";
+            const battingTeam = battingInput?.value || teamAName;
+            const bowlingTeam = battingTeam === teamAName ? teamBName : teamAName;
+            const targetRuns = parseInt(targetInput?.value || 0, 10);
+            const isSecondInnings = inningsInput?.value === "2" && Number.isFinite(targetRuns) && targetRuns > 0;
+            let winner = "";
+            let resultText = "Match Result";
+
+            if (isSecondInnings) {
+                if (liveTotal >= targetRuns) {
+                    winner = battingTeam;
+                    const wicketsLeft = Math.max(10 - liveWickets, 0);
+                    resultText = `${winner} won by ${wicketsLeft} wicket${wicketsLeft === 1 ? "" : "s"}`;
+                } else {
+                    winner = bowlingTeam;
+                    const runsMargin = Math.max(targetRuns - 1 - liveTotal, 0);
+                    resultText = `${winner} won by ${runsMargin} run${runsMargin === 1 ? "" : "s"}`;
+                }
+            } else {
+                resultText = `${teamAName} vs ${teamBName}`;
+            }
+
+            return {
+                teamA: teamAName,
+                teamB: teamBName,
+                teamALogo: teamALogoInput?.value || "",
+                teamBLogo: teamBLogoInput?.value || "",
+                ...getMatchTeamDesign(),
+                batting: battingTeam,
+                innings: inningsInput?.value || "1",
+                winner,
+                resultText,
+                score: `${liveTotal}/${liveWickets}`,
+                overs: calculateOvers(),
+                target: isSecondInnings ? targetRuns : ""
+            };
+        }
+
+        function sendMatchResult() {
+            sendEvent('matchResult', buildMatchResultPayload());
+        }
+
         function hideBreak() {
             sendEvent('break', {
                 hide: true
@@ -8856,7 +9009,14 @@ CURRENT OVER SUMMARY
             sendFullScorecard();
         }
 
-        function sendFullScorecard() {
+        function showBowlingCard() {
+            sendEvent('fullScorecard', {
+                ...buildFullScorecardPayload(),
+                bowlingOnly: true
+            });
+        }
+
+        function buildFullScorecardPayload() {
             const playingXI = (
                 (batting.value === teamA.value
                     ? teamAPlayers.value
@@ -8901,8 +9061,29 @@ CURRENT OVER SUMMARY
                 };
             });
 
+            const fallOfWickets = liveHistory.reduce((items, ball, i) => {
+                if (ball.type !== 'wicket') return items;
+
+                let balls = 0;
+                for (let j = 0; j <= i; j++) {
+                    const b = liveHistory[j];
+                    if (b.type === "run" || b.type === "wicket") balls++;
+                    if (b.type === "extra" && (b.extra === "bye" || b.extra === "legbye")) balls++;
+                }
+
+                items.push({
+                    wicket: ball.wicketNumber || items.length + 1,
+                    score: ball.scoreAtWicket || "",
+                    over: Math.floor(balls / 6) + "." + (balls % 6),
+                    batsman: ball.striker || ball.batter || ""
+                });
+                return items;
+            }, []);
+
             const strikerName = document.getElementById('striker')?.value || "";
             const nonStrikerName = document.getElementById('nonStriker')?.value || "";
+            const isTeamABatting = batting.value === teamA.value;
+            const teamDesign = getMatchTeamDesign();
 
             let batsmenData = Object.fromEntries(
                 Object.entries(batsmanStats).map(([name, s]) => [
@@ -8942,8 +9123,13 @@ CURRENT OVER SUMMARY
                 };
             }
 
-            sendEvent('fullScorecard', {
+            return {
                 team: batting.value,
+                teamLogo: isTeamABatting ? (teamALogo.value || "") : (teamBLogo.value || ""),
+                teamPrimaryColor: isTeamABatting ? teamDesign.teamAPrimaryColor : teamDesign.teamBPrimaryColor,
+                teamAccentColor: isTeamABatting ? teamDesign.teamAAccentColor : teamDesign.teamBAccentColor,
+                teamTextColor: isTeamABatting ? teamDesign.teamATextColor : teamDesign.teamBTextColor,
+                ...teamDesign,
                 overs: calculateOvers(),
                 score: liveTotal + "/" + liveWickets,
 
@@ -8960,6 +9146,7 @@ CURRENT OVER SUMMARY
                 requiredRunRate: requiredRR,
                 bowlingTeam: batting.value === teamA.value ? teamB.value : teamA.value,
                 bowlers: bowlersArray,
+                fallOfWickets,
                 batsmen: batsmenData,
                 lastWicket: lastWicketText,
                 extras:
@@ -8967,7 +9154,11 @@ CURRENT OVER SUMMARY
                     extrasStats.noball +
                     extrasStats.bye +
                     extrasStats.legbye
-            });
+            };
+        }
+
+        function sendFullScorecard() {
+            sendEvent('fullScorecard', buildFullScorecardPayload());
         }
 
         function hideFullScorecard() {
@@ -9379,10 +9570,11 @@ CURRENT OVER SUMMARY
 
         function resetInnings() {
 
-            const innings = document.getElementById('innings')?.value;
+            const innings = document.getElementById('innings')?.value || "1";
+            const previousInnings = lastInningsValue;
 
-            // If we are leaving 1st innings, save score
-            if (innings === "1") {
+            // Save the completed first-innings score before any reset clears it.
+            if (previousInnings === "1" && hasActiveInningsScore()) {
                 firstInningsTotal = liveTotal;
             }
             // CORE SCORE RESET
@@ -9435,17 +9627,23 @@ CURRENT OVER SUMMARY
             updateLiveDisplay();
             const targetInput = document.getElementById('target');
 
-            // If entering 2nd innings and user has NOT edited target
-            if (innings === "2" && !targetManuallyEdited) {
-                if (targetInput) {
-                    targetInput.value = firstInningsTotal + 1;
+            // If entering 2nd innings, populate target unless a real value is already there.
+            if (innings === "2") {
+                if (targetInput && (!targetManuallyEdited || !targetInput.value.trim() || firstInningsTotal > 0)) {
+                    populateSecondInningsTarget(!targetInput.value.trim());
+                    lastSentScore = "";
+                    updateLiveDisplay();
                 }
             }
 
             // Reset manual override when going back to 1st innings
             if (innings === "1") {
                 targetManuallyEdited = false;
+                if (targetInput) {
+                    targetInput.value = "";
+                }
             }
+            lastInningsValue = innings;
             console.log("✅ INNINGS RESET COMPLETE");
         }
 
@@ -9586,11 +9784,14 @@ CURRENT OVER SUMMARY
                 .map(p => (p || '').split('|')[0].trim()) // ✅ remove image
                 .filter(Boolean);
 
+            const teamDesign = getMatchTeamDesign();
+
             sendEvent('teamXI', {
                 teamA: teamA.value,
                 teamB: teamB.value,
                 teamALogo: teamALogo.value,
                 teamBLogo: teamBLogo.value,
+                ...teamDesign,
                 teamAXI,
                 teamBXI
             });
@@ -10058,9 +10259,7 @@ CURRENT OVER SUMMARY
                     Innings Break
                 </button>
                 <button class="modal-action-warn" onclick="
-                sendBreak(
-                    'MATCH RESULT'
-                )
+                sendMatchResult()
             ">
                     Match Result
                 </button>
@@ -10080,10 +10279,15 @@ CURRENT OVER SUMMARY
             ">
                     Show Scorecard
                 </button>
+                <button class="modal-action-primary" onclick="
+                showBowlingCard()
+            ">
+                    Show Bowling Card
+                </button>
                 <button class="modal-action-danger" onclick="
                 hideFullScorecard()
             ">
-                    Hide Scorecard
+                    Hide Scorecards
                 </button>
             </div>
             <button class="close-modal-btn modal-action-neutral"
