@@ -9061,6 +9061,25 @@ CURRENT OVER SUMMARY
                 };
             });
 
+            const fallOfWickets = liveHistory.reduce((items, ball, i) => {
+                if (ball.type !== 'wicket') return items;
+
+                let balls = 0;
+                for (let j = 0; j <= i; j++) {
+                    const b = liveHistory[j];
+                    if (b.type === "run" || b.type === "wicket") balls++;
+                    if (b.type === "extra" && (b.extra === "bye" || b.extra === "legbye")) balls++;
+                }
+
+                items.push({
+                    wicket: ball.wicketNumber || items.length + 1,
+                    score: ball.scoreAtWicket || "",
+                    over: Math.floor(balls / 6) + "." + (balls % 6),
+                    batsman: ball.striker || ball.batter || ""
+                });
+                return items;
+            }, []);
+
             const strikerName = document.getElementById('striker')?.value || "";
             const nonStrikerName = document.getElementById('nonStriker')?.value || "";
             const isTeamABatting = batting.value === teamA.value;
@@ -9127,6 +9146,7 @@ CURRENT OVER SUMMARY
                 requiredRunRate: requiredRR,
                 bowlingTeam: batting.value === teamA.value ? teamB.value : teamA.value,
                 bowlers: bowlersArray,
+                fallOfWickets,
                 batsmen: batsmenData,
                 lastWicket: lastWicketText,
                 extras:
