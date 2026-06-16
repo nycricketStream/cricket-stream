@@ -640,9 +640,10 @@
             color: var(--batting-text);
             background:
                 linear-gradient(108deg,
-                    color-mix(in srgb, var(--batting-primary) 86%, #000 14%) 0%,
-                    var(--batting-primary) 57%,
-                    color-mix(in srgb, var(--batting-accent) 76%, var(--batting-primary) 24%) 100%);
+                    #071426 0%,
+                    var(--batting-primary) 18%,
+                    var(--batting-primary) 61%,
+                    var(--batting-accent) 100%);
             padding: 0 42px 0 12px;
             overflow: hidden;
             clip-path: polygon(0 0, 96% 0, 86% 100%, 0 100%);
@@ -654,9 +655,9 @@
             color: var(--bowling-text);
             background:
                 linear-gradient(108deg,
-                    color-mix(in srgb, var(--bowling-primary) 88%, #000 12%) 0%,
-                    var(--bowling-primary) 68%,
-                    color-mix(in srgb, var(--bowling-accent) 24%, var(--bowling-primary) 76%) 100%);
+                    var(--bowling-primary) 0%,
+                    var(--bowling-primary) 70%,
+                    #071426 100%);
             padding: 0 8px 0 50px;
             clip-path: polygon(12% 0, 100% 0, 100% 100%, 0 100%);
         }
@@ -679,9 +680,9 @@
             top: -8px;
             bottom: -8px;
             width: 5px;
-            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--batting-accent) 52%, color-mix(in srgb, var(--batting-accent) 60%, #000 40%));
+            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--batting-accent) 52%, var(--batting-primary));
             transform: skewX(-18deg);
-            box-shadow: 0 0 10px color-mix(in srgb, var(--batting-accent) 34%, transparent);
+            box-shadow: 0 0 10px var(--batting-accent);
         }
 
         #sbTeamA::after {
@@ -697,8 +698,8 @@
             width: 48px;
             transform: none;
             clip-path: polygon(78% 0, 88% 0, 12% 100%, 2% 100%);
-            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--bowling-accent) 48%, color-mix(in srgb, var(--bowling-accent) 62%, #000 38%));
-            box-shadow: 0 0 8px color-mix(in srgb, var(--bowling-accent) 30%, transparent);
+            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--bowling-accent) 48%, var(--bowling-primary));
+            box-shadow: 0 0 8px var(--bowling-accent);
         }
 
         #scoreboard .scoreLogoWrap {
@@ -911,11 +912,11 @@
 
         #bowlerName {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 24px;
+            grid-template-columns: minmax(0, 1fr) 26px;
             align-items: center;
-            gap: 7px;
+            gap: 9px;
             font-weight: 600;
-            font-size: 20px;
+            font-size: 19px;
             line-height: 22px;
             white-space: nowrap;
             overflow: hidden;
@@ -928,22 +929,21 @@
                 text-overflow: ellipsis;
             }
 
-            #bowlerName::after {
-                content: "";
-                width: 24px;
-                height: 24px;
-                border-radius: 50%;
-                flex: 0 0 auto;
-                justify-self: end;
-                background:
-                    radial-gradient(circle at 34% 28%, rgba(255,255,255,.82), transparent 25%),
-                    radial-gradient(circle at 62% 64%, rgba(0,0,0,.22), transparent 42%),
-                    repeating-linear-gradient(44deg, transparent 0 6px, rgba(255,255,255,.20) 6px 8px),
-                    linear-gradient(135deg, var(--bowling-accent), color-mix(in srgb, var(--bowling-primary) 72%, #000 28%));
-                box-shadow: inset -4px -5px 10px rgba(0,0,0,.24), 0 0 14px color-mix(in srgb, var(--bowling-accent) 45%, transparent);
-            }
+        #bowlerBallIcon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: block;
+            justify-self: end;
+            background:
+                radial-gradient(circle at 34% 28%, rgba(255,255,255,.82), transparent 25%),
+                radial-gradient(circle at 62% 64%, rgba(0,0,0,.26), transparent 42%),
+                repeating-linear-gradient(44deg, transparent 0 6px, rgba(255,255,255,.20) 6px 8px),
+                linear-gradient(135deg, var(--bowling-accent), var(--bowling-primary));
+            box-shadow: inset -4px -5px 10px rgba(0,0,0,.26), 0 0 14px var(--bowling-accent);
+        }
 
-        #sbBowler:not(.hasBowler) #bowlerName::after {
+        #sbBowler:not(.hasBowler) #bowlerBallIcon {
             display: none;
         }
 
@@ -4110,7 +4110,7 @@
         </div>
 
         <div id="sbBowler">
-            <span id="bowlerName"><span id="bowlerNameText">Bowler</span></span>
+            <span id="bowlerName"><span id="bowlerNameText">Bowler</span><span id="bowlerBallIcon" aria-hidden="true"></span></span>
             <span id="bowlerStats">0-0 (0)</span>
         </div>
 
@@ -4258,8 +4258,20 @@
         const bowlerLabel = document.getElementById("bowlerLabel");
         const thisOverBalls = document.getElementById("thisOverBalls");
 
+        function formatScoreboardPersonName(name) {
+            const clean = stripRoleTags(String(name || "").replace(/\*/g, "")).trim();
+            if (!clean) return "";
+            const parts = clean.split(/\s+/).filter(Boolean);
+            if (parts.length > 1) {
+                const first = parts[0].charAt(0).toUpperCase();
+                const last = parts[parts.length - 1];
+                return `${first}. ${last}`;
+            }
+            return clean;
+        }
+
         function setScoreboardBowlerName(name) {
-            const displayName = name || "";
+            const displayName = formatScoreboardPersonName(name);
             bowlerNameText.textContent = displayName;
             sbBowler.classList.toggle("hasBowler", Boolean(String(displayName).trim()));
         }
@@ -5187,18 +5199,25 @@
             }
             else return;
 
-            momentImage.src = file;
-            momentGlow.style.background = glowColor;
-
-            momentFallback.textContent = fallbackText;
-            momentFallback.style.color = glowColor;
-            momentFallback.style.display = "none";
-
             const key = (raw === "W" || raw === "WICKET")
                 ? "moment-wicket"
                 : "moment-" + raw;
 
-            enqueueOverlay(key, 2000, () => {
+            enqueueOverlay(key, 2400, () => {
+
+                momentImage.onerror = () => {
+                    momentImage.style.display = "none";
+                    momentFallback.style.display = "block";
+                    momentFallback.style.animation = "momentIn .5s cubic-bezier(.22,.9,.3,1) forwards";
+                };
+
+                momentImage.style.display = "block";
+                momentImage.src = file;
+                momentGlow.style.background = glowColor;
+
+                momentFallback.textContent = fallbackText;
+                momentFallback.style.color = glowColor;
+                momentFallback.style.display = "none";
 
                 momentStinger.style.opacity = 1;
                 momentStinger.style.pointerEvents = "auto";
@@ -5215,23 +5234,16 @@
 
                 }, 1600);
 
+                // Wicket shake effect
+                if (raw === "W" || raw === "WICKET") {
+                    momentStinger.style.animation = "shake .45s ease";
+                    setTimeout(() => momentStinger.style.animation = "", 450);
+                }
+
+                if (raw === "HATTRICK") {
+                    momentStinger.style.animation = "shake .6s ease";
+                }
             });
-
-            momentImage.onerror = () => {
-                momentImage.style.display = "none";
-                momentFallback.style.display = "block";
-                momentFallback.style.animation = "momentIn .5s cubic-bezier(.22,.9,.3,1) forwards";
-            };
-
-            // Wicket shake effect
-            if (raw === "W" || raw === "WICKET") {
-                momentStinger.style.animation = "shake .45s ease";
-                setTimeout(() => momentStinger.style.animation = "", 450);
-            }
-
-            if (raw === "HATTRICK") {
-                momentStinger.style.animation = "shake .6s ease";
-            }
         });
 
 
