@@ -2690,9 +2690,24 @@
 
         .bowling-score-table {
             grid-row: 2;
+            display: block;
             width: 100%;
+            height: 100%;
             border-collapse: collapse;
             table-layout: fixed;
+            min-height: 0;
+        }
+
+        .bowling-score-table tbody {
+            display: block;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .bowling-score-table tr {
+            display: grid;
+            grid-template-columns: 38% repeat(5, 12.4%);
+            height: calc(100% / var(--bowler-count, 1));
             min-height: 0;
         }
 
@@ -2700,7 +2715,11 @@
         .bowling-score-table col.bowler-stat { width: 12.4%; }
 
         .bowling-score-table td {
-            height: clamp(38px, 4.35vh, 54px);
+            display: flex;
+            align-items: center;
+            min-width: 0;
+            min-height: 0;
+            height: auto;
             color: var(--bowling-text);
             font-size: clamp(24px, 2.1vw, 34px);
             line-height: 1;
@@ -2723,6 +2742,7 @@
         }
 
         .bowling-score-table .bowler-stat-cell {
+            justify-content: center;
             text-align: center;
             font-variant-numeric: tabular-nums;
         }
@@ -2764,8 +2784,7 @@
         }
 
         .bowling-card.many-bowlers .bowling-score-table td {
-            height: clamp(30px, 3.55vh, 42px);
-            font-size: clamp(19px, 1.62vw, 27px);
+            font-size: clamp(18px, 1.46vw, 24px);
             letter-spacing: .25px;
         }
 
@@ -5828,7 +5847,7 @@
             const bowlingLogo = data.bowlingTeamLogo || (isTeamABowling ? (data.teamALogo || overlayState.teamALogo) : (data.teamBLogo || overlayState.teamBLogo));
             const bowlers = [...(data.bowlers || [])];
             const bowlerDensityClass = bowlers.length > 7 ? " many-bowlers" : "";
-            const cardStyle = `--bowling-primary:${primary};--bowling-accent:${accent};--bowling-text:${text};`;
+            const cardStyle = `--bowling-primary:${primary};--bowling-accent:${accent};--bowling-text:${text};--bowler-count:${Math.max(bowlers.length, 1)};`;
             const teamName = (data.bowlingTeam || "BOWLING").toUpperCase();
 
             let rows = "";
