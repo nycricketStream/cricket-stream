@@ -1629,20 +1629,21 @@
 
         #bowlingCard {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -60%) scale(.95);
-            width: 720px;
-            background: #f8fafc;
+            inset: 0;
+            transform: none;
+            width: 100vw;
+            height: 100vh;
+            background: transparent;
             border-radius: 6px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            box-shadow: none;
             opacity: 0;
             transition: all .4s ease;
             z-index: 9999;
+            pointer-events: none;
         }
 
             #bowlingCard.show {
-                transform: translate(-50%, -50%) scale(1);
+                transform: none;
                 opacity: 1;
             }
 
@@ -2575,116 +2576,216 @@
             color: #fff200 !important;
         }
 
-        .tv-card.bowling-card {
-            width: 800px;
-            max-width: calc(100vw - 96px);
-            background: #eef3f8;
-            border-radius: 7px;
-        }
-
-        .tv-card.bowling-card .tv-header {
-            grid-template-columns: 128px minmax(0, 1fr) 148px;
-            height: 54px;
+        .tv-card.bowling-card.full-screen-bowling-card {
+            width: min(1400px, calc(100vw - 84px));
+            height: min(750px, calc(100vh - 88px));
+            max-width: none;
+            display: grid;
+            grid-template-rows: 122px minmax(0, 1fr) 76px;
+            overflow: hidden;
+            color: var(--bowling-text);
             background:
-                linear-gradient(110deg,
-                    #0a1322 0%,
-                    color-mix(in srgb, var(--bowling-primary) 78%, #0a1322 22%) 44%,
-                    color-mix(in srgb, var(--bowling-accent) 34%, #64748b 66%) 100%);
+                radial-gradient(circle at 84% 40%, color-mix(in srgb, var(--bowling-accent) 18%, transparent), transparent 31%),
+                linear-gradient(135deg, color-mix(in srgb, var(--bowling-primary) 88%, #160012 12%), color-mix(in srgb, var(--bowling-primary) 72%, #020611 28%));
+            border: 2px solid color-mix(in srgb, var(--bowling-accent) 78%, #ffffff 22%);
+            border-radius: 10px;
+            box-shadow: 0 38px 110px rgba(0,0,0,.58), 0 0 0 1px rgba(255,255,255,.08) inset;
         }
 
-        .tv-card.bowling-card .espn-banner {
-            display: flex;
+        .bowling-card.full-screen-bowling-card .bowling-score-header {
+            display: grid;
+            grid-template-columns: 112px minmax(0, 1fr);
             align-items: center;
-            justify-content: center;
-            color: #fff;
-            text-shadow: 0 2px 4px rgba(0,0,0,.35);
-        }
-
-        .tv-card.bowling-card .header-team {
-            font-size: 18px;
-            letter-spacing: .8px;
-        }
-
-        .tv-card.bowling-card .header-overs {
-            font-size: 15px !important;
+            gap: 24px;
+            padding: 18px 44px;
             background:
-                linear-gradient(135deg,
-                    color-mix(in srgb, var(--bowling-accent) 88%, #7a5d00 12%),
-                    color-mix(in srgb, var(--bowling-accent) 62%, #09111f 38%));
+                linear-gradient(105deg, color-mix(in srgb, var(--bowling-primary) 92%, #050914 8%) 0 62%,
+                    color-mix(in srgb, var(--bowling-accent) 88%, #fff300 12%) 62% 100%);
+            color: var(--bowling-text);
         }
 
-        .tv-card.bowling-card .tv-table th {
-            height: 28px;
-            color: #1e293b;
-            background: transparent;
-            font-size: 13px;
-            text-align: center;
+        .bowling-score-header .bowling-score-logo {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(0,0,0,.18);
+            border: 3px solid color-mix(in srgb, var(--bowling-accent) 84%, #ffffff 16%);
+            box-shadow: 0 8px 20px rgba(0,0,0,.42);
         }
 
-        .tv-card.bowling-card .tv-table th:first-child {
-            text-align: left;
+        .bowling-score-header .bowling-score-logo.blank {
+            display: grid;
+            place-items: center;
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--bowling-text);
         }
 
-        .tv-card.bowling-card .tv-table td {
-            height: 42px;
-            font-size: 19px;
-            color: #050b16;
+        .bowling-score-title {
+            min-width: 0;
+            font-size: clamp(42px, 5.2vw, 74px);
+            line-height: .9;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 0 3px 10px rgba(0,0,0,.34);
         }
 
-        .tv-card.bowling-card .col-player {
-            width: 50%;
-        }
-
-        .tv-card.bowling-card .col-runs {
-            width: 12.5%;
-        }
-
-        .tv-card.bowling-card .player {
-            padding-left: 14px;
+        .bowling-score-subtitle {
+            margin-top: 12px;
             font-size: 18px;
-            text-align: left;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: color-mix(in srgb, var(--bowling-text) 82%, var(--bowling-accent) 18%);
         }
 
-        .tv-card.bowling-card .runs {
-            padding: 0 10px;
+        .bowling-score-main {
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            padding: 42px 54px 22px;
+            background:
+                repeating-linear-gradient(135deg, rgba(255,255,255,.035) 0 2px, transparent 2px 28px),
+                linear-gradient(90deg,
+                    color-mix(in srgb, var(--bowling-primary) 90%, #050914 10%),
+                    color-mix(in srgb, var(--bowling-primary) 74%, var(--bowling-accent) 26%));
+        }
+
+        .bowling-score-table-wrap {
+            position: relative;
+            min-height: 0;
+            padding: 58px 34px 88px;
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--bowling-primary) 82%, #06101f 18%);
+            box-shadow: 0 20px 48px rgba(0,0,0,.26), inset 0 0 0 1px rgba(255,255,255,.07);
+        }
+
+        .bowling-stat-ribbon {
+            position: absolute;
+            top: 0;
+            left: 32%;
+            right: 30px;
+            height: 48px;
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            align-items: center;
+            color: color-mix(in srgb, var(--bowling-primary) 78%, #000000 22%);
+            background: linear-gradient(90deg, var(--bowling-accent), color-mix(in srgb, var(--bowling-accent) 82%, #fff700 18%));
+            font-size: clamp(18px, 1.7vw, 28px);
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+        }
+
+        .bowling-stat-ribbon span {
             text-align: center;
-            font-size: 20px;
+            border-left: 1px solid color-mix(in srgb, var(--bowling-primary) 28%, transparent);
+        }
+
+        .bowling-score-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .bowling-score-table col.bowler-name { width: 32%; }
+        .bowling-score-table col.bowler-stat { width: 13.6%; }
+
+        .bowling-score-table td {
+            height: clamp(50px, 5.25vh, 66px);
+            color: var(--bowling-text);
+            font-size: clamp(28px, 2.7vw, 42px);
+            line-height: 1;
+            font-weight: 800;
+            text-transform: uppercase;
+            text-shadow: 0 2px 8px rgba(0,0,0,.4);
+            vertical-align: middle;
+        }
+
+        .bowling-score-table td + td {
+            border-left: 1px solid color-mix(in srgb, var(--bowling-text) 24%, transparent);
+        }
+
+        .bowling-score-table .bowler-name-cell {
+            padding-left: 12px;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .bowling-score-table .bowler-stat-cell {
+            text-align: center;
             font-variant-numeric: tabular-nums;
         }
 
-        .tv-card.bowling-card .bowling-leader td {
-            background:
-                linear-gradient(90deg,
-                    color-mix(in srgb, var(--bowling-primary) 62%, #050b16 38%) 0%,
-                    #09111f 42%,
-                    color-mix(in srgb, var(--bowling-accent) 42%, #09111f 58%) 100%) !important;
-            color: #fff200 !important;
+        .bowling-score-table tr.current-bowler td {
+            color: color-mix(in srgb, var(--bowling-accent) 92%, #fff700 8%);
+            background: linear-gradient(90deg, rgba(0,0,0,.25), color-mix(in srgb, var(--bowling-accent) 22%, transparent), rgba(0,0,0,.2));
         }
 
-        .tv-card.bowling-card .bowling-leader td:first-child {
-            border-left: 4px solid var(--bowling-accent);
-        }
-
-        .tv-card.bowling-card .tv-footer {
-            min-height: 50px;
-            display: flex;
+        .bowling-fow-strip {
+            position: absolute;
+            left: 34px;
+            right: 34px;
+            bottom: 18px;
+            height: 58px;
+            display: grid;
+            grid-template-columns: 240px repeat(10, minmax(0, 1fr));
             align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(90deg, #020817 0%, #07111f 100%);
-        }
-
-        .tv-card.bowling-card .tv-footer div:first-child {
+            color: color-mix(in srgb, var(--bowling-primary) 78%, #000000 22%);
+            background: linear-gradient(90deg, var(--bowling-accent), color-mix(in srgb, var(--bowling-accent) 86%, #fff700 14%));
             font-size: 22px;
-            color: #fff;
+            text-transform: uppercase;
+            box-shadow: 0 -8px 20px rgba(0,0,0,.18);
         }
 
-        .tv-card.bowling-card .tv-total {
-            max-width: 62%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            color: #fff200;
-            font-size: 26px;
+        .bowling-fow-strip strong {
+            padding-left: 22px;
+            font-size: 24px;
+            letter-spacing: .8px;
+            font-weight: 700;
+        }
+
+        .bowling-fow-strip span {
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            justify-items: center;
+            gap: 2px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .bowling-fow-strip b,
+        .bowling-fow-strip em {
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        .bowling-score-footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            align-items: center;
+            padding: 0 54px;
+            color: color-mix(in srgb, var(--bowling-primary) 78%, #000000 22%);
+            background: linear-gradient(90deg, var(--bowling-accent), color-mix(in srgb, var(--bowling-accent) 84%, #fff700 16%));
+            font-size: clamp(28px, 3.2vw, 48px);
+            font-weight: 900;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+
+        .bowling-score-footer .footer-center {
+            text-align: center;
+        }
+
+        .bowling-score-footer .footer-score {
+            text-align: right;
+            font-size: clamp(40px, 4.4vw, 66px);
         }
 
         #breakGraphic.match-result-mode {
@@ -5513,7 +5614,7 @@
         }
 
         function escapeHtml(value) {
-            return String(value || "")
+            return String(value ?? "")
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
@@ -5599,6 +5700,17 @@
             return "0";
         }
 
+        function scorecardOversToBalls(overs) {
+            const [whole, balls = "0"] = String(overs || "0.0").split(".");
+            return (Number(whole) || 0) * 6 + (Number(balls) || 0);
+        }
+
+        function formatBowlingEconomy(overs, runs) {
+            const balls = scorecardOversToBalls(overs);
+            if (!balls) return "0.00";
+            return ((Number(runs) || 0) / (balls / 6)).toFixed(2);
+        }
+
         function formatScorecardDismissal(text) {
             const raw = String(text || "").replace(/\s+/g, " ").trim();
             if (!raw || /not\s*out/i.test(raw)) {
@@ -5657,66 +5769,112 @@
                 scoreboardBar.classList.remove("show");
             }
 
-            // ===== BUILD ROWS =====
+            const isTeamABowling = (data.bowlingTeam || "") === overlayState.teamA;
+            const fallbackColors = isTeamABowling ? overlayState.teamAColors : overlayState.teamBColors;
+            const primary = normalizeHexColor(
+                isTeamABowling ? data.teamAPrimaryColor : data.teamBPrimaryColor,
+                fallbackColors.primary
+            );
+            const accent = normalizeHexColor(
+                isTeamABowling ? data.teamAAccentColor : data.teamBAccentColor,
+                fallbackColors.accent
+            );
+            const text = normalizeHexColor(
+                isTeamABowling ? data.teamATextColor : data.teamBTextColor,
+                fallbackColors.text || "#FFFFFF"
+            );
+            const bowlingLogo = data.bowlingTeamLogo || (isTeamABowling ? (data.teamALogo || overlayState.teamALogo) : (data.teamBLogo || overlayState.teamBLogo));
+            const bowlers = [...(data.bowlers || [])];
+            const cardStyle = `--bowling-primary:${primary};--bowling-accent:${accent};--bowling-text:${text};`;
+            const teamName = (data.bowlingTeam || "BOWLING").toUpperCase();
+
             let rows = "";
-
-            const sortedBowlers = [...(data.bowlers || [])]
-                .sort((a, b) => (Number(b.wickets || 0) - Number(a.wickets || 0)) || (Number(a.runs || 0) - Number(b.runs || 0)));
-
-            sortedBowlers.forEach((b, index) => {
+            bowlers.forEach((b, index) => {
                 const maidens = b.maidens === undefined || b.maidens === null || b.maidens === "" ? 0 : b.maidens;
+                const overs = b.overs || "0.0";
+                const economy = b.economy || b.econ || formatBowlingEconomy(overs, b.runs);
                 rows += `
-                                                                                    <tr class="${index === 0 ? 'bowling-leader' : ''}">
-                                                                                        <td class="player">${formatScorecardPlayer(b.name)}</td>
-                                                                                        <td class="runs">${escapeHtml(b.overs || "0.0")}</td>
-                                                                                        <td class="runs">${escapeHtml(maidens)}</td>
-                                                                                        <td class="runs">${escapeHtml(b.runs ?? 0)}</td>
-                                                                                        <td class="runs">${escapeHtml(b.wickets ?? 0)}</td>
-                                                                                    </tr>
-                                                                                `;
+                    <tr>
+                        <td class="bowler-name-cell">${formatScorecardPlayer(b.name)}</td>
+                        <td class="bowler-stat-cell">${escapeHtml(overs)}</td>
+                        <td class="bowler-stat-cell">${escapeHtml(maidens)}</td>
+                        <td class="bowler-stat-cell">${escapeHtml(b.runs ?? 0)}</td>
+                        <td class="bowler-stat-cell">${escapeHtml(b.wickets ?? 0)}</td>
+                        <td class="bowler-stat-cell">${escapeHtml(economy)}</td>
+                    </tr>
+                `;
             });
 
             if (!rows) {
                 rows = `
                     <tr>
-                        <td class="player">No bowlers yet</td>
-                        <td class="runs">0.0</td>
-                        <td class="runs">0</td>
-                        <td class="runs">0</td>
-                        <td class="runs">0</td>
+                        <td class="bowler-name-cell">NO BOWLERS YET</td>
+                        <td class="bowler-stat-cell">0.0</td>
+                        <td class="bowler-stat-cell">0</td>
+                        <td class="bowler-stat-cell">0</td>
+                        <td class="bowler-stat-cell">0</td>
+                        <td class="bowler-stat-cell">0.00</td>
                     </tr>
                 `;
             }
 
-            // ===== INJECT HTML (THIS WAS MISSING) =====
-            el.innerHTML = `
-                                                                                <div class="tv-card bowling-card">
-                                                                                    <div class="tv-header">
-                                                                                        <div class="espn-banner">MKTV</div>
-                                                                                        <div class="header-team bowling-team"><span>${escapeHtml((data.bowlingTeam || "BOWLING").toUpperCase())}</span></div>
-                                                                                        <div class="header-overs">${escapeHtml(data.overs || "0.0")} OVERS</div>
-                                                                                    </div>
+            const fowItems = Array.isArray(data.fallOfWickets) ? data.fallOfWickets.slice(0, 10) : [];
+            const fowCells = Array.from({ length: 10 }, (_, index) => {
+                const wicket = fowItems[index];
+                return `
+                    <span>
+                        <b>${index + 1}</b>
+                        <em>${escapeHtml(wicket?.score || "")}</em>
+                    </span>
+                `;
+            }).join("");
 
-                                                                                    <table class="tv-table">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th class="col-player">BOWLER</th>
-                                                                                                <th class="col-runs">O</th>
-                                                                                                <th class="col-runs">M</th>
-                                                                                                <th class="col-runs">R</th>
-                                                                                                <th class="col-runs">W</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                            ${rows}
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                    <div class="tv-footer">
-                                                                                        <div>BOWLERS ${escapeHtml(String(sortedBowlers.length))}</div>
-                                                                                        <div class="tv-total">${escapeHtml((data.bowlingTeam || "BOWLING").toUpperCase())}</div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            `;
+            el.innerHTML = `
+                <div class="tv-card bowling-card full-screen-bowling-card" style="${cardStyle}">
+                    <div class="bowling-score-header">
+                        ${bowlingLogo
+                            ? `<img class="bowling-score-logo" src="${escapeHtml(bowlingLogo)}" alt="">`
+                            : `<div class="bowling-score-logo blank">${escapeHtml(teamName.slice(0, 2))}</div>`}
+                        <div>
+                            <div class="bowling-score-title">${escapeHtml(teamName)}</div>
+                            <div class="bowling-score-subtitle">Bowling Scorecard</div>
+                        </div>
+                    </div>
+
+                    <div class="bowling-score-main">
+                        <div class="bowling-score-table-wrap">
+                            <div class="bowling-stat-ribbon">
+                                <span>Overs</span>
+                                <span>Maidens</span>
+                                <span>Runs</span>
+                                <span>Wickets</span>
+                                <span>Economy</span>
+                            </div>
+                            <table class="bowling-score-table">
+                                <colgroup>
+                                    <col class="bowler-name">
+                                    <col class="bowler-stat">
+                                    <col class="bowler-stat">
+                                    <col class="bowler-stat">
+                                    <col class="bowler-stat">
+                                    <col class="bowler-stat">
+                                </colgroup>
+                                <tbody>${rows}</tbody>
+                            </table>
+                            <div class="bowling-fow-strip">
+                                <strong>Fall Of Wickets</strong>
+                                ${fowCells}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bowling-score-footer">
+                        <div>Extras ${escapeHtml(data.extras ?? 0)}</div>
+                        <div class="footer-center">Overs ${escapeHtml(data.overs || "0.0")}</div>
+                        <div class="footer-score">${escapeHtml(String(data.score || "0/0").replace("/", "-"))}</div>
+                    </div>
+                </div>
+            `;
 
             // ===== SHOW =====
             el.style.display = "none"; // reset
@@ -5724,7 +5882,7 @@
 
             el.style.display = "block";
             el.style.opacity = "1";
-            el.style.transform = "translate(-50%, -50%) scale(1)";
+            el.style.transform = "none";
             if (scorecardDim) scorecardDim.classList.add("show");
             isFullScorecardVisible = true;
 
