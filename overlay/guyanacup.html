@@ -2720,6 +2720,8 @@
             min-width: 0;
             min-height: 0;
             height: auto;
+            padding-top: 3px;
+            padding-bottom: 3px;
             color: var(--bowling-text);
             font-size: clamp(24px, 2.1vw, 34px);
             line-height: 1;
@@ -5847,7 +5849,8 @@
             const bowlingLogo = data.bowlingTeamLogo || (isTeamABowling ? (data.teamALogo || overlayState.teamALogo) : (data.teamBLogo || overlayState.teamBLogo));
             const bowlers = [...(data.bowlers || [])];
             const bowlerDensityClass = bowlers.length > 7 ? " many-bowlers" : "";
-            const cardStyle = `--bowling-primary:${primary};--bowling-accent:${accent};--bowling-text:${text};--bowler-row-capacity:11;`;
+            const bowlerRowCapacity = bowlers.length > 7 ? 11 : (bowlers.length > 4 ? 9 : 7);
+            const cardStyle = `--bowling-primary:${primary};--bowling-accent:${accent};--bowling-text:${text};--bowler-row-capacity:${bowlerRowCapacity};`;
             const teamName = (data.bowlingTeam || "BOWLING").toUpperCase();
 
             let rows = "";
