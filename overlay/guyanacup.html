@@ -2624,10 +2624,10 @@
 
         .bowling-score-title {
             min-width: 0;
-            font-size: clamp(42px, 5.2vw, 74px);
+            font-size: clamp(34px, 4.25vw, 62px);
             line-height: .9;
             font-weight: 900;
-            letter-spacing: 2px;
+            letter-spacing: 1.4px;
             text-transform: uppercase;
             white-space: nowrap;
             overflow: hidden;
@@ -2668,7 +2668,7 @@
         .bowling-stat-ribbon {
             position: absolute;
             top: 0;
-            left: 32%;
+            left: 38%;
             right: 30px;
             height: 48px;
             display: grid;
@@ -2676,9 +2676,9 @@
             align-items: center;
             color: color-mix(in srgb, var(--bowling-primary) 78%, #000000 22%);
             background: linear-gradient(90deg, var(--bowling-accent), color-mix(in srgb, var(--bowling-accent) 82%, #fff700 18%));
-            font-size: clamp(18px, 1.7vw, 28px);
+            font-size: clamp(16px, 1.35vw, 22px);
             font-weight: 700;
-            letter-spacing: 1.4px;
+            letter-spacing: .9px;
             text-transform: uppercase;
         }
 
@@ -2693,15 +2693,15 @@
             table-layout: fixed;
         }
 
-        .bowling-score-table col.bowler-name { width: 32%; }
-        .bowling-score-table col.bowler-stat { width: 13.6%; }
+        .bowling-score-table col.bowler-name { width: 38%; }
+        .bowling-score-table col.bowler-stat { width: 12.4%; }
 
         .bowling-score-table td {
             height: clamp(50px, 5.25vh, 66px);
             color: var(--bowling-text);
-            font-size: clamp(28px, 2.7vw, 42px);
+            font-size: clamp(24px, 2.1vw, 34px);
             line-height: 1;
-            font-weight: 800;
+            font-weight: 700;
             text-transform: uppercase;
             text-shadow: 0 2px 8px rgba(0,0,0,.4);
             vertical-align: middle;
@@ -2712,8 +2712,8 @@
         }
 
         .bowling-score-table .bowler-name-cell {
-            padding-left: 12px;
-            letter-spacing: 1px;
+            padding-left: 10px;
+            letter-spacing: .5px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -5795,7 +5795,7 @@
                 const economy = b.economy || b.econ || formatBowlingEconomy(overs, b.runs);
                 rows += `
                     <tr>
-                        <td class="bowler-name-cell">${formatScorecardPlayer(b.name)}</td>
+                        <td class="bowler-name-cell">${formatScorecardBatter(b.name)}</td>
                         <td class="bowler-stat-cell">${escapeHtml(overs)}</td>
                         <td class="bowler-stat-cell">${escapeHtml(maidens)}</td>
                         <td class="bowler-stat-cell">${escapeHtml(b.runs ?? 0)}</td>
