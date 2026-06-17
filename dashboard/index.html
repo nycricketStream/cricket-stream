@@ -6741,7 +6741,6 @@ CURRENT OVER SUMMARY
                 bowlerSelect.focus();
                 openBowlerPopup();
                 setScoringEnabled(false);
-                sendEndOfOverGraphic();
             }
 
             if (isOverComplete()) {
@@ -9541,12 +9540,6 @@ CURRENT OVER SUMMARY
                 // falls on last ball of over.
                 // New batter comes in next over.
                 lastOverBowler = currentBowler;
-                sendEvent('overSummary', {
-                    team: batting.value,
-                    score: `${liveTotal}/${liveWickets}`,
-                    overs: `${Math.floor(liveBalls / 6)}.${liveBalls % 6}`,
-                    rr: calculateRR()
-                });
                 const bowlerSelect =
                     document.getElementById('bowler');
                 if (bowlerSelect) {
