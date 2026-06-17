@@ -4940,13 +4940,6 @@
 
             log("MANUAL RECEIVED: ", data);
 
-            if (data.dismissal && data.dismissal !== lastDismissalShown) {
-                lastDismissalShown = data.dismissal;
-                enqueueOverlay("wicket", 6500, () => {
-                    showWicketSequence(data);
-                });
-            }
-
             if (!isFullScorecardVisible) {
                 document.getElementById("scoreboard").classList.add("show");
             }
