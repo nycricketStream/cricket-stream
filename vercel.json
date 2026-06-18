@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/youtube-to-facebook?secret=cOP89VBZV#%#",
+      "path": "/api/youtube-to-facebook?secret=6gDR052ziJUU",
       "schedule": "*/10 * * * *"
     }
   ]
