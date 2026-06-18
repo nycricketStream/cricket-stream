@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/youtube-to-facebook?secret=cOP89VBZV#%#",
+      "schedule": "*/10 * * * *"
+    }
+  ]
+}
