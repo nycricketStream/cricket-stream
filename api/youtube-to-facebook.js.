@@ -1,0 +1,80 @@
+import { XMLParser } from "fast-xml-parser";
+
+export default async function handler(req, res) {
+  try {
+    // Security check
+    if (req.query.secret !== process.env.CRON_SECRET) {
+      return res.status(401).json({
+        error: "Unauthorized"
+      });
+    }
+
+    // Get latest video from YouTube RSS
+    const rssUrl =
+      `https://www.youtube.com/feeds/videos.xml?channel_id=${process.env.YOUTUBE_CHANNEL_ID}`;
+
+    const rssResponse = await fetch(rssUrl);
+
+    if (!rssResponse.ok) {
+      throw new Error("Failed to read YouTube RSS");
+    }
+
+    const xml = await rssResponse.text();
+
+    const parser = new XMLParser({
+      ignoreAttributes: false
+    });
+
+    const feed = parser.parse(xml);
+
+    const entry = Array.isArray(feed.feed.entry)
+      ? feed.feed.entry[0]
+      : feed.feed.entry;
+
+    if (!entry) {
+      return res.status(404).json({
+        error: "No videos found"
+      });
+    }
+
+    const videoId = entry["yt:videoId"];
+    const title = entry.title;
+
+    const youtubeUrl = `https://youtu.be/${videoId}`;
+
+    const message = `🔴 LIVE NOW
+
+${title}
+
+Watch Live:
+${youtubeUrl}`;
+
+    // Post to Facebook
+    const fbResponse = await fetch(
+      `https://graph.facebook.com/${process.env.FACEBOOK_PAGE_ID}/feed`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message,
+          access_token: process.env.FACEBOOK_PAGE_ACCESS_TOKEN
+        })
+      }
+    );
+
+    const fbResult = await fbResponse.json();
+
+    return res.json({
+      success: true,
+      youtubeUrl,
+      facebook: fbResult
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message
+    });
+  }
+}
