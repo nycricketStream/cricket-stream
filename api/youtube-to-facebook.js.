@@ -1,22 +1,26 @@
+import { kv } from "@vercel/kv";
 import { XMLParser } from "fast-xml-parser";
 
 export default async function handler(req, res) {
   try {
-    // Security check
     if (req.query.secret !== process.env.CRON_SECRET) {
-      return res.status(401).json({
-        error: "Unauthorized"
-      });
+      return res.status(401).json({ error: "Unauthorized" });
     }
 
-    // Get latest video from YouTube RSS
-    const rssUrl =
-      `https://www.youtube.com/feeds/videos.xml?channel_id=${process.env.YOUTUBE_CHANNEL_ID}`;
+    const channelId = process.env.YOUTUBE_CHANNEL_ID;
+
+    if (!channelId) {
+      return res.status(400).json({ error: "Missing YOUTUBE_CHANNEL_ID" });
+    }
+
+    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
 
     const rssResponse = await fetch(rssUrl);
 
     if (!rssResponse.ok) {
-      throw new Error("Failed to read YouTube RSS");
+      return res.status(500).json({
+        error: `YouTube RSS failed: ${rssResponse.status}`
+      });
     }
 
     const xml = await rssResponse.text();
@@ -26,21 +30,33 @@ export default async function handler(req, res) {
     });
 
     const feed = parser.parse(xml);
+    const entries = feed.feed?.entry;
 
-    const entry = Array.isArray(feed.feed.entry)
-      ? feed.feed.entry[0]
-      : feed.feed.entry;
-
-    if (!entry) {
-      return res.status(404).json({
-        error: "No videos found"
-      });
+    if (!entries) {
+      return res.status(404).json({ error: "No YouTube videos found" });
     }
 
-    const videoId = entry["yt:videoId"];
-    const title = entry.title;
+    const latest = Array.isArray(entries) ? entries[0] : entries;
 
-    const youtubeUrl = `https://youtu.be/${videoId}`;
+    const videoId = latest["yt:videoId"];
+    const title = latest.title || "NYC Eagles Live";
+    const youtubeUrl = latest.link?.["@_href"] || `https://youtu.be/${videoId}`;
+
+    if (!videoId) {
+      return res.status(400).json({ error: "Could not read YouTube video ID" });
+    }
+
+    const alreadyPosted = await kv.get(`youtubeFbPosted:${videoId}`);
+
+    if (alreadyPosted) {
+      return res.status(200).json({
+        posted: false,
+        reason: "Already posted",
+        videoId,
+        title,
+        youtubeUrl
+      });
+    }
 
     const message = `🔴 LIVE NOW
 
@@ -49,7 +65,6 @@ ${title}
 Watch Live:
 ${youtubeUrl}`;
 
-    // Post to Facebook
     const fbResponse = await fetch(
       `https://graph.facebook.com/${process.env.FACEBOOK_PAGE_ID}/feed`,
       {
@@ -66,15 +81,31 @@ ${youtubeUrl}`;
 
     const fbResult = await fbResponse.json();
 
-    return res.json({
-      success: true,
+    if (!fbResponse.ok) {
+      return res.status(500).json({
+        error: "Facebook post failed",
+        facebook: fbResult
+      });
+    }
+
+    await kv.set(`youtubeFbPosted:${videoId}`, {
+      videoId,
+      title,
+      youtubeUrl,
+      facebookPost: fbResult,
+      postedAt: new Date().toISOString()
+    });
+
+    return res.status(200).json({
+      posted: true,
+      videoId,
+      title,
       youtubeUrl,
       facebook: fbResult
     });
 
   } catch (err) {
-    return res.status(500).json({
-      error: err.message
-    });
+    console.error(err);
+    return res.status(500).json({ error: err.message });
   }
 }
