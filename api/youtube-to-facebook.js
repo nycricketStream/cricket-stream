@@ -54,7 +54,6 @@ export default async function handler(req, res) {
     }
 
     const latest = Array.isArray(entries) ? entries[0] : entries;
-
     const videoId = latest["yt:videoId"];
     const title = latest.title || "NY Eagles CC Live";
     const published = latest.published || null;
