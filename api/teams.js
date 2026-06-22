@@ -1,66 +1,159 @@
 import { kv } from '@vercel/kv';
 
 const defaultColors = {
-  primaryColor: '#0A1A3F',
-  accentColor: '#D4A017',
-  textColor: '#FFFFFF'
+    primaryColor: '#0A1A3F',
+    accentColor: '#D4A017',
+    textColor: '#FFFFFF'
 };
 
 function normalizeColor(value, fallback) {
-  const clean = String(value || '').trim();
-  return /^#[0-9a-fA-F]{6}$/.test(clean) ? clean.toUpperCase() : fallback;
+    const clean = String(value || '').trim();
+
+    if (/^#[0-9A-Fa-f]{6}$/.test(clean)) {
+        return clean.toUpperCase();
+    }
+
+    return fallback;
 }
 
+
 export default async function handler(req, res) {
-  try {
+
+
+    // SAVE TEAM
     if (req.method === 'POST') {
-      const {
-        name,
-        logo,
-        players,
-        primaryColor,
-        accentColor,
-        textColor
-      } = req.body || {};
 
-      if (!name) return res.status(400).json({ error: 'No name' });
+        try {
 
-      await kv.set(`team:${name}`, {
-        name,
-        logo: logo || '',
-        primaryColor: normalizeColor(primaryColor, defaultColors.primaryColor),
-        accentColor: normalizeColor(accentColor, defaultColors.accentColor),
-        textColor: normalizeColor(textColor, defaultColors.textColor),
-        players: Array.isArray(players) ? players : []
-      });
+            const {
+                name,
+                logo,
+                players,
+                primaryColor,
+                accentColor,
+                textColor
+            } = req.body;
 
-      return res.status(200).json({ success: true });
+
+            if (!name) {
+                return res.status(400).json({
+                    error: 'Missing team name'
+                });
+            }
+
+
+            await kv.set(`team:${name}`, {
+                name,
+                logo: logo || '',
+                players: Array.isArray(players) ? players : [],
+
+                primaryColor: normalizeColor(
+                    primaryColor,
+                    defaultColors.primaryColor
+                ),
+
+                accentColor: normalizeColor(
+                    accentColor,
+                    defaultColors.accentColor
+                ),
+
+                textColor: normalizeColor(
+                    textColor,
+                    defaultColors.textColor
+                )
+            });
+
+
+            return res.json({
+                success: true
+            });
+
+
+        } catch (err) {
+
+            return res.status(500).json({
+                error: 'Failed to save team',
+                details: err.message
+            });
+
+        }
+
     }
 
+
+
+    // LOAD TEAMS
     if (req.method === 'GET') {
-      const keys = await kv.keys('team:*');
-      const teams = [];
 
-      for (const key of keys) {
-        const data = await kv.get(key);
-        if (data) teams.push(data);
-      }
+        try {
 
-      return res.status(200).json(teams);
+            const keys = await kv.keys('team:*');
+
+            const teams = [];
+
+
+            for (const key of keys) {
+
+                const team = await kv.get(key);
+
+                if (team) {
+                    teams.push(team);
+                }
+
+            }
+
+
+            return res.json(teams);
+
+
+        } catch (err) {
+
+            return res.status(500).json({
+                error: 'Failed to load teams',
+                details: err.message
+            });
+
+        }
+
     }
 
+
+
+    // DELETE TEAM
     if (req.method === 'DELETE') {
-      const { name } = req.body || {};
-      if (!name) return res.status(400).json({ error: 'No name' });
 
-      await kv.del(`team:${name}`);
-      return res.status(200).json({ success: true });
+        try {
+
+            const { name } = req.body;
+
+
+            if (!name) {
+                return res.status(400).json({
+                    error: 'Missing team name'
+                });
+            }
+
+
+            await kv.del(`team:${name}`);
+
+
+            return res.json({
+                success: true
+            });
+
+
+        } catch (err) {
+
+            return res.status(500).json({
+                error: 'Failed to delete team',
+                details: err.message
+            });
+
+        }
+
     }
 
-    return res.status(405).json({ error: 'Method not allowed' });
 
-  } catch (err) {
-    console.error('teams.js error:', err);
-    return res.status(500).json({ error: err.message });
-  }
+    res.status(405).end();
+
 }
