@@ -2040,6 +2040,12 @@
             margin-top: 10px;
         }
 
+        #match .setup-side-stack {
+            display: grid;
+            gap: 10px;
+            align-content: start;
+        }
+
         #match .setup-card {
             padding: 13px 14px;
         }
@@ -2116,18 +2122,8 @@
             padding: 10px 12px;
         }
 
-        #match .facebook-share-card {
-            grid-column: 2;
-        }
-
         #match > .setup-card[style] {
             margin-top: 10px !important;
-        }
-
-        @media (max-width: 1100px) {
-            #match .facebook-share-card {
-                grid-column: auto;
-            }
         }
 
         #teamManager.active {
@@ -3845,45 +3841,49 @@
 
                 </div>
 
-                <!-- SAVED MATCHES -->
-                <div class="setup-card">
+                <div class="setup-side-stack">
 
-                    <h4>Saved Matches</h4>
+                    <!-- SAVED MATCHES -->
+                    <div class="setup-card">
 
-                    <label>Cloud Saves</label>
+                        <h4>Saved Matches</h4>
 
-                    <select id="matchList"></select>
+                        <label>Cloud Saves</label>
 
-                    <div class="setup-actions">
+                        <select id="matchList"></select>
 
-                        <button onclick="loadMatchFromCloud()">
-                            Load Match
-                        </button>
+                        <div class="setup-actions">
 
-                        <button onclick="deleteMatch()">
-                            Delete Match
-                        </button>
+                            <button onclick="loadMatchFromCloud()">
+                                Load Match
+                            </button>
+
+                            <button onclick="deleteMatch()">
+                                Delete Match
+                            </button>
+
+                        </div>
 
                     </div>
 
-                </div>
+                    <!-- LIVE STREAM SHARING -->
+                    <div class="setup-card">
 
-                <!-- LIVE STREAM SHARING -->
-                <div class="setup-card facebook-share-card">
+                        <h4>Live Stream Sharing</h4>
 
-                    <h4>Live Stream Sharing</h4>
+                        <label>YouTube Live</label>
 
-                    <label>YouTube Live</label>
+                        <div class="setup-actions">
 
-                    <div class="setup-actions">
+                            <button onclick="postYouTubeLiveToFacebook()">
+                                <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M22 2 11 13"></path>
+                                    <path d="m22 2-7 20-4-9-9-4 20-7z"></path>
+                                </svg>
+                                <span>Post Live Stream To Facebook</span>
+                            </button>
 
-                        <button onclick="postYouTubeLiveToFacebook()">
-                            <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M22 2 11 13"></path>
-                                <path d="m22 2-7 20-4-9-9-4 20-7z"></path>
-                            </svg>
-                            <span>Post Live Stream To Facebook</span>
-                        </button>
+                        </div>
 
                     </div>
 
@@ -9254,8 +9254,8 @@ CURRENT OVER SUMMARY
 
             if (!secret) {
                 secret = await showAppDialog({
-                    title: "Facebook Live Post",
-                    message: "Enter the API secret for YouTube to Facebook.",
+                    title: "Facebook live post",
+                    message: "Enter the API secret for /api/youtube-to-facebook.",
                     input: true,
                     placeholder: "Secret",
                     okText: "Save",
