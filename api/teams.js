@@ -18,8 +18,6 @@ function normalizeColor(value, fallback) {
 
 
 export default async function handler(req, res) {
-
-
     // SAVE TEAM
     if (req.method === 'POST') {
 
