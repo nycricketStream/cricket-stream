@@ -2116,8 +2116,18 @@
             padding: 10px 12px;
         }
 
+        #match .facebook-share-card {
+            grid-column: 2;
+        }
+
         #match > .setup-card[style] {
             margin-top: 10px !important;
+        }
+
+        @media (max-width: 1100px) {
+            #match .facebook-share-card {
+                grid-column: auto;
+            }
         }
 
         #teamManager.active {
@@ -3852,6 +3862,27 @@
 
                         <button onclick="deleteMatch()">
                             Delete Match
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <!-- LIVE STREAM SHARING -->
+                <div class="setup-card facebook-share-card">
+
+                    <h4>Live Stream Sharing</h4>
+
+                    <label>YouTube Live</label>
+
+                    <div class="setup-actions">
+
+                        <button onclick="postYouTubeLiveToFacebook()">
+                            <svg class="app-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M22 2 11 13"></path>
+                                <path d="m22 2-7 20-4-9-9-4 20-7z"></path>
+                            </svg>
+                            <span>Post Live Stream To Facebook</span>
                         </button>
 
                     </div>
@@ -6741,7 +6772,6 @@ CURRENT OVER SUMMARY
                 bowlerSelect.focus();
                 openBowlerPopup();
                 setScoringEnabled(false);
-                sendEndOfOverGraphic();
             }
 
             if (isOverComplete()) {
@@ -9219,6 +9249,47 @@ CURRENT OVER SUMMARY
             loadMatchList();
         }
 
+        async function postYouTubeLiveToFacebook() {
+            let secret = localStorage.getItem("youtubeFacebookSecret") || "";
+
+            if (!secret) {
+                secret = await showAppDialog({
+                    title: "Facebook live post",
+                    message: "Enter the API secret for /api/youtube-to-facebook.",
+                    input: true,
+                    placeholder: "Secret",
+                    okText: "Save",
+                    cancelText: "Cancel"
+                });
+
+                secret = String(secret || "").trim();
+                if (!secret) return;
+                localStorage.setItem("youtubeFacebookSecret", secret);
+            }
+
+            try {
+                const response = await fetch(`/api/youtube-to-facebook?secret=${encodeURIComponent(secret)}`);
+                let payload = {};
+                try {
+                    payload = await response.json();
+                } catch (error) {
+                    payload = {};
+                }
+
+                if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        localStorage.removeItem("youtubeFacebookSecret");
+                    }
+                    showModal(payload.error || "Could not post live stream to Facebook");
+                    return;
+                }
+
+                showModal(payload.message || "Live stream posted to Facebook");
+            } catch (error) {
+                showModal("Could not reach the YouTube to Facebook endpoint");
+            }
+        }
+
         /* ========== Helper, Set Scoring to Enavle buttons =============== */
         function setScoringEnabled(enabled) {
             const buttons = document.querySelectorAll(
@@ -9541,12 +9612,6 @@ CURRENT OVER SUMMARY
                 // falls on last ball of over.
                 // New batter comes in next over.
                 lastOverBowler = currentBowler;
-                sendEvent('overSummary', {
-                    team: batting.value,
-                    score: `${liveTotal}/${liveWickets}`,
-                    overs: `${Math.floor(liveBalls / 6)}.${liveBalls % 6}`,
-                    rr: calculateRR()
-                });
                 const bowlerSelect =
                     document.getElementById('bowler');
                 if (bowlerSelect) {
