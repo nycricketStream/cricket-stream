@@ -5,7 +5,7 @@ const defaultColors = {
     accentColor: '#D4A017',
     textColor: '#FFFFFF'
 };
-
+ 
 function normalizeColor(value, fallback) {
     const clean = String(value || '').trim();
 
