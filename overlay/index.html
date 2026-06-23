@@ -103,12 +103,12 @@
             max-width: 540px;
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--batting-primary) 82%, #000 18%) 0%,
-                    color-mix(in srgb, var(--batting-primary) 58%, #071426 42%) 62%,
+                    var(--batting-primary) 0%,
+                    var(--batting-primary) 62%,
                     #071426 100%);
             border-radius: 6px;
             border-left: 5px solid var(--batting-accent);
-            box-shadow: 0 6px 20px rgba(0,0,0,.6), 0 0 20px color-mix(in srgb, var(--batting-accent) 22%, transparent), inset 0 0 12px rgba(255,255,255,0.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,.6), 0 0 20px var(--batting-accent), inset 0 0 12px rgba(255,255,255,0.05);
             overflow: hidden;
         }
 
@@ -157,7 +157,7 @@
         .lt-accent {
             width: 6px;
             height: 100%;
-            background: linear-gradient(var(--batting-accent), color-mix(in srgb, var(--batting-primary) 64%, #000 36%));
+            background: linear-gradient(var(--batting-accent), var(--batting-primary));
         }
 
         /* Content block */
@@ -170,7 +170,7 @@
         .lt-team {
             font-size: 10px;
             font-weight: 500;
-            color: color-mix(in srgb, var(--batting-accent) 70%, #fff 30%);
+            color: var(--batting-accent);
             letter-spacing: 1.2px;
             line-height: 14px;
         }
@@ -208,7 +208,7 @@
         .lt-role {
             font-size: 12px;
             font-weight: 500;
-            color: color-mix(in srgb, var(--batting-accent) 42%, #fff 58%);
+            color: var(--batting-accent);
             line-height: 16px;
         }
 
@@ -229,14 +229,14 @@
         }
 
         #playerImage {
-            width: 58px;
-            height: 58px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             object-fit: cover;
             flex-shrink: 0;
             display: none;
             border: 2px solid rgba(255,255,255,0.25);
-            box-shadow: 0 0 0 2px var(--batting-accent), 0 0 10px color-mix(in srgb, var(--batting-accent) 72%, transparent);
+            box-shadow: 0 0 0 2px var(--batting-accent), 0 0 10px var(--batting-accent);
             transform: scale(.85);
             opacity: 0;
         }
@@ -260,15 +260,15 @@
 
         @keyframes playerPulse {
             0% {
-                box-shadow: 0 0 0 2px var(--batting-accent), 0 0 12px color-mix(in srgb, var(--batting-accent) 70%, transparent), 0 0 25px color-mix(in srgb, var(--batting-accent) 48%, transparent);
+                box-shadow: 0 0 0 2px var(--batting-accent), 0 0 12px var(--batting-accent), 0 0 25px var(--batting-accent);
             }
 
             50% {
-                box-shadow: 0 0 0 3px var(--batting-accent), 0 0 18px color-mix(in srgb, var(--batting-accent) 78%, transparent), 0 0 35px color-mix(in srgb, var(--batting-accent) 54%, transparent);
+                box-shadow: 0 0 0 3px var(--batting-accent), 0 0 18px var(--batting-accent), 0 0 35px var(--batting-accent);
             }
 
             100% {
-                box-shadow: 0 0 0 2px var(--batting-accent), 0 0 12px color-mix(in srgb, var(--batting-accent) 70%, transparent), 0 0 25px color-mix(in srgb, var(--batting-accent) 48%, transparent);
+                box-shadow: 0 0 0 2px var(--batting-accent), 0 0 12px var(--batting-accent), 0 0 25px var(--batting-accent);
             }
         }
 
@@ -288,7 +288,7 @@
             position: absolute;
             inset: 0;
             border-radius: 8px;
-            box-shadow: 0 0 25px color-mix(in srgb, var(--bowling-accent) 30%, transparent);
+            box-shadow: 0 0 25px var(--bowling-accent);
             opacity: 0;
             transition: opacity .4s ease;
         }
@@ -301,18 +301,18 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            padding: 18px 26px 22px;
-            min-height: 166px;
-            width: 360px;
-            max-width: 360px;
+            gap: 7px;
+            padding: 15px 18px 17px;
+            min-height: 158px;
+            width: 292px;
+            max-width: 292px;
             background:
-                radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--bowling-accent) 18%, transparent) 0%, transparent 36%),
+                radial-gradient(circle at 50% 0%, var(--bowling-accent) 0%, transparent 36%),
                 linear-gradient(100deg,
-                    color-mix(in srgb, var(--bowling-primary) 76%, #020817 24%) 0%,
+                    var(--bowling-primary) 0%,
                     #111827 72%,
                     #394150 100%);
-            border-radius: 6px;
+            border-radius: 8px;
             border-left: 6px solid var(--bowling-accent);
             box-shadow: 0 18px 38px rgba(0,0,0,.55), inset 0 0 18px rgba(255,255,255,0.04);
             opacity: 0;
@@ -350,41 +350,46 @@
         }
         
         #bowlerTeam {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 900;
-            color: color-mix(in srgb, var(--bowling-accent) 72%, #fff 28%);
+            color: var(--bowling-accent);
             letter-spacing: 1.2px;
             line-height: 12px;
             margin: 0;
             text-transform: uppercase;
+            max-width: 240px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         #bowlerLabel {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 800;
             color: var(--bowling-accent);
-            letter-spacing: 2px;
+            letter-spacing: 1.6px;
             line-height: 12px;
             text-transform: uppercase;
         }
 
         #bowlerCardName {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 900;
             color: #ffffff;
             text-transform: uppercase;
-            line-height: 30px;
+            line-height: 26px;
             margin: 0;
-            max-width: 100%;
+            max-width: 250px;
             white-space: normal;
             overflow: visible;
             text-overflow: clip;
+            letter-spacing: .4px;
         }
 
         #bowlerCardStats {
-            font-size: 12px;
+            font-size: 11px;
             color: #cbd5f5;
-            line-height: 14px;
+            line-height: 13px;
             margin: 0;
             font-weight: 800;
         }
@@ -394,15 +399,15 @@
         }
 
         #bowlerImage {
-            width: 68px;
-            height: 68px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             object-fit: cover;
             flex-shrink: 0;
             display: none;
             margin: 0 auto;
             border: 2px solid var(--bowling-accent);
-            box-shadow: 0 0 0 2px var(--bowling-accent), 0 0 10px color-mix(in srgb, var(--bowling-accent) 70%, transparent);
+            box-shadow: 0 0 0 2px var(--bowling-accent), 0 0 10px var(--bowling-accent);
             transform: scale(.85);
             opacity: 0;
         }
@@ -640,9 +645,10 @@
             color: var(--batting-text);
             background:
                 linear-gradient(108deg,
-                    color-mix(in srgb, var(--batting-primary) 86%, #000 14%) 0%,
-                    var(--batting-primary) 57%,
-                    color-mix(in srgb, var(--batting-accent) 76%, var(--batting-primary) 24%) 100%);
+                    #071426 0%,
+                    var(--batting-primary) 18%,
+                    var(--batting-primary) 61%,
+                    var(--batting-accent) 100%);
             padding: 0 42px 0 12px;
             overflow: hidden;
             clip-path: polygon(0 0, 96% 0, 86% 100%, 0 100%);
@@ -654,9 +660,9 @@
             color: var(--bowling-text);
             background:
                 linear-gradient(108deg,
-                    color-mix(in srgb, var(--bowling-primary) 88%, #000 12%) 0%,
-                    var(--bowling-primary) 68%,
-                    color-mix(in srgb, var(--bowling-accent) 24%, var(--bowling-primary) 76%) 100%);
+                    var(--bowling-primary) 0%,
+                    var(--bowling-primary) 70%,
+                    #071426 100%);
             padding: 0 8px 0 50px;
             clip-path: polygon(12% 0, 100% 0, 100% 100%, 0 100%);
         }
@@ -679,9 +685,9 @@
             top: -8px;
             bottom: -8px;
             width: 5px;
-            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--batting-accent) 52%, color-mix(in srgb, var(--batting-accent) 60%, #000 40%));
+            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--batting-accent) 52%, var(--batting-primary));
             transform: skewX(-18deg);
-            box-shadow: 0 0 10px color-mix(in srgb, var(--batting-accent) 34%, transparent);
+            box-shadow: 0 0 10px var(--batting-accent);
         }
 
         #sbTeamA::after {
@@ -697,8 +703,8 @@
             width: 48px;
             transform: none;
             clip-path: polygon(78% 0, 88% 0, 12% 100%, 2% 100%);
-            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--bowling-accent) 48%, color-mix(in srgb, var(--bowling-accent) 62%, #000 38%));
-            box-shadow: 0 0 8px color-mix(in srgb, var(--bowling-accent) 30%, transparent);
+            background: linear-gradient(180deg, rgba(255,255,255,.75), var(--bowling-accent) 48%, var(--bowling-primary));
+            box-shadow: 0 0 8px var(--bowling-accent);
         }
 
         #scoreboard .scoreLogoWrap {
@@ -911,11 +917,11 @@
 
         #bowlerName {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 24px;
+            grid-template-columns: minmax(0, 1fr) 26px;
             align-items: center;
-            gap: 7px;
+            gap: 9px;
             font-weight: 600;
-            font-size: 20px;
+            font-size: 19px;
             line-height: 22px;
             white-space: nowrap;
             overflow: hidden;
@@ -928,22 +934,21 @@
                 text-overflow: ellipsis;
             }
 
-            #bowlerName::after {
-                content: "";
-                width: 24px;
-                height: 24px;
-                border-radius: 50%;
-                flex: 0 0 auto;
-                justify-self: end;
-                background:
-                    radial-gradient(circle at 34% 28%, rgba(255,255,255,.82), transparent 25%),
-                    radial-gradient(circle at 62% 64%, rgba(0,0,0,.22), transparent 42%),
-                    repeating-linear-gradient(44deg, transparent 0 6px, rgba(255,255,255,.20) 6px 8px),
-                    linear-gradient(135deg, var(--bowling-accent), color-mix(in srgb, var(--bowling-primary) 72%, #000 28%));
-                box-shadow: inset -4px -5px 10px rgba(0,0,0,.24), 0 0 14px color-mix(in srgb, var(--bowling-accent) 45%, transparent);
-            }
+        #bowlerBallIcon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: block;
+            justify-self: end;
+            background:
+                radial-gradient(circle at 34% 28%, rgba(255,255,255,.82), transparent 25%),
+                radial-gradient(circle at 62% 64%, rgba(0,0,0,.26), transparent 42%),
+                repeating-linear-gradient(44deg, transparent 0 6px, rgba(255,255,255,.20) 6px 8px),
+                linear-gradient(135deg, var(--bowling-accent), var(--bowling-primary));
+            box-shadow: inset -4px -5px 10px rgba(0,0,0,.26), 0 0 14px var(--bowling-accent);
+        }
 
-        #sbBowler:not(.hasBowler) #bowlerName::after {
+        #sbBowler:not(.hasBowler) #bowlerBallIcon {
             display: none;
         }
 
@@ -1088,20 +1093,12 @@
             box-shadow: inset 0 0 20px rgba(255,255,255,.04), 0 0 24px rgba(37,99,235,.16);
             transition: all .35s ease;
             overflow: hidden;
-            animation: battingPulse 2.8s ease-in-out infinite;
         }
 
             /* animated shine sweep */
             .battingHighlight::before {
-                content: "";
-                position: absolute;
-                top: 0;
-                left: -120%;
-                width: 70%;
-                height: 100%;
-                background: linear-gradient( 90deg, transparent, rgba(255,255,255,.18), transparent );
-                transform: skewX(-20deg);
-                animation: battingSweep 3.5s linear infinite;
+                content: none;
+                display: none;
             }
 
             /* glowing active team text */
@@ -1184,7 +1181,7 @@
         
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--bowling-primary) 82%, #000 18%),
+                    var(--bowling-primary),
                     #071426);
             border-left: 6px solid var(--bowling-accent);
             border-radius: 6px;
@@ -1204,7 +1201,7 @@
         #wicketText {
             font-size: 14px;
             letter-spacing: 2px;
-            color: color-mix(in srgb, var(--bowling-accent) 72%, #fff 28%);
+            color: var(--bowling-accent);
             line-height: 16px;
         }
 
@@ -1216,7 +1213,7 @@
 
         #wicketScore {
             font-size: 16px;
-            color: color-mix(in srgb, var(--bowling-accent) 56%, #fff 44%);
+            color: var(--bowling-accent);
             line-height: 20px;
         }
 
@@ -1238,7 +1235,7 @@
         
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--batting-primary) 76%, #000 24%),
+                    var(--batting-primary),
                     #071426);
             border-left: 6px solid var(--batting-accent);
             border-radius: 6px;
@@ -1259,7 +1256,7 @@
         #partnershipTitle {
             font-size: 12px;
             letter-spacing: 2px;
-            color: color-mix(in srgb, var(--batting-accent) 68%, #fff 32%);
+            color: var(--batting-accent);
             line-height: 14px;
         }
 
@@ -1372,7 +1369,7 @@
         
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--batting-primary) 76%, #000 24%),
+                    var(--batting-primary),
                     #071426);
             border-left: 6px solid var(--batting-accent);
             border-radius: 6px;
@@ -1392,7 +1389,7 @@
         #overSummaryTitle {
             font-size: 12px;
             letter-spacing: 2px;
-            color: color-mix(in srgb, var(--batting-accent) 68%, #fff 32%);
+            color: var(--batting-accent);
         }
 
         #overSummaryScore {
@@ -1424,7 +1421,7 @@
         
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--batting-primary) 82%, #000 18%),
+                    var(--batting-primary),
                     #071426);
             border-left: 6px solid var(--batting-accent);
             border-radius: 6px;
@@ -1444,7 +1441,7 @@
         #fallWicketTitle {
             font-size: 13px;
             letter-spacing: 2px;
-            color: color-mix(in srgb, var(--batting-accent) 72%, #fff 28%);
+            color: var(--batting-accent);
             line-height: 15px;
         }
 
@@ -1458,7 +1455,7 @@
         #fallWicketScore {
             font-family: 'Roboto Condensed', 'Oswald', sans-serif;
             font-size: 18px;
-            color: color-mix(in srgb, var(--batting-accent) 56%, #fff 44%);
+            color: var(--batting-accent);
             line-height: 21px;
         }
 
@@ -1479,7 +1476,7 @@
         
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--batting-primary) 76%, #000 24%),
+                    var(--batting-primary),
                     #071426);
             border-left: 6px solid var(--batting-accent);
             border-radius: 6px;
@@ -1499,7 +1496,7 @@
         #milestoneTitle {
             font-size: 12px;
             letter-spacing: 2px;
-            color: color-mix(in srgb, var(--batting-accent) 70%, #fff 30%);
+            color: var(--batting-accent);
             line-height: 14px;
         }
 
@@ -1518,13 +1515,13 @@
         #milestoneGraphic.bowlingMoment {
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--bowling-primary) 82%, #000 18%),
+                    var(--bowling-primary),
                     #071426);
             border-left-color: var(--bowling-accent);
         }
 
         #milestoneGraphic.bowlingMoment #milestoneTitle {
-            color: color-mix(in srgb, var(--bowling-accent) 70%, #fff 30%);
+            color: var(--bowling-accent);
         }
 
         #replayGraphic {
@@ -1995,12 +1992,12 @@
             grid-template-columns: 130px minmax(0, 1fr) 150px;
             align-items: stretch;
             height: 50px;
-            background: linear-gradient(90deg, #061120 0%, #173fba 58%, color-mix(in srgb, var(--batting-accent) 80%, #8b6f0c 20%) 100%);
+            background: linear-gradient(90deg, #061120 0%, #173fba 58%, var(--batting-accent) 100%);
             overflow: hidden;
         }
 
         .tv-card.bowling-card .tv-header {
-            background: linear-gradient(90deg, #061120 0%, color-mix(in srgb, var(--bowling-primary) 75%, #173fba 25%) 58%, color-mix(in srgb, var(--bowling-accent) 80%, #8b6f0c 20%) 100%);
+            background: linear-gradient(90deg, #061120 0%, var(--bowling-primary) 58%, var(--bowling-accent) 100%);
         }
 
         .espn-banner {
@@ -2049,12 +2046,12 @@
             font-weight: 900;
             letter-spacing: .8px;
             text-transform: uppercase;
-            background: linear-gradient(135deg, color-mix(in srgb, var(--batting-accent) 86%, #7c5f00 14%), #a7831c);
+            background: linear-gradient(135deg, var(--batting-accent), #a7831c);
             clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
         }
 
         .tv-card.bowling-card .header-overs {
-            background: linear-gradient(135deg, color-mix(in srgb, var(--bowling-accent) 86%, #7c5f00 14%), #a7831c);
+            background: linear-gradient(135deg, var(--bowling-accent), #a7831c);
         }
 
         .tv-table {
@@ -2133,11 +2130,11 @@
         .striker-row td {
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--batting-primary) 78%, #061120 22%) 0%,
-                    color-mix(in srgb, var(--batting-accent) 64%, var(--batting-primary) 36%) 50%,
-                    color-mix(in srgb, var(--batting-primary) 82%, #061120 18%) 100%) !important;
+                    var(--batting-primary) 0%,
+                    var(--batting-accent) 50%,
+                    var(--batting-primary) 100%) !important;
             color: #ffe600 !important;
-            border-bottom-color: color-mix(in srgb, var(--batting-accent) 38%, transparent);
+            border-bottom-color: var(--batting-accent);
         }
 
         .not-out-row td:first-child,
@@ -2188,8 +2185,8 @@
         }
 
         .tv-lastwicket {
-            background: linear-gradient(90deg, color-mix(in srgb, var(--batting-primary) 82%, #000 18%), #020617);
-            border-top: 1px solid color-mix(in srgb, var(--batting-accent) 54%, transparent);
+            background: linear-gradient(90deg, var(--batting-primary), #020617);
+            border-top: 1px solid var(--batting-accent);
             color: #ffffff;
             font-size: 14px;
             padding: 8px 14px;
@@ -2243,7 +2240,6 @@
             color: #facc15;
             margin-left: 6px;
             font-size: 14px;
-            animation: strikePulse 1.2s infinite;
             text-shadow: 0 0 6px rgba(250,204,21,0.8);
         }
 
@@ -2341,17 +2337,17 @@
             align-items: stretch;
             background:
                 linear-gradient(110deg,
-                    color-mix(in srgb, var(--batting-primary) 82%, #101827 18%) 0%,
-                    color-mix(in srgb, var(--batting-primary) 92%, #2554d9 8%) 42%,
-                    color-mix(in srgb, var(--batting-accent) 24%, #7b8391 76%) 100%);
+                    var(--batting-primary) 0%,
+                    var(--batting-primary) 42%,
+                    var(--batting-accent) 100%);
         }
 
         .tv-card.bowling-card .tv-header {
             background:
                 linear-gradient(110deg,
-                    color-mix(in srgb, var(--bowling-primary) 82%, #101827 18%) 0%,
-                    color-mix(in srgb, var(--bowling-primary) 92%, #2554d9 8%) 42%,
-                    color-mix(in srgb, var(--bowling-accent) 24%, #7b8391 76%) 100%);
+                    var(--bowling-primary) 0%,
+                    var(--bowling-primary) 42%,
+                    var(--bowling-accent) 100%);
         }
 
         .tv-card.scorecard-card .espn-banner,
@@ -2404,12 +2400,12 @@
             font-weight: 900;
             letter-spacing: .9px;
             text-transform: uppercase;
-            background: linear-gradient(135deg, color-mix(in srgb, var(--batting-accent) 90%, #7c5f00 10%), #a98011);
+            background: linear-gradient(135deg, var(--batting-accent), #a98011);
             clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
         }
 
         .tv-card.bowling-card .header-overs {
-            background: linear-gradient(135deg, color-mix(in srgb, var(--bowling-accent) 90%, #7c5f00 10%), #a98011);
+            background: linear-gradient(135deg, var(--bowling-accent), #a98011);
         }
 
         .tv-card.scorecard-card .tv-table,
@@ -2513,9 +2509,9 @@
         .tv-card.scorecard-card .striker-row td {
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--batting-primary) 76%, #0b1220 24%) 0%,
-                    color-mix(in srgb, var(--batting-accent) 55%, var(--batting-primary) 45%) 70%,
-                    color-mix(in srgb, var(--batting-primary) 82%, #0b1220 18%) 100%) !important;
+                    var(--batting-primary) 0%,
+                    var(--batting-accent) 70%,
+                    var(--batting-primary) 100%) !important;
             color: #fff200 !important;
             border-bottom-color: rgba(255,255,255,.18);
         }
@@ -2564,9 +2560,9 @@
         .bowling-card .bowling-leader td {
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--bowling-primary) 80%, #0b1220 20%) 0%,
-                    color-mix(in srgb, var(--bowling-accent) 54%, var(--bowling-primary) 46%) 68%,
-                    color-mix(in srgb, var(--bowling-primary) 82%, #0b1220 18%) 100%) !important;
+                    var(--bowling-primary) 0%,
+                    var(--bowling-accent) 68%,
+                    var(--bowling-primary) 100%) !important;
             color: #fff200 !important;
             border-bottom-color: rgba(255,255,255,.16);
         }
@@ -2585,9 +2581,9 @@
             overflow: hidden;
             color: var(--bowling-text);
             background:
-                radial-gradient(circle at 84% 40%, color-mix(in srgb, var(--bowling-accent) 18%, transparent), transparent 31%),
-                linear-gradient(135deg, color-mix(in srgb, var(--bowling-primary) 88%, #160012 12%), color-mix(in srgb, var(--bowling-primary) 72%, #020611 28%));
-            border: 2px solid color-mix(in srgb, var(--bowling-accent) 78%, #ffffff 22%);
+                radial-gradient(circle at 84% 40%, var(--bowling-accent), transparent 31%),
+                linear-gradient(135deg, var(--bowling-primary), var(--bowling-primary));
+            border: 2px solid var(--bowling-accent);
             border-radius: 10px;
             box-shadow: 0 38px 110px rgba(0,0,0,.58), 0 0 0 1px rgba(255,255,255,.08) inset;
         }
@@ -2599,8 +2595,8 @@
             gap: 24px;
             padding: 18px 44px;
             background:
-                linear-gradient(105deg, color-mix(in srgb, var(--bowling-primary) 92%, #050914 8%) 0 62%,
-                    color-mix(in srgb, var(--bowling-accent) 88%, #fff300 12%) 62% 100%);
+                linear-gradient(105deg, var(--bowling-primary) 0 62%,
+                    var(--bowling-accent) 62% 100%);
             color: var(--bowling-text);
         }
 
@@ -2610,7 +2606,7 @@
             border-radius: 50%;
             object-fit: cover;
             background: rgba(0,0,0,.18);
-            border: 3px solid color-mix(in srgb, var(--bowling-accent) 84%, #ffffff 16%);
+            border: 3px solid var(--bowling-accent);
             box-shadow: 0 8px 20px rgba(0,0,0,.42);
         }
 
@@ -2641,7 +2637,7 @@
             font-weight: 900;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: color-mix(in srgb, var(--bowling-text) 82%, var(--bowling-accent) 18%);
+            color: var(--bowling-text);
         }
 
         .bowling-score-main {
@@ -2652,8 +2648,8 @@
             background:
                 repeating-linear-gradient(135deg, rgba(255,255,255,.035) 0 2px, transparent 2px 28px),
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--bowling-primary) 90%, #050914 10%),
-                    color-mix(in srgb, var(--bowling-primary) 74%, var(--bowling-accent) 26%));
+                    var(--bowling-primary),
+                    var(--bowling-primary));
         }
 
         .bowling-score-table-wrap {
@@ -2663,7 +2659,7 @@
             grid-template-rows: 48px minmax(0, 1fr) 58px;
             padding: 0 34px 18px;
             border-radius: 12px;
-            background: color-mix(in srgb, var(--bowling-primary) 82%, #06101f 18%);
+            background: var(--bowling-primary);
             box-shadow: 0 20px 48px rgba(0,0,0,.26), inset 0 0 0 1px rgba(255,255,255,.07);
             overflow: hidden;
         }
@@ -2675,8 +2671,8 @@
             display: grid;
             grid-template-columns: repeat(5, minmax(0, 1fr));
             align-items: center;
-            color: color-mix(in srgb, var(--bowling-primary) 78%, #000000 22%);
-            background: linear-gradient(90deg, var(--bowling-accent), color-mix(in srgb, var(--bowling-accent) 82%, #fff700 18%));
+            color: var(--bowling-primary);
+            background: linear-gradient(90deg, var(--bowling-accent), var(--bowling-accent));
             font-size: clamp(16px, 1.35vw, 22px);
             font-weight: 700;
             letter-spacing: .9px;
@@ -2685,7 +2681,7 @@
 
         .bowling-stat-ribbon span {
             text-align: center;
-            border-left: 1px solid color-mix(in srgb, var(--bowling-primary) 28%, transparent);
+            border-left: 1px solid var(--bowling-primary);
         }
 
         .bowling-score-table {
@@ -2732,7 +2728,7 @@
         }
 
         .bowling-score-table td + td {
-            border-left: 1px solid color-mix(in srgb, var(--bowling-text) 24%, transparent);
+            border-left: 1px solid var(--bowling-text);
         }
 
         .bowling-score-table .bowler-name-cell {
@@ -2750,8 +2746,8 @@
         }
 
         .bowling-score-table tr.current-bowler td {
-            color: color-mix(in srgb, var(--bowling-accent) 92%, #fff700 8%);
-            background: linear-gradient(90deg, rgba(0,0,0,.25), color-mix(in srgb, var(--bowling-accent) 22%, transparent), rgba(0,0,0,.2));
+            color: var(--bowling-accent);
+            background: linear-gradient(90deg, rgba(0,0,0,.25), var(--bowling-accent), rgba(0,0,0,.2));
         }
 
         .bowling-fow-strip {
@@ -2761,8 +2757,8 @@
             display: grid;
             grid-template-columns: 240px repeat(10, minmax(0, 1fr));
             align-items: center;
-            color: color-mix(in srgb, var(--bowling-primary) 78%, #000000 22%);
-            background: linear-gradient(90deg, var(--bowling-accent), color-mix(in srgb, var(--bowling-accent) 86%, #fff700 14%));
+            color: var(--bowling-primary);
+            background: linear-gradient(90deg, var(--bowling-accent), var(--bowling-accent));
             font-size: 22px;
             text-transform: uppercase;
             box-shadow: 0 -8px 20px rgba(0,0,0,.18);
@@ -2834,8 +2830,8 @@
             grid-template-columns: 1fr 1fr 1fr;
             align-items: center;
             padding: 0 54px;
-            color: color-mix(in srgb, var(--bowling-primary) 78%, #000000 22%);
-            background: linear-gradient(90deg, var(--bowling-accent), color-mix(in srgb, var(--bowling-accent) 84%, #fff700 16%));
+            color: var(--bowling-primary);
+            background: linear-gradient(90deg, var(--bowling-accent), var(--bowling-accent));
             font-size: clamp(28px, 3.2vw, 48px);
             font-weight: 900;
             letter-spacing: 1.2px;
@@ -2854,7 +2850,7 @@
         #breakGraphic.match-result-mode {
             background:
                 radial-gradient(circle at 50% 44%, rgba(15,23,42,.76), rgba(0,0,0,.93) 68%),
-                linear-gradient(90deg, color-mix(in srgb, var(--batting-primary) 35%, transparent), color-mix(in srgb, var(--bowling-primary) 35%, transparent));
+                linear-gradient(90deg, var(--batting-primary), var(--bowling-primary));
         }
 
         #breakGraphic.match-result-mode #breakContent {
@@ -2913,14 +2909,14 @@
             display: grid;
             grid-template-rows: 112px minmax(0, 1fr) 72px;
             overflow: hidden;
-            border: 2px solid color-mix(in srgb, var(--batting-accent) 70%, #ffffff 30%);
+            border: 2px solid var(--batting-accent);
             border-radius: 10px;
             background:
                 linear-gradient(90deg, rgba(255,255,255,.06), transparent 12%, transparent 88%, rgba(255,255,255,.07)),
                 linear-gradient(135deg,
-                    color-mix(in srgb, var(--batting-primary) 78%, #150015 22%) 0%,
-                    color-mix(in srgb, var(--batting-primary) 88%, #030712 12%) 52%,
-                    color-mix(in srgb, var(--batting-accent) 35%, var(--batting-primary) 65%) 100%);
+                    var(--batting-primary) 0%,
+                    var(--batting-primary) 52%,
+                    var(--batting-accent) 100%);
             box-shadow:
                 0 42px 110px rgba(0,0,0,.82),
                 0 18px 42px rgba(0,0,0,.54),
@@ -2939,10 +2935,10 @@
             align-items: stretch;
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--batting-accent) 82%, #ffff66 18%) 0%,
-                    color-mix(in srgb, var(--batting-accent) 70%, #fff56a 30%) 64%,
-                    color-mix(in srgb, var(--batting-primary) 25%, #fff56a 75%) 100%);
-            color: color-mix(in srgb, var(--batting-primary) 82%, #111 18%);
+                    var(--batting-accent) 0%,
+                    var(--batting-accent) 64%,
+                    var(--batting-primary) 100%);
+            color: var(--batting-primary);
         }
 
         .scorecard-header-logo {
@@ -2958,7 +2954,7 @@
             object-fit: cover;
             border-radius: 50%;
             background: radial-gradient(circle, rgba(255,255,255,.18), rgba(0,0,0,.34));
-            border: 3px solid color-mix(in srgb, var(--batting-accent) 70%, #ffffff 30%);
+            border: 3px solid var(--batting-accent);
             box-shadow: 0 0 0 3px rgba(0,0,0,.28), 0 8px 18px rgba(0,0,0,.42);
         }
 
@@ -2997,9 +2993,9 @@
                 radial-gradient(circle at 14% 18%, rgba(255,255,255,.08), transparent 28%),
                 repeating-linear-gradient(135deg, rgba(255,255,255,.04) 0 2px, transparent 2px 34px),
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--batting-primary) 88%, #090018 12%) 0%,
-                    color-mix(in srgb, var(--batting-primary) 72%, #000 28%) 72%,
-                    color-mix(in srgb, var(--batting-accent) 22%, var(--batting-primary) 78%) 100%);
+                    var(--batting-primary) 0%,
+                    var(--batting-primary) 72%,
+                    var(--batting-accent) 100%);
         }
 
         .scorecard-table-wrap {
@@ -3011,8 +3007,8 @@
             border-radius: 12px;
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--batting-primary) 82%, #020617 18%),
-                    color-mix(in srgb, var(--batting-primary) 72%, #020617 28%));
+                    var(--batting-primary),
+                    var(--batting-primary));
             box-shadow:
                 inset 0 1px 0 rgba(255,255,255,.08),
                 inset 0 -1px 0 rgba(0,0,0,.32),
@@ -3032,9 +3028,9 @@
             justify-content: center;
             border-radius: 3px;
             background: linear-gradient(90deg,
-                color-mix(in srgb, var(--batting-accent) 92%, #fff 8%),
-                color-mix(in srgb, var(--batting-accent) 76%, #fff566 24%));
-            color: color-mix(in srgb, var(--batting-primary) 84%, #111 16%);
+                var(--batting-accent),
+                var(--batting-accent));
+            color: var(--batting-primary);
             font-family: 'Roboto Condensed', 'Oswald', 'Arial Narrow', Arial, sans-serif !important;
             font-size: 18px;
             font-weight: 900;
@@ -3092,10 +3088,10 @@
 
         .tv-card.scorecard-card.full-screen-scorecard .tv-table th.col-runs,
         .tv-card.scorecard-card.full-screen-scorecard .tv-table th.col-balls {
-            color: color-mix(in srgb, var(--batting-primary) 84%, #111 16%);
+            color: var(--batting-primary);
             background: linear-gradient(90deg,
-                color-mix(in srgb, var(--batting-accent) 92%, #fff 8%),
-                color-mix(in srgb, var(--batting-accent) 76%, #fff566 24%));
+                var(--batting-accent),
+                var(--batting-accent));
             text-align: center;
             padding-top: 6px;
             padding-bottom: 6px;
@@ -3187,11 +3183,11 @@
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .dismissal {
-            border-left: 1px solid color-mix(in srgb, var(--batting-text) 18%, transparent);
+            border-left: 1px solid var(--batting-text);
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .runs {
-            border-left: 1px solid color-mix(in srgb, var(--batting-text) 18%, transparent);
+            border-left: 1px solid var(--batting-text);
         }
 
         .tv-card.scorecard-card.full-screen-scorecard .dismissal,
@@ -3206,7 +3202,7 @@
 
         .tv-card.scorecard-card.full-screen-scorecard .dismissal,
         .tv-card.scorecard-card.full-screen-scorecard .bowler {
-            color: color-mix(in srgb, var(--batting-text) 66%, var(--batting-accent) 34%);
+            color: var(--batting-text);
             font-size: clamp(17px, 1.04vw, 22px);
             font-weight: 400;
             letter-spacing: .2px;
@@ -3243,10 +3239,10 @@
         .tv-card.scorecard-card.full-screen-scorecard .striker-row {
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--batting-accent) 88%, var(--batting-primary) 12%),
-                    color-mix(in srgb, var(--batting-accent) 68%, var(--batting-primary) 32%)) !important;
+                    var(--batting-accent),
+                    var(--batting-accent)) !important;
             box-shadow:
-                inset 0 1px 0 color-mix(in srgb, var(--batting-text) 24%, transparent),
+                inset 0 1px 0 var(--batting-text),
                 inset 0 -1px 0 rgba(0,0,0,.18),
                 0 8px 18px rgba(0,0,0,.18);
         }
@@ -3273,10 +3269,10 @@
             justify-content: center;
             min-width: 0;
             margin: 30px 22px 30px 10px;
-            border: 2px solid color-mix(in srgb, var(--batting-accent) 64%, #fff 36%);
+            border: 2px solid var(--batting-accent);
             border-radius: 12px;
             background:
-                radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--batting-accent) 38%, transparent) 0%, transparent 56%),
+                radial-gradient(circle at 50% 50%, var(--batting-accent) 0%, transparent 56%),
                 linear-gradient(125deg, rgba(255,255,255,.11) 0%, transparent 22%, transparent 72%, rgba(0,0,0,.22) 100%),
                 linear-gradient(135deg, rgba(255,255,255,.08), rgba(0,0,0,.24));
             overflow: hidden;
@@ -3304,8 +3300,8 @@
             object-fit: cover;
             border-radius: 50%;
             background: radial-gradient(circle, rgba(255,255,255,.16), rgba(0,0,0,.34));
-            border: 4px solid color-mix(in srgb, var(--batting-accent) 72%, #ffffff 28%);
-            box-shadow: 0 0 0 4px rgba(0,0,0,.28), 0 16px 34px rgba(0,0,0,.5), 0 0 34px color-mix(in srgb, var(--batting-accent) 40%, transparent);
+            border: 4px solid var(--batting-accent);
+            box-shadow: 0 0 0 4px rgba(0,0,0,.28), 0 16px 34px rgba(0,0,0,.5), 0 0 34px var(--batting-accent);
             z-index: 1;
         }
 
@@ -3329,11 +3325,11 @@
             background:
                 linear-gradient(90deg, rgba(0,0,0,.12), transparent 20%, transparent 80%, rgba(255,255,255,.08)),
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--batting-accent) 86%, #fff 14%) 0%,
-                    color-mix(in srgb, var(--batting-accent) 74%, #fff066 26%) 70%,
-                    color-mix(in srgb, var(--batting-primary) 20%, #fff066 80%) 100%);
-            color: color-mix(in srgb, var(--batting-primary) 78%, #111 22%);
-            border-top: 3px solid color-mix(in srgb, var(--batting-primary) 60%, #fff 40%);
+                    var(--batting-accent) 0%,
+                    var(--batting-accent) 70%,
+                    var(--batting-primary) 100%);
+            color: var(--batting-primary);
+            border-top: 3px solid var(--batting-primary);
         }
 
         .scorecard-footer-table {
@@ -3787,15 +3783,15 @@
             max-width: 640px;
             position: relative;
             background:
-                radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--xi-accent) 26%, transparent), transparent 34%),
+                radial-gradient(circle at 20% 0%, var(--xi-accent), transparent 34%),
                 linear-gradient(135deg,
-                    color-mix(in srgb, var(--xi-primary) 88%, #000 12%) 0%,
+                    var(--xi-primary) 0%,
                     #071426 52%,
-                    color-mix(in srgb, var(--xi-primary) 70%, #000 30%) 100%);
+                    var(--xi-primary) 100%);
             border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 22px 58px rgba(0,0,0,.78), 0 0 26px color-mix(in srgb, var(--xi-accent) 20%, transparent);
-            border: 1px solid color-mix(in srgb, var(--xi-accent) 34%, transparent);
+            box-shadow: 0 22px 58px rgba(0,0,0,.78), 0 0 26px var(--xi-accent);
+            border: 1px solid var(--xi-accent);
             color: var(--xi-text);
         }
 
@@ -3804,8 +3800,8 @@
                 position: absolute;
                 inset: 0 auto 0 0;
                 width: 9px;
-                background: linear-gradient(180deg, rgba(255,255,255,.75), var(--xi-accent), color-mix(in srgb, var(--xi-accent) 60%, #000 40%));
-                box-shadow: 0 0 16px color-mix(in srgb, var(--xi-accent) 44%, transparent);
+                background: linear-gradient(180deg, rgba(255,255,255,.75), var(--xi-accent), var(--xi-accent));
+                box-shadow: 0 0 16px var(--xi-accent);
             }
 
             .xiCard.right::before {
@@ -3817,7 +3813,7 @@
         .xiTop {
             text-align: center;
             padding: 22px 26px 16px 26px;
-            border-bottom: 1px solid color-mix(in srgb, var(--xi-accent) 32%, transparent);
+            border-bottom: 1px solid var(--xi-accent);
         }
 
         .xiPlaying {
@@ -3825,7 +3821,7 @@
             font-size: 46px;
             font-weight: 700;
             letter-spacing: 3px;
-            color: color-mix(in srgb, var(--xi-text) 14%, transparent);
+            color: var(--xi-text);
             margin-bottom: 12px;
         }
 
@@ -3841,8 +3837,8 @@
             border-radius: 8px;
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--xi-primary) 80%, #000 20%),
-                    color-mix(in srgb, var(--xi-accent) 34%, var(--xi-primary) 66%));
+                    var(--xi-primary),
+                    var(--xi-accent));
             box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
         }
 
@@ -3854,12 +3850,12 @@
             display: flex;
             align-items: center;
             height: 48px;
-            border-bottom: 1px solid color-mix(in srgb, var(--xi-accent) 18%, transparent);
-            background: linear-gradient(90deg, color-mix(in srgb, var(--xi-accent) 9%, transparent), rgba(255,255,255,0));
+            border-bottom: 1px solid var(--xi-accent);
+            background: linear-gradient(90deg, var(--xi-accent), rgba(255,255,255,0));
         }
 
             .xiRow:nth-child(even) {
-                background: linear-gradient(90deg, color-mix(in srgb, var(--xi-primary) 24%, transparent), rgba(255,255,255,0));
+                background: linear-gradient(90deg, var(--xi-primary), rgba(255,255,255,0));
             }
 
         .xiNum {
@@ -3886,12 +3882,12 @@
             height: 110px;
             margin: 0 auto 16px auto;
             border-radius: 50%;
-            background: color-mix(in srgb, var(--xi-primary) 82%, #000 18%);
+            background: var(--xi-primary);
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 18px color-mix(in srgb, var(--xi-accent) 34%, transparent), inset 0 0 0 3px color-mix(in srgb, var(--xi-accent) 75%, transparent);
+            box-shadow: 0 0 18px var(--xi-accent), inset 0 0 0 3px var(--xi-accent);
         }
 
         /* =====================
@@ -3924,11 +3920,11 @@
         }
 
         .leftHeader {
-            background: linear-gradient(90deg, color-mix(in srgb, var(--xi-primary) 82%, #000 18%), color-mix(in srgb, var(--xi-accent) 34%, var(--xi-primary) 66%));
+            background: linear-gradient(90deg, var(--xi-primary), var(--xi-accent));
         }
 
         .rightHeader {
-            background: linear-gradient(90deg, color-mix(in srgb, var(--xi-primary) 82%, #000 18%), color-mix(in srgb, var(--xi-accent) 34%, var(--xi-primary) 66%));
+            background: linear-gradient(90deg, var(--xi-primary), var(--xi-accent));
         }
 
         #teamXIOverlay .xiPlaying {
@@ -3942,9 +3938,9 @@
             border-radius: 6px;
             background:
                 linear-gradient(90deg,
-                    color-mix(in srgb, var(--xi-primary) 84%, #000 16%),
-                    color-mix(in srgb, var(--xi-accent) 28%, var(--xi-primary) 72%));
-            border: 1px solid color-mix(in srgb, var(--xi-accent) 52%, transparent);
+                    var(--xi-primary),
+                    var(--xi-accent));
+            border: 1px solid var(--xi-accent);
             color: var(--xi-text);
             font-family: 'Roboto Condensed', 'Oswald', 'Arial Narrow', Arial, sans-serif !important;
             font-size: 28px;
@@ -3996,16 +3992,398 @@
             letter-spacing: .3px;
             color: #05101f;
             background: var(--xi-accent);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 0 10px color-mix(in srgb, var(--xi-accent) 22%, transparent);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 0 10px var(--xi-accent);
         }
 
         .xiRoleC {
-            background: color-mix(in srgb, var(--xi-accent) 82%, #ffffff 18%);
+            background: var(--xi-accent);
         }
 
         .xiRoleWk {
-            background: color-mix(in srgb, var(--xi-primary) 52%, var(--xi-accent) 48%);
+            background: var(--xi-primary);
             color: var(--xi-text);
+        }
+
+        /* Yolobox-safe team color pass: avoid currentColor on broadcast surfaces. */
+        #scoreboard {
+            background: linear-gradient(90deg,
+                var(--batting-primary) 0%,
+                #061120 20%,
+                #061120 80%,
+                var(--bowling-primary) 100%) !important;
+        }
+
+        #sbTeamA {
+            background: linear-gradient(108deg,
+                var(--batting-primary) 0%,
+                var(--batting-primary) 62%,
+                var(--batting-accent) 100%) !important;
+            color: var(--batting-text) !important;
+        }
+
+        #sbTeamB {
+            background: linear-gradient(108deg,
+                var(--bowling-primary) 0%,
+                var(--bowling-primary) 68%,
+                var(--bowling-accent) 100%) !important;
+            color: var(--bowling-text) !important;
+        }
+
+        #sbTeamA::after {
+            background: linear-gradient(180deg,
+                rgba(255,255,255,.8),
+                var(--batting-accent) 48%,
+                var(--batting-primary)) !important;
+        }
+
+        #sbTeamB::before {
+            background: linear-gradient(180deg,
+                rgba(255,255,255,.8),
+                var(--bowling-accent) 48%,
+                var(--bowling-primary)) !important;
+        }
+
+        #sbTop, #sbBatters {
+            border-color: var(--batting-accent) !important;
+        }
+
+        #sbBowler, #sbThisOver {
+            border-color: var(--bowling-accent) !important;
+        }
+
+        #bowlerBallIcon {
+            background:
+                radial-gradient(circle at 35% 28%, rgba(255,255,255,.55), transparent 22%),
+                linear-gradient(135deg, var(--bowling-accent), var(--bowling-primary)) !important;
+        }
+
+        .batter-triangle {
+            border-left-color: var(--batting-accent) !important;
+            filter: drop-shadow(0 0 5px var(--batting-accent)) !important;
+        }
+
+        .over-ball.four {
+            background: var(--batting-accent) !important;
+            color: var(--batting-text) !important;
+        }
+
+        .over-ball.wicket {
+            background: var(--bowling-primary) !important;
+            color: var(--bowling-text) !important;
+        }
+
+        #lowerThird .lt-card,
+        .lt-card {
+            background:
+                radial-gradient(circle at 14% 22%, rgba(255,255,255,.14), transparent 28%),
+                linear-gradient(105deg, var(--batting-primary) 0%, var(--batting-primary) 70%, var(--batting-accent) 100%) !important;
+            border-color: var(--batting-accent) !important;
+            color: var(--batting-text) !important;
+            box-shadow: 0 18px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.16) !important;
+        }
+
+        .lt-card::before,
+        .lt-accent {
+            background: var(--batting-accent) !important;
+        }
+
+        .lt-team,
+        .lt-role,
+        .lt-extra {
+            color: var(--batting-accent) !important;
+        }
+
+        #playerImage,
+        #bowlerImage {
+            border-color: var(--batting-accent) !important;
+            box-shadow: 0 0 0 2px rgba(255,255,255,.18), 0 0 16px var(--batting-accent) !important;
+        }
+
+        #bowlerLowerThird {
+            background:
+                radial-gradient(circle at 82% 30%, rgba(255,255,255,.12), transparent 30%),
+                linear-gradient(105deg, var(--bowling-primary) 0%, var(--bowling-primary) 76%, var(--bowling-accent) 100%) !important;
+            border-color: var(--bowling-accent) !important;
+            color: var(--bowling-text) !important;
+            box-shadow: 0 18px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.16) !important;
+        }
+
+        #bowlerLowerThird::before {
+            background: var(--bowling-accent) !important;
+        }
+
+        #bowlerTeam,
+        #bowlerLabel,
+        #bowlerCardStats {
+            color: var(--bowling-accent) !important;
+        }
+
+        #bowlerLowerThird #bowlerImage {
+            border-color: var(--bowling-accent) !important;
+            box-shadow: 0 0 0 2px rgba(255,255,255,.18), 0 0 16px var(--bowling-accent) !important;
+        }
+
+        #wicketGraphic,
+        #fallWicketGraphic,
+        #overSummary,
+        #partnershipGraphic,
+        #milestoneGraphic {
+            background:
+                radial-gradient(circle at 18% 20%, rgba(255,255,255,.12), transparent 30%),
+                linear-gradient(112deg, var(--batting-primary) 0%, var(--batting-primary) 72%, var(--batting-accent) 100%) !important;
+            border-color: var(--batting-accent) !important;
+            color: var(--batting-text) !important;
+            box-shadow: 0 22px 46px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.14) !important;
+        }
+
+        #wicketGraphic,
+        .bowlingMoment,
+        #milestoneGraphic.bowlingMoment {
+            background:
+                radial-gradient(circle at 18% 20%, rgba(255,255,255,.12), transparent 30%),
+                linear-gradient(112deg, var(--bowling-primary) 0%, var(--bowling-primary) 72%, var(--bowling-accent) 100%) !important;
+            border-color: var(--bowling-accent) !important;
+            color: var(--bowling-text) !important;
+        }
+
+        #wicketText,
+        #fallWicketTitle,
+        #overSummaryTitle,
+        #partnershipTitle,
+        #milestoneTitle {
+            color: var(--batting-accent) !important;
+        }
+
+        #wicketGraphic #wicketText,
+        .bowlingMoment #milestoneTitle {
+            color: var(--bowling-accent) !important;
+        }
+
+        #teamXIOverlay .xiCard {
+            background:
+                radial-gradient(circle at 20% 18%, rgba(255,255,255,.12), transparent 30%),
+                linear-gradient(135deg, var(--xi-primary), var(--xi-primary)) !important;
+            border-color: var(--xi-accent) !important;
+            color: var(--xi-text) !important;
+        }
+
+        #teamXIOverlay .teamHeader,
+        .leftHeader,
+        .rightHeader,
+        #teamXIOverlay .xiPlaying {
+            background: linear-gradient(90deg, var(--xi-primary), var(--xi-accent)) !important;
+            border-color: var(--xi-accent) !important;
+            color: var(--xi-text) !important;
+        }
+
+        #teamXIOverlay .xiRow {
+            background: rgba(0,0,0,.12) !important;
+            border-color: rgba(255,255,255,.18) !important;
+        }
+
+        #teamXIOverlay .xiRow:nth-child(even) {
+            background: rgba(255,255,255,.07) !important;
+        }
+
+        #teamXIOverlay .xiNum,
+        .xiRole,
+        .xiRoleC,
+        .xiRoleWk {
+            background: var(--xi-accent) !important;
+            color: var(--xi-text) !important;
+            box-shadow: none !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard,
+        .tv-card.bowling-card.full-screen-bowling-card {
+            border-color: var(--batting-accent) !important;
+            background:
+                radial-gradient(circle at 86% 40%, rgba(255,255,255,.08), transparent 34%),
+                linear-gradient(135deg, var(--batting-primary), var(--batting-primary)) !important;
+            box-shadow: 0 26px 70px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.14) !important;
+        }
+
+        .tv-card.bowling-card.full-screen-bowling-card {
+            border-color: var(--bowling-accent) !important;
+            background:
+                radial-gradient(circle at 86% 40%, rgba(255,255,255,.08), transparent 34%),
+                linear-gradient(135deg, var(--bowling-primary), var(--bowling-primary)) !important;
+        }
+
+        .scorecard-hero-header,
+        .scorecard-hero-footer,
+        .bowling-score-header,
+        .bowling-score-footer {
+            background: linear-gradient(90deg, var(--batting-accent), var(--batting-accent)) !important;
+            color: var(--batting-text) !important;
+        }
+
+        .bowling-score-header,
+        .bowling-score-footer {
+            background: linear-gradient(90deg, var(--bowling-accent), var(--bowling-accent)) !important;
+            color: var(--bowling-text) !important;
+        }
+
+        .scorecard-main,
+        .bowling-score-main {
+            background:
+                repeating-linear-gradient(135deg, rgba(255,255,255,.045) 0 2px, transparent 2px 34px),
+                linear-gradient(135deg, var(--batting-primary), var(--batting-primary)) !important;
+        }
+
+        .bowling-score-main {
+            background:
+                repeating-linear-gradient(135deg, rgba(255,255,255,.045) 0 2px, transparent 2px 34px),
+                linear-gradient(135deg, var(--bowling-primary), var(--bowling-primary)) !important;
+        }
+
+        .scorecard-table-wrap,
+        .bowling-score-table-wrap,
+        .scorecard-logo-panel {
+            background: rgba(0,0,0,.12) !important;
+            border-color: var(--batting-accent) !important;
+        }
+
+        .bowling-score-table-wrap {
+            border-color: var(--bowling-accent) !important;
+        }
+
+        .scorecard-runs-label,
+        .bowling-stat-ribbon {
+            background: var(--batting-accent) !important;
+            color: var(--batting-text) !important;
+        }
+
+        .bowling-stat-ribbon {
+            background: var(--bowling-accent) !important;
+            color: var(--bowling-text) !important;
+        }
+
+        .scorecard-row.not-out-row {
+            background: var(--batting-accent) !important;
+            color: var(--batting-text) !important;
+        }
+
+        .scorecard-header-logo,
+        .scorecard-logo-panel img,
+        .bowling-score-header .bowling-score-logo {
+            border-color: var(--batting-accent) !important;
+            box-shadow: 0 0 0 2px rgba(255,255,255,.18), 0 12px 24px rgba(0,0,0,.35) !important;
+        }
+
+        .bowling-score-header .bowling-score-logo {
+            border-color: var(--bowling-accent) !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-hero-header {
+            grid-template-columns: 118px minmax(0, 1fr) !important;
+            background: linear-gradient(90deg,
+                var(--batting-accent) 0%,
+                var(--batting-accent) 62%,
+                var(--batting-primary) 100%) !important;
+            color: var(--batting-text) !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-header-logo,
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-title-wrap {
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-header-logo::before,
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-header-logo::after,
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-title-wrap::before,
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-title-wrap::after {
+            display: none !important;
+            content: none !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-team-title,
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-subtitle {
+            color: var(--batting-text) !important;
+            text-shadow: 0 3px 8px rgba(0,0,0,.36) !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-main {
+            background:
+                repeating-linear-gradient(135deg, rgba(255,255,255,.045) 0 2px, transparent 2px 34px),
+                linear-gradient(100deg, var(--batting-primary) 0%, var(--batting-primary) 78%, var(--batting-accent) 100%) !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-table-wrap {
+            background: rgba(0,0,0,.14) !important;
+            border: 0 !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 22px 44px rgba(0,0,0,.34) !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-table-wrap::before {
+            display: none !important;
+            content: none !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table thead {
+            display: table-header-group !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table th {
+            height: 34px !important;
+            padding: 0 8px !important;
+            border: 0 !important;
+            text-shadow: none !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table th.col-player,
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table th.col-dismissal,
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table th.col-bowler {
+            font-size: 0 !important;
+            line-height: 0 !important;
+            background: transparent !important;
+            color: transparent !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table th.col-runs,
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table th.col-balls {
+            background: var(--batting-accent) !important;
+            color: var(--batting-text) !important;
+            font-size: 17px !important;
+            font-weight: 900 !important;
+            letter-spacing: .8px !important;
+            line-height: 1 !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table th.col-runs {
+            border-radius: 4px 0 0 4px !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .tv-table th.col-balls {
+            border-radius: 0 4px 4px 0 !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .not-out-row,
+        .tv-card.scorecard-card.full-screen-scorecard .striker-row {
+            background: var(--batting-accent) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.18) !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .not-out-row td,
+        .tv-card.scorecard-card.full-screen-scorecard .striker-row td {
+            background: var(--batting-accent) !important;
+            color: var(--batting-text) !important;
+            text-shadow: 0 2px 5px rgba(0,0,0,.42) !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-logo-panel {
+            border: 3px solid var(--batting-accent) !important;
+            background:
+                radial-gradient(circle at 50% 50%, rgba(255,255,255,.14) 0%, transparent 48%),
+                linear-gradient(135deg, var(--batting-primary), var(--batting-primary)) !important;
+            box-shadow: inset 0 0 38px rgba(255,255,255,.08), 0 16px 34px rgba(0,0,0,.30) !important;
+        }
+
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-logo-panel::before,
+        .tv-card.scorecard-card.full-screen-scorecard .scorecard-logo-panel::after {
+            border-color: rgba(255,255,255,.18) !important;
+            display: block !important;
         }
     </style>
 </head>
@@ -4110,7 +4488,7 @@
         </div>
 
         <div id="sbBowler">
-            <span id="bowlerName"><span id="bowlerNameText">Bowler</span></span>
+            <span id="bowlerName"><span id="bowlerNameText">Bowler</span><span id="bowlerBallIcon" aria-hidden="true"></span></span>
             <span id="bowlerStats">0-0 (0)</span>
         </div>
 
@@ -4258,8 +4636,20 @@
         const bowlerLabel = document.getElementById("bowlerLabel");
         const thisOverBalls = document.getElementById("thisOverBalls");
 
+        function formatScoreboardPersonName(name) {
+            const clean = stripRoleTags(String(name || "").replace(/\*/g, "")).trim();
+            if (!clean) return "";
+            const parts = clean.split(/\s+/).filter(Boolean);
+            if (parts.length > 1) {
+                const first = parts[0].charAt(0).toUpperCase();
+                const last = parts[parts.length - 1];
+                return `${first}. ${last}`;
+            }
+            return clean;
+        }
+
         function setScoreboardBowlerName(name) {
-            const displayName = name || "";
+            const displayName = formatScoreboardPersonName(name);
             bowlerNameText.textContent = displayName;
             sbBowler.classList.toggle("hasBowler", Boolean(String(displayName).trim()));
         }
@@ -4409,16 +4799,22 @@
         function enqueueOverlay(name, duration, renderFn) {
             const priority = {
                 wicket: 1,
+                "moment-wicket": 1,
                 "moment-SIX": 2,
                 "moment-FOUR": 2,
+                "moment-6": 2,
+                "moment-4": 2,
+                "moment-HATTRICK": 1,
                 partnership: 3,
                 lowerThird: 4
             };
 
             const item = { name, duration, renderFn };
 
+            const itemPriority = priority[name] ?? 99;
+
             // insert based on priority
-            let index = overlayQueue.findIndex(o => priority[o.name] > priority[name]);
+            let index = overlayQueue.findIndex(o => (priority[o.name] ?? 99) > itemPriority);
 
             if (index === -1) {
                 overlayQueue.push(item);
@@ -4442,10 +4838,27 @@
             item.renderFn();
 
             setTimeout(() => {
-                log("END OVERLAY:", item.name);
-                applyBrandingState();
-                isPlayingOverlay = false;
-                processQueue();
+                const finishOverlay = () => {
+                    log("END OVERLAY:", item.name);
+                    applyBrandingState();
+                    isPlayingOverlay = false;
+                    processQueue();
+                };
+
+                if (String(item.name || "").startsWith("moment-")) {
+                    momentImage.style.animation = "momentOut .38s forwards";
+                    momentFallback.style.animation = "momentOut .38s forwards";
+                    setTimeout(() => {
+                        momentStinger.style.opacity = 0;
+                        momentStinger.style.pointerEvents = "none";
+                        momentImage.style.display = "none";
+                        momentFallback.style.display = "none";
+                        finishOverlay();
+                    }, 380);
+                    return;
+                }
+
+                finishOverlay();
             }, item.duration);
         }
 
@@ -4526,13 +4939,6 @@
             if (!data) return;
 
             log("MANUAL RECEIVED: ", data);
-
-            if (data.dismissal && data.dismissal !== lastDismissalShown) {
-                lastDismissalShown = data.dismissal;
-                enqueueOverlay("wicket", 6500, () => {
-                    showWicketSequence(data);
-                });
-            }
 
             if (!isFullScorecardVisible) {
                 document.getElementById("scoreboard").classList.add("show");
@@ -4925,25 +5331,39 @@
 
         let fullscreenSponsorTimer = null;
 
-        channel.bind('fullscreenSponsor', data => {
+        function hideFullscreenSponsor(restoreBranding = true) {
             const box = document.getElementById("fullscreenSponsor");
             const img = document.getElementById("fullscreenSponsorImg");
-
-            if (!box || !img) return;
 
             if (fullscreenSponsorTimer) {
                 clearTimeout(fullscreenSponsorTimer);
                 fullscreenSponsorTimer = null;
             }
 
-            if (!data || data.hide) {
-                box.classList.remove("show");
-                setTimeout(() => {
-                    if (!box.classList.contains("show")) img.removeAttribute("src");
-                    applyBrandingState();
-                }, 450);
+            if (!box || !img) {
+                if (restoreBranding) applyBrandingState();
                 return;
             }
+
+            box.classList.remove("show");
+            setTimeout(() => {
+                if (!box.classList.contains("show")) img.removeAttribute("src");
+                if (restoreBranding) applyBrandingState();
+            }, 450);
+        }
+
+        channel.bind('fullscreenSponsor', data => {
+            const box = document.getElementById("fullscreenSponsor");
+            const img = document.getElementById("fullscreenSponsorImg");
+
+            if (!box || !img) return;
+
+            if (!data || data.hide) {
+                hideFullscreenSponsor(true);
+                return;
+            }
+
+            hideFullscreenSponsor(false);
 
             if (data.image) {
                 img.src = data.image;
@@ -5033,11 +5453,6 @@
 
                         /* trigger animation */
                         imgEl.style.animation = "playerIn .45s cubic-bezier(.22,.9,.3,1) forwards";
-
-                        /* pulse after entry */
-                        setTimeout(() => {
-                            imgEl.style.animation += ", playerPulse 2s ease-in-out infinite";
-                        }, 450);
 
                     }, 50);
 
@@ -5187,51 +5602,44 @@
             }
             else return;
 
-            momentImage.src = file;
-            momentGlow.style.background = glowColor;
-
-            momentFallback.textContent = fallbackText;
-            momentFallback.style.color = glowColor;
-            momentFallback.style.display = "none";
-
             const key = (raw === "W" || raw === "WICKET")
                 ? "moment-wicket"
                 : "moment-" + raw;
 
-            enqueueOverlay(key, 2000, () => {
+            enqueueOverlay(key, 2400, () => {
+
+                momentImage.onerror = () => {
+                    momentImage.style.display = "none";
+                    momentFallback.style.display = "block";
+                    momentFallback.style.animation = "momentIn .5s cubic-bezier(.22,.9,.3,1) forwards";
+                };
+
+                momentImage.style.display = "block";
+                momentImage.src = file;
+                momentGlow.style.background = glowColor;
+
+                momentFallback.textContent = fallbackText;
+                momentFallback.style.color = glowColor;
+                momentFallback.style.display = "none";
 
                 momentStinger.style.opacity = 1;
                 momentStinger.style.pointerEvents = "auto";
 
+                momentImage.style.animation = "none";
+                momentFallback.style.animation = "none";
+                void momentImage.offsetWidth;
                 momentImage.style.animation = "momentIn .6s forwards";
 
-                setTimeout(() => {
-                    momentImage.style.animation = "momentOut .4s forwards";
+                // Wicket shake effect
+                if (raw === "W" || raw === "WICKET") {
+                    momentStinger.style.animation = "shake .45s ease";
+                    setTimeout(() => momentStinger.style.animation = "", 450);
+                }
 
-                    setTimeout(() => {
-                        momentStinger.style.opacity = 0;
-                        momentStinger.style.pointerEvents = "none";
-                    }, 400);
-
-                }, 1600);
-
+                if (raw === "HATTRICK") {
+                    momentStinger.style.animation = "shake .6s ease";
+                }
             });
-
-            momentImage.onerror = () => {
-                momentImage.style.display = "none";
-                momentFallback.style.display = "block";
-                momentFallback.style.animation = "momentIn .5s cubic-bezier(.22,.9,.3,1) forwards";
-            };
-
-            // Wicket shake effect
-            if (raw === "W" || raw === "WICKET") {
-                momentStinger.style.animation = "shake .45s ease";
-                setTimeout(() => momentStinger.style.animation = "", 450);
-            }
-
-            if (raw === "HATTRICK") {
-                momentStinger.style.animation = "shake .6s ease";
-            }
         });
 
 
@@ -5337,6 +5745,8 @@
             if (!data || !data.hide) return;
 
             console.log("HIDE EVENT RECEIVED");
+            stopSponsorRotation();
+            hideFullscreenSponsor(false);
 
             // Hide Team XI
             const teamXI = document.getElementById("teamXIOverlay");
@@ -5409,10 +5819,36 @@
         let sponsorIndex = 0;
         let sponsorTimer = null;
 
+        function stopSponsorRotation() {
+            if (sponsorTimer) {
+                clearTimeout(sponsorTimer);
+                sponsorTimer = null;
+            }
+        }
+
+        function scheduleSponsorRotation(interval) {
+            stopSponsorRotation();
+
+            if (sponsorList.length <= 1 || !topSponsorBar.classList.contains("show")) {
+                return;
+            }
+
+            sponsorTimer = setTimeout(() => {
+                sponsorIndex = (sponsorIndex + 1) % sponsorList.length;
+                topSponsorImage.style.opacity = 0;
+
+                setTimeout(() => {
+                    topSponsorImage.src = sponsorList[sponsorIndex];
+                    topSponsorImage.style.opacity = 1;
+                    scheduleSponsorRotation(interval);
+                }, 300);
+            }, interval);
+        }
+
         channel.bind('sponsor', data => {
             log("Sponsor event:", data);
 
-            clearInterval(sponsorTimer);
+            stopSponsorRotation();
 
             if (!data || data.enabled !== true) {
                 topSponsorBar.classList.remove('show');
@@ -5439,18 +5875,7 @@
             topSponsorBar.classList.add('show');
 
             const interval = parseInt(data.interval || 8) * 1000;
-
-            sponsorTimer = setInterval(() => {
-                sponsorIndex = (sponsorIndex + 1) % sponsorList.length;
-
-                topSponsorImage.style.opacity = 0;
-
-                setTimeout(() => {
-                    topSponsorImage.src = sponsorList[sponsorIndex];
-                    topSponsorImage.style.opacity = 1;
-                }, 300);
-
-            }, interval);
+            scheduleSponsorRotation(interval);
         });
 
 
@@ -5459,6 +5884,8 @@
             log("BREAK RECEIVED: ", data);
 
             if (data && data.hide) {
+                stopSponsorRotation();
+                hideFullscreenSponsor(false);
 
                 // Hide all overlays
                 document.querySelectorAll(
@@ -6112,11 +6539,13 @@
 
                 if (id === "bowlerLowerThird") {
                     el.style.background = `
-                                                            linear-gradient(90deg,
-                                                                color-mix(in srgb, var(--bowling-primary) ${Math.round(opacity * 100)}%, #000 ${100 - Math.round(opacity * 100)}%),
-                                                                rgba(7,20,38,${opacity})
+                                                            linear-gradient(105deg,
+                                                                var(--bowling-primary) 0%,
+                                                                var(--bowling-primary) 76%,
+                                                                var(--bowling-accent) 100%
                                                             )
                                                         `;
+                    el.style.opacity = String(opacity);
                     return;
                 }
 
