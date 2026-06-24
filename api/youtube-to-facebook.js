@@ -7,7 +7,8 @@ export default async function handler(req, res) {
             return res.status(405).json({ error: "Method not allowed" });
         }
 
-        const apiSecret = process.env.YOUTUBE_FACEBOOK_SECRET
+        const apiSecret = process.env.YOUTUBE_FACEBOOK_SECRET;
+
         if (!apiSecret) {
             return res.status(500).json({ error: "Missing YOUTUBE_FACEBOOK_SECRET" });
         }
@@ -17,11 +18,16 @@ export default async function handler(req, res) {
         }
 
         const channelId = process.env.YOUTUBE_CHANNEL_ID;
+        const youtubeApiKey = process.env.YOUTUBE_API_KEY;
         const facebookPageId = process.env.FACEBOOK_PAGE_ID;
         const facebookPageToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
 
         if (!channelId) {
             return res.status(400).json({ error: "Missing YOUTUBE_CHANNEL_ID" });
+        }
+
+        if (!youtubeApiKey) {
+            return res.status(400).json({ error: "Missing YOUTUBE_API_KEY" });
         }
 
         if (!facebookPageId) {
@@ -66,6 +72,55 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: "Could not read YouTube video ID" });
         }
 
+        const videoDetailsUrl = new URL("https://www.googleapis.com/youtube/v3/videos");
+        videoDetailsUrl.searchParams.set("part", "liveStreamingDetails,snippet");
+        videoDetailsUrl.searchParams.set("id", videoId);
+        videoDetailsUrl.searchParams.set("key", youtubeApiKey);
+
+        const videoDetailsResponse = await fetch(videoDetailsUrl);
+
+        if (!videoDetailsResponse.ok) {
+            return res.status(500).json({
+                error: `YouTube video details failed: ${videoDetailsResponse.status}`,
+                videoId,
+                title,
+                youtubeUrl
+            });
+        }
+
+        const videoDetails = await videoDetailsResponse.json();
+        const video = videoDetails.items?.[0];
+
+        if (!video) {
+            return res.status(404).json({
+                error: "YouTube video details not found",
+                videoId,
+                title,
+                youtubeUrl
+            });
+        }
+
+        const liveStreamingDetails = video.liveStreamingDetails || {};
+        const liveBroadcastContent = video.snippet?.liveBroadcastContent || "none";
+        const actualStartTime = liveStreamingDetails.actualStartTime || null;
+        const actualEndTime = liveStreamingDetails.actualEndTime || null;
+        const isLive = Boolean(actualStartTime) && !actualEndTime;
+
+        if (!isLive) {
+            return res.status(200).json({
+                posted: false,
+                reason: actualEndTime ? "Stream has ended" : "Latest YouTube video is not live",
+                videoId,
+                title,
+                youtubeUrl,
+                liveStatus: {
+                    liveBroadcastContent,
+                    actualStartTime,
+                    actualEndTime
+                }
+            });
+        }
+
         const kvKey = `youtubeFbPosted:${videoId}`;
         const alreadyPosted = await kv.get(kvKey);
 
@@ -76,6 +131,11 @@ export default async function handler(req, res) {
                 videoId,
                 title,
                 youtubeUrl,
+                liveStatus: {
+                    liveBroadcastContent,
+                    actualStartTime,
+                    actualEndTime
+                },
                 previousPost: alreadyPosted
             });
         }
@@ -119,6 +179,11 @@ ${youtubeUrl}`;
             youtubeUrl,
             published,
             updated,
+            liveStatus: {
+                liveBroadcastContent,
+                actualStartTime,
+                actualEndTime
+            },
             facebookPost: fbResult,
             postedAt: new Date().toISOString()
         };
@@ -130,6 +195,11 @@ ${youtubeUrl}`;
             videoId,
             title,
             youtubeUrl,
+            liveStatus: {
+                liveBroadcastContent,
+                actualStartTime,
+                actualEndTime
+            },
             facebook: fbResult
         });
     } catch (err) {
