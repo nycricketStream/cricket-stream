@@ -9255,7 +9255,7 @@ CURRENT OVER SUMMARY
             if (!secret) {
                 secret = await showAppDialog({
                     title: "Facebook live post",
-                    message: "Enter the API secret for Youtube-To-Facebook.",
+                    message: "Enter the API secret for /api/youtube-to-facebook.",
                     input: true,
                     placeholder: "Secret",
                     okText: "Save",
@@ -9281,6 +9281,11 @@ CURRENT OVER SUMMARY
                         localStorage.removeItem("youtubeFacebookSecret");
                     }
                     showModal(payload.error || "Could not post live stream to Facebook");
+                    return;
+                }
+
+                if (payload.posted === false) {
+                    showModal(payload.reason || "No live YouTube stream found");
                     return;
                 }
 
