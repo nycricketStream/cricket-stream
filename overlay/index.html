@@ -4047,7 +4047,12 @@
             border-color: var(--batting-accent) !important;
         }
 
-        #sbBowler, #sbThisOver {
+        #sbBowler {
+            border-left-color: var(--batting-accent) !important;
+            border-right-color: var(--bowling-accent) !important;
+        }
+
+        #sbThisOver {
             border-color: var(--bowling-accent) !important;
         }
 
@@ -4479,7 +4484,7 @@
             <div id="scoreboardMeta">
                 <span id="scoreMetricTarget" class="scoreMetric is-hidden">Target -</span>
                 <span id="scoreMetricA" class="scoreMetric">CRR 0.00</span>
-                <span id="scoreMetricB" class="scoreMetric">Projected -</span>
+                <span id="scoreMetricB" class="scoreMetric is-hidden">Projected -</span>
             </div>
             <div id="sbBatters">
                 <div class="batRow"><span id="bat1">Batter1*</span><span id="bat1Score">0 (0)</span><span id="bat1Sr" class="batSr">SR 0.0</span></div>
@@ -4690,7 +4695,9 @@
             bat1: "",
             bat2: "",
             score: "0/0",
-            overs: "0.0"
+            overs: "0.0",
+            innings: "1",
+            maxOvers: "50"
         };
         let overlayState = {
             teamA: "",
@@ -4727,6 +4734,49 @@
 
         function safeNumber(v, fallback = 0) {
             return Number.isFinite(Number(v)) ? Number(v) : fallback;
+        }
+
+        function getProjectedScoreThresholdBalls(maxOvers) {
+            const totalOvers = Number.parseFloat(maxOvers);
+
+            if (totalOvers === 20) return 18;
+            if (totalOvers === 30 || totalOvers === 40 || totalOvers === 50) return 30;
+
+            return Number.POSITIVE_INFINITY;
+        }
+
+        function getRunsFromScore(score) {
+            const runs = Number.parseInt(String(score || "").split("/")[0], 10);
+            return Number.isFinite(runs) ? runs : 0;
+        }
+
+        function inferMaxOversFromProjection(data = {}) {
+            const projectedScore = Number.parseFloat(data.projectedScore);
+            const currentBalls = scorecardOversToBalls(data.overs ?? matchState.overs);
+            const currentRuns = getRunsFromScore(data.score ?? matchState.score);
+
+            if (!Number.isFinite(projectedScore) || projectedScore <= 0 || currentBalls <= 0 || currentRuns <= 0) {
+                return "";
+            }
+
+            const impliedOvers = projectedScore * (currentBalls / 6) / currentRuns;
+            const supportedOvers = [20, 30, 40, 50];
+            const closestOvers = supportedOvers.reduce((closest, overs) => {
+                return Math.abs(overs - impliedOvers) < Math.abs(closest - impliedOvers) ? overs : closest;
+            }, supportedOvers[0]);
+
+            return Math.abs(closestOvers - impliedOvers) <= 2 ? String(closestOvers) : "";
+        }
+
+        function shouldShowProjectedScore(data = {}) {
+            const inningsValue = String(data.innings ?? matchState.innings ?? "1");
+            if (inningsValue !== "1") return false;
+
+            const totalOvers = data.maxOvers || data.totalOvers || data.matchOvers || inferMaxOversFromProjection(data) || matchState.maxOvers;
+            const thresholdBalls = getProjectedScoreThresholdBalls(totalOvers);
+            const currentBalls = scorecardOversToBalls(data.overs ?? matchState.overs);
+
+            return currentBalls >= thresholdBalls;
         }
 
         function normalizeHexColor(value, fallback) {
@@ -4895,6 +4945,8 @@
             overlayState.teamBLogo = data.teamBLogo || overlayState.teamBLogo;
             overlayState.battingTeam = data.batting || overlayState.battingTeam;
             overlayState.target = data.target || data.targetScore || data.chaseTarget || overlayState.target;
+            matchState.innings = String(data.innings || matchState.innings || "1");
+            matchState.maxOvers = String(data.maxOvers || data.totalOvers || data.matchOvers || matchState.maxOvers || "50");
             overlayState.teamAColors = getScoreboardColors(data, "teamA", overlayState.teamAColors.primary, overlayState.teamAColors.accent, overlayState.teamAColors.text);
             overlayState.teamBColors = getScoreboardColors(data, "teamB", overlayState.teamBColors.primary, overlayState.teamBColors.accent, overlayState.teamBColors.text);
 
@@ -4948,17 +5000,28 @@
             if (data.score && data.score !== lastScore) {
 
                 sbScore.textContent = data.score;
+                matchState.score = data.score;
 
                 sbScore.classList.remove("scoreFlash");
                 void sbScore.offsetWidth;
                 sbScore.classList.add("scoreFlash");
 
                 lastScore = data.score;
+            } else if (data.score) {
+                matchState.score = data.score;
             }
 
             if (data.overs !== undefined) {
                 matchState.overs = data.overs;
                 sbOvers.textContent = "(" + data.overs + ")";
+            }
+
+            if (data.innings !== undefined) {
+                matchState.innings = String(data.innings || "1");
+            }
+
+            if (data.maxOvers !== undefined || data.totalOvers !== undefined || data.matchOvers !== undefined) {
+                matchState.maxOvers = String(data.maxOvers || data.totalOvers || data.matchOvers || "50");
             }
 
             if (data.runRate) {
@@ -4986,10 +5049,17 @@
                 }
                 scoreMetricA.textContent = needText;
                 scoreMetricB.textContent = "RRR " + data.requiredRunRate;
+                scoreMetricB.classList.remove("is-hidden");
             } else if (data.projectedScore !== undefined) {
                 scoreboardMeta.classList.remove("has-target");
                 scoreMetricTarget.classList.add("is-hidden");
-                scoreMetricB.textContent = "Projected " + data.projectedScore;
+                if (shouldShowProjectedScore(data)) {
+                    scoreMetricB.textContent = "Projected " + data.projectedScore;
+                    scoreMetricB.classList.remove("is-hidden");
+                } else {
+                    scoreMetricB.textContent = "Projected -";
+                    scoreMetricB.classList.add("is-hidden");
+                }
             }
 
             if (data.bat1 !== undefined) {
@@ -6681,7 +6751,9 @@
                 bat1: "",
                 bat2: "",
                 score: "0/0",
-                overs: "0.0"
+                overs: "0.0",
+                innings: "1",
+                maxOvers: "50"
             };
 
             sbScore.textContent = "0/0";
@@ -6692,6 +6764,7 @@
             scoreboardMeta.classList.remove("has-target");
             scoreMetricA.textContent = "CRR 0.00";
             scoreMetricB.textContent = "Projected -";
+            scoreMetricB.classList.add("is-hidden");
 
             bat1.textContent = "";
             bat1Score.textContent = "";
