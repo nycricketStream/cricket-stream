@@ -5017,11 +5017,17 @@
             const striker = document.getElementById('striker')?.value || "";
             const nonStriker = document.getElementById('nonStriker')?.value || "";
             const bowler = document.getElementById('bowler')?.value || "";
+            const chaseMetrics = getChaseMetrics();
 
             const data = {
                 score: liveTotal + "/" + liveWickets,
                 overs: calculateOvers(),
                 runRate: calculateRR(),
+                projectedScore: chaseMetrics.projectedScore,
+                requiredRuns: chaseMetrics.requiredRuns,
+                ballsRemaining: chaseMetrics.ballsRemaining,
+                requiredRunInfo: chaseMetrics.requiredRunInfo,
+                requiredRunRate: chaseMetrics.requiredRunRate,
                 teamA: document.getElementById('teamA')?.value || "",
                 teamB: document.getElementById('teamB')?.value || "",
                 teamALogo: document.getElementById('teamALogo')?.value || "",
@@ -5058,6 +5064,7 @@
                 currentOverId: currentOverId,
                 currentOverBalls: currentOverBalls,
                 lastOverNumber: lastOverNumber,
+                bowlersUsed: [...bowlersUsed],
 
                 history: liveHistory,
                 extras: extrasStats,
@@ -5140,8 +5147,24 @@
                     wickets: b.wickets
                 };
             });
+            const restoredBowlerNames = new Set(data.bowlersUsed || []);
+            Object.keys(bowlerStats).forEach(name => {
+                if (name && (
+                    bowlerStats[name].balls > 0 ||
+                    bowlerStats[name].runs > 0 ||
+                    bowlerStats[name].wickets > 0
+                )) {
+                    restoredBowlerNames.add(name);
+                }
+            });
 
             liveHistory = data.history || [];
+            liveHistory.forEach(ball => {
+                if (ball?.bowler) {
+                    restoredBowlerNames.add(ball.bowler);
+                }
+            });
+            bowlersUsed = restoredBowlerNames;
             extrasStats = data.extras || {
                 wide: 0,
                 noball: 0,
@@ -5710,7 +5733,12 @@
                 this.classList.remove("bowler-warning");
                 setScoringEnabled(true);
 
-                const isReturning = bowlersUsed.has(bowler);
+                const hasBowledBefore = Boolean(bowlerStats[bowler]) && (
+                    bowlerStats[bowler].balls > 0 ||
+                    bowlerStats[bowler].runs > 0 ||
+                    bowlerStats[bowler].wickets > 0
+                );
+                const isReturning = bowlersUsed.has(bowler) || hasBowledBefore;
 
                 let stats = "0-0 (0.0)";
                 if (bowlerStats[bowler]) {
@@ -8791,6 +8819,7 @@ CURRENT OVER SUMMARY
         /* ============= Auto Save Match =============== */
         function autoSaveMatch() {
             if (isRestoring) return;
+            const chaseMetrics = getChaseMetrics();
             const state = {
                 liveTotal,
                 liveWickets,
@@ -8799,6 +8828,12 @@ CURRENT OVER SUMMARY
                 bowlerStats,
                 batsmanStats,
                 extrasStats,
+                projectedScore: chaseMetrics.projectedScore,
+                requiredRuns: chaseMetrics.requiredRuns,
+                ballsRemaining: chaseMetrics.ballsRemaining,
+                requiredRunInfo: chaseMetrics.requiredRunInfo,
+                requiredRunRate: chaseMetrics.requiredRunRate,
+                bowlersUsed: [...bowlersUsed],
                 currentOverBalls,
                 teamA: teamA.value,
                 teamB: teamB.value,
@@ -8894,8 +8929,25 @@ CURRENT OVER SUMMARY
             bowlerStats = state.bowlerStats || {};
             batsmanStats = state.batsmanStats || {};
             extrasStats = state.extrasStats || { wide: 0, noball: 0, bye: 0, legbye: 0 };
+            const restoredBowlerNames = new Set(state.bowlersUsed || []);
+            Object.keys(bowlerStats).forEach(name => {
+                const stats = bowlerStats[name] || {};
+                if (name && (
+                    stats.balls > 0 ||
+                    stats.runs > 0 ||
+                    stats.wickets > 0
+                )) {
+                    restoredBowlerNames.add(name);
+                }
+            });
+            liveHistory.forEach(ball => {
+                if (ball?.bowler) {
+                    restoredBowlerNames.add(ball.bowler);
+                }
+            });
+            bowlersUsed = restoredBowlerNames;
 
-            currentOverBalls = state.currentOverBalls || [];
+            currentOverBalls = Number.isFinite(Number(state.currentOverBalls)) ? Number(state.currentOverBalls) : 0;
 
             // TEAMS
             teamA.value = state.teamA || "";
