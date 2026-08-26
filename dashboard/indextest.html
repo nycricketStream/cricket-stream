@@ -5369,6 +5369,20 @@
             ).style.display = 'none';
         }
 
+        function openDisplayImagesModal() {
+            closeGraphicsModal();
+            loadDisplayImagePresets();
+            document.getElementById(
+                'displayImagesModal'
+            ).style.display = 'flex';
+        }
+
+        function closeDisplayImagesModal() {
+            document.getElementById(
+                'displayImagesModal'
+            ).style.display = 'none';
+        }
+
         async function openBrandingModal() {
             try {
                 await loadBrandingSettings();
@@ -5913,6 +5927,7 @@
             loadTeamsToLineup();
             loadBrandingSettings(); 
             loadSponsorPresets();
+            loadDisplayImagePresets();
             loadMatchFromFirebase();
             rebuildBattingOrder();
 
@@ -8660,6 +8675,7 @@ CURRENT OVER SUMMARY
 
         let savingSponsors = false;
         let lastSavedSponsorsHash = "";
+        const displayImagePresetsStorageKey = "displayImagePresets";
 
         // Simple hash to detect changes
         function generateSponsorsHash(data) {
@@ -8798,6 +8814,98 @@ CURRENT OVER SUMMARY
                 console.warn("⚠️ Could not load sponsors:", err);
             }
         }
+        function getDisplayImagePresetInputs() {
+            const modal = document.querySelector(
+                '#displayImagesModal .modal-box'
+            );
+            return modal
+                ? [...modal.querySelectorAll('[id^="displayImagePreset"]')]
+                : [];
+        }
+
+        function readDisplayImagePresetsFromInputs() {
+            const presets = {};
+            getDisplayImagePresetInputs().forEach(input => {
+                presets[input.id] = input.value.trim();
+            });
+
+            return presets;
+        }
+
+        function applyDisplayImagePresets(presets) {
+            getDisplayImagePresetInputs().forEach(input => {
+                input.value = presets?.[input.id] || "";
+            });
+        }
+
+        async function saveDisplayImagePresets() {
+            const presets = readDisplayImagePresetsFromInputs();
+
+            localStorage.setItem(
+                displayImagePresetsStorageKey,
+                JSON.stringify(presets)
+            );
+
+            try {
+                const res = await fetch('/api/display-images', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ presets })
+                });
+
+                if (!res.ok) throw new Error("Display image preset save failed");
+                showModal("Display image presets saved");
+            } catch (err) {
+                console.warn("Display image presets saved locally only", err);
+                showModal("Display image presets saved locally");
+            }
+        }
+
+        async function loadDisplayImagePresets() {
+            let presets = {};
+            try {
+                presets = JSON.parse(
+                    localStorage.getItem(displayImagePresetsStorageKey) || "{}"
+                );
+            } catch (err) {
+                console.warn("Display image presets could not be parsed", err);
+            }
+
+            applyDisplayImagePresets(presets);
+
+            try {
+                const res = await fetch('/api/display-images');
+                if (!res.ok) return;
+
+                const data = await res.json();
+                const cloudPresets = data?.presets || {};
+                localStorage.setItem(
+                    displayImagePresetsStorageKey,
+                    JSON.stringify(cloudPresets)
+                );
+                applyDisplayImagePresets(cloudPresets);
+            } catch (err) {
+                console.warn("Display image presets loaded from local storage", err);
+            }
+        }
+
+        function triggerDisplayImagePreset(index) {
+            const input = document.getElementById(
+                `displayImagePreset${index}`
+            );
+            const url = input?.value.trim() || "";
+
+            if (!url) {
+                showModal(`Enter Display Image ${index} URL first`);
+                return;
+            }
+
+            sendEvent('fullscreenSponsor', {
+                image: url
+            });
+            console.log("Display image triggered:", url);
+        }
+
         /* ========= Show Live Sub Tab ============= */
         function showLiveSubTab(tab) {
             const basic = document.getElementById('basicLiveTab');
@@ -10466,6 +10574,11 @@ CURRENT OVER SUMMARY
             ">
                     Match Result
                 </button>
+                <button class="modal-action-warn" onclick="
+                openDisplayImagesModal()
+            ">
+                    Display Images
+                </button>
                 <button class="modal-action-danger" onclick="
                     hideBreak()
              ">
@@ -10622,6 +10735,98 @@ CURRENT OVER SUMMARY
             </div>
             <button class="close-modal-btn modal-action-neutral"
                     onclick="closeSponsorsModal()">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- =========================
+         DISPLAY IMAGES MODAL
+    ========================= -->
+    <div id="displayImagesModal"
+         class="modal-overlay"
+         style="display:none;">
+        <div class="modal-box"
+             style="
+        width:700px;
+        max-width:95%;
+        max-height:88vh;
+        overflow:auto;
+     ">
+            <h2>Display Images</h2>
+            <div class="sponsor-layout">
+                <div class="sponsor-panel-card">
+                    <h4 style="margin-top:0">
+                        Image Presets
+                    </h4>
+                    <div class="sponsor-input-grid">
+                        <input id="displayImagePreset1"
+                               placeholder="Image 1 URL">
+                        <input id="displayImagePreset2"
+                               placeholder="Image 2 URL">
+                        <input id="displayImagePreset3"
+                               placeholder="Image 3 URL">
+                        <input id="displayImagePreset4"
+                               placeholder="Image 4 URL">
+                        <input id="displayImagePreset5"
+                               placeholder="Image 5 URL">
+                        <input id="displayImagePreset6"
+                               placeholder="Image 6 URL">
+                        <input id="displayImagePreset7"
+                               placeholder="Image 7 URL">
+                        <input id="displayImagePreset8"
+                               placeholder="Image 8 URL">
+                        <input id="displayImagePreset9"
+                               placeholder="Image 9 URL">
+                        <input id="displayImagePreset10"
+                               placeholder="Image 10 URL">
+                    </div>
+                    <button class="modal-action-success"
+                            onclick="saveDisplayImagePresets()"
+                            style="margin-top:14px;width:100%;">
+                        Save Presets
+                    </button>
+                </div>
+                <div class="sponsor-panel-card">
+                    <h4 style="margin-top:0">
+                        Trigger Images
+                    </h4>
+                    <div class="modal-grid">
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(1)">
+                            Image 1
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(2)">
+                            Image 2
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(3)">
+                            Image 3
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(4)">
+                            Image 4
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(5)">
+                            Image 5
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(6)">
+                            Image 6
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(7)">
+                            Image 7
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(8)">
+                            Image 8
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(9)">
+                            Image 9
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(10)">
+                            Image 10
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <button class="close-modal-btn modal-action-neutral"
+                    onclick="closeDisplayImagesModal()">
                 Close
             </button>
         </div>
