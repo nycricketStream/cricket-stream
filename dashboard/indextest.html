@@ -8901,9 +8901,16 @@ CURRENT OVER SUMMARY
             }
 
             sendEvent('fullscreenSponsor', {
-                image: url
+                image: url,
+                persistent: true
             });
             console.log("Display image triggered:", url);
+        }
+
+        function hideDisplayImage() {
+            sendEvent('fullscreenSponsor', {
+                hide: true
+            });
         }
 
         /* ========= Show Live Sub Tab ============= */
@@ -10785,6 +10792,11 @@ CURRENT OVER SUMMARY
                             onclick="saveDisplayImagePresets()"
                             style="margin-top:14px;width:100%;">
                         Save Presets
+                    </button>
+                    <button class="modal-action-danger"
+                            onclick="hideDisplayImage()"
+                            style="margin-top:10px;width:100%;">
+                        Hide Image
                     </button>
                 </div>
                 <div class="sponsor-panel-card">
