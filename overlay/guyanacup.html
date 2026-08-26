@@ -5439,6 +5439,10 @@
                 img.src = data.image;
                 box.classList.add("show");
 
+                if (data.persistent) {
+                    return;
+                }
+
                 fullscreenSponsorTimer = setTimeout(() => {
                     box.classList.remove("show");
                     fullscreenSponsorTimer = null;
