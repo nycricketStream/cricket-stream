@@ -6121,6 +6121,7 @@
         let lastOverProcessed = -1;
         let currentOverId = 0;
         let selectedExtraType = "";
+        let selectedRunOutRuns = 0;
 
         function calculateOvers() {
             return Math.floor(liveBalls / 6) + "." + (liveBalls % 6);
@@ -6229,7 +6230,10 @@
         function getBallSymbol(b) {
             if (!b) return "";
             if (b.type === "run") return b.runs;
-            if (b.type === "wicket") return "W";
+            if (b.type === "wicket") {
+                const runs = Number(b.runs) || 0;
+                return runs > 0 ? runs + "W" : "W";
+            }
             if (b.type === "extra") {
                 const r = Number(b.runs) || 1;
                 if (b.extra === "wide") return r + "Wd";
@@ -6986,6 +6990,10 @@ CURRENT OVER SUMMARY
                 swaps++;
             }
 
+            if (ball.type === "wicket" && Number(ball.runs || 0) % 2 === 1) {
+                swaps++;
+            }
+
             if (ball.type === "extra") {
                 const totalRuns = Number(ball.runs || 0);
                 const hasRunsTaken = ball.runsTaken !== undefined && ball.runsTaken !== null;
@@ -7287,8 +7295,8 @@ CURRENT OVER SUMMARY
                 }
 
                 // runs from bat
-                if (ball.type === "run") {
-                    overs[over] += ball.runs;
+                if (ball.type === "run" || ball.type === "wicket") {
+                    overs[over] += ball.runs || 0;
                 }
 
                 // extras that count against bowler
@@ -7439,6 +7447,7 @@ CURRENT OVER SUMMARY
                     currentRuns += ball.runs;
                     ballCount++;
                 } else if (ball.type === "wicket") {
+                    currentRuns += ball.runs || 0;
                     ballCount++;
                 } else if (ball.type === "extra") {
                     // wides and no balls add runs but not balls
@@ -7822,7 +7831,7 @@ CURRENT OVER SUMMARY
                 const el = document.createElement("div");
                 el.className = "overBall";
                 el.innerText = symbol;
-                if (String(symbol) === "W") {
+                if (String(symbol).includes("W")) {
                     el.classList.add("wicket");
                 }
                 else if (String(symbol) === "4") {
@@ -8162,16 +8171,33 @@ CURRENT OVER SUMMARY
                 // WICKET
                 // =========================
                 else if (ball.type === "wicket") {
+                    const wicketRuns = Math.max(0, Number(ball.runs) || 0);
+                    const facingBatter = ball.facingBatter || ball.scoringBatter || striker;
+                    const outBatter = ball.outBatter || striker;
+
+                    if (facingBatter) ensureBatsman(facingBatter);
+                    if (outBatter) ensureBatsman(outBatter);
+
+                    liveTotal += wicketRuns;
                     liveWickets++;
                     liveBalls++;
                     legalBallsInOver++;
-                    batsmanStats[striker].balls++;
-                    batsmanStats[striker].out = true;
-                    batsmanStats[striker].dismissal = ball.dismissal || "Out";
-                    batsmanStats[striker].bowler = bowler || "";
-                    bowlerStats[bowler].balls++;
+                    if (facingBatter) {
+                        batsmanStats[facingBatter].runs += wicketRuns;
+                        batsmanStats[facingBatter].balls++;
+                        if (wicketRuns === 4) batsmanStats[facingBatter].fours++;
+                        if (wicketRuns === 6) batsmanStats[facingBatter].sixes++;
+                    }
+                    batsmanStats[outBatter].out = true;
+                    batsmanStats[outBatter].dismissal = ball.dismissal || "Out";
+                    batsmanStats[outBatter].bowler = bowler || "";
+                    if (bowler) {
+                        bowlerStats[bowler].runs += wicketRuns;
+                        bowlerStats[bowler].balls++;
+                    }
                     // wickets credited only to bowler dismissals
                     if (
+                        bowler &&
                         !ball.dismissal?.includes("Run Out") &&
                         !ball.dismissal?.includes("Obstructing") &&
                         !ball.dismissal?.includes("Timed Out")
@@ -9507,7 +9533,7 @@ CURRENT OVER SUMMARY
             saveMatchToFirebase();
         }
 
-        function smartWicket(type, fielder, runOutChoice = "striker") {
+        function smartWicket(type, fielder, runOutChoice = "striker", runOutRuns = 0) {
             if (!validateBeforeBall()) return;
             
             const striker = document.getElementById('striker')?.value;
@@ -9515,6 +9541,7 @@ CURRENT OVER SUMMARY
             const shortBowler = shortName(currentBowler);
             const shortFielder = shortName(fielder);
             const nonStriker = document.getElementById('nonStriker')?.value;
+            const completedRuns = type === "Run Out" ? Math.max(0, Number(runOutRuns) || 0) : 0;
             const outBatter =
                 (
                     type === "Run Out" &&
@@ -9558,8 +9585,12 @@ CURRENT OVER SUMMARY
                 type: 'wicket',
                 bowler: currentBowler,
                 striker: outBatter,
+                facingBatter: striker,
+                outBatter: outBatter,
+                runs: completedRuns,
+                runsTaken: completedRuns,
                 dismissal: dismissalText,
-                scoreAtWicket: liveTotal,
+                scoreAtWicket: liveTotal + completedRuns,
                 wicketNumber: liveWickets + 1,
                 overId: currentOverId
             });
@@ -9570,14 +9601,27 @@ CURRENT OVER SUMMARY
             partnership100Shown = false;
             lastPartnershipKey = "";
             lastHatTrickKey = "";
+            liveTotal += completedRuns;
             liveWickets++;
             liveBalls++;
             currentOverBalls++;
-            batsmanStats[outBatter].balls++;
+            if (currentOverBalls === 1) {
+                currentOverBowler = currentBowler;
+            }
+            if (completedRuns > 0 && striker) {
+                batsmanStats[striker].runs += completedRuns;
+                if (completedRuns === 4) batsmanStats[striker].fours++;
+                if (completedRuns === 6) batsmanStats[striker].sixes++;
+                checkMilestones(striker);
+            }
+            if (striker) {
+                batsmanStats[striker].balls++;
+            }
             batsmanStats[outBatter].out = true;
             batsmanStats[outBatter].dismissal = dismissalText;
             if (currentBowler) {
                 bowlerStats[currentBowler].balls++;
+                bowlerStats[currentBowler].runs += completedRuns;
             }
             if (
                 type === "Bowled" ||
@@ -9601,6 +9645,9 @@ CURRENT OVER SUMMARY
                 triggerMoment('HATTRICK');
             } else {
                 triggerMoment('WICKET');
+            }
+            if (completedRuns % 2 === 1) {
+                rotateStrike();
             }
             // Show next batter selector
             showNextBatter();
@@ -9753,6 +9800,28 @@ CURRENT OVER SUMMARY
             const typeSelect = document.getElementById("wicketType");
             const fielderSection = document.getElementById("fielderSection");
             const fielderSelect = document.getElementById("fielderSelect");
+            const runOutSection = document.getElementById("runOutSection");
+            const runOutRunsSection = document.getElementById("runOutRunsSection");
+            const runOutRunButtons = document.getElementById("runOutRunButtons");
+            selectedRunOutRuns = 0;
+
+            runOutRunButtons.innerHTML = "";
+            for (let i = 0; i <= 4; i++) {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.innerText = i;
+                btn.onclick = () => {
+                    selectedRunOutRuns = i;
+                    [...runOutRunButtons.children].forEach(child => {
+                        child.style.background = "";
+                    });
+                    btn.style.background = "#2563eb";
+                };
+                if (i === 0) {
+                    btn.style.background = "#2563eb";
+                }
+                runOutRunButtons.appendChild(btn);
+            }
 
             // ✅ Populate fielders from bowling team
             const battingTeam = document.getElementById("batting")?.value;
@@ -9791,10 +9860,13 @@ CURRENT OVER SUMMARY
                     fielderSection.style.display = "none";
                 }
 
-                  if (type === "Run Out") {
+                if (type === "Run Out") {
                     runOutSection.style.display = "block";
+                    runOutRunsSection.style.display = "block";
                 } else {
                     runOutSection.style.display = "none";
+                    runOutRunsSection.style.display = "none";
+                    selectedRunOutRuns = 0;
                 }
             }
 
@@ -9823,7 +9895,7 @@ CURRENT OVER SUMMARY
 
             closeWicketModal();
 
-            smartWicket(type, fielder, runOutChoice);
+            smartWicket(type, fielder, runOutChoice, selectedRunOutRuns);
         }
 
         function selectExtraRuns(runsTaken) {
@@ -10136,6 +10208,15 @@ CURRENT OVER SUMMARY
                     <option value="striker">Striker</option>
                     <option value="nonStriker">Non-Striker</option>
                 </select>
+            </div>
+            <div id="runOutRunsSection" style="display:none;margin-top:10px;">
+                <label>Runs Completed</label>
+                <div id="runOutRunButtons" style="
+                   display:grid;
+                   grid-template-columns:repeat(5,1fr);
+                   gap:8px;
+                   margin-top:6px;
+                   "></div>
             </div>
             <button onclick="confirmWicket()">Confirm</button>
             <button onclick="closeWicketModal()" style="background:#374151">Cancel</button>
