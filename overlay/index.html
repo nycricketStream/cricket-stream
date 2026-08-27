@@ -4898,12 +4898,14 @@
                 };
 
                 if (String(item.name || "").startsWith("moment-")) {
+                    momentRenderToken++;
                     momentImage.style.animation = "momentOut .38s forwards";
                     momentFallback.style.animation = "momentOut .38s forwards";
                     setTimeout(() => {
                         momentStinger.style.opacity = 0;
                         momentStinger.style.pointerEvents = "none";
                         momentImage.style.display = "none";
+                        momentImage.removeAttribute("src");
                         momentFallback.style.display = "none";
                         finishOverlay();
                     }, 380);
@@ -5643,6 +5645,7 @@
         const momentImage = document.getElementById('momentImage');
         const momentGlow = document.getElementById('momentGlow');
         const momentFallback = document.getElementById('momentFallback');
+        let momentRenderToken = 0;
 
 
         /* MOMENTS WITH PNG */
@@ -5683,19 +5686,30 @@
                 : "moment-" + raw;
 
             enqueueOverlay(key, 2400, () => {
+                const renderToken = ++momentRenderToken;
 
-                momentImage.onerror = () => {
+                const showFallback = () => {
+                    if (renderToken !== momentRenderToken) return;
                     momentImage.style.display = "none";
+                    momentImage.removeAttribute("src");
                     momentFallback.style.display = "block";
                     momentFallback.style.animation = "momentIn .5s cubic-bezier(.22,.9,.3,1) forwards";
                 };
 
-                momentImage.onload = () => {
+                const showImage = () => {
+                    if (renderToken !== momentRenderToken) return;
+                    momentImage.src = file;
                     momentImage.style.display = "block";
                     momentImage.style.animation = "none";
                     void momentImage.offsetWidth;
                     momentImage.style.animation = "momentIn .6s forwards";
                 };
+                const preloadedMomentImage = new Image();
+                preloadedMomentImage.onload = showImage;
+                preloadedMomentImage.onerror = showFallback;
+
+                momentImage.onload = null;
+                momentImage.onerror = null;
                 momentImage.style.display = "none";
                 momentImage.removeAttribute("src");
                 momentGlow.style.background = glowColor;
@@ -5708,7 +5722,7 @@
                 momentStinger.style.pointerEvents = "auto";
 
                 momentFallback.style.animation = "none";
-                momentImage.src = file;
+                preloadedMomentImage.src = file;
 
                 // Wicket shake effect
                 if (raw === "W" || raw === "WICKET") {
