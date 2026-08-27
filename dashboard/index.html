@@ -5017,11 +5017,17 @@
             const striker = document.getElementById('striker')?.value || "";
             const nonStriker = document.getElementById('nonStriker')?.value || "";
             const bowler = document.getElementById('bowler')?.value || "";
+            const chaseMetrics = getChaseMetrics();
 
             const data = {
                 score: liveTotal + "/" + liveWickets,
                 overs: calculateOvers(),
                 runRate: calculateRR(),
+                projectedScore: chaseMetrics.projectedScore,
+                requiredRuns: chaseMetrics.requiredRuns,
+                ballsRemaining: chaseMetrics.ballsRemaining,
+                requiredRunInfo: chaseMetrics.requiredRunInfo,
+                requiredRunRate: chaseMetrics.requiredRunRate,
                 teamA: document.getElementById('teamA')?.value || "",
                 teamB: document.getElementById('teamB')?.value || "",
                 teamALogo: document.getElementById('teamALogo')?.value || "",
@@ -5058,6 +5064,7 @@
                 currentOverId: currentOverId,
                 currentOverBalls: currentOverBalls,
                 lastOverNumber: lastOverNumber,
+                bowlersUsed: [...bowlersUsed],
 
                 history: liveHistory,
                 extras: extrasStats,
@@ -5140,8 +5147,24 @@
                     wickets: b.wickets
                 };
             });
+            const restoredBowlerNames = new Set(data.bowlersUsed || []);
+            Object.keys(bowlerStats).forEach(name => {
+                if (name && (
+                    bowlerStats[name].balls > 0 ||
+                    bowlerStats[name].runs > 0 ||
+                    bowlerStats[name].wickets > 0
+                )) {
+                    restoredBowlerNames.add(name);
+                }
+            });
 
             liveHistory = data.history || [];
+            liveHistory.forEach(ball => {
+                if (ball?.bowler) {
+                    restoredBowlerNames.add(ball.bowler);
+                }
+            });
+            bowlersUsed = restoredBowlerNames;
             extrasStats = data.extras || {
                 wide: 0,
                 noball: 0,
@@ -5343,6 +5366,20 @@
         function closeSponsorsModal() {
             document.getElementById(
                 'sponsorsModal'
+            ).style.display = 'none';
+        }
+
+        function openDisplayImagesModal() {
+            closeGraphicsModal();
+            loadDisplayImagePresets();
+            document.getElementById(
+                'displayImagesModal'
+            ).style.display = 'flex';
+        }
+
+        function closeDisplayImagesModal() {
+            document.getElementById(
+                'displayImagesModal'
             ).style.display = 'none';
         }
 
@@ -5710,7 +5747,12 @@
                 this.classList.remove("bowler-warning");
                 setScoringEnabled(true);
 
-                const isReturning = bowlersUsed.has(bowler);
+                const hasBowledBefore = Boolean(bowlerStats[bowler]) && (
+                    bowlerStats[bowler].balls > 0 ||
+                    bowlerStats[bowler].runs > 0 ||
+                    bowlerStats[bowler].wickets > 0
+                );
+                const isReturning = bowlersUsed.has(bowler) || hasBowledBefore;
 
                 let stats = "0-0 (0.0)";
                 if (bowlerStats[bowler]) {
@@ -5885,6 +5927,7 @@
             loadTeamsToLineup();
             loadBrandingSettings(); 
             loadSponsorPresets();
+            loadDisplayImagePresets();
             loadMatchFromFirebase();
             rebuildBattingOrder();
 
@@ -6121,6 +6164,7 @@
         let lastOverProcessed = -1;
         let currentOverId = 0;
         let selectedExtraType = "";
+        let selectedRunOutRuns = 0;
 
         function calculateOvers() {
             return Math.floor(liveBalls / 6) + "." + (liveBalls % 6);
@@ -6229,7 +6273,10 @@
         function getBallSymbol(b) {
             if (!b) return "";
             if (b.type === "run") return b.runs;
-            if (b.type === "wicket") return "W";
+            if (b.type === "wicket") {
+                const runs = Number(b.runs) || 0;
+                return runs > 0 ? runs + "W" : "W";
+            }
             if (b.type === "extra") {
                 const r = Number(b.runs) || 1;
                 if (b.extra === "wide") return r + "Wd";
@@ -6986,6 +7033,10 @@ CURRENT OVER SUMMARY
                 swaps++;
             }
 
+            if (ball.type === "wicket" && Number(ball.runs || 0) % 2 === 1) {
+                swaps++;
+            }
+
             if (ball.type === "extra") {
                 const totalRuns = Number(ball.runs || 0);
                 const hasRunsTaken = ball.runsTaken !== undefined && ball.runsTaken !== null;
@@ -7287,8 +7338,8 @@ CURRENT OVER SUMMARY
                 }
 
                 // runs from bat
-                if (ball.type === "run") {
-                    overs[over] += ball.runs;
+                if (ball.type === "run" || ball.type === "wicket") {
+                    overs[over] += ball.runs || 0;
                 }
 
                 // extras that count against bowler
@@ -7439,6 +7490,7 @@ CURRENT OVER SUMMARY
                     currentRuns += ball.runs;
                     ballCount++;
                 } else if (ball.type === "wicket") {
+                    currentRuns += ball.runs || 0;
                     ballCount++;
                 } else if (ball.type === "extra") {
                     // wides and no balls add runs but not balls
@@ -7822,7 +7874,7 @@ CURRENT OVER SUMMARY
                 const el = document.createElement("div");
                 el.className = "overBall";
                 el.innerText = symbol;
-                if (String(symbol) === "W") {
+                if (String(symbol).includes("W")) {
                     el.classList.add("wicket");
                 }
                 else if (String(symbol) === "4") {
@@ -8162,16 +8214,33 @@ CURRENT OVER SUMMARY
                 // WICKET
                 // =========================
                 else if (ball.type === "wicket") {
+                    const wicketRuns = Math.max(0, Number(ball.runs) || 0);
+                    const facingBatter = ball.facingBatter || ball.scoringBatter || striker;
+                    const outBatter = ball.outBatter || striker;
+
+                    if (facingBatter) ensureBatsman(facingBatter);
+                    if (outBatter) ensureBatsman(outBatter);
+
+                    liveTotal += wicketRuns;
                     liveWickets++;
                     liveBalls++;
                     legalBallsInOver++;
-                    batsmanStats[striker].balls++;
-                    batsmanStats[striker].out = true;
-                    batsmanStats[striker].dismissal = ball.dismissal || "Out";
-                    batsmanStats[striker].bowler = bowler || "";
-                    bowlerStats[bowler].balls++;
+                    if (facingBatter) {
+                        batsmanStats[facingBatter].runs += wicketRuns;
+                        batsmanStats[facingBatter].balls++;
+                        if (wicketRuns === 4) batsmanStats[facingBatter].fours++;
+                        if (wicketRuns === 6) batsmanStats[facingBatter].sixes++;
+                    }
+                    batsmanStats[outBatter].out = true;
+                    batsmanStats[outBatter].dismissal = ball.dismissal || "Out";
+                    batsmanStats[outBatter].bowler = bowler || "";
+                    if (bowler) {
+                        bowlerStats[bowler].runs += wicketRuns;
+                        bowlerStats[bowler].balls++;
+                    }
                     // wickets credited only to bowler dismissals
                     if (
+                        bowler &&
                         !ball.dismissal?.includes("Run Out") &&
                         !ball.dismissal?.includes("Obstructing") &&
                         !ball.dismissal?.includes("Timed Out")
@@ -8606,6 +8675,7 @@ CURRENT OVER SUMMARY
 
         let savingSponsors = false;
         let lastSavedSponsorsHash = "";
+        const displayImagePresetsStorageKey = "displayImagePresets";
 
         // Simple hash to detect changes
         function generateSponsorsHash(data) {
@@ -8744,6 +8814,105 @@ CURRENT OVER SUMMARY
                 console.warn("⚠️ Could not load sponsors:", err);
             }
         }
+        function getDisplayImagePresetInputs() {
+            const modal = document.querySelector(
+                '#displayImagesModal .modal-box'
+            );
+            return modal
+                ? [...modal.querySelectorAll('[id^="displayImagePreset"]')]
+                : [];
+        }
+
+        function readDisplayImagePresetsFromInputs() {
+            const presets = {};
+            getDisplayImagePresetInputs().forEach(input => {
+                presets[input.id] = input.value.trim();
+            });
+
+            return presets;
+        }
+
+        function applyDisplayImagePresets(presets) {
+            getDisplayImagePresetInputs().forEach(input => {
+                input.value = presets?.[input.id] || "";
+            });
+        }
+
+        async function saveDisplayImagePresets() {
+            const presets = readDisplayImagePresetsFromInputs();
+
+            localStorage.setItem(
+                displayImagePresetsStorageKey,
+                JSON.stringify(presets)
+            );
+
+            try {
+                const res = await fetch('/api/display-images', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ presets })
+                });
+
+                if (!res.ok) throw new Error("Display image preset save failed");
+                showModal("Display image presets saved");
+            } catch (err) {
+                console.warn("Display image presets saved locally only", err);
+                showModal("Display image presets saved locally");
+            }
+        }
+
+        async function loadDisplayImagePresets() {
+            let presets = {};
+            try {
+                presets = JSON.parse(
+                    localStorage.getItem(displayImagePresetsStorageKey) || "{}"
+                );
+            } catch (err) {
+                console.warn("Display image presets could not be parsed", err);
+            }
+
+            applyDisplayImagePresets(presets);
+
+            try {
+                const res = await fetch('/api/display-images');
+                if (!res.ok) return;
+
+                const data = await res.json();
+                const cloudPresets = data?.presets || {};
+                localStorage.setItem(
+                    displayImagePresetsStorageKey,
+                    JSON.stringify(cloudPresets)
+                );
+                applyDisplayImagePresets(cloudPresets);
+            } catch (err) {
+                console.warn("Display image presets loaded from local storage", err);
+            }
+        }
+
+        function triggerDisplayImagePreset(index) {
+            const input = document.getElementById(
+                `displayImagePreset${index}`
+            );
+            const url = input?.value.trim() || "";
+
+            if (!url) {
+                showModal(`Enter Display Image ${index} URL first`);
+                return;
+            }
+
+            sendEvent('fullscreenSponsor', {
+                image: url,
+                persistent: true
+            });
+            console.log("Display image triggered:", url);
+        }
+
+        function hideDisplayImage() {
+            sendEvent('fullscreenSponsor', {
+                hide: true
+            });
+        }
+
         /* ========= Show Live Sub Tab ============= */
         function showLiveSubTab(tab) {
             const basic = document.getElementById('basicLiveTab');
@@ -8765,6 +8934,7 @@ CURRENT OVER SUMMARY
         /* ============= Auto Save Match =============== */
         function autoSaveMatch() {
             if (isRestoring) return;
+            const chaseMetrics = getChaseMetrics();
             const state = {
                 liveTotal,
                 liveWickets,
@@ -8773,6 +8943,12 @@ CURRENT OVER SUMMARY
                 bowlerStats,
                 batsmanStats,
                 extrasStats,
+                projectedScore: chaseMetrics.projectedScore,
+                requiredRuns: chaseMetrics.requiredRuns,
+                ballsRemaining: chaseMetrics.ballsRemaining,
+                requiredRunInfo: chaseMetrics.requiredRunInfo,
+                requiredRunRate: chaseMetrics.requiredRunRate,
+                bowlersUsed: [...bowlersUsed],
                 currentOverBalls,
                 teamA: teamA.value,
                 teamB: teamB.value,
@@ -8868,8 +9044,25 @@ CURRENT OVER SUMMARY
             bowlerStats = state.bowlerStats || {};
             batsmanStats = state.batsmanStats || {};
             extrasStats = state.extrasStats || { wide: 0, noball: 0, bye: 0, legbye: 0 };
+            const restoredBowlerNames = new Set(state.bowlersUsed || []);
+            Object.keys(bowlerStats).forEach(name => {
+                const stats = bowlerStats[name] || {};
+                if (name && (
+                    stats.balls > 0 ||
+                    stats.runs > 0 ||
+                    stats.wickets > 0
+                )) {
+                    restoredBowlerNames.add(name);
+                }
+            });
+            liveHistory.forEach(ball => {
+                if (ball?.bowler) {
+                    restoredBowlerNames.add(ball.bowler);
+                }
+            });
+            bowlersUsed = restoredBowlerNames;
 
-            currentOverBalls = state.currentOverBalls || [];
+            currentOverBalls = Number.isFinite(Number(state.currentOverBalls)) ? Number(state.currentOverBalls) : 0;
 
             // TEAMS
             teamA.value = state.teamA || "";
@@ -9507,7 +9700,7 @@ CURRENT OVER SUMMARY
             saveMatchToFirebase();
         }
 
-        function smartWicket(type, fielder, runOutChoice = "striker") {
+        function smartWicket(type, fielder, runOutChoice = "striker", runOutRuns = 0) {
             if (!validateBeforeBall()) return;
             
             const striker = document.getElementById('striker')?.value;
@@ -9515,6 +9708,7 @@ CURRENT OVER SUMMARY
             const shortBowler = shortName(currentBowler);
             const shortFielder = shortName(fielder);
             const nonStriker = document.getElementById('nonStriker')?.value;
+            const completedRuns = type === "Run Out" ? Math.max(0, Number(runOutRuns) || 0) : 0;
             const outBatter =
                 (
                     type === "Run Out" &&
@@ -9558,8 +9752,12 @@ CURRENT OVER SUMMARY
                 type: 'wicket',
                 bowler: currentBowler,
                 striker: outBatter,
+                facingBatter: striker,
+                outBatter: outBatter,
+                runs: completedRuns,
+                runsTaken: completedRuns,
                 dismissal: dismissalText,
-                scoreAtWicket: liveTotal,
+                scoreAtWicket: liveTotal + completedRuns,
                 wicketNumber: liveWickets + 1,
                 overId: currentOverId
             });
@@ -9570,14 +9768,27 @@ CURRENT OVER SUMMARY
             partnership100Shown = false;
             lastPartnershipKey = "";
             lastHatTrickKey = "";
+            liveTotal += completedRuns;
             liveWickets++;
             liveBalls++;
             currentOverBalls++;
-            batsmanStats[outBatter].balls++;
+            if (currentOverBalls === 1) {
+                currentOverBowler = currentBowler;
+            }
+            if (completedRuns > 0 && striker) {
+                batsmanStats[striker].runs += completedRuns;
+                if (completedRuns === 4) batsmanStats[striker].fours++;
+                if (completedRuns === 6) batsmanStats[striker].sixes++;
+                checkMilestones(striker);
+            }
+            if (striker) {
+                batsmanStats[striker].balls++;
+            }
             batsmanStats[outBatter].out = true;
             batsmanStats[outBatter].dismissal = dismissalText;
             if (currentBowler) {
                 bowlerStats[currentBowler].balls++;
+                bowlerStats[currentBowler].runs += completedRuns;
             }
             if (
                 type === "Bowled" ||
@@ -9601,6 +9812,9 @@ CURRENT OVER SUMMARY
                 triggerMoment('HATTRICK');
             } else {
                 triggerMoment('WICKET');
+            }
+            if (completedRuns % 2 === 1) {
+                rotateStrike();
             }
             // Show next batter selector
             showNextBatter();
@@ -9753,6 +9967,28 @@ CURRENT OVER SUMMARY
             const typeSelect = document.getElementById("wicketType");
             const fielderSection = document.getElementById("fielderSection");
             const fielderSelect = document.getElementById("fielderSelect");
+            const runOutSection = document.getElementById("runOutSection");
+            const runOutRunsSection = document.getElementById("runOutRunsSection");
+            const runOutRunButtons = document.getElementById("runOutRunButtons");
+            selectedRunOutRuns = 0;
+
+            runOutRunButtons.innerHTML = "";
+            for (let i = 0; i <= 4; i++) {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.innerText = i;
+                btn.onclick = () => {
+                    selectedRunOutRuns = i;
+                    [...runOutRunButtons.children].forEach(child => {
+                        child.style.background = "";
+                    });
+                    btn.style.background = "#2563eb";
+                };
+                if (i === 0) {
+                    btn.style.background = "#2563eb";
+                }
+                runOutRunButtons.appendChild(btn);
+            }
 
             // ✅ Populate fielders from bowling team
             const battingTeam = document.getElementById("batting")?.value;
@@ -9791,10 +10027,13 @@ CURRENT OVER SUMMARY
                     fielderSection.style.display = "none";
                 }
 
-                  if (type === "Run Out") {
+                if (type === "Run Out") {
                     runOutSection.style.display = "block";
+                    runOutRunsSection.style.display = "block";
                 } else {
                     runOutSection.style.display = "none";
+                    runOutRunsSection.style.display = "none";
+                    selectedRunOutRuns = 0;
                 }
             }
 
@@ -9823,7 +10062,7 @@ CURRENT OVER SUMMARY
 
             closeWicketModal();
 
-            smartWicket(type, fielder, runOutChoice);
+            smartWicket(type, fielder, runOutChoice, selectedRunOutRuns);
         }
 
         function selectExtraRuns(runsTaken) {
@@ -10137,6 +10376,15 @@ CURRENT OVER SUMMARY
                     <option value="nonStriker">Non-Striker</option>
                 </select>
             </div>
+            <div id="runOutRunsSection" style="display:none;margin-top:10px;">
+                <label>Runs Completed</label>
+                <div id="runOutRunButtons" style="
+                   display:grid;
+                   grid-template-columns:repeat(5,1fr);
+                   gap:8px;
+                   margin-top:6px;
+                   "></div>
+            </div>
             <button onclick="confirmWicket()">Confirm</button>
             <button onclick="closeWicketModal()" style="background:#374151">Cancel</button>
         </div>
@@ -10333,6 +10581,11 @@ CURRENT OVER SUMMARY
             ">
                     Match Result
                 </button>
+                <button class="modal-action-warn" onclick="
+                openDisplayImagesModal()
+            ">
+                    Display Images
+                </button>
                 <button class="modal-action-danger" onclick="
                     hideBreak()
              ">
@@ -10489,6 +10742,103 @@ CURRENT OVER SUMMARY
             </div>
             <button class="close-modal-btn modal-action-neutral"
                     onclick="closeSponsorsModal()">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- =========================
+         DISPLAY IMAGES MODAL
+    ========================= -->
+    <div id="displayImagesModal"
+         class="modal-overlay"
+         style="display:none;">
+        <div class="modal-box"
+             style="
+        width:700px;
+        max-width:95%;
+        max-height:88vh;
+        overflow:auto;
+     ">
+            <h2>Display Images</h2>
+            <div class="sponsor-layout">
+                <div class="sponsor-panel-card">
+                    <h4 style="margin-top:0">
+                        Image Presets
+                    </h4>
+                    <div class="sponsor-input-grid">
+                        <input id="displayImagePreset1"
+                               placeholder="Image 1 URL">
+                        <input id="displayImagePreset2"
+                               placeholder="Image 2 URL">
+                        <input id="displayImagePreset3"
+                               placeholder="Image 3 URL">
+                        <input id="displayImagePreset4"
+                               placeholder="Image 4 URL">
+                        <input id="displayImagePreset5"
+                               placeholder="Image 5 URL">
+                        <input id="displayImagePreset6"
+                               placeholder="Image 6 URL">
+                        <input id="displayImagePreset7"
+                               placeholder="Image 7 URL">
+                        <input id="displayImagePreset8"
+                               placeholder="Image 8 URL">
+                        <input id="displayImagePreset9"
+                               placeholder="Image 9 URL">
+                        <input id="displayImagePreset10"
+                               placeholder="Image 10 URL">
+                    </div>
+                    <button class="modal-action-success"
+                            onclick="saveDisplayImagePresets()"
+                            style="margin-top:14px;width:100%;">
+                        Save Presets
+                    </button>
+                    <button class="modal-action-danger"
+                            onclick="hideDisplayImage()"
+                            style="margin-top:10px;width:100%;">
+                        Hide Image
+                    </button>
+                </div>
+                <div class="sponsor-panel-card">
+                    <h4 style="margin-top:0">
+                        Trigger Images
+                    </h4>
+                    <div class="modal-grid">
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(1)">
+                            Image 1
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(2)">
+                            Image 2
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(3)">
+                            Image 3
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(4)">
+                            Image 4
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(5)">
+                            Image 5
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(6)">
+                            Image 6
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(7)">
+                            Image 7
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(8)">
+                            Image 8
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(9)">
+                            Image 9
+                        </button>
+                        <button class="modal-action-warn" onclick="triggerDisplayImagePreset(10)">
+                            Image 10
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <button class="close-modal-btn modal-action-neutral"
+                    onclick="closeDisplayImagesModal()">
                 Close
             </button>
         </div>
