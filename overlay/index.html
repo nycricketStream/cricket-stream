@@ -2757,11 +2757,12 @@
             display: grid;
             grid-template-columns: 240px repeat(10, minmax(0, 1fr));
             align-items: center;
-            color: var(--bowling-primary);
+            color: #fff;
             background: linear-gradient(90deg, var(--bowling-accent), var(--bowling-accent));
             font-size: 22px;
             text-transform: uppercase;
             box-shadow: 0 -8px 20px rgba(0,0,0,.18);
+            text-shadow: 0 2px 7px rgba(0,0,0,.55);
         }
 
         .bowling-card.many-bowlers.full-screen-bowling-card {
@@ -2817,6 +2818,7 @@
 
         .bowling-fow-strip b,
         .bowling-fow-strip em {
+            color: #fff;
             font-style: normal;
             font-weight: 600;
         }
@@ -5439,6 +5441,10 @@
                 img.src = data.image;
                 box.classList.add("show");
 
+                if (data.persistent) {
+                    return;
+                }
+
                 fullscreenSponsorTimer = setTimeout(() => {
                     box.classList.remove("show");
                     fullscreenSponsorTimer = null;
@@ -5684,8 +5690,14 @@
                     momentFallback.style.animation = "momentIn .5s cubic-bezier(.22,.9,.3,1) forwards";
                 };
 
-                momentImage.style.display = "block";
-                momentImage.src = file;
+                momentImage.onload = () => {
+                    momentImage.style.display = "block";
+                    momentImage.style.animation = "none";
+                    void momentImage.offsetWidth;
+                    momentImage.style.animation = "momentIn .6s forwards";
+                };
+                momentImage.style.display = "none";
+                momentImage.removeAttribute("src");
                 momentGlow.style.background = glowColor;
 
                 momentFallback.textContent = fallbackText;
@@ -5695,10 +5707,8 @@
                 momentStinger.style.opacity = 1;
                 momentStinger.style.pointerEvents = "auto";
 
-                momentImage.style.animation = "none";
                 momentFallback.style.animation = "none";
-                void momentImage.offsetWidth;
-                momentImage.style.animation = "momentIn .6s forwards";
+                momentImage.src = file;
 
                 // Wicket shake effect
                 if (raw === "W" || raw === "WICKET") {
