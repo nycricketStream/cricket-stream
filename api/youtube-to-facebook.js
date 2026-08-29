@@ -7,7 +7,7 @@ const FACEBOOK_GRAPH_VERSION = 'v25.0';
 
 function validateEnvironment() {
     const required = [
-        'CRON_SECRET',
+        'YOUTUBE_FACEBOOK_SECRET',
         'YOUTUBE_API_KEY',
         'YOUTUBE_CHANNEL_ID',
         'FACEBOOK_PAGE_ID',
