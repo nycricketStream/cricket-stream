@@ -1,211 +1,223 @@
-import { kv } from "@vercel/kv";
-import { XMLParser } from "fast-xml-parser";
+import { kv } from '@vercel/kv';
+
+const YOUTUBE_API_BASE_URL =
+    'https://www.googleapis.com/youtube/v3';
+
+const FACEBOOK_GRAPH_VERSION = 'v25.0';
+
+function validateEnvironment() {
+    const required = [
+        'CRON_SECRET',
+        'YOUTUBE_API_KEY',
+        'YOUTUBE_CHANNEL_ID',
+        'FACEBOOK_PAGE_ID',
+        'FACEBOOK_PAGE_ACCESS_TOKEN'
+    ];
+
+    return required.filter(name => !process.env[name]?.trim());
+}
+
+async function getCurrentLiveStream() {
+    const channelId = process.env.YOUTUBE_CHANNEL_ID.trim();
+    const apiKey = process.env.YOUTUBE_API_KEY.trim();
+
+    const params = new URLSearchParams({
+        part: 'snippet',
+        channelId,
+        eventType: 'live',
+        type: 'video',
+        maxResults: '1',
+        key: apiKey
+    });
+
+    const url =
+        `${YOUTUBE_API_BASE_URL}/search?${params.toString()}`;
+
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json'
+        }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const message =
+            data?.error?.message ||
+            `YouTube API returned HTTP ${response.status}`;
+
+        throw new Error(`YouTube API failed: ${message}`);
+    }
+
+    if (!Array.isArray(data.items) || data.items.length === 0) {
+        return null;
+    }
+
+    const item = data.items[0];
+    const videoId = item?.id?.videoId;
+
+    if (!videoId) {
+        throw new Error(
+            'YouTube returned a live item without a video ID'
+        );
+    }
+
+    return {
+        videoId,
+        title: item.snippet?.title || 'NY Eagles CC Live',
+        description: item.snippet?.description || '',
+        publishedAt: item.snippet?.publishedAt || null,
+        thumbnail:
+            item.snippet?.thumbnails?.high?.url ||
+            item.snippet?.thumbnails?.medium?.url ||
+            item.snippet?.thumbnails?.default?.url ||
+            null,
+        youtubeUrl:
+            `https://www.youtube.com/watch?v=${videoId}`
+    };
+}
+
+async function postToFacebook(liveStream) {
+    const pageId = process.env.FACEBOOK_PAGE_ID.trim();
+    const pageToken =
+        process.env.FACEBOOK_PAGE_ACCESS_TOKEN.trim();
+
+    const message = `🔴 LIVE NOW
+
+${liveStream.title}
+
+Watch Live:
+${liveStream.youtubeUrl}`;
+
+    const body = new URLSearchParams({
+        message,
+        link: liveStream.youtubeUrl,
+        access_token: pageToken
+    });
+
+    const response = await fetch(
+        `https://graph.facebook.com/${FACEBOOK_GRAPH_VERSION}/${pageId}/feed`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type':
+                    'application/x-www-form-urlencoded'
+            },
+            body: body.toString()
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const message =
+            data?.error?.message ||
+            `Facebook returned HTTP ${response.status}`;
+
+        const error = new Error(
+            `Facebook post failed: ${message}`
+        );
+
+        error.facebookResponse = data;
+        throw error;
+    }
+
+    return data;
+}
 
 export default async function handler(req, res) {
     try {
-        if (req.method !== "GET" && req.method !== "POST") {
-            return res.status(405).json({ error: "Method not allowed" });
+        if (req.method !== 'GET' && req.method !== 'POST') {
+            return res.status(405).json({
+                error: 'Method not allowed'
+            });
         }
 
-        const apiSecret = process.env.YOUTUBE_FACEBOOK_SECRET;
+        const missingEnvironmentVariables =
+            validateEnvironment();
 
-        if (!apiSecret) {
-            return res.status(500).json({ error: "Missing YOUTUBE_FACEBOOK_SECRET" });
-        }
-
-        if (req.query.secret !== apiSecret) {
-            return res.status(401).json({ error: "Unauthorized" });
-        }
-
-        const channelId = process.env.YOUTUBE_CHANNEL_ID;
-        const youtubeApiKey = process.env.YOUTUBE_API_KEY;
-        const facebookPageId = process.env.FACEBOOK_PAGE_ID;
-        const facebookPageToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-
-        if (!channelId) {
-            return res.status(400).json({ error: "Missing YOUTUBE_CHANNEL_ID" });
-        }
-
-        if (!youtubeApiKey) {
-            return res.status(400).json({ error: "Missing YOUTUBE_API_KEY" });
-        }
-
-        if (!facebookPageId) {
-            return res.status(400).json({ error: "Missing FACEBOOK_PAGE_ID" });
-        }
-
-        if (!facebookPageToken) {
-            return res.status(400).json({ error: "Missing FACEBOOK_PAGE_ACCESS_TOKEN" });
-        }
-
-        const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-        const rssResponse = await fetch(rssUrl);
-
-        if (!rssResponse.ok) {
+        if (missingEnvironmentVariables.length > 0) {
             return res.status(500).json({
-                error: `YouTube RSS failed: ${rssResponse.status}`
+                error: 'Missing environment variables',
+                missing: missingEnvironmentVariables
             });
         }
 
-        const xml = await rssResponse.text();
-        const parser = new XMLParser({
-            ignoreAttributes: false
-        });
-
-        const feed = parser.parse(xml);
-        const entries = feed.feed?.entry;
-
-        if (!entries) {
-            return res.status(404).json({ error: "No YouTube videos found" });
-        }
-
-        const latest = Array.isArray(entries) ? entries[0] : entries;
-        const videoId = latest["yt:videoId"];
-        const title = latest.title || "NY Eagles CC Live";
-        const published = latest.published || null;
-        const updated = latest.updated || null;
-        const youtubeUrl =
-            latest.link?.["@_href"] ||
-            `https://www.youtube.com/watch?v=${videoId}`;
-
-        if (!videoId) {
-            return res.status(400).json({ error: "Could not read YouTube video ID" });
-        }
-
-        const videoDetailsUrl = new URL("https://www.googleapis.com/youtube/v3/videos");
-        videoDetailsUrl.searchParams.set("part", "liveStreamingDetails,snippet");
-        videoDetailsUrl.searchParams.set("id", videoId);
-        videoDetailsUrl.searchParams.set("key", youtubeApiKey);
-
-        const videoDetailsResponse = await fetch(videoDetailsUrl);
-
-        if (!videoDetailsResponse.ok) {
-            return res.status(500).json({
-                error: `YouTube video details failed: ${videoDetailsResponse.status}`,
-                videoId,
-                title,
-                youtubeUrl
+        if (
+            req.query.secret !==
+            process.env.YOUTUBE_FACEBOOK_SECRET.trim()
+        ) {
+            return res.status(401).json({
+                error: 'Unauthorized'
             });
         }
 
-        const videoDetails = await videoDetailsResponse.json();
-        const video = videoDetails.items?.[0];
+        const liveStream =
+            await getCurrentLiveStream();
 
-        if (!video) {
-            return res.status(404).json({
-                error: "YouTube video details not found",
-                videoId,
-                title,
-                youtubeUrl
-            });
-        }
-
-        const liveStreamingDetails = video.liveStreamingDetails || {};
-        const liveBroadcastContent = video.snippet?.liveBroadcastContent || "none";
-        const actualStartTime = liveStreamingDetails.actualStartTime || null;
-        const actualEndTime = liveStreamingDetails.actualEndTime || null;
-        const isLive = Boolean(actualStartTime) && !actualEndTime;
-
-        if (!isLive) {
+        if (!liveStream) {
             return res.status(200).json({
                 posted: false,
-                reason: actualEndTime ? "Stream has ended" : "Latest YouTube video is not live",
-                videoId,
-                title,
-                youtubeUrl,
-                liveStatus: {
-                    liveBroadcastContent,
-                    actualStartTime,
-                    actualEndTime
-                }
+                live: false,
+                reason: 'YouTube channel is not currently live'
             });
         }
 
-        const kvKey = `youtubeFbPosted:${videoId}`;
-        const alreadyPosted = await kv.get(kvKey);
+        const kvKey =
+            `youtubeFbPosted:${liveStream.videoId}`;
 
-        if (alreadyPosted) {
+        const existingPost =
+            await kv.get(kvKey);
+
+        if (existingPost) {
             return res.status(200).json({
                 posted: false,
-                reason: "Already posted",
-                videoId,
-                title,
-                youtubeUrl,
-                liveStatus: {
-                    liveBroadcastContent,
-                    actualStartTime,
-                    actualEndTime
-                },
-                previousPost: alreadyPosted
+                live: true,
+                reason: 'Live stream was already posted to Facebook',
+                videoId: liveStream.videoId,
+                title: liveStream.title,
+                youtubeUrl: liveStream.youtubeUrl,
+                existingPost
             });
         }
 
-        const message = `LIVE NOW
+        const facebookResult =
+            await postToFacebook(liveStream);
 
-${title}
-
-Watch Live:
-${youtubeUrl}`;
-
-        const fbResponse = await fetch(
-            `https://graph.facebook.com/v25.0/${facebookPageId}/feed`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message,
-                    access_token: facebookPageToken
-                })
-            }
-        );
-
-        const fbResult = await fbResponse.json();
-
-        if (!fbResponse.ok) {
-            return res.status(500).json({
-                error: "Facebook post failed",
-                videoId,
-                title,
-                youtubeUrl,
-                facebook: fbResult
-            });
-        }
-
-        const savedPost = {
-            videoId,
-            title,
-            youtubeUrl,
-            published,
-            updated,
-            liveStatus: {
-                liveBroadcastContent,
-                actualStartTime,
-                actualEndTime
-            },
-            facebookPost: fbResult,
+        const postRecord = {
+            videoId: liveStream.videoId,
+            title: liveStream.title,
+            youtubeUrl: liveStream.youtubeUrl,
+            publishedAt: liveStream.publishedAt,
+            facebookPostId:
+                facebookResult?.id || null,
             postedAt: new Date().toISOString()
         };
 
-        await kv.set(kvKey, savedPost);
+        await kv.set(kvKey, postRecord);
 
         return res.status(200).json({
             posted: true,
-            videoId,
-            title,
-            youtubeUrl,
-            liveStatus: {
-                liveBroadcastContent,
-                actualStartTime,
-                actualEndTime
-            },
-            facebook: fbResult
+            live: true,
+            videoId: liveStream.videoId,
+            title: liveStream.title,
+            youtubeUrl: liveStream.youtubeUrl,
+            facebook: facebookResult
         });
+
     } catch (err) {
-        console.error("youtube-to-facebook error:", err);
+        console.error(
+            'youtube-to-facebook error:',
+            err
+        );
+
         return res.status(500).json({
-            error: err.message || "Unknown server error"
+            error:
+                err.message ||
+                'Unknown server error',
+            facebook:
+                err.facebookResponse || undefined
         });
     }
 }
