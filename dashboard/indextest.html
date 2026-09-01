@@ -3924,6 +3924,7 @@
                            runsPerOver:[],
                            ...getChaseMetrics()
                            });
+                           pushBrandingSnapshot();
                            updateLiveDisplay();
                            saveMatchToFirebase();
                         ">
@@ -4976,6 +4977,14 @@
 
             // ✅ current bowler = last ball bowler
             const bowler = lastBall.bowler || "";
+
+            if (lastBall.afterStriker || lastBall.afterNonStriker) {
+                return {
+                    striker: lastBall.afterStriker || document.getElementById('striker')?.value || "",
+                    nonStriker: lastBall.afterNonStriker || document.getElementById('nonStriker')?.value || "",
+                    bowler
+                };
+            }
 
             // ✅ get all NOT OUT batsmen
             const active = Object.keys(batsmanStats).filter(
@@ -6457,7 +6466,10 @@
 
                 pendingOverChange = false;
 
-                thisOver = getThisOver() || "";
+                const currentOverHasHistory = liveHistory.some(b => b.overId === currentOverId);
+                thisOver = bowlerName && !currentOverHasHistory
+                    ? ""
+                    : (getThisOver() || "");
             }
             lastStriker = strikerName;
             lastNonStriker = nonStrikerName;
@@ -6741,13 +6753,16 @@ CURRENT OVER SUMMARY
                 return;
             }
 
-            liveHistory.push({
+            const beforePair = getBattingPair();
+            const ball = attachBattingContext({
                 type: 'run',
                 runs: r,
                 bowler: currentBowler,
                 striker: striker,
                 overId: currentOverId
-            });
+            }, beforePair);
+
+            liveHistory.push(ball);
 
             liveTotal += r;
             liveBalls++;
@@ -6792,6 +6807,8 @@ CURRENT OVER SUMMARY
                 rotateStrike();
             }
 
+            finalizeBattingContext(ball);
+
             if (isOverComplete() && lastOverProcessed !== currentOverId) {
                 lastDismissalSent = "";
                 lastBatsmanTriggered = "";
@@ -6827,6 +6844,7 @@ CURRENT OVER SUMMARY
                 currentOverBowler = "";
             }
 
+            finalizeBattingContext(ball);
             lastBowler = currentBowler;
 
             updateLiveDisplay();
@@ -6924,6 +6942,10 @@ CURRENT OVER SUMMARY
                         })
                     );
                 }
+                const lastWicket = [...liveHistory].reverse().find(ball => ball.type === "wicket");
+                if (lastWicket) {
+                    finalizeBattingContext(lastWicket);
+                }
                 modal.style.display = "none";
             };
                 list.appendChild(btn);
@@ -7015,6 +7037,92 @@ CURRENT OVER SUMMARY
             const striker = strikerEl.value;
             strikerEl.value = nonStrikerEl.value;
             nonStrikerEl.value = striker;
+        }
+
+        function getBattingPair() {
+            return {
+                striker: document.getElementById('striker')?.value || "",
+                nonStriker: document.getElementById('nonStriker')?.value || ""
+            };
+        }
+
+        function applyBattingPair(pair) {
+            if (!pair) return;
+            const strikerEl = document.getElementById('striker');
+            const nonStrikerEl = document.getElementById('nonStriker');
+            if (!strikerEl || !nonStrikerEl) return;
+
+            const canUse = (select, value) =>
+                value && [...select.options].some(o => o.value === value);
+
+            if (canUse(strikerEl, pair.striker)) {
+                strikerEl.value = pair.striker;
+            }
+
+            if (
+                canUse(nonStrikerEl, pair.nonStriker) &&
+                pair.nonStriker !== strikerEl.value
+            ) {
+                nonStrikerEl.value = pair.nonStriker;
+            }
+        }
+
+        function attachBattingContext(ball, before = getBattingPair()) {
+            ball.beforeStriker = before.striker;
+            ball.beforeNonStriker = before.nonStriker;
+            if (!ball.facingBatter) {
+                ball.facingBatter = before.striker;
+            }
+            return ball;
+        }
+
+        function finalizeBattingContext(ball, after = getBattingPair()) {
+            ball.afterStriker = after.striker;
+            ball.afterNonStriker = after.nonStriker;
+            return ball;
+        }
+
+        function getBallBeforePair(ball) {
+            return {
+                striker: ball.beforeStriker || ball.facingBatter || ball.striker || document.getElementById('striker')?.value || "",
+                nonStriker: ball.beforeNonStriker || document.getElementById('nonStriker')?.value || ""
+            };
+        }
+
+        function rotatedPair(pair) {
+            return {
+                striker: pair.nonStriker,
+                nonStriker: pair.striker
+            };
+        }
+
+        function updateEditedBallBattingContext(ball) {
+            const before = getBallBeforePair(ball);
+            attachBattingContext(ball, before);
+            ball.facingBatter = before.striker;
+
+            if (ball.type !== "wicket") {
+                ball.striker = before.striker;
+            }
+
+            let after = { ...before };
+            if (ball.type === "run" && Number(ball.runs || 0) % 2 === 1) {
+                after = rotatedPair(after);
+            } else if (ball.type === "wicket" && Number(ball.runs || 0) % 2 === 1) {
+                after = rotatedPair(after);
+            } else if (ball.type === "extra") {
+                const totalRuns = Number(ball.runs || 0);
+                const runsTaken = ball.runsTaken !== undefined && ball.runsTaken !== null
+                    ? Number(ball.runsTaken || 0)
+                    : (ball.extra === "wide" || ball.extra === "noball" ? Math.max(totalRuns - 1, 0) : totalRuns);
+
+                if (runsTaken % 2 === 1) {
+                    after = rotatedPair(after);
+                }
+            }
+
+            finalizeBattingContext(ball, after);
+            return ball;
         }
 
         function isLegalHistoryBall(ball) {
@@ -7136,6 +7244,9 @@ CURRENT OVER SUMMARY
                 ensureBowler(currentBowler);
                 bowlerStats[currentBowler].runs += runs;
             }
+            if (currentBowler && !currentOverBowler) {
+                currentOverBowler = currentBowler;
+            }
 
             if (type === "bye" || type === "legbye") {
                 liveBalls++;
@@ -7202,7 +7313,12 @@ CURRENT OVER SUMMARY
             }
             recalculateMatch();
             restoreSelectionsAfterHistoryChange();
-            if (undoShouldSwapBatters(last, wasEndOfOverUndo)) {
+            if (last.beforeStriker || last.beforeNonStriker) {
+                applyBattingPair({
+                    striker: last.beforeStriker,
+                    nonStriker: last.beforeNonStriker
+                });
+            } else if (undoShouldSwapBatters(last, wasEndOfOverUndo)) {
                 swapBattersSilently();
             }
             const lastBall = liveHistory[liveHistory.length - 1];
@@ -7439,7 +7555,7 @@ CURRENT OVER SUMMARY
                     body.innerHTML += `
                                                                     <tr>
                                                                     <td>${ball.scoreAtWicket}/${ball.wicketNumber}</td>
-                                                                    <td title="${ball.striker}">${shortName(ball.striker)}</td>
+                                                                    <td title="${ball.outBatter || ball.striker}">${shortName(ball.outBatter || ball.striker)}</td>
                                                                     <td>${over}</td>
                                                                     </tr>
                                                                     `;
@@ -7861,8 +7977,9 @@ CURRENT OVER SUMMARY
 
             liveHistory.forEach((b, i) => {
                 //if (b.overId !== currentOverId) return;
+                const currentOverHasHistory = liveHistory.some(ball => ball.overId === currentOverId);
                 const activeOverId =
-                    currentOverBalls === 0
+                    currentOverBalls === 0 && !currentOverHasHistory
                         ? currentOverId - 1
                         : currentOverId;
 
@@ -7903,6 +8020,7 @@ CURRENT OVER SUMMARY
             if (!ok) return;
             liveHistory.splice(index, 1);
             recalculateMatch();
+            restoreSelectionsAfterHistoryChange();
             updateLiveDisplay();
         }
         /* ============== Open Ball Editor ========= */
@@ -7956,7 +8074,7 @@ CURRENT OVER SUMMARY
                     opt.text = clean;
                     outSelect.appendChild(opt);
                 });
-                outSelect.value = ball.striker || "";
+                outSelect.value = ball.outBatter || ball.striker || "";
             } else {
                 outSection.style.display = "none";
             }
@@ -7985,6 +8103,7 @@ CURRENT OVER SUMMARY
             liveHistory.splice(editingBallIndex, 1);
             closeBallEditor();
             recalculateMatch();
+            restoreSelectionsAfterHistoryChange();
             updateLiveDisplay();
         }
 
@@ -8050,7 +8169,7 @@ CURRENT OVER SUMMARY
                 showModal("Not a wicket ball");
                 return;
             }
-            const oldBatter = ball.striker;
+            const oldBatter = ball.outBatter || ball.striker;
             const newBatter =
                 document.getElementById(
                     "editOutBatter"
@@ -8067,6 +8186,11 @@ CURRENT OVER SUMMARY
             // CHANGE WICKET BALL
             // ==================================
             ball.striker = newBatter;
+            ball.outBatter = newBatter;
+            if (!ball.facingBatter) {
+                ball.facingBatter = ball.beforeStriker || oldBatter;
+            }
+            updateEditedBallBattingContext(ball);
             // ==================================
             // MOVE FUTURE BALLS
             // ==================================
@@ -8120,12 +8244,19 @@ CURRENT OVER SUMMARY
             const ball = liveHistory[editingBallIndex];
             ball.type = "run";
             ball.runs = r;
+            ball.extra = "";
+            ball.dismissal = "";
+            ball.outBatter = "";
+            ball.wicketNumber = "";
+            ball.scoreAtWicket = "";
             ball.bowler =
                 document.getElementById(
                     "editBallBowler"
                 ).value;
+            updateEditedBallBattingContext(ball);
             closeBallEditor();
             recalculateMatch();
+            restoreSelectionsAfterHistoryChange();
             updateLiveDisplay();
         }
         /* ======== Edit Ball Wicket  ======= */
@@ -8138,6 +8269,10 @@ CURRENT OVER SUMMARY
                     "editBallBowler"
                 ).value;
             ball.dismissal = ball.dismissal || "Out";
+            ball.outBatter = ball.outBatter || ball.striker || ball.beforeStriker || "";
+            ball.striker = ball.outBatter;
+            ball.scoreAtWicket = "";
+            updateEditedBallBattingContext(ball);
             closeBallEditor();
             recalculateMatch();
             restoreSelectionsAfterHistoryChange();
@@ -8168,8 +8303,19 @@ CURRENT OVER SUMMARY
                     "editBallBowler"
                 ).value;
             ball.runs = runs;
+            if (type === "wide" || type === "noball") {
+                ball.runsTaken = Math.max(runs - 1, 0);
+            } else {
+                ball.runsTaken = runs;
+            }
+            ball.dismissal = "";
+            ball.outBatter = "";
+            ball.wicketNumber = "";
+            ball.scoreAtWicket = "";
+            updateEditedBallBattingContext(ball);
             closeBallEditor();
             recalculateMatch();
+            restoreSelectionsAfterHistoryChange();
             updateLiveDisplay();
         }
         /* =========== Recalculate Match =========== */
@@ -8223,6 +8369,8 @@ CURRENT OVER SUMMARY
 
                     liveTotal += wicketRuns;
                     liveWickets++;
+                    ball.wicketNumber = liveWickets;
+                    ball.scoreAtWicket = liveTotal;
                     liveBalls++;
                     legalBallsInOver++;
                     if (facingBatter) {
@@ -9298,7 +9446,7 @@ CURRENT OVER SUMMARY
                     wicket: ball.wicketNumber || items.length + 1,
                     score: ball.scoreAtWicket || "",
                     over: Math.floor(balls / 6) + "." + (balls % 6),
-                    batsman: ball.striker || ball.batter || ""
+                    batsman: ball.outBatter || ball.striker || ball.batter || ""
                 });
                 return items;
             }, []);
@@ -9581,20 +9729,27 @@ CURRENT OVER SUMMARY
 
             const striker = document.getElementById('striker')?.value;
             const currentBowler = document.getElementById('bowler')?.value;
+            const beforePair = getBattingPair();
 
             // ✅ 2. ENSURE STATS EXIST
             if (currentBowler) ensureBowler(currentBowler);
             if (striker) ensureBatsman(striker);
+            if (!currentOverBowler) {
+                currentOverBowler = currentBowler;
+            }
 
             // ✅ 3. SAVE BALL
-            liveHistory.push({
+            const ball = attachBattingContext({
                 type: 'extra',
                 extra: type,
                 runs: totalRuns,
+                runsTaken: runsTaken,
                 bowler: currentBowler,
                 striker: striker,
                 overId: currentOverId
-            });
+            }, beforePair);
+
+            liveHistory.push(ball);
 
             // ✅ 4. ADD RUNS
             liveTotal += totalRuns;
@@ -9650,6 +9805,7 @@ CURRENT OVER SUMMARY
             }
 
             // ✅ 7. UPDATE UI
+            finalizeBattingContext(ball);
             updateLiveDisplay();
         }
 
@@ -9708,6 +9864,7 @@ CURRENT OVER SUMMARY
             const shortBowler = shortName(currentBowler);
             const shortFielder = shortName(fielder);
             const nonStriker = document.getElementById('nonStriker')?.value;
+            const beforePair = getBattingPair();
             const completedRuns = type === "Run Out" ? Math.max(0, Number(runOutRuns) || 0) : 0;
             const outBatter =
                 (
@@ -9748,7 +9905,7 @@ CURRENT OVER SUMMARY
             dismissalShown = false;
             awaitingNewBatsman = true;
             lockedOut = true;
-            liveHistory.push({
+            const ball = attachBattingContext({
                 type: 'wicket',
                 bowler: currentBowler,
                 striker: outBatter,
@@ -9760,7 +9917,9 @@ CURRENT OVER SUMMARY
                 scoreAtWicket: liveTotal + completedRuns,
                 wicketNumber: liveWickets + 1,
                 overId: currentOverId
-            });
+            }, beforePair);
+
+            liveHistory.push(ball);
             awaitingNewBatsman = true;
             lockedOut = true;
             lastBatsmanTriggered = "";
@@ -9849,6 +10008,7 @@ CURRENT OVER SUMMARY
                 currentOverBowler = "";
             }
 
+            finalizeBattingContext(ball);
             updateLiveDisplay();
         }
 
