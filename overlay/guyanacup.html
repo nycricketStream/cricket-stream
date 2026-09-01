@@ -448,12 +448,40 @@
 
         #momentFallback {
             position: absolute;
-            font-size: 200px;
-            font-weight: 700;
-            letter-spacing: .1em;
+            font-size: clamp(150px, 16vw, 320px);
+            line-height: .86;
+            font-weight: 900;
+            letter-spacing: .03em;
             display: none;
             z-index: 2;
-            font-family: 'Oswald', sans-serif;
+            font-family: 'Roboto Condensed', 'Oswald', 'Arial Narrow', Arial, sans-serif;
+            text-align: center;
+            text-transform: uppercase;
+            -webkit-text-stroke: 4px rgba(255,255,255,.92);
+            text-shadow:
+                0 0 18px currentColor,
+                0 0 44px currentColor,
+                0 16px 34px rgba(0,0,0,.65);
+            transform: scale(.4);
+            opacity: 0;
+        }
+
+        #momentFallback.moment-four {
+            letter-spacing: .04em;
+        }
+
+        #momentFallback.moment-six {
+            letter-spacing: .08em;
+        }
+
+        #momentFallback.moment-wicket {
+            font-size: clamp(125px, 13vw, 270px);
+            letter-spacing: .035em;
+        }
+
+        #momentFallback.moment-hattrick {
+            font-size: clamp(105px, 11vw, 230px);
+            letter-spacing: .02em;
         }
 
         /* Animations */
@@ -4898,15 +4926,13 @@
                 };
 
                 if (String(item.name || "").startsWith("moment-")) {
-                    momentRenderToken++;
-                    momentImage.style.animation = "momentOut .38s forwards";
                     momentFallback.style.animation = "momentOut .38s forwards";
+                    momentGlow.style.transform = "scale(.55)";
                     setTimeout(() => {
                         momentStinger.style.opacity = 0;
                         momentStinger.style.pointerEvents = "none";
-                        momentImage.style.display = "none";
-                        momentImage.removeAttribute("src");
                         momentFallback.style.display = "none";
+                        momentFallback.className = "";
                         finishOverlay();
                     }, 380);
                     return;
@@ -5642,13 +5668,11 @@
 
 
         const momentStinger = document.getElementById('momentStinger');
-        const momentImage = document.getElementById('momentImage');
         const momentGlow = document.getElementById('momentGlow');
         const momentFallback = document.getElementById('momentFallback');
-        let momentRenderToken = 0;
 
 
-        /* MOMENTS WITH PNG */
+        /* MOMENTS WITH LIGHTWEIGHT TEXT STINGERS */
         channel.bind('moment', data => {
             log("MOMENT RECEIVED:", data);
             if (!data || !data.type) return;
@@ -5659,25 +5683,29 @@
             }*/
 
             let raw = data.type.toString().toUpperCase();
-            let file = "";
             let glowColor = "#facc15";
             let fallbackText = raw;
+            let momentClass = "";
 
             if (raw === "4" || raw === "FOUR") {
-                file = "assets/moments/four.png";
                 glowColor = getComputedStyle(document.documentElement).getPropertyValue("--batting-accent").trim() || "#facc15";
+                fallbackText = "FOUR";
+                momentClass = "moment-four";
             }
             else if (raw === "6" || raw === "SIX") {
-                file = "assets/moments/six.png";
                 glowColor = getComputedStyle(document.documentElement).getPropertyValue("--batting-accent").trim() || "#22c55e";
+                fallbackText = "SIX";
+                momentClass = "moment-six";
             }
             else if (raw === "W" || raw === "WICKET") {
-                file = "assets/moments/wicket.png";
                 glowColor = getComputedStyle(document.documentElement).getPropertyValue("--bowling-accent").trim() || "#ef4444";
+                fallbackText = "WICKET";
+                momentClass = "moment-wicket";
             }
             else if (raw === "HATTRICK") {
-                file = "assets/moments/hattrick.png";
                 glowColor = getComputedStyle(document.documentElement).getPropertyValue("--bowling-accent").trim() || "#a855f7";
+                fallbackText = "HAT-TRICK";
+                momentClass = "moment-hattrick";
             }
             else return;
 
@@ -5686,43 +5714,20 @@
                 : "moment-" + raw;
 
             enqueueOverlay(key, 2400, () => {
-                const renderToken = ++momentRenderToken;
-
-                const showFallback = () => {
-                    if (renderToken !== momentRenderToken) return;
-                    momentImage.style.display = "none";
-                    momentImage.removeAttribute("src");
-                    momentFallback.style.display = "block";
-                    momentFallback.style.animation = "momentIn .5s cubic-bezier(.22,.9,.3,1) forwards";
-                };
-
-                const showImage = () => {
-                    if (renderToken !== momentRenderToken) return;
-                    momentImage.src = file;
-                    momentImage.style.display = "block";
-                    momentImage.style.animation = "none";
-                    void momentImage.offsetWidth;
-                    momentImage.style.animation = "momentIn .6s forwards";
-                };
-                const preloadedMomentImage = new Image();
-                preloadedMomentImage.onload = showImage;
-                preloadedMomentImage.onerror = showFallback;
-
-                momentImage.onload = null;
-                momentImage.onerror = null;
-                momentImage.style.display = "none";
-                momentImage.removeAttribute("src");
                 momentGlow.style.background = glowColor;
+                momentGlow.style.transform = "scale(.9)";
 
                 momentFallback.textContent = fallbackText;
                 momentFallback.style.color = glowColor;
-                momentFallback.style.display = "none";
+                momentFallback.className = momentClass;
+                momentFallback.style.display = "block";
 
                 momentStinger.style.opacity = 1;
                 momentStinger.style.pointerEvents = "auto";
 
                 momentFallback.style.animation = "none";
-                preloadedMomentImage.src = file;
+                void momentFallback.offsetWidth;
+                momentFallback.style.animation = "momentIn .42s cubic-bezier(.22,.9,.3,1) forwards";
 
                 // Wicket shake effect
                 if (raw === "W" || raw === "WICKET") {
