@@ -7125,6 +7125,31 @@ CURRENT OVER SUMMARY
             return ball;
         }
 
+        function getRunsTakenForStrike(ball) {
+            if (!ball) return 0;
+
+            if (ball.type === "run" || ball.type === "wicket") {
+                return Number(ball.runs || 0);
+            }
+
+            if (ball.type === "extra") {
+                if (ball.runsTaken !== undefined && ball.runsTaken !== null) {
+                    return Number(ball.runsTaken || 0);
+                }
+
+                const totalRuns = Number(ball.runs || 0);
+                return ball.extra === "wide" || ball.extra === "noball"
+                    ? Math.max(totalRuns - 1, 0)
+                    : totalRuns;
+            }
+
+            return 0;
+        }
+
+        function isEndOfOverLegalBall(ball, legalBallsInOver) {
+            return isLegalHistoryBall(ball) && legalBallsInOver >= 6;
+        }
+
         function isLegalHistoryBall(ball) {
             return !!ball && (
                 ball.type === "run" ||
@@ -7223,16 +7248,20 @@ CURRENT OVER SUMMARY
 
             const striker = document.getElementById('striker')?.value;
             const currentBowler = document.getElementById('bowler')?.value;
+            const beforePair = getBattingPair();
 
             // ✅ SINGLE ENTRY PER BALL
-            liveHistory.push({
+            const ball = attachBattingContext({
                 type: 'extra',
                 extra: type,
                 runs: runs,
+                runsTaken: type === "wide" || type === "noball" ? Math.max(runs - 1, 0) : runs,
                 bowler: currentBowler,
                 striker: striker,
                 overId: currentOverId
-            });
+            }, beforePair);
+
+            liveHistory.push(ball);
 
             liveTotal += runs;
 
@@ -7286,12 +7315,14 @@ CURRENT OVER SUMMARY
                     rotateStrike();
                 }
             }
+            finalizeBattingContext(ball);
             updateLiveDisplay();
         }
 
         /* ============ Undo Last =================== */
         function undoLast() {
             if (liveHistory.length === 0) return;
+            recalculateMatch();
             const last = liveHistory[liveHistory.length - 1];
             const wasEndOfOverUndo =
                 isLegalHistoryBall(last) &&
@@ -8333,10 +8364,19 @@ CURRENT OVER SUMMARY
             };
             currentOverId = 0;
             let legalBallsInOver = 0;
+            let battingPair = liveHistory.length
+                ? getBallBeforePair(liveHistory[0])
+                : getBattingPair();
             liveHistory.forEach(ball => {
                 // ✅ preserve correct over id rebuild
                 ball.overId = currentOverId;
-                const striker = ball.striker;
+                const beforePair = battingPair.striker
+                    ? { ...battingPair }
+                    : getBallBeforePair(ball);
+                attachBattingContext(ball, beforePair);
+                ball.facingBatter = beforePair.striker;
+
+                const striker = beforePair.striker;
                 const bowler = ball.bowler;
                 if (striker) ensureBatsman(striker);
                 if (bowler) ensureBowler(bowler);
@@ -8344,28 +8384,36 @@ CURRENT OVER SUMMARY
                 // RUNS
                 // =========================
                 if (ball.type === "run") {
+                    ball.striker = striker;
                     liveTotal += ball.runs;
                     liveBalls++;
                     legalBallsInOver++;
-                    batsmanStats[striker].runs += ball.runs;
-                    batsmanStats[striker].balls++;
-                    if (ball.runs === 4)
-                        batsmanStats[striker].fours++;
-                    if (ball.runs === 6)
-                        batsmanStats[striker].sixes++;
-                    bowlerStats[bowler].runs += ball.runs;
-                    bowlerStats[bowler].balls++;
+                    if (striker) {
+                        batsmanStats[striker].runs += ball.runs;
+                        batsmanStats[striker].balls++;
+                        if (ball.runs === 4)
+                            batsmanStats[striker].fours++;
+                        if (ball.runs === 6)
+                            batsmanStats[striker].sixes++;
+                    }
+                    if (bowler) {
+                        bowlerStats[bowler].runs += ball.runs;
+                        bowlerStats[bowler].balls++;
+                    }
                 }
                 // =========================
                 // WICKET
                 // =========================
                 else if (ball.type === "wicket") {
                     const wicketRuns = Math.max(0, Number(ball.runs) || 0);
-                    const facingBatter = ball.facingBatter || ball.scoringBatter || striker;
-                    const outBatter = ball.outBatter || striker;
+                    const facingBatter = striker;
+                    const outBatter = ball.outBatter || ball.striker || striker;
 
                     if (facingBatter) ensureBatsman(facingBatter);
                     if (outBatter) ensureBatsman(outBatter);
+                    ball.facingBatter = facingBatter;
+                    ball.outBatter = outBatter;
+                    ball.striker = outBatter;
 
                     liveTotal += wicketRuns;
                     liveWickets++;
@@ -8398,6 +8446,7 @@ CURRENT OVER SUMMARY
                 }
                 else if (ball.type === "retiredHurt") {
                     ensureBatsman(striker);
+                    ball.striker = striker;
                     batsmanStats[striker].out = false;
                     batsmanStats[striker].retiredHurt = true;
                     batsmanStats[striker].dismissal = "Retired Hurt";
@@ -8406,6 +8455,7 @@ CURRENT OVER SUMMARY
                 // EXTRAS
                 // =========================
                 else if (ball.type === "extra") {
+                    ball.striker = striker;
                     const r = Number(ball.runs) || 1;
                     liveTotal += r;
                     if (extrasStats[ball.extra] !== undefined) {
@@ -8416,7 +8466,9 @@ CURRENT OVER SUMMARY
                         ball.extra === "wide" ||
                         ball.extra === "noball"
                     ) {
-                        bowlerStats[bowler].runs += r;
+                        if (bowler) {
+                            bowlerStats[bowler].runs += r;
+                        }
                     }
                     // byes + leg byes count as legal balls
                     if (
@@ -8433,11 +8485,31 @@ CURRENT OVER SUMMARY
                         }
                     }
                 }
+                const completedOver = legalBallsInOver >= 6;
+
                 // ✅ move over ONLY after 6 legal balls
                 if (legalBallsInOver >= 6) {
                     currentOverId++;
                     legalBallsInOver = 0;
                 }
+
+                let afterPair = { ...beforePair };
+                if (getRunsTakenForStrike(ball) % 2 === 1) {
+                    afterPair = rotatedPair(afterPair);
+                }
+                if (completedOver) {
+                    afterPair = ball.type === "wicket"
+                        ? afterPair
+                        : rotatedPair(afterPair);
+                }
+                if (ball.type === "wicket" && (ball.afterStriker || ball.afterNonStriker)) {
+                    afterPair = {
+                        striker: ball.afterStriker || afterPair.striker,
+                        nonStriker: ball.afterNonStriker || afterPair.nonStriker
+                    };
+                }
+                finalizeBattingContext(ball, afterPair);
+                battingPair = afterPair;
             });
             // ✅ restore current over state
             currentOverBalls = legalBallsInOver;
